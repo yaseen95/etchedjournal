@@ -1,0 +1,10 @@
+package com.etchedjournal.etched.api
+
+import com.etchedjournal.etched.entity.Entry
+
+interface EntryService {
+
+    fun getEntry(entryId: Long): Entry
+
+    fun getEntries(): List<Entry>
+}
