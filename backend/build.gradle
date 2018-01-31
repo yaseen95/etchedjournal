@@ -52,3 +52,12 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.springframework.security:spring-security-test')
 }
+
+jar {
+    // Copy the react bundle into the jar.
+    from('../frontend/build') {
+        into 'static'
+    }
+}
+
+processResources.dependsOn(":frontend:bundle")
