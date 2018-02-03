@@ -10,12 +10,9 @@ backspace. It feels like a cool enough idea to implement.
 
 ## Encryption
 ### Entry/Etches
-For every new entry, an IV and key are generated. The IV and key are used to encrypt etches. Process outlined below
-
-1. Generate secure random iv and key
-2. Use key and iv are used as input to AES encrypt every etch for an entry
-3. The key and iv are then encrypted by the Master Encryption Key and uploaded alongside the
-message content to the server.
+For each etch, an IV and key are randomly generated and used for encryption. The key and iv are 
+then encrypted by the Master Encryption Key (and a new iv) and uploaded alongside the message 
+content to the server.
 
 ### Master Encryption Key
 The master encryption key is used to encrypt all the other data sent to the servers. This will

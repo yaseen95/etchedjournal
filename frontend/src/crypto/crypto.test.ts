@@ -1,4 +1,4 @@
-import { EtchedCryptoUtils } from './crypto';
+import { EtchedCryptoUtils } from './etched-crypto-utils';
 import EncryptWrapper = EtchedCryptoUtils.EncryptWrapper;
 
 test('test hash can be verified', () => {
