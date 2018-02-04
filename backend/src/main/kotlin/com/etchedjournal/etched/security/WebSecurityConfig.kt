@@ -16,5 +16,7 @@ open class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 .authorizeRequests()
                 .antMatchers("/", "/**")
                 .permitAll()
+            .and()
+                .csrf().disable()
     }
 }

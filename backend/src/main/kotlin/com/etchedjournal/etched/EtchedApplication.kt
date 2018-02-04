@@ -15,12 +15,14 @@ import java.util.TimeZone
 
 @SpringBootApplication
 open class EtchedApplication {
-    val log: Logger = LoggerFactory.getLogger(EtchedApplication::class.java)
+    companion object {
+        val log: Logger = LoggerFactory.getLogger(EtchedApplication::class.java)
+    }
 
     @Bean
     open fun commandLineRunner(entryRepository: EntryRepository): CommandLineRunner {
         return CommandLineRunner {
-            entryRepository.save(Entry("Journal title", "encryption key", "initialization vector"))
+            entryRepository.save(Entry("Journal title"))
         }
     }
 
