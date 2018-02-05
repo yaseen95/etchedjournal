@@ -35,7 +35,7 @@ data class Etch(
         val id: Long?,
 
         @Column(nullable = false)
-        val timestamp: LocalDateTime,
+        val timestamp: Instant,
 
         // TODO: Do we need to store a position???
         @Column(nullable = false)
@@ -59,7 +59,7 @@ data class Etch(
         var entry: Entry?
 ) {
     constructor(content: String, position: Int?, contentKey: String, contentIv: String,
-                initVector: String, entry: Entry?) : this(null, LocalDateTime.now(), position,
+                initVector: String, entry: Entry?) : this(null, Instant.now(), position,
             content, contentKey, contentIv, initVector, entry)
 
     // Setting these values to Empty to remove the val is None error. This is just for Hibernate.
