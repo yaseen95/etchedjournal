@@ -1,6 +1,6 @@
 package com.etchedjournal.etched.entity
 
-import java.time.LocalDateTime
+import java.time.Instant
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -35,10 +35,10 @@ open class Entry(
         val title: String,
 
         @Column(nullable = false)
-        val created: LocalDateTime,
+        val created: Instant,
 
         @Column(nullable = true)
-        var finished: LocalDateTime?,
+        var finished: Instant?,
 
         @OneToMany(mappedBy = "entry")
         val etches: MutableList<Etch>,
@@ -47,7 +47,7 @@ open class Entry(
         var state: EntryState
 ) {
     constructor(title: String) :
-            this(null, title, LocalDateTime.now(), null, mutableListOf(), EntryState.CREATED)
+            this(null, title, Instant.now(), null, mutableListOf(), EntryState.CREATED)
 
     /**
      * Default no-arg constructor is required by hibernate. Values are set to null/empty and are

@@ -1,7 +1,7 @@
 package com.etchedjournal.etched.entity
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import java.time.LocalDateTime
+import java.time.Instant
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
