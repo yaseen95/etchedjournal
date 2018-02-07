@@ -1,33 +1,33 @@
 import * as React from 'react';
 import { ClassAttributes } from 'react';
 import './App.css';
-// import { EtchEncrypter } from './crypto/crypto';
-// import { EtchedCryptoUtils } from './crypto/etched-crypto-utils';
+import { EtchEncrypter } from './crypto/crypto';
+import { EtchedCryptoUtils } from './crypto/etched-crypto-utils';
 import { EtchedApi } from './EtchedApi';
 import { Entry } from './models/entry';
 import { EntryComponent } from './components/entry/entry';
 
-// let msg = 'The quick brown fox jumps over the lazy dog';
-// let passphrase = 'Bonsoir Elliot';
-// let masterKey = EtchedCryptoUtils.hashPassphrase(passphrase).hash;
-// let encryptor = new EtchEncrypter(masterKey);
-// let etch = encryptor.encrypt(msg);
-// let decryptedEtch = encryptor.decrypt(etch);
 let etchedApi = new EtchedApi();
 
-class App extends React.Component<{}, { entries: Entry[] | null }> {
+interface AppState {
+  entries: Entry[] | null;
+  fetchedData: boolean;
+  encrypter: EtchEncrypter | null;
+  etchedApi: EtchedApi;
+}
+
+class App extends React.Component<{}, AppState> {
   constructor(props: ClassAttributes<{}>) {
     super(props);
     this.state = {
-      entries: null
+      entries: null,
+      fetchedData: false,
+      encrypter: null,
+      etchedApi: new EtchedApi()
     };
   }
 
   render() {
-    if (this.state.entries == null) {
-      this.getEntries();
-    }
-
     return (
       <div className="App">
         <header className="App-header">
@@ -38,14 +38,31 @@ class App extends React.Component<{}, { entries: Entry[] | null }> {
     );
   }
 
+  componentDidMount() {
+    if (!this.state.fetchedData) {
+      this.getEntries();
+    }
+  }
+
   getEntries() {
-    etchedApi.getEntries().then(entries => {
-      setTimeout(function (x: React.Component) { x.setState({entries: entries}); }, 2000, this);
-    });
+    let msg = 'The quick brown fox jumps over the lazy dog';
+    let passphrase = 'Bonsoir Elliot';
+    let masterKey = EtchedCryptoUtils.hashPassphrase(passphrase).hash;
+    let encrypter = new EtchEncrypter(masterKey);
+    let etch = encrypter.encrypt(msg);
+
+    this.setState({encrypter: encrypter});
+    etchedApi.postEtch(1, etch);
+
+    etchedApi.getEntries()
+      .then(entries => {
+        setTimeout(component => { component.setState({entries: entries}); }, 2000, this);
+        this.setState({fetchedData: true});
+      });
   }
 
   renderEntries() {
-    if (this.state.entries == null) {
+    if (this.state.entries == null || this.state.encrypter == null) {
       return <div><h2>No entries</h2></div>;
     }
 
@@ -53,7 +70,7 @@ class App extends React.Component<{}, { entries: Entry[] | null }> {
     for (let i = 0; i < this.state.entries.length; i++) {
       let e = this.state.entries[i];
       renderedEntries.push(
-        <EntryComponent entry={e}/>
+        <EntryComponent key={e.id} entry={e} encrypter={this.state.encrypter} api={this.state.etchedApi}/>
       );
     }
     return <div>{renderedEntries}</div>;

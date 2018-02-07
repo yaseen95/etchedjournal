@@ -1,5 +1,8 @@
 
 export class Etch {
+  /** id */
+  id: number;
+
   /** Etch content */
   content: string;
 
@@ -15,11 +18,16 @@ export class Etch {
   /** Indicates whether content, contentKey, and contentIv are encrypted */
   encrypted: boolean;
 
+  /** Position of etch relative to other etches */
+  position: number;
+
   constructor(content: string, contentKey: string, contentIv: string, initVector: string, encrypted: boolean) {
     this.content = content;
     this.contentKey = contentKey;
     this.contentIv = contentIv;
     this.initVector = initVector;
     this.encrypted = encrypted;
+    // TODO: Actually increment position.
+    this.position = 1;
   }
 }

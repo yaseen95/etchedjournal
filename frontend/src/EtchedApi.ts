@@ -83,4 +83,22 @@ export class EtchedApi {
         return etch as Etch;
       });
   }
+
+  postEtch(entryId: number, etch: Etch): Promise<Etch> {
+    let init: RequestInit = {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+      body: JSON.stringify(etch),
+    };
+
+    return fetch(`${this.BASE_URL}/entries/entry/${entryId}/etches/etch/`, init)
+      .then(r => {
+        return r.json();
+      })
+      .then(savedEtch => {
+        return savedEtch as Etch;
+      });
+  }
 }
