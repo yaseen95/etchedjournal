@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
+import java.time.Instant
 
 @RequestMapping("/api/v1/entries/entry/{entryId}/etches")
 @RestController
@@ -40,6 +41,7 @@ class EtchServiceController : EtchService {
     override fun create(@PathVariable entryId: Long, @RequestBody etch: Etch): Etch {
         val entry = getEntry(entryId)
         etch.entry = entry
+        etch.timestamp = Instant.now()
         return etchRepository.save(etch)
     }
 

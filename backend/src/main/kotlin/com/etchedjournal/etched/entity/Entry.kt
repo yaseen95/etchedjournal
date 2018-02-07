@@ -21,7 +21,7 @@ import javax.persistence.Table
  */
 @Entity
 @Table(name = "entries")
-open class Entry(
+data class Entry(
         /**
          * This is only null when creating an entry. When retrieved by the database safe to
          * assume non-null
@@ -34,8 +34,10 @@ open class Entry(
         @Column(nullable = false)
         val title: String,
 
+        // Have to set this to var, because Jackson can't read the default value.
+        // TODO: File a bug report possibly?
         @Column(nullable = false)
-        val created: Instant,
+        var created: Instant = Instant.now(),
 
         @Column(nullable = true)
         var finished: Instant?,
@@ -48,10 +50,4 @@ open class Entry(
 ) {
     constructor(title: String) :
             this(null, title, Instant.now(), null, mutableListOf(), EntryState.CREATED)
-
-    /**
-     * Default no-arg constructor is required by hibernate. Values are set to null/empty and are
-     * replaced by Hibernate with the actual database values later.
-     */
-    constructor() : this("")
 }

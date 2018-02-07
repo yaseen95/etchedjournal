@@ -45,7 +45,12 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
+    // This is needed to convert java8 time objects e.g. Instant, LocalDateTime, etc.
     compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.4')
+
+    // This enables jackson to instantiate kotlin classes that don't have a default constructor.
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4"
+
     compile "org.flywaydb:flyway-core:5.0.6"
     runtime('org.springframework.boot:spring-boot-devtools')
     runtime group: 'com.h2database', name: 'h2', version: '1.4.196'

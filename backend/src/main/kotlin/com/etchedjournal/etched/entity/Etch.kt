@@ -34,8 +34,10 @@ data class Etch(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long?,
 
+        // Have to set this to var, because Jackson can't read the default value.
+        // TODO: File a bug report possibly?
         @Column(nullable = false)
-        val timestamp: Instant,
+        var timestamp: Instant = Instant.now(),
 
         // TODO: Do we need to store a position???
         @Column(nullable = false)
@@ -57,11 +59,4 @@ data class Etch(
         @JoinColumn(name = "entry_id")
         @JsonIgnore
         var entry: Entry?
-) {
-    constructor(content: String, position: Int?, contentKey: String, contentIv: String,
-                initVector: String, entry: Entry?) : this(null, Instant.now(), position,
-            content, contentKey, contentIv, initVector, entry)
-
-    // Setting these values to Empty to remove the val is None error. This is just for Hibernate.
-    constructor() : this("", null, "", "", "", null)
-}
+)
