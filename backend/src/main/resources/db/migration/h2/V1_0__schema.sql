@@ -17,3 +17,18 @@ CREATE TABLE etches (
   init_vector VARCHAR(255) NOT NULL,
   FOREIGN KEY (entry_id) REFERENCES entries (entry_id)
 );
+
+CREATE TABLE users (
+  user_id BIGINT IDENTITY PRIMARY KEY,
+  // TODO: Enforce username rules in app logic e.g. starts with letter, etc.
+  username VARCHAR(30) UNIQUE NOT NULL,
+  password VARCHAR(60) NOT NULL,  // bcrypt stretches to 60 chars
+  email VARCHAR(320) UNIQUE NOT NULL, // 320 max allowed length RFC 5321
+  admin BOOL NOT NULL DEFAULT FALSE,
+
+  // Fields below are all for deriving master key.
+  algo VARCHAR(10) DEFAULT NULL,
+  salt VARCHAR(255) DEFAULT NULL,
+  key_size INT DEFAULT NULL,
+  iterations BIGINT DEFAULT NOT NULL
+);
