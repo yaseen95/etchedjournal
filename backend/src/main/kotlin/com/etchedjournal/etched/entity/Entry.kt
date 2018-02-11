@@ -1,11 +1,14 @@
 package com.etchedjournal.etched.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.Instant
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
 
@@ -31,6 +34,9 @@ data class Entry(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long?,
 
+        // TODO-HIGH: As much as possible should be encrypted
+        // Title, and dates should be encrypted.
+        // Maybe title, dates, tags, state, etc. is all encrypted client side and stored there
         @Column(nullable = false)
         val title: String,
 
@@ -46,8 +52,14 @@ data class Entry(
         val etches: MutableList<Etch>,
 
         @Column(nullable = false)
-        var state: EntryState
+        var state: EntryState,
+
+        @ManyToOne
+        @JoinColumn(name = "user_id")
+        @JsonIgnore
+        val user: EtchedUser
 ) {
-    constructor(title: String) :
-            this(null, title, Instant.now(), null, mutableListOf(), EntryState.CREATED)
+    constructor(title: String, user: EtchedUser) :
+            this(null, title, Instant.now(), null, mutableListOf(), EntryState.CREATED,
+                    user)
 }

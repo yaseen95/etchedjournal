@@ -3,6 +3,7 @@ package com.etchedjournal.etched.security
 import com.etchedjournal.etched.EtchedApplication
 import io.jsonwebtoken.JwtException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
@@ -25,17 +26,12 @@ class JwtTokenFilter : UsernamePasswordAuthenticationFilter() {
     @Autowired
     private lateinit var subjectHubUserService: SecurityUserService
 
-    companion object {
-        const val AUTHORIZATION_HEADER = "Authorization"
-    }
-
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
 
         val httpRequest = request as HttpServletRequest
-        val authToken = httpRequest.getHeader(AUTHORIZATION_HEADER)
+        val authToken = httpRequest.getHeader(HttpHeaders.AUTHORIZATION)
 
-        // TODO: Filter on requests only.
         if (authToken != null) {
             var username: String? = null
             try {

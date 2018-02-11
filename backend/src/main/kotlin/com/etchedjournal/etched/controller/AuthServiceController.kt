@@ -1,19 +1,15 @@
 package com.etchedjournal.etched.controller
 
 import com.etchedjournal.etched.EtchedApplication
-import com.etchedjournal.etched.api.AuthServiceApi
 import com.etchedjournal.etched.dto.AuthenticationRequest
 import com.etchedjournal.etched.dto.JwtResponse
 import com.etchedjournal.etched.dto.RegisterRequest
-import com.etchedjournal.etched.entity.EtchedUser
 import com.etchedjournal.etched.repository.EtchedUserRepository
 import com.etchedjournal.etched.security.JwtTokenUtils
+import com.etchedjournal.etched.service.AuthService
 import org.apache.commons.validator.routines.EmailValidator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.AuthenticationException
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,19 +19,16 @@ import java.util.regex.Pattern
 
 @RequestMapping("/api/v1/auth")
 @RestController
-class AuthenticationController : AuthServiceApi {
-
-    @Autowired
-    private lateinit var authenticationManager: AuthenticationManager
+class AuthServiceController {
 
     @Autowired
     private lateinit var jwtTokenUtils: JwtTokenUtils
 
     @Autowired
-    private lateinit var bCryptPasswordEncoder: BCryptPasswordEncoder
+    private lateinit var etchedUserRepository: EtchedUserRepository
 
     @Autowired
-    private lateinit var etchedUserRepository: EtchedUserRepository
+    private lateinit var authService: AuthService
 
     companion object {
         // Username must start with a letter and can be followed by letters or numbers. Between 6-20
@@ -44,16 +37,10 @@ class AuthenticationController : AuthServiceApi {
     }
 
     @RequestMapping("/authenticate", method = [RequestMethod.POST])
-    override fun authenticate(@RequestBody authRequest: AuthenticationRequest): JwtResponse {
+    fun authenticate(@RequestBody authRequest: AuthenticationRequest): JwtResponse {
         EtchedApplication.log.info("Attempting authentication for {}", authRequest.username)
-        try {
-            val authentication = authenticationManager.authenticate(
-                    UsernamePasswordAuthenticationToken(authRequest.username, authRequest.password)
-            )
-            SecurityContextHolder.getContext().authentication = authentication
-        } catch (ae: AuthenticationException) {
-            throw Exception("Invalid credentials.")
-        }
+
+        authService.authenticate(authRequest.username, authRequest.password)
 
         // User is guaranteed to exist in database otherwise auth would have failed.
         val user = etchedUserRepository.findByUsername(authRequest.username)!!
@@ -62,19 +49,14 @@ class AuthenticationController : AuthServiceApi {
     }
 
     @RequestMapping("/register", method = [RequestMethod.POST])
-    override fun register(@RequestBody registerRequest: RegisterRequest): JwtResponse {
-        // TODO: Handle usernames as case insensitive
-        // I.e. usernames are still displayed with case sensitivity but are treated as case
-        // insensitive.
+    fun register(@RequestBody registerRequest: RegisterRequest): JwtResponse {
         validateRegisterRequest(registerRequest)
         EtchedApplication.log.info("Received register request with: {}", registerRequest)
-        val hashedPassword = bCryptPasswordEncoder.encode(registerRequest.password)
-        var subjectHubUser = EtchedUser(null, registerRequest.username, hashedPassword,
+        val user = authService.register(registerRequest.username, registerRequest.password,
                 registerRequest.email)
-        subjectHubUser = etchedUserRepository.save(subjectHubUser)
-
         EtchedApplication.log.info("{} successfully registered.", registerRequest.username)
-        return JwtResponse(jwtTokenUtils.generateToken(subjectHubUser))
+        // TODO: Should we return a jwt on register or do we require another login?
+        return JwtResponse(jwtTokenUtils.generateToken(user))
     }
 
     /**

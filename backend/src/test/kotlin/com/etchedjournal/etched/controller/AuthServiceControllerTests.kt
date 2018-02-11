@@ -1,6 +1,6 @@
-package com.etchedjournal.etched
+package com.etchedjournal.etched.controller
 
-import com.etchedjournal.etched.controller.AuthenticationController
+import com.etchedjournal.etched.TestUtils
 import com.etchedjournal.etched.dto.AuthenticationRequest
 import com.etchedjournal.etched.dto.RegisterRequest
 import com.etchedjournal.etched.entity.EtchedUser
@@ -29,10 +29,10 @@ import java.time.Period
 @RunWith(SpringRunner::class)
 @SpringBootTest
 @Transactional
-class AuthControllerTests {
+class AuthServiceControllerTests {
 
     @Autowired
-    private lateinit var authController: AuthenticationController
+    private lateinit var authController: AuthServiceController
 
     @Autowired
     private lateinit var jwtTokenUtils: JwtTokenUtils

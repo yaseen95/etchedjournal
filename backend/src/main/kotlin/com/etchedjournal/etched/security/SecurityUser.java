@@ -14,19 +14,18 @@ public class SecurityUser implements UserDetails {
     private String username;
     private String password;
     private Collection<GrantedAuthority> authorities;
+    private Long userId;
 
-    public SecurityUser() {
-
-    }
-
-    public SecurityUser(String username, String password) {
-        this(username, password, java.util.Collections.emptyList());
-    }
-
-    public SecurityUser(String username, String password, Collection<GrantedAuthority> authorities) {
+    public SecurityUser(String username, String password, Collection<GrantedAuthority>
+            authorities, Long userId) {
         this.username = username;
         this.password = password;
         this.authorities = authorities;
+        this.userId = userId;
+    }
+
+    public Long getUserId() {
+        return userId;
     }
 
     @Override

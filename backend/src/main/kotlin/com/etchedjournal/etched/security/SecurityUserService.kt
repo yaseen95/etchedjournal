@@ -29,7 +29,7 @@ class SecurityUserService : UserDetailsService {
             if (etchedUser.admin) {
                 authorities.add(SimpleGrantedAuthority("ADMIN"))
             }
-            return SecurityUser(username, etchedUser.password, authorities)
+            return SecurityUser(username, etchedUser.password, authorities, etchedUser.id)
         }
         return null
     }
