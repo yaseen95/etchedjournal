@@ -56,6 +56,8 @@ class AuthServiceController {
                 registerRequest.email)
         EtchedApplication.log.info("{} successfully registered.", registerRequest.username)
         // TODO: Should we return a jwt on register or do we require another login?
+        // Maybe we should return a User object to adhere to POST principles and include the token
+        // too.
         return JwtResponse(jwtTokenUtils.generateToken(user))
     }
 

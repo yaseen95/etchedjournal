@@ -1,5 +1,6 @@
 import { Entry } from './models/entry';
 import { Etch } from './models/etch';
+import { Jwt } from './models/jwt';
 
 module ApiModels {
 
@@ -38,6 +39,14 @@ export class EtchedApi {
       entries.push(EtchedApi.parseEntry(entryApiModels[i]));
     }
     return entries;
+  }
+
+  private static jsonPostInit(body: object): RequestInit {
+    return {
+      method: 'POST',
+      headers: new Headers({'Content-Type': 'application/json'}),
+      body: JSON.stringify(body)
+    };
   }
 
   getEntries(): Promise<Entry[]> {
@@ -85,20 +94,30 @@ export class EtchedApi {
   }
 
   postEtch(entryId: number, etch: Etch): Promise<Etch> {
-    let init: RequestInit = {
-      method: 'POST',
-      headers: new Headers({
-        'Content-Type': 'application/json'
-      }),
-      body: JSON.stringify(etch),
-    };
+    let requestInit = EtchedApi.jsonPostInit(etch);
 
-    return fetch(`${this.BASE_URL}/entries/entry/${entryId}/etches/etch/`, init)
+    return fetch(`${this.BASE_URL}/entries/entry/${entryId}/etches/etch/`, requestInit)
       .then(r => {
         return r.json();
       })
       .then(savedEtch => {
         return savedEtch as Etch;
+      });
+  }
+
+  register(username: string, email: string, password: string): Promise<Jwt> {
+    let requestInit = EtchedApi.jsonPostInit({
+                                               'username': username,
+                                               'email': email,
+                                               'password': password
+                                             });
+    return fetch(`${this.BASE_URL}/auth/register`, requestInit)
+      .then(r => {
+        return r.json();
+      })
+      .then(user => {
+        console.log(JSON.stringify(user));
+        return user as Jwt;
       });
   }
 }
