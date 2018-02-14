@@ -40,4 +40,10 @@ class EtchedUser(
 
     @Column(nullable = true)
     var iterations: Long? = null
-)
+
+
+) {
+    override fun toString(): String {
+        return "EtchedUser(id=$id, username='$username', email='$email')"
+    }
+}

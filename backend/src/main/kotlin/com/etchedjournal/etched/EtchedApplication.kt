@@ -17,17 +17,6 @@ open class EtchedApplication {
     companion object {
         val log: Logger = LoggerFactory.getLogger(EtchedApplication::class.java)
     }
-
-    @Bean
-    open fun commandLineRunner(entryRepository: EntryRepository, etchedUserRepository:
-    EtchedUserRepository, bCryptPasswordEncoder: BCryptPasswordEncoder): CommandLineRunner {
-        return CommandLineRunner {
-            val hashed = bCryptPasswordEncoder.encode("password")
-            var user = EtchedUser(null, "testuser", hashed, "test@example.com")
-            user = etchedUserRepository.save(user)
-            entryRepository.save(Entry("Journal title", user))
-        }
-    }
 }
 
 fun main(args: Array<String>) {

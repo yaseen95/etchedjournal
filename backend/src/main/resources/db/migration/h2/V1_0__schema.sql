@@ -18,7 +18,7 @@ CREATE TABLE entries (
   title    VARCHAR(255) NOT NULL,
   created  TIMESTAMP    NOT NULL,
   finished TIMESTAMP DEFAULT NULL,
-  state    INT          NOT NULL,
+  state    VARCHAR(30)  NOT NULL,
   user_id  BIGINT       NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users (user_id)
 );

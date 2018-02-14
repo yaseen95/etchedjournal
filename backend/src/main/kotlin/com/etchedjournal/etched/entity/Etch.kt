@@ -52,8 +52,11 @@ data class Etch(
         @Column(nullable = false, name = "content_iv")
         val contentIv: String,
 
+        // TODO: Don't use iv again dumb dumb
         @Column(nullable = false, name = "init_vector")
         val initVector: String,
+
+        // TODO: Store HMAC
 
         @ManyToOne
         @JoinColumn(name = "entry_id")

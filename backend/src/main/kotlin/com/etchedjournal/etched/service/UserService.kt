@@ -4,6 +4,13 @@ import com.etchedjournal.etched.entity.EtchedUser
 
 interface UserService {
 
-    fun configureEncryptionProperties(algo: String, salt: String, iterations: Long, keySize: Int):
-            EtchedUser
+    /**
+     * Configures the encryption properties for the specified user.
+     */
+    fun configureEncryptionProperties(
+            user: EtchedUser,
+            algo: String,
+            salt: String,
+            iterations: Long,
+            keySize: Int): EtchedUser
 }

@@ -4,13 +4,13 @@ import com.etchedjournal.etched.EtchedApplication
 import com.etchedjournal.etched.dto.AuthenticationRequest
 import com.etchedjournal.etched.dto.JwtResponse
 import com.etchedjournal.etched.dto.RegisterRequest
+import com.etchedjournal.etched.dto.RegisterResponse
 import com.etchedjournal.etched.repository.EtchedUserRepository
 import com.etchedjournal.etched.security.JwtTokenUtils
 import com.etchedjournal.etched.service.AuthService
+import org.apache.commons.beanutils.BeanUtils
 import org.apache.commons.validator.routines.EmailValidator
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -49,16 +49,17 @@ class AuthServiceController {
     }
 
     @RequestMapping("/register", method = [RequestMethod.POST])
-    fun register(@RequestBody registerRequest: RegisterRequest): JwtResponse {
+    fun register(@RequestBody registerRequest: RegisterRequest): RegisterResponse {
         validateRegisterRequest(registerRequest)
         EtchedApplication.log.info("Received register request with: {}", registerRequest)
         val user = authService.register(registerRequest.username, registerRequest.password,
                 registerRequest.email)
         EtchedApplication.log.info("{} successfully registered.", registerRequest.username)
-        // TODO: Should we return a jwt on register or do we require another login?
-        // Maybe we should return a User object to adhere to POST principles and include the token
-        // too.
-        return JwtResponse(jwtTokenUtils.generateToken(user))
+
+        val response = RegisterResponse()
+        BeanUtils.copyProperties(response, user)
+        response.token = jwtTokenUtils.generateToken(user)
+        return response
     }
 
     /**

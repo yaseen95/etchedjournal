@@ -9,15 +9,16 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserServiceImpl : UserService {
-    @Autowired
-    private lateinit var authService: AuthService
 
     @Autowired
     private lateinit var etchedUserRepository: EtchedUserRepository
 
-    override fun configureEncryptionProperties(algo: String, salt: String, iterations: Long,
-                                               keySize: Int): EtchedUser {
-        val user = authService.getRequestingUser()
+    override fun configureEncryptionProperties(
+            user: EtchedUser,
+            algo: String,
+            salt: String,
+            iterations: Long,
+            keySize: Int): EtchedUser {
         user.algo = algo
         user.iterations = iterations
         user.keySize = keySize

@@ -7,6 +7,8 @@ import com.etchedjournal.etched.entity.EtchedUser
 import com.etchedjournal.etched.repository.EtchedUserRepository
 import com.etchedjournal.etched.security.JwtTokenUtils
 import com.jayway.jsonpath.JsonPath
+import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.nullValue
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -67,6 +69,15 @@ class AuthServiceControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk)
+                .andExpect(jsonPath("$.id").isNumber)
+                .andExpect(jsonPath("$.username", `is`("tester")))
+                .andExpect(jsonPath("$.email", `is`("a@test.com")))
+                .andExpect(jsonPath("$.password").doesNotExist())
+                .andExpect(jsonPath("$.admin", `is`(false)))
+                .andExpect(jsonPath("$.algo", nullValue()))
+                .andExpect(jsonPath("$.salt", nullValue()))
+                .andExpect(jsonPath("$.keySize", nullValue()))
+                .andExpect(jsonPath("$.iterations", nullValue()))
                 .andReturn()
 
         val token = JsonPath.read<String>(result.response.contentAsString, "$.token")
