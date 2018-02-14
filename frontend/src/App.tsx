@@ -3,9 +3,10 @@ import { ClassAttributes } from 'react';
 import './App.css';
 import { EtchEncrypter } from './crypto/crypto';
 import { EtchedCryptoUtils } from './crypto/etched-crypto-utils';
-import { EtchedApi } from './EtchedApi';
+import { EtchedApi } from './etched-api';
 import { Entry } from './models/entry';
 import { EntryComponent } from './components/entry/entry';
+import { RegisterComponent } from './components/register/register';
 
 let etchedApi = new EtchedApi();
 
@@ -33,7 +34,12 @@ class App extends React.Component<{}, AppState> {
         <header className="App-header">
           <h1 className="App-title">Etched Journal</h1>
         </header>
-        {this.renderEntries()}
+        <section className="section">
+          <div className="container">
+            {this.renderEntries()}
+            <RegisterComponent etchedApi={this.state.etchedApi}/>
+          </div>
+        </section>
       </div>
     );
   }
@@ -62,18 +68,23 @@ class App extends React.Component<{}, AppState> {
   }
 
   renderEntries() {
-    if (this.state.entries == null || this.state.encrypter == null) {
-      return <div><h2>No entries</h2></div>;
-    }
-
     let renderedEntries = [];
-    for (let i = 0; i < this.state.entries.length; i++) {
-      let e = this.state.entries[i];
-      renderedEntries.push(
-        <EntryComponent key={e.id} entry={e} encrypter={this.state.encrypter} api={this.state.etchedApi}/>
-      );
+
+    if (this.state.entries == null || this.state.encrypter == null) {
+      renderedEntries.push(<h2>No entries</h2>);
+    } else {
+      for (let i = 0; i < this.state.entries.length; i++) {
+        let e = this.state.entries[i];
+        renderedEntries.push(
+          <EntryComponent key={e.id} entry={e} encrypter={this.state.encrypter} api={this.state.etchedApi}/>
+        );
+      }
     }
-    return <div>{renderedEntries}</div>;
+    return (
+      <div className="columns">
+        <div className="column is-12">{renderedEntries}</div>
+      </div>
+    );
   }
 }
 

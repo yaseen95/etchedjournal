@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Entry } from '../../models/entry';
-import { EtchedApi } from '../../EtchedApi';
+import { EtchedApi } from '../../etched-api';
 import { EtchEncrypter } from '../../crypto/crypto';
 
 interface EntryProps {

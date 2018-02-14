@@ -2,5 +2,5 @@
 max_line_length = 100
 indent_style = space
 
-[*.{tsx,ts,jsx,js}]
+[*.{tsx,ts,jsx,js,html,css}]
 indent_size = 2

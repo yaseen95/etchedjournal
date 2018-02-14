@@ -1,0 +1,293 @@
+{
+	"info": {
+		"name": "etched",
+		"_postman_id": "088d81ea-7549-6b8a-bdda-d9834926e5b6",
+		"description": "API config for Etched.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Entry",
+			"description": "API requests/responses for operations on entries",
+			"item": [
+				{
+					"name": "Entries",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{domain}}/api/v1/entries",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"entries"
+							]
+						},
+						"description": "GET all entries."
+					},
+					"response": []
+				},
+				{
+					"name": "Entry",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{domain}}/api/v1/entries/entry/1/",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"entries",
+								"entry",
+								"1",
+								""
+							]
+						},
+						"description": "GET entry using entry id."
+					},
+					"response": []
+				},
+				{
+					"name": "Entry",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"title\": \"New Journal Title\"\n}"
+						},
+						"url": {
+							"raw": "{{domain}}/api/v1/entries/entry/",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"entries",
+								"entry",
+								""
+							]
+						},
+						"description": "POST a new Entry."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Etches",
+			"description": "",
+			"item": [
+				{
+					"name": "Etches",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "648b17c3-1b2a-461f-84d5-e80c20d9f733",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{domain}}/api/v1/entries/entry/:entryId/etches",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"entries",
+								"entry",
+								":entryId",
+								"etches"
+							],
+							"variable": [
+								{
+									"key": "entryId",
+									"value": "1"
+								}
+							]
+						},
+						"description": "GET all Etches for a specific entry."
+					},
+					"response": []
+				},
+				{
+					"name": "Etch",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{domain}}/api/v1/entries/entry/:entryId/etches/etch/:etchId",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"entries",
+								"entry",
+								":entryId",
+								"etches",
+								"etch",
+								":etchId"
+							],
+							"variable": [
+								{
+									"key": "entryId",
+									"value": "1"
+								},
+								{
+									"key": "etchId",
+									"value": "1"
+								}
+							]
+						},
+						"description": "GET a specific etch for an entry."
+					},
+					"response": []
+				},
+				{
+					"name": "Etch",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "648b17c3-1b2a-461f-84d5-e80c20d9f733",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"content\": \"abcdefghijklmnopqrstuvwxyz\",\n\t\"contentKey\": \"contentKey\",\n\t\"contentIv\": \"contentIv\",\n\t\"initVector\": \"initVector\",\n\t\"position\": 2\n}"
+						},
+						"url": {
+							"raw": "{{domain}}/api/v1/entries/entry/:entryId/etches/etch",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"entries",
+								"entry",
+								":entryId",
+								"etches",
+								"etch"
+							],
+							"variable": [
+								{
+									"key": "entryId",
+									"value": "1"
+								}
+							]
+						},
+						"description": "POST a new Etch for an Entry."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"description": "",
+			"item": [
+				{
+					"name": "Authenticate (Login)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"example\",\n\t\"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{domain}}/api/v1/auth/authenticate",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"authenticate"
+							]
+						},
+						"description": "Authenticates the user. A JWT is returned which can be used to authenticate for further requests."
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"example\",\n\t\"password\": \"password\",\n\t\"email\": \"test@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{domain}}/api/v1/auth/register",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
