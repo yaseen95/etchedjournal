@@ -1,17 +1,17 @@
 import * as React from 'react';
 import { ChangeEvent } from 'react';
 import { EtchedApi } from '../../etched-api';
-import { Jwt } from '../../models/jwt';
+import { EtchedUser } from '../../models/etched-user';
 
 interface RegisterState {
   username: string;
   email: string;
   password: string;
-  jwt: Jwt | null;
 }
 
 interface RegisterProps {
   etchedApi: EtchedApi;
+  setUser(user: EtchedUser): void;
 }
 
 export class RegisterComponent extends React.Component<RegisterProps, RegisterState> {
@@ -22,7 +22,6 @@ export class RegisterComponent extends React.Component<RegisterProps, RegisterSt
       username: '',
       email: '',
       password: '',
-      jwt: null,
     };
   }
 
@@ -30,8 +29,8 @@ export class RegisterComponent extends React.Component<RegisterProps, RegisterSt
     event.preventDefault();
     console.log(`Registering User[username='${this.state.username}']`);
     this.props.etchedApi.register(this.state.username, this.state.email, this.state.password)
-      .then((jwt: Jwt) => {
-        setTimeout((c: RegisterComponent) => { c.setState({jwt: jwt}); }, 2000, this);
+      .then((user: EtchedUser) => {
+        this.props.setUser(user);
       });
   }
 
@@ -49,9 +48,6 @@ export class RegisterComponent extends React.Component<RegisterProps, RegisterSt
 
   render() {
     let jwtDisplay = null;
-    if (this.state.jwt !== null) {
-      jwtDisplay = <h5>Jwt is {this.state.jwt.token}</h5>;
-    }
     return (
       <div className="columns is-centered">
         <div className="column is-12-mobile is-4-desktop">

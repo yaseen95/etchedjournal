@@ -1,6 +1,7 @@
 import { Entry } from './models/entry';
 import { Etch } from './models/etch';
 import { Jwt } from './models/jwt';
+import { EtchedUser } from './models/etched-user';
 
 module ApiModels {
 
@@ -17,6 +18,9 @@ module ApiModels {
 export class EtchedApi {
 
   BASE_URL = 'http://localhost:8080/api/v1';
+
+  user: EtchedUser | null;
+  private token: string | null;
 
   private static parseEntry(o: ApiModels.EntryApiModel): Entry {
     let e = new Entry();
@@ -47,6 +51,19 @@ export class EtchedApi {
       headers: new Headers({'Content-Type': 'application/json'}),
       body: JSON.stringify(body)
     };
+  }
+
+  constructor() {
+    this.user = null;
+    this.token = null;
+  }
+
+  /**
+   * Returns true if this user is logged in.
+   */
+  isLoggedIn = () => {
+    // TODO: Actually validate jwt by checking expiry.
+    return this.token === null;
   }
 
   getEntries(): Promise<Entry[]> {
@@ -105,7 +122,7 @@ export class EtchedApi {
       });
   }
 
-  register(username: string, email: string, password: string): Promise<Jwt> {
+  register(username: string, email: string, password: string): Promise<EtchedUser> {
     let requestInit = EtchedApi.jsonPostInit({
                                                'username': username,
                                                'email': email,
@@ -115,9 +132,11 @@ export class EtchedApi {
       .then(r => {
         return r.json();
       })
-      .then(user => {
-        console.log(JSON.stringify(user));
-        return user as Jwt;
+      .then(jwt => {
+        console.log(JSON.stringify(jwt));
+        // The response from the server includes user fields and a JWT.
+        this.token = (jwt as Jwt).token;
+        return jwt as EtchedUser;
       });
   }
 }

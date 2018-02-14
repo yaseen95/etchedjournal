@@ -7,6 +7,7 @@ import { EtchedApi } from './etched-api';
 import { Entry } from './models/entry';
 import { EntryComponent } from './components/entry/entry';
 import { RegisterComponent } from './components/register/register';
+import { EtchedUser } from './models/etched-user';
 
 let etchedApi = new EtchedApi();
 
@@ -15,6 +16,7 @@ interface AppState {
   fetchedData: boolean;
   encrypter: EtchEncrypter | null;
   etchedApi: EtchedApi;
+  user: EtchedUser | null;
 }
 
 class App extends React.Component<{}, AppState> {
@@ -24,7 +26,8 @@ class App extends React.Component<{}, AppState> {
       entries: null,
       fetchedData: false,
       encrypter: null,
-      etchedApi: new EtchedApi()
+      etchedApi: new EtchedApi(),
+      user: null,
     };
   }
 
@@ -37,7 +40,7 @@ class App extends React.Component<{}, AppState> {
         <section className="section">
           <div className="container">
             {this.renderEntries()}
-            <RegisterComponent etchedApi={this.state.etchedApi}/>
+            {this.renderAuthPrompt()}
           </div>
         </section>
       </div>
@@ -62,7 +65,9 @@ class App extends React.Component<{}, AppState> {
 
     etchedApi.getEntries()
       .then(entries => {
-        setTimeout(component => { component.setState({entries: entries}); }, 2000, this);
+        setTimeout(component => {
+          component.setState({entries: entries});
+        },         2000, this);
         this.setState({fetchedData: true});
       });
   }
@@ -71,7 +76,8 @@ class App extends React.Component<{}, AppState> {
     let renderedEntries = [];
 
     if (this.state.entries == null || this.state.encrypter == null) {
-      renderedEntries.push(<h2>No entries</h2>);
+      // React complains about key not existing.
+      renderedEntries.push(<h2 key={1}>No entries</h2>);
     } else {
       for (let i = 0; i < this.state.entries.length; i++) {
         let e = this.state.entries[i];
@@ -85,6 +91,26 @@ class App extends React.Component<{}, AppState> {
         <div className="column is-12">{renderedEntries}</div>
       </div>
     );
+  }
+
+  renderAuthPrompt() {
+    if (this.state.user === null) {
+      return (<RegisterComponent etchedApi={this.state.etchedApi} setUser={this.setUser}/>);
+    }
+    return (
+      <div>
+        <h4>Hi {this.state.user.username}</h4>
+        <p>Email is <i>{this.state.user.email}</i></p>
+        <p>User id is <i>{this.state.user.id}</i></p>
+        <p>Admin <i>{this.state.user.admin.toString()}</i></p>
+      </div>
+    );
+  }
+
+  setUser = (user: EtchedUser) => {
+    setTimeout((u: EtchedUser) => {
+      this.setState({user: u});
+    },         2000, user);
   }
 }
 
