@@ -2,6 +2,7 @@ import * as React from 'react';
 import { ChangeEvent } from 'react';
 import { EtchedApi } from '../../etched-api';
 import { EtchedUser } from '../../models/etched-user';
+import { FormField } from '../utils/form-field';
 
 interface RegisterState {
   username: string;
@@ -11,6 +12,7 @@ interface RegisterState {
 
 interface RegisterProps {
   etchedApi: EtchedApi;
+
   setUser(user: EtchedUser): void;
 }
 
@@ -53,49 +55,45 @@ export class RegisterComponent extends React.Component<RegisterProps, RegisterSt
         <div className="column is-12-mobile is-4-desktop">
           <h3>Register</h3>
           <form className="control" onSubmit={this.handleSubmit}>
-            <div className="field">
-              <div className="control">
-                <label className="label">Username</label>
-                <input
-                  className="input"
-                  type="text"
-                  placeholder="Username"
-                  name="username"
-                  value={this.state.username}
-                  onChange={this.onUsernameChanged}
-                />
+            <FormField>
+              <label className="label">Username</label>
+              <input
+                className="input"
+                type="text"
+                placeholder="Username"
+                name="username"
+                value={this.state.username}
+                onChange={this.onUsernameChanged}
+              />
+            </FormField>
+            <FormField>
+              <label className="label">Email</label>
+              <input
+                className="input"
+                type="text"
+                placeholder="Email"
+                value={this.state.email}
+                onChange={this.onEmailChanged}
+              />
+            </FormField>
+            <FormField>
+              <label className="label">Password</label>
+              <input
+                className="input"
+                type="password"
+                placeholder="Password"
+                name="password"
+                value={this.state.password}
+                onChange={this.onPasswordChanged}
+              />
+            </FormField>
+            <FormField>
+              <div className="field">
+                <div className="control">
+                  <button className="button is-primary">Submit</button>
+                </div>
               </div>
-            </div>
-            <div className="field">
-              <div className="control">
-                <label className="label">Email</label>
-                <input
-                  className="input"
-                  type="text"
-                  placeholder="Email"
-                  value={this.state.email}
-                  onChange={this.onEmailChanged}
-                />
-              </div>
-            </div>
-            <div className="field">
-              <div className="control">
-                <label className="label">Password</label>
-                <input
-                  className="input"
-                  type="password"
-                  placeholder="Password"
-                  name="password"
-                  value={this.state.password}
-                  onChange={this.onPasswordChanged}
-                />
-              </div>
-            </div>
-            <div className="field">
-              <div className="control">
-                <button className="button is-primary">Submit</button>
-              </div>
-            </div>
+            </FormField>
           </form>
           {jwtDisplay}
         </div>
