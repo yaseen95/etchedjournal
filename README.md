@@ -1,4 +1,4 @@
-# Etched Journal
+# Etched Journal (In Development)
 A journal where entries are "etched" in stone. That's the idea anyway.
 
 A few years ago I started journaling and I set a rule where I would try my best not to press
@@ -7,6 +7,12 @@ backspace. It feels like a cool enough idea to implement.
 ## Key Features
 * All journal entries are encrypted on the client side
 * After {x} seconds, entries cannot be edited
+
+## Timeline
+|Date      |Goals|
+|----------|-----|
+|2018-03-15|First RC|
+|2018-04-10|Deployed to production|
 
 ## Encryption
 ### Entry/Etches
