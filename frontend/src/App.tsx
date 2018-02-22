@@ -2,12 +2,12 @@ import * as React from 'react';
 import { ClassAttributes } from 'react';
 import './App.css';
 import { EtchEncrypter } from './crypto/crypto';
-import { EtchedCryptoUtils } from './crypto/etched-crypto-utils';
 import { EtchedApi } from './etched-api';
 import { Entry } from './models/entry';
 import { EntryComponent } from './components/entry/entry';
 import { RegisterComponent } from './components/register/register';
 import { EtchedUser } from './models/etched-user';
+import { ConfigurePassphrase } from './components/configure-passphrase/configure-passphrase';
 
 let etchedApi = new EtchedApi();
 
@@ -41,6 +41,7 @@ class App extends React.Component<{}, AppState> {
           <div className="container">
             {this.renderEntries()}
             {this.renderAuthPrompt()}
+            <ConfigurePassphrase/>
           </div>
         </section>
       </div>
@@ -54,14 +55,14 @@ class App extends React.Component<{}, AppState> {
   }
 
   getEntries() {
-    let msg = 'The quick brown fox jumps over the lazy dog';
-    let passphrase = 'Bonsoir Elliot';
-    let masterKey = EtchedCryptoUtils.hashPassphrase(passphrase).hash;
-    let encrypter = new EtchEncrypter(masterKey);
-    let etch = encrypter.encrypt(msg);
+    // let msg = 'The quick brown fox jumps over the lazy dog';
+    // let passphrase = 'Bonsoir Elliot';
+    // let masterKey = EtchedCryptoUtils.hashPassphrase(passphrase).hash;
+    let encrypter = new EtchEncrypter('abc');
+    // let etch = encrypter.encrypt(msg);
 
     this.setState({encrypter: encrypter});
-    etchedApi.postEtch(1, etch);
+    // etchedApi.postEtch(1, etch);
 
     etchedApi.getEntries()
       .then(entries => {

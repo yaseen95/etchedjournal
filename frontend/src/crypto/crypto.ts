@@ -1,6 +1,5 @@
 import { Etch } from '../models/etch';
-import { EtchedCryptoUtils } from './etched-crypto-utils';
-import EncryptWrapper = EtchedCryptoUtils.EncryptWrapper;
+import { EtchedCryptoUtils, EncryptWrapper } from './etched-crypto';
 
 export class EtchEncrypter {
 
