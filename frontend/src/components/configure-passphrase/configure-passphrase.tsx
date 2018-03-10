@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { FormField } from '../utils/form-field';
 import { Spinner } from '../utils/spinner';
-import { StretchedKey } from '../../crypto/etched-crypto';
-import * as PassphraseHasher from 'worker-loader!./worker';
+import { EtchedCryptoUtils, StretchedKey } from '../../crypto/etched-crypto';
 
 interface PassphraseState {
   passphrase: string;
@@ -10,7 +9,6 @@ interface PassphraseState {
   submitClicked: boolean;
   formErrorMessage: string;
   generatingMasterKey: boolean;
-  hasher: Worker;
 }
 
 const MIN_PASSPHRASE_LENGTH = 20;
@@ -21,18 +19,12 @@ export class ConfigurePassphrase extends React.Component<{}, PassphraseState> {
   constructor(props: {}) {
     super(props);
 
-    let worker = new PassphraseHasher();
-    worker.onmessage = (message: StretchedKey) => {
-      this.onPassphraseHashed(message);
-    };
-
     this.state = {
       passphrase: '',
       passphraseConfirm: '',
       submitClicked: false,
       formErrorMessage: '',
       generatingMasterKey: false,
-      hasher: worker,
     };
   }
 
@@ -46,6 +38,9 @@ export class ConfigurePassphrase extends React.Component<{}, PassphraseState> {
 
   handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     this.setState({submitClicked: true});
+
+    // TODO: Use zxcvbn to enforce decent passwords
+
     if (this.state.passphrase.length < MIN_PASSPHRASE_LENGTH) {
       this.setState({formErrorMessage: `Passphrase is too short. Must be more than 
       ${MIN_PASSPHRASE_LENGTH} characters.`});
@@ -58,7 +53,10 @@ export class ConfigurePassphrase extends React.Component<{}, PassphraseState> {
       // Password looks good.
       this.setState({formErrorMessage: ''});
       this.setState({generatingMasterKey: true});
-      this.state.hasher.postMessage(this.state.passphrase);
+      EtchedCryptoUtils.hashPassphrase(this.state.passphrase)
+        .then((key: StretchedKey) => {
+          this.onPassphraseHashed(key);
+        });
     }
     // Prevent page refresh on form submit.
     event.preventDefault();
