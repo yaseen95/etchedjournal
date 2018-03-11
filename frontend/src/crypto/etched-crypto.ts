@@ -133,10 +133,9 @@ export class EtchedCryptoUtils {
    * @param {PassphraseHashProperties?} properties
    * @returns {PromiseLike<StretchedKey>}
    */
-  static hashPassphrase(
-    userPassphrase: string,
-    salt?: string,
-    properties?: PassphraseHashProperties): PromiseLike<StretchedKey> {
+  static hashPassphrase(userPassphrase: string,
+                        salt?: string,
+                        properties?: PassphraseHashProperties): PromiseLike<StretchedKey> {
 
     let saltStr = salt ? salt : EtchedCryptoUtils.secureHexString(PASSPHRASE_HASH_SALT_SIZE);
     let hashProps = properties ? properties : DEFAULT_PASSPHRASE_HASH_PROPERTIES;
@@ -163,7 +162,7 @@ export class EtchedCryptoUtils {
     }).then((hashBytes: ArrayBuffer) => {
       let hashString = arrayBufferToHex(hashBytes);
       return new StretchedKey(hashProps.algo, hashProps.stretcherAlgo, saltStr, hashProps.keySize, hashProps.iterations,
-        hashString);
+                              hashString);
     });
   }
 
