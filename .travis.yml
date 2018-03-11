@@ -1,0 +1,3 @@
+
+script:
+  - ./gradlew nodeSetup && ./gradlew frontend:install && ./gradlew clean build

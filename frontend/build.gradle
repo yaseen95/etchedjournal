@@ -15,3 +15,7 @@ task start(type: NpmTask) {
 task install(type: NpmTask) {
     args = ['install']
 }
+
+task test(type: NpmTask) {
+    args = ['test']
+}
