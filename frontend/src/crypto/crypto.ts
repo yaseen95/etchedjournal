@@ -1,6 +1,5 @@
 import { Etch } from '../models/etch';
-import { EtchedCryptoUtils } from './etched-crypto-utils';
-import EncryptWrapper = EtchedCryptoUtils.EncryptWrapper;
+import { EtchedCryptoUtils, EncryptWrapper } from './etched-crypto';
 
 export class EtchEncrypter {
 
@@ -11,20 +10,27 @@ export class EtchEncrypter {
   }
 
   /**
-   * Encrypt the content and return it as an Etch
+   * Encrypt the content and return it as an Etch.
+   *
+   * Internally the etch is encrypted using a random key and iv. The random key and iv are then also encrypted using
+   * another random iv and the master key.
+   *
    * @param {string} content
-   * @returns {Etch}
+   * @returns {Promise<Etch>}
    */
-  encrypt(content: string) {
-    // Firstly encrypt the content
-    let encrypted = EtchedCryptoUtils.encrypt(content);
+  encrypt(content: string): Promise<Etch> {
+    return EtchedCryptoUtils.encrypt(content)
+      .then((wrapper: EncryptWrapper) => {
+        let encryptedKey = EtchedCryptoUtils.encrypt(wrapper.key, this.masterKey);
+        let encryptedIv = EtchedCryptoUtils.encrypt(wrapper.iv, this.masterKey);
 
-    // Encrypt the key and iv used to encrypt the content
-    let etchIv = EtchedCryptoUtils.secureHexString();
-    let contentKey = EtchedCryptoUtils.encrypt(encrypted.key, this.masterKey, etchIv).ciphertext;
-    let contentIv = EtchedCryptoUtils.encrypt(encrypted.iv, this.masterKey, etchIv).ciphertext;
-
-    return new Etch(encrypted.ciphertext, contentKey, contentIv, etchIv, true);
+        return Promise.all([encryptedKey, encryptedIv])
+          .then((values: [EncryptWrapper, EncryptWrapper]) => {
+            let key = values[0];
+            let iv = values[1];
+            return new Etch(wrapper.ciphertext, key.ciphertext, iv.ciphertext, key.iv, iv.iv);
+          });
+      });
   }
 
   /**
@@ -32,13 +38,21 @@ export class EtchEncrypter {
    * @param {Etch} etch
    * @returns {Etch}
    */
-  decrypt(etch: Etch) {
+  decrypt(etch: Etch): Promise<Etch> {
     // Decrypt the encrypted key and iv
-    let decKey = EtchedCryptoUtils.decrypt(new EncryptWrapper(this.masterKey, etch.initVector, etch.contentKey));
-    let decIv = EtchedCryptoUtils.decrypt(new EncryptWrapper(this.masterKey, etch.initVector, etch.contentIv));
+    let contentKey = EtchedCryptoUtils.decrypt(new EncryptWrapper(this.masterKey, etch.keyIv, etch.contentKey));
+    let contentIv = EtchedCryptoUtils.decrypt(new EncryptWrapper(this.masterKey, etch.ivIv, etch.contentIv));
 
-    // Decrypt the content using the decrypted key and iv
-    let decContent = EtchedCryptoUtils.decrypt(new EncryptWrapper(decKey, decIv, etch.content));
-    return new Etch(decContent, decKey, decIv, etch.initVector, false);
+    return Promise.all([contentKey, contentIv])
+      .then((values: [string, string]) => {
+        // The decrypted key and iv can now be used to decrypt the content
+        let keyStr = values[0];
+        let ivStr = values[1];
+
+        let etchKey = EtchedCryptoUtils.decrypt(new EncryptWrapper(keyStr, ivStr, etch.content));
+        return etchKey.then((decryptedContent: string) => {
+          return new Etch(decryptedContent, keyStr, ivStr, etch.keyIv, etch.ivIv);
+        });
+      });
   }
 }

@@ -31,7 +31,8 @@ CREATE TABLE etches (
   entry_id    BIGINT       NOT NULL,
   content_key VARCHAR(255) NOT NULL,
   content_iv  VARCHAR(255) NOT NULL,
-  init_vector VARCHAR(255) NOT NULL,
+  key_iv      VARCHAR(255) NOT NULL,
+  iv_iv       VARCHAR(255) NOT NULL,
   FOREIGN KEY (entry_id) REFERENCES entries (entry_id)
 );
 

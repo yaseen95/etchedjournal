@@ -88,11 +88,7 @@ export class RegisterComponent extends React.Component<RegisterProps, RegisterSt
               />
             </FormField>
             <FormField>
-              <div className="field">
-                <div className="control">
-                  <button className="button is-primary">Submit</button>
-                </div>
-              </div>
+                <button className="button is-primary">Submit</button>
             </FormField>
           </form>
           {jwtDisplay}

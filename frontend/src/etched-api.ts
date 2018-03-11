@@ -23,18 +23,8 @@ export class EtchedApi {
   private token: string | null;
 
   private static parseEntry(o: ApiModels.EntryApiModel): Entry {
-    let e = new Entry();
-    e.id = o.id;
-    e.etches = o.etches;
-    e.title = o.title;
-    e.state = o.state;
-    e.created = new Date(o.created);
-    let finished = null;
-    if (o.finished !== null) {
-      finished = new Date(o.finished);
-    }
-    e.finished = finished;
-    return e;
+    let finished = o.finished ? new Date(o.finished) : undefined;
+    return new Entry(o.id, o.title, new Date(o.created), finished, o.etches, o.state);
   }
 
   private static parseEntries(entryApiModels: ApiModels.EntryApiModel[]): Entry[] {
