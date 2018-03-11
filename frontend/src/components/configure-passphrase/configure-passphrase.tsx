@@ -79,13 +79,7 @@ export class ConfigurePassphrase extends React.Component<{}, PassphraseState> {
 
   render() {
     if (this.state.generatingMasterKey) {
-      return (
-        <div className="columns is-centered">
-          <div className="column is-12-mobile is-4-desktop">
-            <Spinner text="Generating Encryption Key"/>
-          </div>
-        </div>
-      );
+      return <Spinner text="Generating Encryption Key"/>;
     }
 
     let error = this.displayError();

@@ -22,12 +22,14 @@ export class Spinner extends React.Component<SpinnerProps, {}> {
       text = (<h6>{this.props.text}</h6>);
     }
     return (
-      <div>
-        <div className="spinner">
-          <div className="double-bounce1"/>
-          <div className="double-bounce2"/>
+      <div className="columns is-centered">
+        <div className="column is-12-mobile is-4-desktop">
+          <div className="spinner">
+            <div className="double-bounce1"/>
+            <div className="double-bounce2"/>
+          </div>
+          {text}
         </div>
-        {text}
       </div>
     );
   }

@@ -18,9 +18,10 @@ import javax.persistence.Table
  * @param timestamp: timestamp of the etch
  * @param position: used to order etches
  * @param content: the etch content (encrypted client side)
- * @param contentKey: the key used to encrypt the etch (encrypted by master key and initVector)
- * @param contentIv: the iv used to encrypt the etch (encrypted by master key and initVector)
- * @param initVector: the iv used to encrypt the contentKey and contentIv
+ * @param contentKey: the key used to encrypt the etch (this is itself encrypted by master key and keyIv)
+ * @param contentIv: the iv used to encrypt the etch (this is itself encrypted by master key and ivIv)
+ * @param keyIv: the iv used to encrypt the contentKey
+ * @param ivIv: the iv used to encrypt the contentIv
  */
 @Entity
 @Table(name = "etches")
@@ -53,8 +54,11 @@ data class Etch(
         val contentIv: String,
 
         // TODO: Don't use iv again dumb dumb
-        @Column(nullable = false, name = "init_vector")
-        val initVector: String,
+        @Column(nullable = false, name = "key_iv")
+        val keyIv: String,
+
+        @Column(nullable = false, name = "iv_iv")
+        val ivIv: String,
 
         // TODO: Store HMAC
 

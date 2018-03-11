@@ -8,6 +8,7 @@ import { EntryComponent } from './components/entry/entry';
 import { RegisterComponent } from './components/register/register';
 import { EtchedUser } from './models/etched-user';
 import { ConfigurePassphrase } from './components/configure-passphrase/configure-passphrase';
+import { StretchedKey } from './crypto/etched-crypto';
 
 let etchedApi = new EtchedApi();
 
@@ -55,14 +56,38 @@ class App extends React.Component<{}, AppState> {
   }
 
   getEntries() {
-    // let msg = 'The quick brown fox jumps over the lazy dog';
     // let passphrase = 'Bonsoir Elliot';
-    // let masterKey = EtchedCryptoUtils.hashPassphrase(passphrase).hash;
-    let encrypter = new EtchEncrypter('abc');
-    // let etch = encrypter.encrypt(msg);
 
+    let stretchedKey = new StretchedKey(
+      'PBKDF2',
+      'sha-1',
+      'd14c66711c7fbfb70290a73d40941a88b83f175e',
+      256,
+      100000,
+      '0e912f3a00c176d2d9cc9b47879c8ee3b1330e7b6738fdd5c1580f2e60c3eb46'
+    );
+
+    // EtchedCryptoUtils.verifyPassphrase('Bonsoir Elliot', stretchedKey)
+    //   .then((matches: boolean) => {
+    //     if (matches) {
+    //       console.log('Passphrase matches');
+    //     } else {
+    //       console.log(`Passphrase doesn't match`);
+    //     }
+    //   });
+
+    let encrypter = new EtchEncrypter(stretchedKey.hash);
     this.setState({encrypter: encrypter});
-    // etchedApi.postEtch(1, etch);
+
+    // encrypter.encrypt('Message number 4')
+    //   .then((etch) => {
+    //     console.log(JSON.stringify(etch));
+    //     console.log(`Etch encrypted`);
+    //     etchedApi.postEtch(1, etch)
+    //       .then((_) => {
+    //         console.log(`Etch successfully posted to server`);
+    //       });
+    //   });
 
     etchedApi.getEntries()
       .then(entries => {

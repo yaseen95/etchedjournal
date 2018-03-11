@@ -1,10 +1,10 @@
-const CryptoJS = require('crypto-js');
 const getRandomValues = require('get-random-values');
 const arrayBufferToHex = require('array-buffer-to-hex');
+const hexToArrayBuffer = require('hex-to-array-buffer');
 import { TextEncoder } from 'text-encoding';
 
-const AES_KEY_HEX_LENGTH = 64;  // equivalent to 256 bit key
-const AES_IV_HEX_LENGTH = 32;
+const AES_KEY_BIT_LENGTH = 256;
+const AES_IV_BIT_LENGTH = 128;
 
 // TODO: Allow users to modify iterations.
 const PASSPHRASE_HASH_ALGO: string = 'PBKDF2';
@@ -79,7 +79,7 @@ export class StretchedKey {
   }
 
   toString() {
-    return [this.algo, this.salt, this.keySize, this.iterations, this.hash].join('_');
+    return [this.algo, this.stretcherAlgo, this.salt, this.keySize, this.iterations, this.hash].join('_');
   }
 }
 
@@ -110,79 +110,60 @@ export class EtchedCryptoUtils {
   /**
    * Verifies that the user passphrase is correct.
    * @param {string} userPassphrase
-   * @param {string | StretchedKey} hashedPassphrase
+   * @param {StretchedKey} expected
    * @returns {PromiseLike<boolean>}
    */
-  static verifyPassphrase(userPassphrase: string, hashedPassphrase: string | StretchedKey): PromiseLike<boolean> {
+  static verifyPassphrase(userPassphrase: string, expected: StretchedKey): PromiseLike<boolean> {
 
-    let stretchedKey: StretchedKey;
-    if (typeof hashedPassphrase === 'string') {
-      stretchedKey = StretchedKey.fromString(hashedPassphrase);
-    } else {
-      stretchedKey = hashedPassphrase;
-    }
-
-    return EtchedCryptoUtils.hashPassphrase(userPassphrase)
+    return EtchedCryptoUtils.hashPassphrase(userPassphrase, expected.salt)
       .then((key: StretchedKey) => {
-        return (key.algo === stretchedKey.algo &&
-            key.stretcherAlgo === stretchedKey.stretcherAlgo &&
-            key.iterations === stretchedKey.iterations &&
-            key.keySize === stretchedKey.keySize &&
-            key.hash === stretchedKey.hash);
+        return (key.algo === expected.algo &&
+          key.stretcherAlgo === expected.stretcherAlgo &&
+          key.salt === expected.salt &&
+          key.iterations === expected.iterations &&
+          key.keySize === expected.keySize &&
+          key.hash === expected.hash);
       });
   }
 
   /**
    * Hashes the passphrase to be stored on the server.
    * @param {string} userPassphrase
-   * @param {string | null} salt
-   * @param {PassphraseHashProperties | null} properties
+   * @param {string?} salt
+   * @param {PassphraseHashProperties?} properties
    * @returns {PromiseLike<StretchedKey>}
    */
   static hashPassphrase(
     userPassphrase: string,
-    salt: string | null = null,
-    properties: PassphraseHashProperties | null = null): PromiseLike<StretchedKey> {
+    salt?: string,
+    properties?: PassphraseHashProperties): PromiseLike<StretchedKey> {
 
-    let saltStr: string;
-    if (salt === null || salt === undefined) {
-      saltStr = EtchedCryptoUtils.secureHexString(PASSPHRASE_HASH_SALT_SIZE);
-    } else {
-      saltStr = salt;
-    }
+    let saltStr = salt ? salt : EtchedCryptoUtils.secureHexString(PASSPHRASE_HASH_SALT_SIZE);
+    let hashProps = properties ? properties : DEFAULT_PASSPHRASE_HASH_PROPERTIES;
 
-    let props: PassphraseHashProperties;
-    if (properties == null) {
-      props = DEFAULT_PASSPHRASE_HASH_PROPERTIES;
-    } else {
-      props = properties;
-    }
-
-    console.log(`salt ${saltStr}`);
     let encoder = new TextEncoder('utf-8');
-
     let passphraseBytes = encoder.encode(userPassphrase);
     let saltBytes = encoder.encode(saltStr);
 
     return window.crypto.subtle.importKey(
       'raw',
       passphraseBytes,
-      props.algo,
+      hashProps.algo,
       false,
       ['deriveBits']
     ).then((key: CryptoKey) => {
       let pbkdf2Params: Pbkdf2Params = {
-        name: props.algo,
+        name: hashProps.algo,
         salt: saltBytes,
-        iterations: props.iterations,
-        hash: props.stretcherAlgo
+        iterations: hashProps.iterations,
+        hash: hashProps.stretcherAlgo
       };
-      return window.crypto.subtle.deriveBits(pbkdf2Params, key, props.keySize);
+      return window.crypto.subtle.deriveBits(pbkdf2Params, key, hashProps.keySize);
 
     }).then((hashBytes: ArrayBuffer) => {
       let hashString = arrayBufferToHex(hashBytes);
-      console.log(hashString);
-      return new StretchedKey(props.algo, props.stretcherAlgo, saltStr, props.keySize, props.iterations, hashString);
+      return new StretchedKey(hashProps.algo, hashProps.stretcherAlgo, saltStr, hashProps.keySize, hashProps.iterations,
+        hashString);
     });
   }
 
@@ -201,45 +182,73 @@ export class EtchedCryptoUtils {
   }
 
   /**
-   * Encrypts the passed object
-   * @param {string} data
-   * @param {string | null} key - optional - specify hex string key to use for encryption
-   * @param {string | null} iv - optional - specify hex string iv to use
-   * @returns {EncryptWrapper}
+   * Encrypts a string
+   * @param {string} data - content to encrypt
+   * @param {string} key - Optional supply the key used for encryption. Otherwise generate a random one.
+   * @param {string} iv - Optional supply the iv used for encryption. Otherwise generate a random one.
+   * @returns {Promise<EncryptWrapper>}
    */
-  static encrypt(data: string, key: string | null = null, iv: string | null = null): EncryptWrapper {
-    if (key == null) {
-      key = this.secureHexString(AES_KEY_HEX_LENGTH);
-    }
-    let keyBytes = CryptoJS.enc.Hex.parse(key);
+  public static encrypt(data: string, key?: string, iv?: string): Promise<EncryptWrapper> {
 
-    if (iv == null) {
-      iv = this.secureHexString(AES_IV_HEX_LENGTH);
-    }
-    let ivBytes = CryptoJS.enc.Hex.parse(iv);
+    let encryptionKeyStr = key ? key : arrayBufferToHex(getRandomValues(new Uint8Array(AES_KEY_BIT_LENGTH / 8)));
+    let encryptionIvStr = iv ? iv : arrayBufferToHex(getRandomValues(new Uint8Array(AES_IV_BIT_LENGTH / 8)));
 
-    let encrypted = CryptoJS.AES.encrypt(data, keyBytes, {iv: ivBytes});
-    return new EncryptWrapper(key.toString(), ivBytes.toString(), encrypted.toString());
+    let encryptionKeyBytes = hexToArrayBuffer(encryptionKeyStr);
+    let encryptionIvBytes = hexToArrayBuffer(encryptionIvStr);
+
+    let encoder = new TextEncoder('utf-8');
+    let dataBytes = encoder.encode(data);
+
+    let importedKey = this.importAesGcmKey(encryptionKeyBytes, ['encrypt']);
+
+    return importedKey.then((cryptoKey: CryptoKey) => {
+      return window.crypto.subtle.encrypt(
+        {name: 'AES-GCM', iv: encryptionIvBytes},
+        cryptoKey,
+        dataBytes.buffer
+      ).then((ciphertextBytes: ArrayBuffer) => {
+        let ciphertext = arrayBufferToHex(ciphertextBytes);
+        return new EncryptWrapper(encryptionKeyStr, encryptionIvStr, ciphertext);
+      });
+    }) as Promise<EncryptWrapper>;
   }
 
   /**
-   * Decrypts ciphertext.
+   * Decrypts the encrypted wrapper into a string.
    * @param {EncryptWrapper} wrapper
-   * @returns {string}
+   * @returns {Promise<string>}
    */
-  static decrypt(wrapper: EncryptWrapper): string {
-    let key = CryptoJS.enc.Hex.parse(wrapper.key);
-    let iv = CryptoJS.enc.Hex.parse(wrapper.iv);
-    let decryptedBytes = CryptoJS.AES.decrypt(wrapper.ciphertext, key, {iv: iv});
-    let decrypted = null;
-    try {
-      decrypted = decryptedBytes.toString(CryptoJS.enc.Utf8);
-    } catch (e) {
-      throw new Error('Decryption failed');
-    }
-    if (decrypted.length === 0) {
-      throw new Error('Decryption failed');
-    }
-    return decrypted;
+  public static decrypt(wrapper: EncryptWrapper): Promise<string> {
+    let encryptionKeyBytes = hexToArrayBuffer(wrapper.key);
+    let encryptionIvBytes = hexToArrayBuffer(wrapper.iv);
+    let ciphertextBytes = hexToArrayBuffer(wrapper.ciphertext);
+
+    let importKey = this.importAesGcmKey(encryptionKeyBytes, ['decrypt']);
+
+    return importKey
+      .then((key: CryptoKey) => {
+        let decrypted = window.crypto.subtle.decrypt(
+          {name: 'AES-GCM', iv: encryptionIvBytes},
+          key,
+          ciphertextBytes
+        ) as Promise<ArrayBuffer>;
+
+        return decrypted
+          .then((decryptedBytes: ArrayBuffer) => {
+            return new TextDecoder().decode(decryptedBytes);
+          }).catch((reason => {
+            throw new Error(`Decryption failed`);
+          }));
+      });
+  }
+
+  private static importAesGcmKey(keyBytes: ArrayBuffer, keyUsages: string[]): Promise<CryptoKey> {
+    return window.crypto.subtle.importKey(
+      'raw',
+      keyBytes,
+      {name: 'AES-GCM'},
+      false,
+      keyUsages
+    ) as Promise<CryptoKey>;
   }
 }
