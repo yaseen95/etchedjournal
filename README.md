@@ -1,6 +1,8 @@
 # Etched Journal (In Development)
 A journal where entries are "etched" in stone. That's the idea anyway.
 
+[![Build Status](https://travis-ci.org/yaseen95/subjecthub.svg?branch=master)](https://travis-ci.org/yaseen95/subjecthub)
+
 A few years ago I started journaling and I set a rule where I would try my best not to press
 backspace. It feels like a cool enough idea to implement.
 
