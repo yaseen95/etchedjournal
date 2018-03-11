@@ -10,12 +10,6 @@ backspace. It feels like a cool enough idea to implement.
 * All journal entries are encrypted on the client side
 * After {x} seconds, entries cannot be edited
 
-## Timeline
-|Date      |Goals|
-|----------|-----|
-|2018-03-15|First RC|
-|2018-04-10|Deployed to production|
-
 ## Encryption
 ### Entry/Etches
 For each etch, an IV and key are randomly generated and used for encryption. The key and iv are 
