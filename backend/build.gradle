@@ -68,4 +68,5 @@ jar {
     }
 }
 
+test.dependsOn(":frontend:test")
 processResources.dependsOn(":frontend:bundle")
