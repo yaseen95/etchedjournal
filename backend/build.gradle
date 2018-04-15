@@ -2,6 +2,8 @@ buildscript {
     ext {
         kotlinVersion = '1.2.21'
         springBootVersion = '1.5.9.RELEASE'
+        keycloakVersion = '3.4.3.Final'
+        resteasyVersion = '3.5.0.Final'
     }
     repositories {
         mavenCentral()
@@ -36,14 +38,22 @@ repositories {
 
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-data-jpa')
-    compile('org.springframework.boot:spring-boot-starter-security')
-    compile('org.springframework.boot:spring-boot-starter-web')
+    compile("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+
+    // Keycloak dependencies/integration
+    compile("org.keycloak:keycloak-spring-boot-starter:${keycloakVersion}")
+    compile("org.keycloak:keycloak-spring-security-adapter:${keycloakVersion}")
+    compile("org.keycloak:keycloak-admin-client:${keycloakVersion}")
+    compile("org.jboss.resteasy:resteasy-jaxrs:${resteasyVersion}")
+    compile("org.jboss.resteasy:resteasy-client:${resteasyVersion}")
+    compile("org.jboss.resteasy:resteasy-jackson2-provider:${resteasyVersion}")
+
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
+
     compile "org.flywaydb:flyway-core:5.0.6"
-    compile 'io.jsonwebtoken:jjwt:0.9.0'
-    compile('commons-validator:commons-validator:1.6')
 
     // This is needed to convert java8 time objects e.g. Instant, LocalDateTime, etc.
     compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.4')

@@ -1,0 +1,31 @@
+#flyway.locations=db/migration/{vendor}
+
+# Enable to view full http requests
+
+logging.level.org.apache.http: DEBUG
+
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+
+    # Must specify this value in order to execute data-h2.sql.
+    platform: h2
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  jackson:
+    serialization:
+      # This enables jackson to write Instants as millis since epoch (as an int/long).
+      write-dates-as-timestamps: true
+      write-date-timestamps-as-nanoseconds: false
+
+keycloak:
+  auth-server-url: http://localhost:9001/auth
+  realm: etched
+  resource: etched-backend
+  public-client: false
+  principal-attribute: preferred_username
+  credentials:
+    secret: SECRET

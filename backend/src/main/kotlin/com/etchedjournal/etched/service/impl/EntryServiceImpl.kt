@@ -26,6 +26,6 @@ class EntryServiceImpl: EntryService {
     }
 
     override fun create(title: String): Entry {
-        return entryRepository.save(Entry(title, authService.getRequestingUser()))
+        return entryRepository.save(Entry(title, authService.simpleUser().userId))
     }
 }

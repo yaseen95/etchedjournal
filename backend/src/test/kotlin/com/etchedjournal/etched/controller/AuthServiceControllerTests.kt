@@ -3,9 +3,6 @@ package com.etchedjournal.etched.controller
 import com.etchedjournal.etched.TestUtils
 import com.etchedjournal.etched.dto.AuthenticationRequest
 import com.etchedjournal.etched.dto.RegisterRequest
-import com.etchedjournal.etched.entity.EtchedUser
-import com.etchedjournal.etched.repository.EtchedUserRepository
-import com.etchedjournal.etched.security.JwtTokenUtils
 import com.jayway.jsonpath.JsonPath
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.nullValue
@@ -16,7 +13,6 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
@@ -36,15 +32,6 @@ class AuthServiceControllerTests {
     @Autowired
     private lateinit var authController: AuthServiceController
 
-    @Autowired
-    private lateinit var jwtTokenUtils: JwtTokenUtils
-
-    @Autowired
-    private lateinit var etchedUserRepository: EtchedUserRepository
-
-    @Autowired
-    private lateinit var bCryptPasswordEncoder: BCryptPasswordEncoder
-
     private lateinit var mockMvc: MockMvc
 
     @Before
@@ -52,10 +39,6 @@ class AuthServiceControllerTests {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(authController)
                 .build()
-
-        // Initialise database
-        val hashedPassword = bCryptPasswordEncoder.encode("password")
-        etchedUserRepository.save(EtchedUser(null, "testuser", hashedPassword, "a@example.com"))
     }
 
     @Test

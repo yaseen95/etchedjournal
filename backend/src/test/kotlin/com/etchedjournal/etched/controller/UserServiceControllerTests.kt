@@ -2,9 +2,6 @@ package com.etchedjournal.etched.controller
 
 import com.etchedjournal.etched.TestUtils
 import com.etchedjournal.etched.dto.EncryptionPropertiesRequest
-import com.etchedjournal.etched.entity.EtchedUser
-import com.etchedjournal.etched.repository.EtchedUserRepository
-import com.etchedjournal.etched.security.JwtTokenUtils
 import com.etchedjournal.etched.service.AuthService
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -14,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -29,19 +25,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 class UserServiceControllerTests {
 
     @Autowired
-    private lateinit var etchedUserRepository: EtchedUserRepository
-
-    @Autowired
-    private lateinit var bCryptPasswordEncoder: BCryptPasswordEncoder
-
-    @Autowired
     private lateinit var userServiceController: UserServiceController
 
     @Autowired
     private lateinit var authService: AuthService
-
-    @Autowired
-    private lateinit var jwtTokenUtils: JwtTokenUtils
 
     private lateinit var mockMvc: MockMvc
 
@@ -50,10 +37,6 @@ class UserServiceControllerTests {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(userServiceController)
                 .build()
-
-        // Initialise database
-        val hashedPassword = bCryptPasswordEncoder.encode("password")
-        etchedUserRepository.save(EtchedUser(null, "testuser", hashedPassword, "a@example.com"))
     }
 
     @Test
@@ -63,7 +46,7 @@ class UserServiceControllerTests {
                 .MAX_VALUE, 256)
 
         mockMvc.perform(
-                post("/api/v1/users/user/configure-encryption")
+                post("/api/v1/users/userId/configure-encryption")
                     .header(HttpHeaders.AUTHORIZATION, authToken)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(TestUtils.asJson(encryptionPropertiesRequest)))

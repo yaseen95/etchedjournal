@@ -53,7 +53,6 @@ data class Etch(
         @Column(nullable = false, name = "content_iv")
         val contentIv: String,
 
-        // TODO: Don't use iv again dumb dumb
         @Column(nullable = false, name = "key_iv")
         val keyIv: String,
 
@@ -61,6 +60,9 @@ data class Etch(
         val ivIv: String,
 
         // TODO: Store HMAC
+
+        // TODO: Should we store encryption details?
+        // Would we ever want custom encryption options e.g. different AES modes, key sizes, etc.
 
         @ManyToOne
         @JoinColumn(name = "entry_id")
