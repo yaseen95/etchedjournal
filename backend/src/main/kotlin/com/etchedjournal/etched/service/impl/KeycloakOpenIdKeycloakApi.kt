@@ -25,6 +25,8 @@ class KeycloakOpenIdKeycloakApi(baseUrl: String, private val clientId: String, p
     private val userInfoUrl: String
 
     private val simpleRestTemplate: RestTemplate
+
+    // TODO: Do we have a separate need for KeycloakRestTemplate?
     private val keycloakRestTemplate: KeycloakRestTemplate
 
     companion object {

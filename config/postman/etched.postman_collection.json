@@ -326,6 +326,37 @@
 						"description": "Returns the current logged in user."
 					},
 					"response": []
+				},
+				{
+					"name": "Configure Encryption",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"algo\": \"algo\",\n\t\"salt\": \"salty\",\n\t\"iterations\": 100000,\n\t\"keySize\": 256\n}"
+						},
+						"url": {
+							"raw": "{{domain}}/api/v1/auth/self/configure-encryption",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"self",
+								"configure-encryption"
+							]
+						},
+						"description": "Configures the encryption properties for the user."
+					},
+					"response": []
 				}
 			]
 		}
@@ -364,7 +395,7 @@
 	],
 	"variable": [
 		{
-			"id": "afd3ef2b-d0a9-4f8f-8274-39d7baa25f42",
+			"id": "8e635f10-f819-4fb4-aaa7-9f67032ec1f1",
 			"key": "accessToken",
 			"value": "",
 			"type": "text",
