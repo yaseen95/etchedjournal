@@ -33,7 +33,7 @@ import javax.ws.rs.core.MediaType
 @SpringBootTest
 @Transactional
 @ContextConfiguration(classes = [TestConfig::class])
-class EtchServiceControllerTests {
+class EntryServiceControllerTests {
 
     private lateinit var mockMvc: MockMvc
 
