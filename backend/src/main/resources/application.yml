@@ -1,15 +1,16 @@
 #flyway.locations=db/migration/{vendor}
 
 # Enable to view full http requests
+#logging.level.org.apache.http: DEBUG
 
-logging.level.org.apache.http: DEBUG
+#logging.level.org.keycloak: DEBUG
 
 spring:
   datasource:
     driver-class-name: org.h2.Driver
 
-    # Must specify this value in order to execute data-h2.sql.
-    platform: h2
+#    # Must specify this value in order to execute data-h2.sql.
+#    platform: h2
 
   jpa:
     hibernate:
@@ -26,6 +27,8 @@ keycloak:
   realm: etched
   resource: etched-backend
   public-client: false
-  principal-attribute: preferred_username
+#  principal-attribute: preferred_username
+  # Enabling bearer-only so that spring doesn't redirect to /sso/login
+  bearer-only: true
   credentials:
     secret: SECRET

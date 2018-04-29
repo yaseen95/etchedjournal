@@ -1,5 +1,6 @@
 package com.etchedjournal.etched.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.Instant
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -47,6 +48,7 @@ data class Entry(
         @Column(nullable = true)
         var finished: Instant?,
 
+        @JsonIgnore
         @OneToMany(mappedBy = "entry")
         val etches: MutableList<Etch>,
 
@@ -54,6 +56,7 @@ data class Entry(
         @Enumerated(EnumType.STRING)
         var state: EntryState,
 
+        @JsonIgnore
         @Column(name = "user_id", nullable = false)
         val userId: String
 ) {

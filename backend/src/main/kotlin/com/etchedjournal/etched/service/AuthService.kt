@@ -7,14 +7,14 @@ import com.etchedjournal.etched.security.SimpleUser
 interface AuthService {
 
     /**
-     * Returns basic user details of requesting user
+     * Returns id of current user
      */
-    fun simpleUser(): SimpleUser
+    fun getUserId(): String
 
     /**
      * Return full user details of requesting user
      */
-    fun requestingUser(): EtchedUser
+    fun getRequestingUser(): EtchedUser
 
     /**
      * Register a new user with the given attributes

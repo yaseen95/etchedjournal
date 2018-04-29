@@ -2,7 +2,6 @@ package com.etchedjournal.etched.service.impl
 
 import com.etchedjournal.etched.dto.LoginResponse
 import com.etchedjournal.etched.security.EtchedUser
-import com.etchedjournal.etched.security.SimpleUser
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.OpenIdConnectApi
 import org.apache.http.HttpHeaders
@@ -18,20 +17,18 @@ import org.keycloak.representations.idm.UserRepresentation
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.stereotype.Service
 import javax.ws.rs.ForbiddenException
 import javax.ws.rs.core.Response
 
 private data class EncryptionProperties(val algo: String?, val salt: String?, val iterations: Long?, val keySize: Int?)
 
-@Service
 class AuthServiceImpl(
         private val openIdConnectApi: OpenIdConnectApi,
         etchedRealm: RealmResource
 ) : AuthService {
 
-    private final val usersResource: UsersResource
-    private final val userRoleRepresentation: RoleRepresentation
+    private val usersResource: UsersResource
+    private val userRoleRepresentation: RoleRepresentation
 
     companion object {
         val logger: Logger = LoggerFactory.getLogger(AuthServiceImpl::class.java)
@@ -97,21 +94,12 @@ class AuthServiceImpl(
         }
     }
 
-    override fun simpleUser(): SimpleUser {
-        val token = getAccessToken()
-        return SimpleUser(token.subject, token.preferredUsername)
+    override fun getUserId(): String {
+        return getAccessToken().subject
     }
 
-    override fun requestingUser(): EtchedUser {
-        return getUser(simpleUser().userId)
-    }
-
-    /**
-     * Fetch user with the given id
-     */
-    private fun getUser(userId: String): EtchedUser {
-        val userRepresentation = usersResource.get(userId).toRepresentation()
-        return repToUser(userRepresentation)
+    override fun getRequestingUser(): EtchedUser {
+        return repToUser(getUserRepresentation(getUserId()))
     }
 
     override fun register(username: String, password: String, email: String): EtchedUser {
@@ -177,7 +165,7 @@ class AuthServiceImpl(
             keySize: Int
     ): EtchedUser {
         // Get user representation
-        val userRepresentation = getUserRepresentation()
+        val userRepresentation = getUserRepresentation(getUserId())
         logger.info("Configuring encryption for ${userRepresentation.id}")
 
         // Attributes == null when the user first registers
@@ -195,7 +183,7 @@ class AuthServiceImpl(
         val userResource: UserResource = usersResource.get(userRepresentation.id)
         userResource.update(userRepresentation)
         // Do we need to do another request???
-        return requestingUser()
+        return getRequestingUser()
     }
 
     private fun getAccessToken(): AccessToken {
@@ -210,7 +198,7 @@ class AuthServiceImpl(
     /**
      * Returns the current requesting user as a [UserRepresentation] from keycloak.
      */
-    private fun getUserRepresentation(): UserRepresentation {
-        return usersResource.get(simpleUser().userId).toRepresentation()
+    private fun getUserRepresentation(userId: String): UserRepresentation {
+        return usersResource.get(userId).toRepresentation()
     }
 }

@@ -36,7 +36,7 @@ class AuthServiceController(private val authService: AuthService) {
 
     @GetMapping("/self")
     fun self(): EtchedUser {
-        return authService.requestingUser()
+        return authService.getRequestingUser()
     }
 
     @PostMapping("/self/configure-encryption")

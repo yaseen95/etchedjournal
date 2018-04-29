@@ -44,7 +44,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{domain}}/api/v1/entries/entry/1/",
+							"raw": "{{domain}}/api/v1/entries/:entryId/",
 							"host": [
 								"{{domain}}"
 							],
@@ -52,9 +52,14 @@
 								"api",
 								"v1",
 								"entries",
-								"entry",
-								"1",
+								":entryId",
 								""
+							],
+							"variable": [
+								{
+									"key": "entryId",
+									"value": "1"
+								}
 							]
 						},
 						"description": "GET entry using entry id."
@@ -76,7 +81,7 @@
 							"raw": "{\n\t\"title\": \"New Journal Title\"\n}"
 						},
 						"url": {
-							"raw": "{{domain}}/api/v1/entries/entry/",
+							"raw": "{{domain}}/api/v1/entries/",
 							"host": [
 								"{{domain}}"
 							],
@@ -84,7 +89,6 @@
 								"api",
 								"v1",
 								"entries",
-								"entry",
 								""
 							]
 						},

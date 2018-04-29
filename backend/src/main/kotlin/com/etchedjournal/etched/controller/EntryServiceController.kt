@@ -3,6 +3,7 @@ package com.etchedjournal.etched.controller
 import com.etchedjournal.etched.dto.EntryRequest
 import com.etchedjournal.etched.entity.Entry
 import com.etchedjournal.etched.service.EntryService
+import com.etchedjournal.etched.service.exception.BadRequestException
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -22,7 +23,7 @@ class EntryServiceController(private val entryService: EntryService) {
     /**
      * Returns an Entry with the specified ID.
      */
-    @GetMapping("/entry/{entryId}")
+    @GetMapping("/{entryId}")
     fun getEntry(@PathVariable entryId: Long): Entry {
         return entryService.getEntry(entryId)
     }
@@ -38,10 +39,10 @@ class EntryServiceController(private val entryService: EntryService) {
     /**
      * Creates a new entry
      */
-    @PostMapping("/entry")
+    @PostMapping("")
     fun create(@RequestBody entry: EntryRequest): Entry {
         if (entry.title == null) {
-            throw Exception("Title can't be null")
+            throw BadRequestException("Title can't be null")
         }
 
         return entryService.create(entry.title)
