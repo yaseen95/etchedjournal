@@ -124,7 +124,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{domain}}/api/v1/entries/entry/:entryId/etches",
+							"raw": "{{domain}}/api/v1/entries/:entryId/etches/",
 							"host": [
 								"{{domain}}"
 							],
@@ -132,9 +132,9 @@
 								"api",
 								"v1",
 								"entries",
-								"entry",
 								":entryId",
-								"etches"
+								"etches",
+								""
 							],
 							"variable": [
 								{
@@ -157,7 +157,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{domain}}/api/v1/entries/entry/:entryId/etches/etch/:etchId",
+							"raw": "{{domain}}/api/v1/entries/:entryId/etches/:etchId",
 							"host": [
 								"{{domain}}"
 							],
@@ -165,10 +165,8 @@
 								"api",
 								"v1",
 								"entries",
-								"entry",
 								":entryId",
 								"etches",
-								"etch",
 								":etchId"
 							],
 							"variable": [
@@ -213,7 +211,7 @@
 							"raw": "{\n\t\"content\": \"abcdefghijklmnopqrstuvwxyz\",\n\t\"contentKey\": \"contentKey\",\n\t\"contentIv\": \"contentIv\",\n\t\"keyIv\": \"keyIv\",\n\t\"ivIv\": \"ivIv\",\n\t\"position\": 1\n}"
 						},
 						"url": {
-							"raw": "{{domain}}/api/v1/entries/entry/:entryId/etches/etch",
+							"raw": "{{domain}}/api/v1/entries/:entryId/etches/",
 							"host": [
 								"{{domain}}"
 							],
@@ -221,10 +219,9 @@
 								"api",
 								"v1",
 								"entries",
-								"entry",
 								":entryId",
 								"etches",
-								"etch"
+								""
 							],
 							"variable": [
 								{

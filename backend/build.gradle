@@ -4,6 +4,7 @@ buildscript {
         springBootVersion = '1.5.9.RELEASE'
         keycloakVersion = '3.4.3.Final'
         resteasyVersion = '3.5.0.Final'
+        jacksonVersion = '2.9.4'
     }
     repositories {
         mavenCentral()
@@ -55,11 +56,17 @@ dependencies {
 
     compile "org.flywaydb:flyway-core:5.0.6"
 
+    /* JACKSON */
     // This is needed to convert java8 time objects e.g. Instant, LocalDateTime, etc.
-    compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.4')
+    compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}")
 
     // This enables jackson to instantiate kotlin classes that don't have a default constructor.
-    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4"
+    compile("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}")
+
+    compile("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
+    compile("com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
+    compile("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
+    compile("com.fasterxml.jackson.datatype:jackson-datatype-joda:${jacksonVersion}")
 
     // hibernate-core:5.0.12.Final has a bug mapping LocalDateTime to H2 timestamp. Have to use
     // other library. https://stackoverflow.com/questions/44676732/

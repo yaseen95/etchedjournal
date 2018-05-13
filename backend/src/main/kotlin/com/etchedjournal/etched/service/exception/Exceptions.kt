@@ -49,10 +49,21 @@ open class ClientException(
  * @param message message to return to the user
  * @param logMessage optional - specify log message
  */
-class BadRequestException(
+open class BadRequestException(
         message: String = "Bad request",
         logMessage: String? = null
 ) : ClientException(HttpStatus.BAD_REQUEST, message, logMessage)
+
+/**
+ * Exception thrown due to an invalid payload
+ *
+ * @param message message to return to the user
+ * @param logMessage optional - specify log message
+ */
+open class InvalidPayloadException(
+        message: String,
+        logMessage: String? = null
+) : BadRequestException(message, logMessage)
 
 /**
  * Exception thrown when user is forbidden to access requested data

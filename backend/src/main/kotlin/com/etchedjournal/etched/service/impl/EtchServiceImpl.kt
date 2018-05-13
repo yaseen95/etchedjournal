@@ -4,6 +4,7 @@ import com.etchedjournal.etched.entity.Etch
 import com.etchedjournal.etched.repository.EtchRepository
 import com.etchedjournal.etched.service.EntryService
 import com.etchedjournal.etched.service.EtchService
+import com.etchedjournal.etched.service.exception.NotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
@@ -16,13 +17,17 @@ class EtchServiceImpl(
 ) : EtchService {
 
     override fun getEtches(@PathVariable entryId: Long): List<Etch> {
-        return entryService.getEntry(entryId).etches
+        // Defer to entryService.getEntry() to handle 404/permissions checks of Entry
+        entryService.getEntry(entryId)
+
+        return etchRepository.findByEntryId(entryId)
     }
 
     override fun getEtch(@PathVariable entryId: Long, @PathVariable etchId: Long): Etch {
-        val entry = entryService.getEntry(entryId)
-        return entry.etches.firstOrNull { etch -> etch.id == etchId }
-                ?: throw Exception("No etch with id $etchId exists.")
+        // Defer to entryService.getEntry() to handle 404/permissions checks of Entry
+        entryService.getEntry(entryId)
+        return etchRepository.findByEntryId(entryId).firstOrNull { etch -> etch.id == etchId }
+                ?: throw NotFoundException("No etch with id $etchId exists.")
     }
 
     override fun create(@PathVariable entryId: Long, @RequestBody etch: Etch): Etch {
