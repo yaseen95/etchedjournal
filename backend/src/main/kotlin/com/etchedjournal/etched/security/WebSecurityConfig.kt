@@ -70,6 +70,7 @@ class WebSecurityConfig : KeycloakWebSecurityConfigurerAdapter() {
                 .authorizeRequests()
                     .antMatchers("/api/v1/auth/authenticate").permitAll()
                     .antMatchers("/api/v1/auth/register").permitAll()
+                    .antMatchers("/api/v1/status").permitAll()
                     .antMatchers("/api/v1/**").hasRole("user")
                     .antMatchers("/h2-console/**").hasRole("admin")
                     .antMatchers("/").permitAll()
