@@ -1,8 +1,8 @@
 {
 	"info": {
 		"name": "etched",
-		"_postman_id": "088d81ea-7549-6b8a-bdda-d9834926e5b6",
-		"description": "API config for Etched.",
+		"_postman_id": "6d814f54-991a-437e-a3f0-2d4bd83a7c7d",
+		"description": "API config for Etched.\n\nAll but a few of the API requests require login. To simplify this a collection variable `accessToken` has been defined. Requests will automatically use that variable as the access token for all protected endpoints.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -15,7 +15,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{domain}}/api/v1/entries",
 							"host": [
@@ -36,9 +39,12 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
-							"raw": "{{domain}}/api/v1/entries/entry/1/",
+							"raw": "{{domain}}/api/v1/entries/:entryId/",
 							"host": [
 								"{{domain}}"
 							],
@@ -46,9 +52,14 @@
 								"api",
 								"v1",
 								"entries",
-								"entry",
-								"1",
+								":entryId",
 								""
+							],
+							"variable": [
+								{
+									"key": "entryId",
+									"value": "1"
+								}
 							]
 						},
 						"description": "GET entry using entry id."
@@ -70,7 +81,7 @@
 							"raw": "{\n\t\"title\": \"New Journal Title\"\n}"
 						},
 						"url": {
-							"raw": "{{domain}}/api/v1/entries/entry/",
+							"raw": "{{domain}}/api/v1/entries/",
 							"host": [
 								"{{domain}}"
 							],
@@ -78,7 +89,6 @@
 								"api",
 								"v1",
 								"entries",
-								"entry",
 								""
 							]
 						},
@@ -90,7 +100,7 @@
 		},
 		{
 			"name": "Etches",
-			"description": "",
+			"description": null,
 			"item": [
 				{
 					"name": "Etches",
@@ -109,9 +119,12 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
-							"raw": "{{domain}}/api/v1/entries/entry/:entryId/etches",
+							"raw": "{{domain}}/api/v1/entries/:entryId/etches/",
 							"host": [
 								"{{domain}}"
 							],
@@ -119,9 +132,9 @@
 								"api",
 								"v1",
 								"entries",
-								"entry",
 								":entryId",
-								"etches"
+								"etches",
+								""
 							],
 							"variable": [
 								{
@@ -139,9 +152,12 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
-							"raw": "{{domain}}/api/v1/entries/entry/:entryId/etches/etch/:etchId",
+							"raw": "{{domain}}/api/v1/entries/:entryId/etches/:etchId",
 							"host": [
 								"{{domain}}"
 							],
@@ -149,10 +165,8 @@
 								"api",
 								"v1",
 								"entries",
-								"entry",
 								":entryId",
 								"etches",
-								"etch",
 								":etchId"
 							],
 							"variable": [
@@ -194,10 +208,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"content\": \"abcdefghijklmnopqrstuvwxyz\",\n\t\"contentKey\": \"contentKey\",\n\t\"contentIv\": \"contentIv\",\n\t\"initVector\": \"initVector\",\n\t\"position\": 2\n}"
+							"raw": "{\n\t\"content\": \"abcdefghijklmnopqrstuvwxyz\",\n\t\"contentKey\": \"contentKey\",\n\t\"contentIv\": \"contentIv\",\n\t\"keyIv\": \"keyIv\",\n\t\"ivIv\": \"ivIv\",\n\t\"position\": 1\n}"
 						},
 						"url": {
-							"raw": "{{domain}}/api/v1/entries/entry/:entryId/etches/etch",
+							"raw": "{{domain}}/api/v1/entries/:entryId/etches/",
 							"host": [
 								"{{domain}}"
 							],
@@ -205,10 +219,9 @@
 								"api",
 								"v1",
 								"entries",
-								"entry",
 								":entryId",
 								"etches",
-								"etch"
+								""
 							],
 							"variable": [
 								{
@@ -225,11 +238,14 @@
 		},
 		{
 			"name": "Auth",
-			"description": "",
+			"description": null,
 			"item": [
 				{
 					"name": "Authenticate (Login)",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -260,6 +276,9 @@
 				{
 					"name": "Register",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -269,7 +288,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"username\": \"example\",\n\t\"password\": \"password\",\n\t\"email\": \"test@example.com\"\n}"
+							"raw": "{\n\t\"username\": \"yaseen\",\n\t\"password\": \"password\",\n\t\"email\": \"yaseen@example.com\"\n}"
 						},
 						"url": {
 							"raw": "{{domain}}/api/v1/auth/register",
@@ -283,11 +302,105 @@
 								"register"
 							]
 						},
-						"description": ""
+						"description": null
+					},
+					"response": []
+				},
+				{
+					"name": "Self",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{domain}}/api/v1/auth/self",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"self"
+							]
+						},
+						"description": "Returns the current logged in user."
+					},
+					"response": []
+				},
+				{
+					"name": "Configure Encryption",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"algo\": \"algo\",\n\t\"salt\": \"salty\",\n\t\"iterations\": 100000,\n\t\"keySize\": 256\n}"
+						},
+						"url": {
+							"raw": "{{domain}}/api/v1/auth/self/configure-encryption",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"self",
+								"configure-encryption"
+							]
+						},
+						"description": "Configures the encryption properties for the user."
 					},
 					"response": []
 				}
 			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "bf4f1b1a-9147-4cdb-a057-e786114ab5d3",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "d2712fd4-ad37-41b5-90d1-2e76532a6a6b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "8e635f10-f819-4fb4-aaa7-9f67032ec1f1",
+			"key": "accessToken",
+			"value": "",
+			"type": "text",
+			"description": ""
 		}
 	]
 }

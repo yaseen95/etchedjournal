@@ -2,32 +2,34 @@ package com.etchedjournal.etched.controller
 
 import com.etchedjournal.etched.entity.Etch
 import com.etchedjournal.etched.service.EtchService
-import org.springframework.beans.factory.annotation.Autowired
+import com.etchedjournal.etched.service.exception.InvalidPayloadException
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
+import javax.validation.Valid
 
-@RequestMapping("/api/v1/entries/entry/{entryId}/etches")
+@RequestMapping("/api/v1/entries/{entryId}/etches")
 @RestController
-class EtchServiceController {
+class EtchServiceController(private val etchService: EtchService) {
 
-    @Autowired
-    private lateinit var etchService: EtchService
-
-    @RequestMapping("", method = [RequestMethod.GET])
+    @GetMapping("")
     fun getEtches(@PathVariable entryId: Long): List<Etch> {
         return etchService.getEtches(entryId)
     }
 
-    @RequestMapping("/etch/{etchId}", method = [RequestMethod.GET])
+    @GetMapping("/{etchId}")
     fun getEtch(@PathVariable entryId: Long, @PathVariable etchId: Long): Etch {
         return etchService.getEtch(entryId, etchId)
     }
 
-    @RequestMapping("/etch", method = [RequestMethod.POST])
-    fun create(@PathVariable entryId: Long, @RequestBody etch: Etch): Etch {
+    @PostMapping("")
+    fun create(@PathVariable entryId: Long, @Valid @RequestBody etch: Etch): Etch {
+        if (etch.id != null) {
+            throw InvalidPayloadException("Must not supply id when creating an etch")
+        }
         return etchService.create(entryId, etch)
     }
 }

@@ -9,8 +9,6 @@ import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
 
@@ -50,6 +48,7 @@ data class Entry(
         @Column(nullable = true)
         var finished: Instant?,
 
+        @JsonIgnore
         @OneToMany(mappedBy = "entry")
         val etches: MutableList<Etch>,
 
@@ -57,12 +56,11 @@ data class Entry(
         @Enumerated(EnumType.STRING)
         var state: EntryState,
 
-        @ManyToOne
-        @JoinColumn(name = "user_id")
         @JsonIgnore
-        val user: EtchedUser
+        @Column(name = "user_id", nullable = false)
+        val userId: String
 ) {
-    constructor(title: String, user: EtchedUser) :
+    constructor(title: String, userId: String) :
             this(null, title, Instant.now(), null, mutableListOf(), EntryState.CREATED,
-                    user)
+                    userId)
 }

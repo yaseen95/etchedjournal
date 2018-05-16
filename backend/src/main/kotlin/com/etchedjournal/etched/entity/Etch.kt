@@ -10,6 +10,7 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.Table
+import javax.validation.constraints.NotNull
 
 /**
  * A new 'etch' in the Journal Entry
@@ -26,6 +27,7 @@ import javax.persistence.Table
 @Entity
 @Table(name = "etches")
 data class Etch(
+
         /**
          * This is only null when creating an entry. When retrieved by the database safe to
          * assume non-null
@@ -42,25 +44,33 @@ data class Etch(
 
         // TODO: Do we need to store a position???
         @Column(nullable = false)
+        @field:NotNull
         val position: Int?,
 
         @Column(nullable = false)
+        @field:NotNull
         val content: String,
 
         @Column(nullable = false, name = "content_key")
+        @field:NotNull
         val contentKey: String,
 
         @Column(nullable = false, name = "content_iv")
+        @field:NotNull
         val contentIv: String,
 
-        // TODO: Don't use iv again dumb dumb
         @Column(nullable = false, name = "key_iv")
+        @field:NotNull
         val keyIv: String,
 
         @Column(nullable = false, name = "iv_iv")
+        @field:NotNull
         val ivIv: String,
 
         // TODO: Store HMAC
+
+        // TODO: Should we store encryption details?
+        // Would we ever want custom encryption options e.g. different AES modes, key sizes, etc.
 
         @ManyToOne
         @JoinColumn(name = "entry_id")
