@@ -50,9 +50,16 @@ open class ClientException(
  * @param logMessage optional - specify log message
  */
 open class BadRequestException(
+        status: HttpStatus = HttpStatus.BAD_REQUEST,
         message: String = "Bad request",
         logMessage: String? = null
-) : ClientException(HttpStatus.BAD_REQUEST, message, logMessage)
+) : ClientException(status, message, logMessage) {
+    init {
+        if (!status.is4xxClientError) {
+            throw IllegalArgumentException("Supplied non-400 status $status")
+        }
+    }
+}
 
 /**
  * Exception thrown due to an invalid payload
@@ -63,7 +70,18 @@ open class BadRequestException(
 open class InvalidPayloadException(
         message: String,
         logMessage: String? = null
-) : BadRequestException(message, logMessage)
+) : BadRequestException(message = message, logMessage = logMessage)
+
+/**
+ * User is unauthorized to perform the requested action
+ *
+ * @param message message to return to the user
+ * @param logMessage optional - specify log message
+ */
+open class UnauthorizedException(
+    message: String,
+    logMessage: String? = null
+) : BadRequestException(HttpStatus.UNAUTHORIZED, message, logMessage)
 
 /**
  * Exception thrown when user is forbidden to access requested data
@@ -106,3 +124,12 @@ open class ServerException(
         }
     }
 }
+
+/**
+ * Exception thrown when backend receives unexpected response from auth server
+ *
+ * @param logMessage optional - specify log message
+ */
+class AuthServerException(
+    logMessage: String? = null
+): ServerException(HttpStatus.SERVICE_UNAVAILABLE, logMessage = logMessage)
