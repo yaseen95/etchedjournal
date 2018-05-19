@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 class EntryServiceController(private val entryService: EntryService) {
 
     companion object {
-        val logger = LoggerFactory.getLogger(EntryServiceController::class.java)
+        private val logger = LoggerFactory.getLogger(EntryServiceController::class.java)
     }
 
     /**
@@ -42,7 +42,7 @@ class EntryServiceController(private val entryService: EntryService) {
     @PostMapping("")
     fun create(@RequestBody entry: EntryRequest): Entry {
         if (entry.title == null) {
-            throw BadRequestException("Title can't be null")
+            throw BadRequestException(message = "Title can't be null")
         }
 
         return entryService.create(entry.title)
