@@ -1,10 +1,12 @@
 buildscript {
     ext {
         kotlinVersion = '1.2.21'
-        springBootVersion = '1.5.9.RELEASE'
+        springBootVersion = '1.5.13.RELEASE'
+        springSecurityVersion = '4.2.6.RELEASE'
         keycloakVersion = '3.4.3.Final'
         resteasyVersion = '3.5.0.Final'
         jacksonVersion = '2.9.4'
+        h2Version = '1.4.196'
     }
     repositories {
         mavenCentral()
@@ -72,10 +74,11 @@ dependencies {
     // other library. https://stackoverflow.com/questions/44676732/
     compile('org.hibernate:hibernate-java8:5.0.12.Final')
 
-    runtime('org.springframework.boot:spring-boot-devtools')
-    runtime group: 'com.h2database', name: 'h2', version: '1.4.196'
-    testCompile('org.springframework.boot:spring-boot-starter-test')
-    testCompile('org.springframework.security:spring-security-test')
+    runtime("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
+    runtime("com.h2database:h2:${h2Version}")
+
+    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+    testCompile("org.springframework.security:spring-security-test:${springSecurityVersion}")
 }
 
 jar {
