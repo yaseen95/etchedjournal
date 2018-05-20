@@ -2,8 +2,9 @@ package com.etchedjournal.etched.controller
 
 import com.etchedjournal.etched.dto.AuthenticationRequest
 import com.etchedjournal.etched.dto.EncryptionPropertiesRequest
-import com.etchedjournal.etched.dto.LoginResponse
+import com.etchedjournal.etched.dto.RefreshTokenRequest
 import com.etchedjournal.etched.dto.RegisterRequest
+import com.etchedjournal.etched.dto.TokenResponse
 import com.etchedjournal.etched.security.EtchedUser
 import com.etchedjournal.etched.service.AuthService
 import org.slf4j.Logger
@@ -24,7 +25,7 @@ class AuthServiceController(private val authService: AuthService) {
     }
 
     @PostMapping("/authenticate")
-    fun authenticate(@RequestBody authRequest: AuthenticationRequest): LoginResponse {
+    fun authenticate(@RequestBody authRequest: AuthenticationRequest): TokenResponse {
         return authService.authenticate(authRequest.username, authRequest.password)
     }
 
@@ -37,6 +38,11 @@ class AuthServiceController(private val authService: AuthService) {
     @GetMapping("/self")
     fun self(): EtchedUser {
         return authService.getRequestingUser()
+    }
+
+    @PostMapping("/refresh-token")
+    fun refreshToken(@RequestBody refreshTokenRequest: RefreshTokenRequest): TokenResponse {
+        return authService.refreshToken(refreshTokenRequest.refreshToken)
     }
 
     @PostMapping("/self/configure-encryption")

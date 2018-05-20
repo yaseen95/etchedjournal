@@ -1,8 +1,7 @@
 package com.etchedjournal.etched.service
 
-import com.etchedjournal.etched.dto.LoginResponse
+import com.etchedjournal.etched.dto.TokenResponse
 import com.etchedjournal.etched.security.EtchedUser
-import com.etchedjournal.etched.security.SimpleUser
 
 interface AuthService {
 
@@ -24,7 +23,12 @@ interface AuthService {
     /**
      * Authenticate a user
      */
-    fun authenticate(username: String, password: String): LoginResponse
+    fun authenticate(username: String, password: String): TokenResponse
+
+    /**
+     * Refreshes JWT tokens using the supplied refresh token
+     */
+    fun refreshToken(refreshToken: String): TokenResponse
 
     /**
      * Configures the encryption properties for the user

@@ -1,9 +1,11 @@
 package com.etchedjournal.etched.service.impl
 
-import com.etchedjournal.etched.dto.LoginResponse
+import com.etchedjournal.etched.dto.TokenResponse
 import com.etchedjournal.etched.security.EtchedUser
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.OpenIdConnectApi
+import com.etchedjournal.etched.service.exception.BadRequestException
+import com.etchedjournal.etched.service.exception.ServerException
 import org.apache.http.HttpHeaders
 import org.keycloak.KeycloakPrincipal
 import org.keycloak.KeycloakSecurityContext
@@ -107,6 +109,7 @@ class AuthServiceImpl(
         // I.e. usernames are still displayed with case sensitivity but are treated as case
         // insensitive.
 
+        logger.info("Attempting to register User(username='{}', email='{}')", username, email)
         // Prepare payload
         val credentials = CredentialRepresentation()
         credentials.type = CredentialRepresentation.PASSWORD
@@ -129,12 +132,14 @@ class AuthServiceImpl(
 
                 // user already exists
                 Response.Status.CONFLICT -> {
-                    throw Exception("User with username and/or email already exists")
+                    throw BadRequestException(message = "User with username and/or email already " +
+                        "exists")
                 }
 
                 else -> {
-                    throw Exception("Unable to create user $username. Received unexpected status " +
-                            "'${newUserResponse.statusInfo}'.")
+                    throw ServerException(logMessage = "Unable to create User" +
+                        "(username='$username', email='$email'). Received unexpected status " +
+                        "${newUserResponse.statusInfo}.")
                 }
             }
         }
@@ -145,6 +150,7 @@ class AuthServiceImpl(
         // Response body contains location (ie path to new user)
         // e.g. http://localhost:9001/auth/admin/realms/etched/users/3b1fa466-b1f3-4544-9924-7f7a2ec351f0
         val userId = location[0].split("/").last()
+        logger.info("Created User(id='{}', username='{}', email='{}')", userId, username, email)
 
         // Assign "user" role to user
         val userResource: UserResource = usersResource.get(userId)
@@ -153,9 +159,14 @@ class AuthServiceImpl(
         return repToUser(userResource.toRepresentation())
     }
 
-    override fun authenticate(username: String, password: String): LoginResponse {
-        logger.info("Attempting authentication for username='$username'")
+    override fun authenticate(username: String, password: String): TokenResponse {
+        logger.info("Attempting authentication for username '{}'", username)
         return openIdConnectApi.login(username, password)
+    }
+
+    override fun refreshToken(refreshToken: String): TokenResponse {
+        logger.info("Attempting to refresh token for User(id='{}')", getUserId())
+        return openIdConnectApi.refreshToken(refreshToken)
     }
 
     override fun configureEncryptionProperties(
@@ -166,7 +177,7 @@ class AuthServiceImpl(
     ): EtchedUser {
         // Get user representation
         val userRepresentation = getUserRepresentation(getUserId())
-        logger.info("Configuring encryption for ${userRepresentation.id}")
+        logger.info("Configuring encryption for User(id='{}')", userRepresentation.id)
 
         // Attributes == null when the user first registers
         if (userRepresentation.attributes == null) {

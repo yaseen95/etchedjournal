@@ -3,7 +3,7 @@ package com.etchedjournal.etched
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.OpenIdConnectApi
 import com.etchedjournal.etched.service.impl.AuthServiceImpl
-import com.etchedjournal.etched.service.impl.KeycloakOpenIdKeycloakApi
+import com.etchedjournal.etched.service.impl.KeycloakOpenIdConnectApi
 import org.keycloak.OAuth2Constants
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
@@ -27,7 +27,7 @@ class EtchedConfig {
             @Value("\${keycloak.resource}") resource: String,
             @Value("\${keycloak.credentials.secret}") clientSecret: String
     ): OpenIdConnectApi {
-        return KeycloakOpenIdKeycloakApi("$authServerUrl/realms/$realm/", resource, clientSecret)
+        return KeycloakOpenIdConnectApi("$authServerUrl/realms/$realm/", resource, clientSecret)
     }
 
     @Bean

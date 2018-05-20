@@ -1,8 +1,7 @@
 package com.etchedjournal.etched
 
-import com.etchedjournal.etched.dto.LoginResponse
+import com.etchedjournal.etched.dto.TokenResponse
 import com.etchedjournal.etched.security.EtchedUser
-import com.etchedjournal.etched.security.SimpleUser
 import com.etchedjournal.etched.service.AuthService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -14,15 +13,15 @@ class TestAuthService : AuthService {
 
     companion object {
         val users: MutableMap<String, EtchedUser> = mutableMapOf(
-                "tester" to EtchedUser(
-                        id = "01234567-89ab-cdef-0123-456789abcdef",
-                        username = "tester",
-                        email = "tester@example.com",
-                        salt = "salt",
-                        algo = "algo",
-                        keySize = 256,
-                        iterations = 100000
-                )
+            "tester" to EtchedUser(
+                id = "01234567-89ab-cdef-0123-456789abcdef",
+                username = "tester",
+                email = "tester@example.com",
+                salt = "salt",
+                algo = "algo",
+                keySize = 256,
+                iterations = 100000
+            )
         )
 
         val logger: Logger = LoggerFactory.getLogger(TestAuthService::class.java)
@@ -48,7 +47,7 @@ class TestAuthService : AuthService {
         return users[username]!!
     }
 
-    override fun authenticate(username: String, password: String): LoginResponse {
+    override fun authenticate(username: String, password: String): TokenResponse {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -56,7 +55,11 @@ class TestAuthService : AuthService {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    fun getUser(): User {
+    private fun getUser(): User {
         return SecurityContextHolder.getContext().authentication.principal as User
+    }
+
+    override fun refreshToken(refreshToken: String): TokenResponse {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
