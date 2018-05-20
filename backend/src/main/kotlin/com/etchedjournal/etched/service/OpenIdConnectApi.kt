@@ -1,17 +1,16 @@
 package com.etchedjournal.etched.service
 
-import com.etchedjournal.etched.dto.LoginResponse
+import com.etchedjournal.etched.dto.TokenResponse
 import com.etchedjournal.etched.dto.UserInfo
 
 /**
  * Interface for Keycloak's openid-connect REST endpoint.
  *
- *
- * There is very basic validation, and no exception handling. These are just examples.
- *
- *
- * Return types are simply Object because I didn't want to create custom classes. However, jackson still serializes them
- * with the json data returned by keycloak.
+ * This *is not* a good interface abstraction for a generalised openid-connect endpoint. The
+ * interface does not define accessToken params because the implementation
+ * [com.etchedjournal.etched.service.impl.KeycloakOpenIdConnectApi] uses a
+ * [org.keycloak.adapters.springsecurity.client.KeycloakRestTemplate] internally, which will
+ * extract the access token automatically and use that when interacting with keycloak.
  */
 interface OpenIdConnectApi {
     /**
@@ -19,24 +18,29 @@ interface OpenIdConnectApi {
      *
      * @param username username of user logging in
      * @param password password of user logging in
-     * @return
+     * @return access tokens which can be used to access the service
      */
-    fun login(username: String, password: String): LoginResponse
+    fun login(username: String, password: String): TokenResponse
 
     /**
      * Logs a user out
      *
-     * @param accessToken  the bearer token with the "Bearer " prefix
      * @param refreshToken the refresh token that is returned in the payload of [.authenticate]
-     * @return
      */
-    fun logout(accessToken: String, refreshToken: String): Any
+    fun logout(refreshToken: String): Any
 
     /**
-     * Returns user info
+     * Gets user details using their access token
      *
-     * @param accessToken the bearer token with the "Bearer " prefix
-     * @return
+     * @return user details of requesting user
      */
-    fun userInfo(accessToken: String): UserInfo
+    fun userInfo(): UserInfo
+
+    /**
+     * Refreshes a token using the refreshToken provided on first login
+     *
+     * @param refreshToken refresh token that was provided when they last authenticated/refreshed
+     * @return updated tokens which can be used to continue to access the service
+     */
+    fun refreshToken(refreshToken: String): TokenResponse
 }

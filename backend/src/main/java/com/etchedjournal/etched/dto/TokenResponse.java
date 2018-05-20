@@ -3,12 +3,12 @@ package com.etchedjournal.etched.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Login Response returned from the openid-connect endpoint of keycloak.
+ * Token response returned from the openid-connect endpoint of keycloak.
  *
  * This class is used as a DTO and transforms the openid-connect payload (which use snake_case)
  * keys into camelCase keys.
  */
-public class LoginResponse {
+public class TokenResponse {
     private String accessToken;
     private Long expiresIn;
     private Long refreshExpiresIn;

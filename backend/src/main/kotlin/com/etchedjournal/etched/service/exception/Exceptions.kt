@@ -131,5 +131,6 @@ open class ServerException(
  * @param logMessage optional - specify log message
  */
 class AuthServerException(
+    message: String = "Unexpected error with auth server",
     logMessage: String? = null
-): ServerException(HttpStatus.SERVICE_UNAVAILABLE, logMessage = logMessage)
+): ServerException(HttpStatus.SERVICE_UNAVAILABLE, message, logMessage)
