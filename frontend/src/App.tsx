@@ -5,11 +5,11 @@ import { EtchEncrypter } from './crypto/crypto';
 import { EtchedApi } from './etched-api';
 import { Entry } from './models/entry';
 import { EntryComponent } from './components/entry/entry';
-import { RegisterComponent } from './components/register/register';
+import { Register } from './components/register/register';
 import { EtchedUser } from './models/etched-user';
-import { ConfigurePassphrase } from './components/configure-passphrase/configure-passphrase';
 import { StretchedKey } from './crypto/etched-crypto';
 import { Login } from './components/login/login';
+import { Redirect, Route, Switch } from 'react-router';
 
 interface AppState {
   entries: Entry[] | null;
@@ -32,6 +32,8 @@ class App extends React.Component<{}, AppState> {
   }
 
   render() {
+    const api = this.state.etchedApi;
+    const setUser = this.setUser;
     return (
       <div className="App">
         <header className="App-header">
@@ -39,9 +41,11 @@ class App extends React.Component<{}, AppState> {
         </header>
         <section className="section">
           <div className="container">
-            {this.renderEntries()}
-            {this.renderAuthPrompt()}
-            <ConfigurePassphrase/>
+            <Switch>
+              <Route exact={true} path="/" render={() => <Redirect to="/login"/>}/>
+              <Route path="/login" render={() => <Login etchedApi={api} setUser={setUser}/>}/>
+              <Route path="/register" render={() => <Register etchedApi={api} setUser={setUser}/>}/>
+            </Switch>
           </div>
         </section>
       </div>
@@ -108,25 +112,6 @@ class App extends React.Component<{}, AppState> {
     return (
       <div className="columns">
         <div className="column is-12">{renderedEntries}</div>
-      </div>
-    );
-  }
-
-  renderAuthPrompt() {
-    if (this.state.user === null) {
-      return (
-        <React.Fragment>
-          <RegisterComponent etchedApi={this.state.etchedApi} setUser={this.setUser}/>
-          <Login etchedApi={this.state.etchedApi} setUser={this.setUser}/>
-        </React.Fragment>
-      );
-    }
-    return (
-      <div>
-        <h4>Hi {this.state.user.username}</h4>
-        <p>Email is <i>{this.state.user.email}</i></p>
-        <p>User id is <i>{this.state.user.id}</i></p>
-        <p>Admin <i>{this.state.user.admin.toString()}</i></p>
       </div>
     );
   }

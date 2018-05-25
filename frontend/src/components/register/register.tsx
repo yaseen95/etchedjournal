@@ -3,6 +3,7 @@ import { ChangeEvent } from 'react';
 import { EtchedApi } from '../../etched-api';
 import { EtchedUser } from '../../models/etched-user';
 import { FormField } from '../utils/form-field';
+import { Link } from 'react-router-dom';
 
 interface RegisterState {
   username: string;
@@ -16,7 +17,7 @@ interface RegisterProps {
   setUser(user: EtchedUser): void;
 }
 
-export class RegisterComponent extends React.Component<RegisterProps, RegisterState> {
+export class Register extends React.Component<RegisterProps, RegisterState> {
 
   constructor(props: RegisterProps) {
     super(props);
@@ -54,7 +55,6 @@ export class RegisterComponent extends React.Component<RegisterProps, RegisterSt
   }
 
   render() {
-    let jwtDisplay = null;
     return (
       <div className="columns is-centered">
         <div className="column is-12-mobile is-4-desktop">
@@ -95,8 +95,10 @@ export class RegisterComponent extends React.Component<RegisterProps, RegisterSt
             <FormField>
                 <button className="button is-primary">Submit</button>
             </FormField>
+            <div style={{'paddingTop': '10px'}}>
+              Already have an account? <Link to="/login">Log in here</Link>
+            </div>
           </form>
-          {jwtDisplay}
         </div>
       </div>
     );

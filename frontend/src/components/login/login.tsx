@@ -4,6 +4,7 @@ import { EtchedApi } from '../../etched-api';
 import { EtchedUser } from '../../models/etched-user';
 import { FormField } from '../utils/form-field';
 import { Spinner } from '../utils/spinner';
+import { Link } from 'react-router-dom';
 
 interface LoginProps {
   etchedApi: EtchedApi;
@@ -90,6 +91,9 @@ export class Login extends React.Component<LoginProps, LoginState> {
             <FormField>
               <button className="button is-primary">Login</button>
             </FormField>
+            <div style={{'paddingTop': '10px'}}>
+              Don't have an account? <Link to="/register">Create an account</Link>
+            </div>
           </form>
         </div>
       </div>

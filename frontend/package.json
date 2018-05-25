@@ -8,6 +8,7 @@
     "hex-to-array-buffer": "^1.1.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "react-router-dom": "^4.2.2",
     "react-scripts-ts": "2.13.0"
   },
   "scripts": {
@@ -21,6 +22,7 @@
     "@types/node": "^9.4.0",
     "@types/react": "^16.0.36",
     "@types/react-dom": "^16.0.3",
+    "@types/react-router-dom": "^4.2.6",
     "@types/text-encoding": "0.0.32",
     "bulma": "^0.6.2",
     "text-encoding": "^0.6.4",
