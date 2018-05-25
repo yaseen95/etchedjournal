@@ -3,42 +3,39 @@ import { ChangeEvent } from 'react';
 import { EtchedApi } from '../../etched-api';
 import { EtchedUser } from '../../models/etched-user';
 import { FormField } from '../utils/form-field';
+import { Spinner } from '../utils/spinner';
 
-interface RegisterState {
-  username: string;
-  email: string;
-  password: string;
-}
-
-interface RegisterProps {
+interface LoginProps {
   etchedApi: EtchedApi;
 
   setUser(user: EtchedUser): void;
 }
 
-export class RegisterComponent extends React.Component<RegisterProps, RegisterState> {
+interface LoginState {
+  username: string;
+  password: string;
+  loggingIn: boolean;
+}
 
-  constructor(props: RegisterProps) {
-    super(props);
-    this.state = {
-      username: '',
-      email: '',
-      password: '',
-    };
-  }
+export class Login extends React.Component<LoginProps, LoginState> {
 
   handleSubmit = (event: React.SyntheticEvent<EventTarget>) => {
     event.preventDefault();
-    const {username, password, email} = this.state;
-    console.log(`Registering User[username='${this.state.username}']`);
-    this.props.etchedApi.register(username, email, password)
-      .then((user: EtchedUser) => {
-        // TODO: Should user perform login or should we just handle it in code?
-        // Have to perform a login after registering
-        console.log(`Getting auth tokens for ${user.username}`);
-        this.props.etchedApi.login(username, password)
-          .then(() => { this.props.setUser(user); });
-      });
+    this.setState({loggingIn: true});
+    console.log(`Logging in User[username='${this.state.username}']`);
+
+    this.props.etchedApi.login(this.state.username, this.state.password)
+      .then(() => {
+        // After login, get the user details
+        return this.props.etchedApi.self();
+      })
+      .then(user => {
+        // TODO: reevaluate auth API
+        // We have to send another request. Is this a problem with our API?
+        this.setState({loggingIn: false});
+        this.props.setUser(user);
+      })
+      .catch(e => console.error(e));
   }
 
   onUsernameChanged = (event: ChangeEvent<HTMLInputElement>) => {
@@ -49,16 +46,24 @@ export class RegisterComponent extends React.Component<RegisterProps, RegisterSt
     this.setState({password: event.target.value});
   }
 
-  onEmailChanged = (event: ChangeEvent<HTMLInputElement>) => {
-    this.setState({email: event.target.value});
+  constructor(props: LoginProps) {
+    super(props);
+    this.state = {
+      username: '',
+      password: '',
+      loggingIn: false,
+    };
   }
 
   render() {
-    let jwtDisplay = null;
+    if (this.state.loggingIn) {
+      return <Spinner text="Logging in"/>;
+    }
+
     return (
       <div className="columns is-centered">
         <div className="column is-12-mobile is-4-desktop">
-          <h3>Register</h3>
+          <h3>Login</h3>
           <form className="control" onSubmit={this.handleSubmit}>
             <FormField>
               <label className="label">Username</label>
@@ -69,16 +74,6 @@ export class RegisterComponent extends React.Component<RegisterProps, RegisterSt
                 name="username"
                 value={this.state.username}
                 onChange={this.onUsernameChanged}
-              />
-            </FormField>
-            <FormField>
-              <label className="label">Email</label>
-              <input
-                className="input"
-                type="text"
-                placeholder="Email"
-                value={this.state.email}
-                onChange={this.onEmailChanged}
               />
             </FormField>
             <FormField>
@@ -93,10 +88,9 @@ export class RegisterComponent extends React.Component<RegisterProps, RegisterSt
               />
             </FormField>
             <FormField>
-                <button className="button is-primary">Submit</button>
+              <button className="button is-primary">Login</button>
             </FormField>
           </form>
-          {jwtDisplay}
         </div>
       </div>
     );

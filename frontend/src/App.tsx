@@ -9,8 +9,7 @@ import { RegisterComponent } from './components/register/register';
 import { EtchedUser } from './models/etched-user';
 import { ConfigurePassphrase } from './components/configure-passphrase/configure-passphrase';
 import { StretchedKey } from './crypto/etched-crypto';
-
-let etchedApi = new EtchedApi();
+import { Login } from './components/login/login';
 
 interface AppState {
   entries: Entry[] | null;
@@ -49,12 +48,6 @@ class App extends React.Component<{}, AppState> {
     );
   }
 
-  componentDidMount() {
-    if (!this.state.fetchedData) {
-      this.getEntries();
-    }
-  }
-
   getEntries() {
     // let passphrase = 'Bonsoir Elliot';
 
@@ -89,7 +82,7 @@ class App extends React.Component<{}, AppState> {
     //       });
     //   });
 
-    etchedApi.getEntries()
+    this.state.etchedApi.getEntries()
       .then(entries => {
         setTimeout(component => {
           component.setState({entries: entries});
@@ -121,7 +114,12 @@ class App extends React.Component<{}, AppState> {
 
   renderAuthPrompt() {
     if (this.state.user === null) {
-      return (<RegisterComponent etchedApi={this.state.etchedApi} setUser={this.setUser}/>);
+      return (
+        <React.Fragment>
+          <RegisterComponent etchedApi={this.state.etchedApi} setUser={this.setUser}/>
+          <Login etchedApi={this.state.etchedApi} setUser={this.setUser}/>
+        </React.Fragment>
+      );
     }
     return (
       <div>
@@ -134,9 +132,9 @@ class App extends React.Component<{}, AppState> {
   }
 
   setUser = (user: EtchedUser) => {
-    setTimeout((u: EtchedUser) => {
-      this.setState({user: u});
-    },         2000, user);
+    console.log(`Setting user ${user.username}`);
+    this.setState({user: user});
+    this.getEntries();
   }
 }
 
