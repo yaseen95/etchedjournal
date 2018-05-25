@@ -14,6 +14,9 @@ interface PassphraseState {
 const MIN_PASSPHRASE_LENGTH = 20;
 const MAX_PASSPHRASE_LENGTH = 256;  // What "an oddly specific number"
 
+/** How long it should look like it's stretching the password */
+const HASHING_STRENGTH_ILLUSION = 3000;  // DEMO purposes only!
+
 export class ConfigurePassphrase extends React.Component<{}, PassphraseState> {
 
   constructor(props: {}) {
@@ -50,21 +53,31 @@ export class ConfigurePassphrase extends React.Component<{}, PassphraseState> {
     } else if (this.state.passphrase !== this.state.passphraseConfirm) {
       this.setState({formErrorMessage: `Passphrases don't match.`});
     } else {
-      // Password looks good.
+      // Passphrase looks good.
       this.setState({formErrorMessage: ''});
       this.setState({generatingMasterKey: true});
+
+      const startTime = Date.now();
       EtchedCryptoUtils.hashPassphrase(this.state.passphrase)
         .then((key: StretchedKey) => {
-          this.onPassphraseHashed(key);
+
+          const endTime = Date.now();
+
+          let timeout = 0;
+          if (endTime - startTime <= HASHING_STRENGTH_ILLUSION) {
+            timeout = HASHING_STRENGTH_ILLUSION - (endTime - startTime);
+          }
+
+          setTimeout(() => {
+            // TODO-HIGH: Don't log this
+            // Obviously don't do this
+            console.log(`Generated key ${key.toString()}`);
+            this.setState({generatingMasterKey: false});
+          },         timeout);
         });
     }
     // Prevent page refresh on form submit.
     event.preventDefault();
-  }
-
-  onPassphraseHashed(stretchedKey: StretchedKey) {
-    console.log(`Generated key ${stretchedKey.toString()}`);
-    this.setState({generatingMasterKey: false});
   }
 
   displayError = () => {
