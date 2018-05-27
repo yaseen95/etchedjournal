@@ -5,6 +5,7 @@ import { EtchedUser } from '../../models/etched-user';
 import { FormField } from '../utils/form-field';
 import { Spinner } from '../utils/spinner';
 import { Link } from 'react-router-dom';
+import { Redirect } from 'react-router';
 
 interface LoginProps {
   etchedApi: EtchedApi;
@@ -16,9 +17,20 @@ interface LoginState {
   username: string;
   password: string;
   loggingIn: boolean;
+  loggedIn: boolean;
 }
 
 export class Login extends React.Component<LoginProps, LoginState> {
+
+  constructor(props: LoginProps) {
+    super(props);
+    this.state = {
+      username: '',
+      password: '',
+      loggingIn: false,
+      loggedIn: false,
+    };
+  }
 
   handleSubmit = (event: React.SyntheticEvent<EventTarget>) => {
     event.preventDefault();
@@ -33,8 +45,8 @@ export class Login extends React.Component<LoginProps, LoginState> {
       .then(user => {
         // TODO: reevaluate auth API
         // We have to send another request. Is this a problem with our API?
-        this.setState({loggingIn: false});
         this.props.setUser(user);
+        this.setState({loggingIn: false, loggedIn: true});
       })
       .catch(e => console.error(e));
   }
@@ -47,18 +59,12 @@ export class Login extends React.Component<LoginProps, LoginState> {
     this.setState({password: event.target.value});
   }
 
-  constructor(props: LoginProps) {
-    super(props);
-    this.state = {
-      username: '',
-      password: '',
-      loggingIn: false,
-    };
-  }
-
   render() {
     if (this.state.loggingIn) {
       return <Spinner text="Logging in"/>;
+    } else if (this.state.loggedIn) {
+      console.log('Logged in...');
+      return <Redirect to="/"/>;
     }
 
     return (

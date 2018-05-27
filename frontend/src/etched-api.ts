@@ -13,24 +13,50 @@ module ApiModels {
     created: string;
     finished: string | null;
   }
+
+  export interface ApiError {
+    message: string;
+  }
 }
 
 const AUTHENTICATE_URL = '/auth/authenticate';
 // const REGISTER_URL = '/auth/register';
 const SELF_URL = '/auth/self';
+const CONFIGURE_ENCRYPTION_URL = '/auth/self/configure-encryption';
 // const CONFIGURE_ENCRYPTION_URL = '/auth/self/configure-encryption';
 const REFRESH_TOKEN_URL = '/auth/refresh-token';
 
 const AUTHORIZATION = 'Authorization';
 
-module HttpStatus {
-  // 200
-  export const OK: number = 200;
+export enum HttpStatus {
+  /* Success codes */
+  OK = 200,
 
-  // 400
-  export const BAD_REQUEST: number = 400;
-  export const FORBIDDEN: number = 403;
-  export const UNAUTHORIZED: number = 401;
+  /* Client error codes */
+  BAD_REQUEST = 400,
+  UNAUTHORIZED = 401,
+  FORBIDDEN = 403
+}
+
+function statusOf(status: number): HttpStatus {
+
+  switch (status) {
+    // 2xx codes
+    case HttpStatus.OK:             return HttpStatus.OK;
+
+    // 4xx codes
+    case HttpStatus.BAD_REQUEST:    return HttpStatus.BAD_REQUEST;
+    case HttpStatus.UNAUTHORIZED:   return HttpStatus.UNAUTHORIZED;
+    case HttpStatus.FORBIDDEN:      return HttpStatus.FORBIDDEN;
+    default:
+      throw new Error(`Unexpected status code ${status}`);
+  }
+}
+
+export class HttpError extends Error {
+  constructor(readonly status: HttpStatus, readonly message: string, readonly body: string) {
+    super(message);
+  }
 }
 
 export class EtchedApi {
@@ -84,6 +110,19 @@ export class EtchedApi {
     return entries;
   }
 
+  private static parseUser(user: EtchedUser): EtchedUser {
+    return new EtchedUser(
+      user.id,
+      user.username,
+      user.email,
+      user.admin,
+      user.algo,
+      user.salt,
+      user.keySize,
+      user.iterations
+    );
+  }
+
   /**
    * Utility for initializing setting required fields for a json POST request
    *
@@ -98,8 +137,35 @@ export class EtchedApi {
     };
   }
 
-  private static throwApiError(response: Response, text: string) {
-    throw Error(`Request to ${response.url} failed. Received status ${response.status}. Response: ${text}`);
+  /**
+   * Utility to throws an ApiError with a good error message
+   * @param {Response} response
+   * @param {ApiModels.ApiError} json
+   */
+  private static throwApiError(response: Response, json: ApiModels.ApiError) {
+    console.log(`Request to ${response.url} failed. Received status ${response.status}. ` +
+      `Response: ${JSON.stringify(json)}`);
+    throw new HttpError(statusOf(response.status), json.message, JSON.stringify(json));
+  }
+
+  /**
+   * Check response for expected status code and return the json if valid otherwise throw an error.
+   *
+   * @param {Response} response to check
+   * @param {HttpStatus} expectedStatus check response for this status, throw error if not matching
+   * @returns {Promise<any>} return json body if response is valid
+   * @throws {ApiError} if response status does not match expectedStatus
+   */
+  private static checkResponse(
+    response: Response,
+    expectedStatus: HttpStatus = HttpStatus.OK
+  // tslint:disable-next-line: no-any
+  ): Promise<any> {
+    if (response.status !== expectedStatus) {
+      return response.json().then(json => this.throwApiError(response, json));
+    }
+    console.log(`Request to ${response.url} was successful`);
+    return response.json();
   }
 
   /**
@@ -113,27 +179,27 @@ export class EtchedApi {
   getEntries(): Promise<Entry[]> {
     console.log('Getting entries');
     return fetch(`${this.BASE_URL}/entries`, {headers: this.authHeaders})
-      .then(r => r.json())
+      .then(r => EtchedApi.checkResponse(r))
       .then(entries => EtchedApi.parseEntries(entries));
   }
 
   getEntry(entryId: number): Promise<Entry> {
     console.log(`Getting Entry(id=${entryId})`);
     return fetch(`${this.BASE_URL}/entries/${entryId}`)
-      .then(r => r.json())
+      .then(r => EtchedApi.checkResponse(r))
       .then(json => json as Entry);
   }
 
   getEtches(entryId: number): Promise<Etch[]> {
     console.log(`Getting etches for Entry(id=${entryId})`);
     return fetch(`${this.BASE_URL}/entries/${entryId}/etches`)
-      .then(r => r.json())
+      .then(r => EtchedApi.checkResponse(r))
       .then(json => json as Etch[]);
   }
 
   getEtch(entryId: number, etchId: number): Promise<Etch> {
     return fetch(`${this.BASE_URL}/entries/${entryId}/etches/${etchId}`)
-      .then(r => r.json())
+      .then(r => EtchedApi.checkResponse(r))
       .then(json => json as Etch);
   }
 
@@ -143,7 +209,7 @@ export class EtchedApi {
     console.log(`Creating a new etch for Entry(id=${entryId})`);
 
     return fetch(`${this.BASE_URL}/entries/${entryId}/etches/`, requestInit)
-      .then(r => r.json())
+      .then(r => EtchedApi.checkResponse(r))
       .then(savedEtch => savedEtch as Etch);
   }
 
@@ -162,10 +228,10 @@ export class EtchedApi {
 
     console.log(`Attempting registration for username: ${username}`);
     return fetch(`${this.BASE_URL}/auth/register`, requestInit)
-      .then(r => r.json())
+      .then(r => EtchedApi.checkResponse(r))
       .then((user: EtchedUser) => {
         console.log(`Successfully registered EtchedUser(id='${user.id}', username='${username}')`);
-        return user;
+        return EtchedApi.parseUser(user);
       });
   }
 
@@ -179,14 +245,8 @@ export class EtchedApi {
   login(username: string, password: string): Promise<void> {
     let requestInit = EtchedApi.jsonPostInit({'username': username, 'password': password});
     return fetch(this.BASE_URL + AUTHENTICATE_URL, requestInit)
-      .then(r => {
-        if (r.status !== HttpStatus.OK) {
-          console.log(`Login failed for ${username}`);
-          return r.text().then(text => EtchedApi.throwApiError(r, text));
-        }
-        console.log(`Successfully logged in ${username}`);
-        return r.json().then(resp => this.setTokens(resp));
-      });
+      .then(r => EtchedApi.checkResponse(r))
+      .then(tokens => this.setTokens(tokens));
   }
 
   /**
@@ -200,17 +260,38 @@ export class EtchedApi {
     console.log(`Getting user info`);
     return this.refreshTokens()
       .then(() => fetch(this.BASE_URL + SELF_URL, {headers: this.authHeaders}))
-      .then((resp: Response) => {
-        console.log(`Received response from ${resp.url}`);
-        if (resp.status !== HttpStatus.OK) {
-          return resp.text().then(text => EtchedApi.throwApiError(resp, text));
-        }
-        return resp.json();
-      })
+      .then((resp: Response) => EtchedApi.checkResponse(resp))
       .then(user => {
         console.log(`Received user info ${JSON.stringify(user)}`);
-        return user as EtchedUser;
+        return EtchedApi.parseUser(user);
       });
+  }
+
+  /**
+   * Configure encryption properties for the current user.
+   *
+   * Requires user to be authenticated.
+   *
+   * @param {string} algo
+   * @param {string} salt
+   * @param {number} iterations
+   * @param {number} keySize
+   * @returns {Promise<EtchedUser>}
+   */
+  configureEncryption(
+    algo: string,
+    salt: string,
+    iterations: number,
+    keySize: number
+  ): Promise<EtchedUser> {
+    const requestBody = {algo: algo, salt: salt, iterations: iterations, keySize: keySize};
+    const requestInit = EtchedApi.jsonPostInit(requestBody);
+    (requestInit.headers as Headers).append(AUTHORIZATION, `Bearer ${this.accessToken}`);
+
+    return this.refreshTokens()
+      .then(() => fetch(this.BASE_URL + CONFIGURE_ENCRYPTION_URL, requestInit))
+      .then(r => EtchedApi.checkResponse(r))
+      .then(user => EtchedApi.parseUser(user));
   }
 
   private refreshTokens(): Promise<void> {
@@ -229,7 +310,7 @@ export class EtchedApi {
     (requestInit.headers as Headers).append(AUTHORIZATION, `Bearer ${this.accessToken}`);
 
     return fetch(this.BASE_URL + REFRESH_TOKEN_URL, requestInit)
-      .then(r => r.json())
+      .then(r => EtchedApi.checkResponse(r))
       .then((token: TokenResponse) => this.setTokens(token));
   }
 

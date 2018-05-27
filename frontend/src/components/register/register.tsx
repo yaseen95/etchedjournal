@@ -4,11 +4,15 @@ import { EtchedApi } from '../../etched-api';
 import { EtchedUser } from '../../models/etched-user';
 import { FormField } from '../utils/form-field';
 import { Link } from 'react-router-dom';
+import { Spinner } from '../utils/spinner';
+import { Redirect } from 'react-router';
 
 interface RegisterState {
   username: string;
   email: string;
   password: string;
+  registering: boolean;
+  registered: boolean;
 }
 
 interface RegisterProps {
@@ -25,20 +29,28 @@ export class Register extends React.Component<RegisterProps, RegisterState> {
       username: '',
       email: '',
       password: '',
+      registered: false,
+      registering: false,
     };
   }
 
   handleSubmit = (event: React.SyntheticEvent<EventTarget>) => {
     event.preventDefault();
+    this.setState({registering: true});
+
     const {username, password, email} = this.state;
-    console.log(`Registering User[username='${this.state.username}']`);
+    console.log(`Registering User[username='${username}']`);
+
     this.props.etchedApi.register(username, email, password)
       .then((user: EtchedUser) => {
         // TODO: Should user perform login or should we just handle it in code?
         // Have to perform a login after registering
         console.log(`Getting auth tokens for ${user.username}`);
         this.props.etchedApi.login(username, password)
-          .then(() => { this.props.setUser(user); });
+          .then(() => {
+            this.setState({registering: false, registered: true});
+            this.props.setUser(user);
+          });
       });
   }
 
@@ -55,6 +67,12 @@ export class Register extends React.Component<RegisterProps, RegisterState> {
   }
 
   render() {
+
+    if (this.state.registering) {
+      return <Spinner text="Creating account"/>;
+    } else if (this.state.registered) {
+      return <Redirect to="/configure-passphrase"/>;
+    }
     return (
       <div className="columns is-centered">
         <div className="column is-12-mobile is-4-desktop">

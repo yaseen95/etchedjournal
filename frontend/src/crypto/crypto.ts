@@ -12,8 +12,8 @@ export class EtchEncrypter {
   /**
    * Encrypt the content and return it as an Etch.
    *
-   * Internally the etch is encrypted using a random key and iv. The random key and iv are then also encrypted using
-   * another random iv and the master key.
+   * Internally the etch is encrypted using a random key and iv. The random key and iv are then also
+   * encrypted using another random iv and the master key.
    *
    * @param {string} content
    * @returns {Promise<Etch>}
@@ -40,8 +40,10 @@ export class EtchEncrypter {
    */
   decrypt(etch: Etch): Promise<Etch> {
     // Decrypt the encrypted key and iv
-    let contentKey = EtchedCryptoUtils.decrypt(new EncryptWrapper(this.masterKey, etch.keyIv, etch.contentKey));
-    let contentIv = EtchedCryptoUtils.decrypt(new EncryptWrapper(this.masterKey, etch.ivIv, etch.contentIv));
+    const keyWrapper = new EncryptWrapper(this.masterKey, etch.keyIv, etch.contentKey);
+    const ivWrapper = new EncryptWrapper(this.masterKey, etch.ivIv, etch.contentIv);
+    const contentKey = EtchedCryptoUtils.decrypt(keyWrapper);
+    const contentIv = EtchedCryptoUtils.decrypt(ivWrapper);
 
     return Promise.all([contentKey, contentIv])
       .then((values: [string, string]) => {

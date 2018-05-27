@@ -2,6 +2,16 @@ import * as React from 'react';
 import { FormField } from '../utils/form-field';
 import { Spinner } from '../utils/spinner';
 import { EtchedCryptoUtils, StretchedKey } from '../../crypto/etched-crypto';
+import { EtchedUser } from '../../models/etched-user';
+import { EtchedApi } from '../../etched-api';
+import { EtchEncrypter } from '../../crypto/crypto';
+import { Redirect } from 'react-router';
+
+interface PassphraseProps {
+  etchedApi: EtchedApi;
+  setUser(user: EtchedUser): void;
+  setEncrypter(encrypter: EtchEncrypter): void;
+}
 
 interface PassphraseState {
   passphrase: string;
@@ -9,6 +19,7 @@ interface PassphraseState {
   submitClicked: boolean;
   formErrorMessage: string;
   generatingMasterKey: boolean;
+  keyGenerated: boolean;
 }
 
 const MIN_PASSPHRASE_LENGTH = 20;
@@ -17,9 +28,9 @@ const MAX_PASSPHRASE_LENGTH = 256;  // What "an oddly specific number"
 /** How long it should look like it's stretching the password */
 const HASHING_STRENGTH_ILLUSION = 3000;  // DEMO purposes only!
 
-export class ConfigurePassphrase extends React.Component<{}, PassphraseState> {
+export class ConfigurePassphrase extends React.Component<PassphraseProps, PassphraseState> {
 
-  constructor(props: {}) {
+  constructor(props: PassphraseProps) {
     super(props);
 
     this.state = {
@@ -28,6 +39,7 @@ export class ConfigurePassphrase extends React.Component<{}, PassphraseState> {
       submitClicked: false,
       formErrorMessage: '',
       generatingMasterKey: false,
+      keyGenerated: false,
     };
   }
 
@@ -72,12 +84,22 @@ export class ConfigurePassphrase extends React.Component<{}, PassphraseState> {
             // TODO-HIGH: Don't log this
             // Obviously don't do this
             console.log(`Generated key ${key.toString()}`);
-            this.setState({generatingMasterKey: false});
+            this.setEncryptionProperties(key);
           },         timeout);
         });
     }
     // Prevent page refresh on form submit.
     event.preventDefault();
+  }
+
+  setEncryptionProperties(key: StretchedKey) {
+
+    this.props.etchedApi.configureEncryption(key.algo, key.salt, key.iterations, key.keySize)
+      .then(u => {
+        this.props.setEncrypter(new EtchEncrypter(key.hash));
+        this.props.setUser(u);
+        this.setState({generatingMasterKey: false, keyGenerated: true});
+      });
   }
 
   displayError = () => {
@@ -93,6 +115,8 @@ export class ConfigurePassphrase extends React.Component<{}, PassphraseState> {
   render() {
     if (this.state.generatingMasterKey) {
       return <Spinner text="Generating Encryption Key"/>;
+    } else if (this.state.keyGenerated) {
+      return <Redirect to="/"/>;
     }
 
     let error = this.displayError();
@@ -100,10 +124,7 @@ export class ConfigurePassphrase extends React.Component<{}, PassphraseState> {
       <div className="columns is-centered">
         <div className="column is-12-mobile is-4-desktop">
           <h4>Configure Passphrase</h4>
-          <form
-            className="control"
-            onSubmit={this.handleSubmit}
-          >
+          <form className="control" onSubmit={this.handleSubmit}>
             <FormField>
               <label>Passphrase</label>
               <input
