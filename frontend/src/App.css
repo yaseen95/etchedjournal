@@ -13,3 +13,64 @@
   color: white;
 }
 
+#etchInput.textarea:active, #etchInput.textarea:focus  {
+  /* Disable the blue border bulma uses for input elements. We just use the same style as :hover */
+  box-shadow: inset 0 1px 2px rgba(10,10,10,.1);
+  border-color: #b5b5b5;
+}
+
+#etchInput {
+  /* Hide the "resizable" handle on the textarea. The js code automatically resizes the input */
+  resize: none;
+}
+
+.full-width {
+  min-width: 100%;
+  max-width: 100%;
+}
+
+#entryTitleInput {
+  margin-bottom: 10px;
+}
+
+.etched-editable {
+  display: block;
+  max-width: 100%;
+  min-width: 100%;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(10,10,10,.1)
+}
+
+.etched-editable[contenteditable="true"]:hover,
+.etched-editable[contenteditable="true"]:active,
+.etched-editable[contenteditable="true"]:focus {
+  /* Blue outline looks funny, we use the same style as bulma's .input:hover */
+  outline: none;
+}
+
+#content-editor {
+  padding: 0.625rem;
+  margin: 20px 0 20px 0;
+}
+
+/* https://til.hashrocket.com/posts/a2cdb1ac8e-create-a-placeholder-for-content-editable-divs */
+.etched-editable[contenteditable="true"]:empty:before {
+  content: attr(data-placeholder);
+  /* Set placeholder color to match that of bulma */
+  color: rgba(54, 54, 54, 0.4);
+}
+
+#etch-title-heading {
+  /* disable the border inherited from .etched-editable */
+  border: none;
+  box-shadow: none;
+}
+
+#etch-title-heading:active,
+#etch-title-heading:focus {
+  padding: 0.250rem;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(10,10,10,.1)
+}

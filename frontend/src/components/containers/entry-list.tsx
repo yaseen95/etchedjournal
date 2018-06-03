@@ -4,6 +4,7 @@ import { Entry } from '../../models/entry';
 import { Spinner } from '../utils/spinner';
 import { EntryComponent } from '../entry/entry';
 import { EtchEncrypter } from '../../crypto/crypto';
+import { Redirect } from 'react-router';
 
 interface EntryListProps {
   etchedApi: EtchedApi;
@@ -14,6 +15,7 @@ interface EntryListState {
   entries: Entry[];
   fetched: boolean;
   fetching: boolean;
+  redirect?: string;
 }
 
 export class EntryList extends React.Component<EntryListProps, EntryListState> {
@@ -36,6 +38,10 @@ export class EntryList extends React.Component<EntryListProps, EntryListState> {
       });
   }
 
+  onStartNewEntryClicked = (event: React.SyntheticEvent<EventTarget>) => {
+    this.setState({redirect: '/entries/new'});
+  }
+
   renderEntry(e: Entry, index: number) {
     const {encrypter, etchedApi} = this.props;
     return <EntryComponent key={e.id} entry={e} encrypter={encrypter} api={etchedApi}/>;
@@ -47,16 +53,22 @@ export class EntryList extends React.Component<EntryListProps, EntryListState> {
       return <Spinner text="Getting entries"/>;
     }
 
-    const renderedEntries = entries.map(this.renderEntry);
+    let renderedEntries = entries.length > 0 ? entries.map(this.renderEntry) : <h3>No entries</h3>;
 
-    if (entries.length === 0) {
-      return <h3>No entries</h3>;
+    if (this.state.redirect !== undefined) {
+      return <Redirect to="/entries/new"/>;
     }
 
     return (
       <div className="columns is-centered">
         <div className="column is-12-mobile is-8-desktop">
           {renderedEntries}
+          <button className="button is-primary" onClick={this.onStartNewEntryClicked}>
+            <span className="icon">
+              <i className="fa fa-fw fa-plus"/>
+            </span>
+            <span>Start a new entry</span>
+          </button>
         </div>
       </div>
     );

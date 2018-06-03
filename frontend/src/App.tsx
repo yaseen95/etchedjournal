@@ -8,6 +8,7 @@ import { Login } from './components/login/login';
 import { Redirect, Route, Switch } from 'react-router';
 import { Home } from './components/containers/home';
 import { ConfigurePassphrase } from './components/configure-passphrase/configure-passphrase';
+import { EntryEditor } from './components/containers/entry-editor';
 
 interface AppState {
   etchedApi: EtchedApi;
@@ -83,6 +84,13 @@ class App extends React.Component<{}, AppState> {
                   setUser={setUser}
                   setEncrypter={setEncrypter}
                   etchedApi={etchedApi}
+                />}
+              />
+              <Route
+                path="/entries/new"
+                render={() => <EntryEditor
+                  etchedApi={etchedApi}
+                  encrypter={encrypter!!}
                 />}
               />
             </Switch>
