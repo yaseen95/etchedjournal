@@ -25,6 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
@@ -155,29 +156,32 @@ class EtchServiceControllerTests {
     fun `POST etch`() {
         val etchRequest =
                 """
-            {
-                "position": 1,
-                "content": "foo",
-                "contentKey": "bar",
-                "contentIv": "baz",
-                "keyIv": "sam",
-                "ivIv": "sepiol"
-            }
-            """
+                [
+
+                    {
+                        "position": 1,
+                        "content": "foo",
+                        "contentKey": "bar",
+                        "contentIv": "baz",
+                        "keyIv": "sam",
+                        "ivIv": "sepiol"
+                    }
+                ]
+                """
         mockMvc.perform(
                 post("$ENTRIES_PATH/${entry.id}/etches/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(etchRequest)
         )
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("\$.position", `is`(1)))
-                .andExpect(jsonPath("\$.content", `is`("foo")))
-                .andExpect(jsonPath("\$.contentKey", `is`("bar")))
-                .andExpect(jsonPath("\$.contentIv", `is`("baz")))
-                .andExpect(jsonPath("\$.keyIv", `is`("sam")))
-                .andExpect(jsonPath("\$.ivIv", `is`("sepiol")))
-                .andExpect(jsonPath("\$.id").isNumber)
-                .andExpect(jsonPath("\$.timestamp").isNumber)
+                .andExpect(jsonPath("\$[0].position", `is`(1)))
+                .andExpect(jsonPath("\$[0].content", `is`("foo")))
+                .andExpect(jsonPath("\$[0].contentKey", `is`("bar")))
+                .andExpect(jsonPath("\$[0].contentIv", `is`("baz")))
+                .andExpect(jsonPath("\$[0].keyIv", `is`("sam")))
+                .andExpect(jsonPath("\$[0].ivIv", `is`("sepiol")))
+                .andExpect(jsonPath("\$[0].id").isNumber)
+                .andExpect(jsonPath("\$[0].timestamp").isNumber)
 
         mockMvc.perform(get("$ENTRIES_PATH/${entry.id}/etches"))
                 .andExpect(status().isOk)
@@ -226,7 +230,9 @@ class EtchServiceControllerTests {
         val requestPayload = mutableMapOf<String, Any>()
         // Iterate over the keys and build the payload until it becomes valid
         for ((key, value) in completePayload) {
-            val content = testUtils.asJson(requestPayload)
+            // We post a list of etches
+            val payload = listOf(requestPayload)
+            val content = testUtils.asJson(payload)
 
             mockMvc.perform(
                     post("$ENTRIES_PATH/${entry.id}/etches")
@@ -244,11 +250,25 @@ class EtchServiceControllerTests {
         mockMvc.perform(
                 post("$ENTRIES_PATH/${entry.id}/etches")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(testUtils.asJson(requestPayload))
+                        .content(testUtils.asJson(listOf(requestPayload)))
         )
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("\$.id").isNumber)
-                .andExpect(jsonPath("\$.content", `is`("super encrypted etch!")))
+                .andExpect(content().json(
+                    """
+                    [
+                        {
+                            "content": "super encrypted etch!",
+                            "ivIv": "foo",
+                            "keyIv": "bar",
+                            "contentKey": "baz",
+                            "contentIv": "foobarbaz",
+                            "position": 1
+                        }
+                    ]
+                    """
+
+                ))
+                .andExpect(jsonPath("\$[0].id").isNumber)
     }
 
     @Test
@@ -266,10 +286,12 @@ class EtchServiceControllerTests {
                 entry = null
         )
 
+        val etches = listOf(e)
+
         mockMvc.perform(
                 post("$ENTRIES_PATH/${entry.id}/etches")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(testUtils.asJson(e))
+                        .content(testUtils.asJson(etches))
         )
                 .andExpect(status().isBadRequest)
                 .andExpect(jsonPath("\$.message", `is`("Must not supply id when creating an etch")))

@@ -71,7 +71,7 @@ class WebSecurityConfig : KeycloakWebSecurityConfigurerAdapter() {
                     .antMatchers("/api/v1/auth/register").permitAll()
                     .antMatchers("/api/v1/status").permitAll()
                     .antMatchers("/api/v1/**").hasRole("user")
-                    .antMatchers("/h2-console/**").hasRole("admin")
+                    .antMatchers("/h2-console/**").permitAll()
                     .antMatchers("/").permitAll()
                 .and()
                 .csrf()
