@@ -1,11 +1,14 @@
 import { EtchedApi } from '../../etched-api';
 import { EtchEncrypter } from '../../crypto/crypto';
 import * as React from 'react';
+import { Entry } from '../../models/entry';
+import { Link } from 'react-router-dom';
+import { Etch } from '../../models/etch';
 
 interface EntryEditorProps {
   etchedApi: EtchedApi;
   encrypter: EtchEncrypter;
-  entryId?: number;
+  entry?: Entry;
 }
 
 interface EntryEditorState {
@@ -23,6 +26,12 @@ const ETCH_TIMEOUT = 5 * 1000;
 const ESC_KEY_CODE = 27;
 const ENTER_KEY_CODE = 13;
 
+const ENTRY_NOT_CREATED = 'NOT_CREATED';
+const ENTRY_CREATING = 'ENTRY_CREATING';
+const ENTRY_CREATED = 'ENTRY_CREATED';
+
+const ENTRY_EDITOR_ID = 'entry-editor';
+
 export class EntryEditor extends React.Component<EntryEditorProps, EntryEditorState> {
 
   /** indicates that the user pressed escape when editing the title */
@@ -33,6 +42,69 @@ export class EntryEditor extends React.Component<EntryEditorProps, EntryEditorSt
 
   /** timestamp of last edit (millis since epoch) */
   recentEdit: number;
+
+  /** entry created */
+  entryCreated: boolean;
+
+  /** etches not yet posted */
+  queuedEtches: string[];
+
+  /** the timer/interval used to post queued etches */
+  queuedEtchInterval: number;
+
+  /** the timer/interval used to etch entries due to inactivity */
+  etchingInterval: number;
+
+  /** the current state of the entry */
+  entryCreationState: string;
+
+  /** the current entry */
+  entry?: Entry;
+
+  constructor(props: EntryEditorProps) {
+    super(props);
+
+    this.state = {
+      title: new Date().toString(),
+      currentText: '',
+      etches: [],
+    };
+
+    this.entry = this.props.entry;
+    this.editingTitle = '';
+    this.escapedEditingTitle = false;
+    this.recentEdit = Date.now();
+    this.entryCreated = false;
+    this.queuedEtches = [];
+    this.entryCreationState = ENTRY_NOT_CREATED;
+  }
+
+  componentDidMount() {
+    this.etchingInterval = window.setInterval(() => {
+      // If user hasn't made any changes in `ETCH_TIMEOUT` seconds, we update
+      if (Date.now() - this.recentEdit >= ETCH_TIMEOUT && this.state.currentText !== '') {
+        this.updateContent();
+      }
+    },                                        500);
+
+    this.queuedEtchInterval = window.setInterval(() => {
+      if (this.entryCreationState === ENTRY_CREATED) {
+        this.postEtches();
+      }
+    },                                           10000);
+  }
+
+  componentWillUnmount() {
+    console.log('Unmounting. Posting all queued etches');
+    if (this.entry !== undefined) {
+      // Can't be queued etches if the entry hasn't yet been created
+      this.postEtches();
+    }
+
+    // clear intervals
+    window.clearInterval(this.etchingInterval);
+    window.clearInterval(this.queuedEtchInterval);
+  }
 
   onEtchChange = (event: React.ChangeEvent<HTMLDivElement>) => {
     this.recentEdit = Date.now();
@@ -45,40 +117,28 @@ export class EntryEditor extends React.Component<EntryEditorProps, EntryEditorSt
     const text = this.state.currentText;
     items.push(text);
 
+    if (items.length > 0 && this.entryCreationState === ENTRY_NOT_CREATED) {
+      this.createEntry();
+    }
+
     this.setState({currentText: ''});
+    this.queuedEtches.push(text);
     console.log(this.state);
 
-    // Empty contents of input
-    document.getElementById('content-editor')!!.innerText = '';
+    // This element may not exist in the case when a user navigates away from a page and the
+    // component posts all queued etches during componentWillUnmount
+    let contentEditorElement = document.getElementById(ENTRY_EDITOR_ID);
+    if (contentEditorElement !== null) {
+      contentEditorElement.textContent = '';
+    }
   }
 
   onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     // On enter update content
-    if (e.keyCode === ENTER_KEY_CODE && e.shiftKey === false) {
+    if (e.keyCode === ENTER_KEY_CODE && !e.shiftKey) {
       e.preventDefault();
       this.updateContent();
     }
-  }
-
-  constructor(props: EntryEditorProps) {
-    super(props);
-
-    this.state = {
-      title: new Date().toString(),
-      currentText: '',
-      etches: [],
-    };
-
-    this.editingTitle = '';
-    this.escapedEditingTitle = false;
-    this.recentEdit = Date.now();
-
-    setInterval(() => {
-      // If user hasn't made any changes in `ETCH_TIMEOUT` seconds, we update
-      if (Date.now() - this.recentEdit >= ETCH_TIMEOUT && this.state.currentText !== '') {
-        this.updateContent();
-      }
-    },          500);  // this number is how often we check
   }
 
   saveTitle = (title: string) => {
@@ -86,6 +146,7 @@ export class EntryEditor extends React.Component<EntryEditorProps, EntryEditorSt
     this.setState({title: title});
     let titleElement = document.getElementById('etch-title-heading')!!;
     titleElement.setAttribute('contenteditable', 'false');
+    this.createEntry();
   }
 
   resetTitle = () => {
@@ -138,17 +199,62 @@ export class EntryEditor extends React.Component<EntryEditorProps, EntryEditorSt
     );
   }
 
+  createEntry() {
+    if (this.entryCreationState !== ENTRY_NOT_CREATED) {
+      return;
+    }
+
+    const title = this.state.title;
+    console.log(`Creating entry '${title}'`);
+
+    this.entryCreationState = ENTRY_CREATING;
+    this.props.etchedApi.postEntry(title)
+      .then(entry => {
+        console.log(`Posted entry with id ${entry.id}`);
+        this.entry = entry;
+        this.entryCreationState = ENTRY_CREATED;
+      });
+  }
+
+  postEtches() {
+    let {etchedApi, encrypter} = this.props;
+
+    let entry = this.entry;
+    if (entry === undefined || entry === null) {
+      throw new Error(`Attempted to post an etch to a non existent entry`);
+    }
+
+    let etches = this.queuedEtches.slice(0);
+
+    if (etches.length === 0) {
+      return;
+    }
+
+    let encrypting = etches.map((etch: string) => encrypter.encrypt(etch));
+    Promise.all(encrypting)
+      .then((encryptedEtches: Etch[]) => {
+        // TODO: Handle queue getting really large e.g. 100 elements
+        // Break it up against multiple requests???
+        // TODO: Why do we need the !!? We've checked that it's not null or undefined earlier...
+        console.log(`Posting ${encryptedEtches.length} etches`);
+        return etchedApi.postEtches(entry!!.id, encryptedEtches);
+      })
+      .then((savedEtches: Etch[]) => {
+        // Remove the posted etches from the queue
+        this.queuedEtches = this.queuedEtches.slice(savedEtches.length);
+        console.log(`Successfully posted ${savedEtches.length} etches`);
+      });
+  }
+
   render() {
     const title = this.renderTitle();
 
     let renderedEtches = null;
     if (this.state.etches.length > 0) {
       let listItems: JSX.Element[] = [];
-
       this.state.etches.forEach((etch: string, index: number) => {
         listItems.push(<li key={index}>{etch}</li>);
       });
-
       renderedEtches = <ul>{listItems}</ul>;
     }
 
@@ -164,7 +270,7 @@ export class EntryEditor extends React.Component<EntryEditorProps, EntryEditorSt
           <div className="columns has-text-left">
             <form className="full-width" onSubmit={this.updateContent}>
               <div
-                id="content-editor"
+                id={ENTRY_EDITOR_ID}
                 className="etched-editable"
                 contentEditable={true}
                 data-placeholder="What's on your mind?"
@@ -174,6 +280,11 @@ export class EntryEditor extends React.Component<EntryEditorProps, EntryEditorSt
               />
             </form>
           </div>
+          <Link to="/">
+            <button className="button is-primary">
+              Home
+            </button>
+          </Link>
         </div>
       </div>
     );

@@ -64,7 +64,7 @@ export class Login extends React.Component<LoginProps, LoginState> {
       return <Spinner text="Logging in"/>;
     } else if (this.state.loggedIn) {
       console.log('Logged in...');
-      return <Redirect to="/"/>;
+      return <Redirect to="/enter-passphrase"/>;
     }
 
     return (

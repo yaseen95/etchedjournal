@@ -13,7 +13,7 @@ const PASSPHRASE_HASH_ITERATIONS: number = 100000;
 const PASSPHRASE_HASH_KEY_SIZE: number = 256;
 const PASSPHRASE_HASH_SALT_SIZE: number = 20;
 
-interface PassphraseHashProperties {
+export interface PassphraseHashProperties {
   readonly algo: string;
   readonly iterations: number;
   readonly keySize: number;

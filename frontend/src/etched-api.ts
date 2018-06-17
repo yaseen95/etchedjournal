@@ -25,6 +25,7 @@ const SELF_URL = '/auth/self';
 const CONFIGURE_ENCRYPTION_URL = '/auth/self/configure-encryption';
 // const CONFIGURE_ENCRYPTION_URL = '/auth/self/configure-encryption';
 const REFRESH_TOKEN_URL = '/auth/refresh-token';
+const ENTRIES_URL = '/entries';
 
 const AUTHORIZATION = 'Authorization';
 
@@ -124,20 +125,6 @@ export class EtchedApi {
   }
 
   /**
-   * Utility for initializing setting required fields for a json POST request
-   *
-   * @param {object} body the object to send as json
-   * @returns {RequestInit} the constructed RequestInit used to send a POST by fetch
-   */
-  private static jsonPostInit(body: object): RequestInit {
-    return {
-      method: 'POST',
-      headers: new Headers({'Content-Type': 'application/json'}),
-      body: JSON.stringify(body)
-    };
-  }
-
-  /**
    * Utility to throws an ApiError with a good error message
    * @param {Response} response
    * @param {ApiModels.ApiError} json
@@ -178,39 +165,46 @@ export class EtchedApi {
 
   getEntries(): Promise<Entry[]> {
     console.log('Getting entries');
-    return fetch(`${this.BASE_URL}/entries`, {headers: this.authHeaders})
+    let url = `${this.BASE_URL}/entries`;
+    return this.refreshTokens()
+      .then(() => fetch(url, {headers: this.authHeaders}))
       .then(r => EtchedApi.checkResponse(r))
       .then(entries => EtchedApi.parseEntries(entries));
   }
 
   getEntry(entryId: number): Promise<Entry> {
     console.log(`Getting Entry(id=${entryId})`);
-    return fetch(`${this.BASE_URL}/entries/${entryId}`)
+    let url = `${this.BASE_URL}/entries/${entryId}`;
+    return this.refreshTokens()
+      .then(() => fetch(url, {headers: this.authHeaders}))
       .then(r => EtchedApi.checkResponse(r))
       .then(json => json as Entry);
   }
 
   getEtches(entryId: number): Promise<Etch[]> {
     console.log(`Getting etches for Entry(id=${entryId})`);
-    return fetch(`${this.BASE_URL}/entries/${entryId}/etches`)
+    let url = `${this.BASE_URL}/entries/${entryId}/etches`;
+    return this.refreshTokens()
+      .then(() => fetch(url, {headers: this.authHeaders}))
       .then(r => EtchedApi.checkResponse(r))
       .then(json => json as Etch[]);
   }
 
   getEtch(entryId: number, etchId: number): Promise<Etch> {
-    return fetch(`${this.BASE_URL}/entries/${entryId}/etches/${etchId}`)
+    let url = `${this.BASE_URL}/entries/${entryId}/etches/${etchId}`;
+    return this.refreshTokens()
+      .then(() => fetch(url, {headers: this.authHeaders}))
       .then(r => EtchedApi.checkResponse(r))
       .then(json => json as Etch);
   }
 
-  postEtch(entryId: number, etch: Etch): Promise<Etch> {
-    let requestInit = EtchedApi.jsonPostInit(etch);
-
+  postEtches(entryId: number, etches: Etch[]): Promise<Etch[]> {
+    let requestInit = this.jsonPostInit(etches);
     console.log(`Creating a new etch for Entry(id=${entryId})`);
-
-    return fetch(`${this.BASE_URL}/entries/${entryId}/etches/`, requestInit)
+    return this.refreshTokens()
+      .then(() => fetch(`${this.BASE_URL}/entries/${entryId}/etches/`, requestInit))
       .then(r => EtchedApi.checkResponse(r))
-      .then(savedEtch => savedEtch as Etch);
+      .then(savedEtch => savedEtch as Etch[]);
   }
 
   /**
@@ -224,7 +218,7 @@ export class EtchedApi {
    */
   register(username: string, email: string, password: string): Promise<EtchedUser> {
     const jsonPayload = {'username': username, 'email': email, 'password': password};
-    let requestInit = EtchedApi.jsonPostInit(jsonPayload);
+    let requestInit = this.jsonPostInit(jsonPayload, true);
 
     console.log(`Attempting registration for username: ${username}`);
     return fetch(`${this.BASE_URL}/auth/register`, requestInit)
@@ -243,7 +237,7 @@ export class EtchedApi {
    * @returns {Promise<void>}
    */
   login(username: string, password: string): Promise<void> {
-    let requestInit = EtchedApi.jsonPostInit({'username': username, 'password': password});
+    let requestInit = this.jsonPostInit({'username': username, 'password': password}, true);
     return fetch(this.BASE_URL + AUTHENTICATE_URL, requestInit)
       .then(r => EtchedApi.checkResponse(r))
       .then(tokens => this.setTokens(tokens));
@@ -285,13 +279,22 @@ export class EtchedApi {
     keySize: number
   ): Promise<EtchedUser> {
     const requestBody = {algo: algo, salt: salt, iterations: iterations, keySize: keySize};
-    const requestInit = EtchedApi.jsonPostInit(requestBody);
-    (requestInit.headers as Headers).append(AUTHORIZATION, `Bearer ${this.accessToken}`);
+    const requestInit = this.jsonPostInit(requestBody);
 
     return this.refreshTokens()
       .then(() => fetch(this.BASE_URL + CONFIGURE_ENCRYPTION_URL, requestInit))
       .then(r => EtchedApi.checkResponse(r))
       .then(user => EtchedApi.parseUser(user));
+  }
+
+  postEntry(title: string): Promise<Entry> {
+    const requestBody = {title: title};
+    const requestInit = this.jsonPostInit(requestBody);
+
+    return this.refreshTokens()
+      .then(() => fetch(this.BASE_URL + ENTRIES_URL, requestInit))
+      .then(r => EtchedApi.checkResponse(r))
+      .then(entry => entry as Entry);
   }
 
   private refreshTokens(): Promise<void> {
@@ -306,8 +309,7 @@ export class EtchedApi {
 
     console.log('Refreshing token because it has expired or is about to');
 
-    let requestInit = EtchedApi.jsonPostInit({'refreshToken': this.refreshToken});
-    (requestInit.headers as Headers).append(AUTHORIZATION, `Bearer ${this.accessToken}`);
+    let requestInit = this.jsonPostInit({'refreshToken': this.refreshToken});
 
     return fetch(this.BASE_URL + REFRESH_TOKEN_URL, requestInit)
       .then(r => EtchedApi.checkResponse(r))
@@ -321,5 +323,24 @@ export class EtchedApi {
     this.refreshToken = response.refreshToken;
     // TODO: Get expiry from jwt instead of now + seconds
     this.accessTokenExpiry = new Date().getTime() + (1000 * response.expiresIn);
+  }
+
+  /**
+   * Utility for initializing setting required fields for a json POST request
+   *
+   * @param {object} body the object to send as json
+   * @param excludeBearerToken {boolean} exclude auth token in RequestInit
+   * @returns {RequestInit} the constructed RequestInit used to send a POST by fetch
+   */
+  private jsonPostInit(body: object, excludeBearerToken: boolean = false): RequestInit {
+    let headers = new Headers({'Content-Type': 'application/json'});
+    if (!excludeBearerToken) {
+      headers.append(AUTHORIZATION, `Bearer ${this.accessToken}`);
+    }
+    return {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(body)
+    };
   }
 }

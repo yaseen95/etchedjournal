@@ -42,7 +42,7 @@ export class EntryList extends React.Component<EntryListProps, EntryListState> {
     this.setState({redirect: '/entries/new'});
   }
 
-  renderEntry(e: Entry, index: number) {
+  renderEntry = (e: Entry, index: number) => {
     const {encrypter, etchedApi} = this.props;
     return <EntryComponent key={e.id} entry={e} encrypter={encrypter} api={etchedApi}/>;
   }

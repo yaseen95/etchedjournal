@@ -9,6 +9,7 @@ import { Redirect, Route, Switch } from 'react-router';
 import { Home } from './components/containers/home';
 import { ConfigurePassphrase } from './components/configure-passphrase/configure-passphrase';
 import { EntryEditor } from './components/containers/entry-editor';
+import { EnterPassphrase } from './components/enter-passphrase/enter-passphrase';
 
 interface AppState {
   etchedApi: EtchedApi;
@@ -85,6 +86,15 @@ class App extends React.Component<{}, AppState> {
                   setEncrypter={setEncrypter}
                   etchedApi={etchedApi}
                 />}
+              />
+              <Route
+                path="/enter-passphrase"
+                render={() => {
+                  if (!loggedIn) {
+                    return <Redirect to="/login"/>;
+                  }
+                  return <EnterPassphrase setEncrypter={setEncrypter} user={this.state.user!!}/>;
+                }}
               />
               <Route
                 path="/entries/new"
