@@ -22,46 +22,6 @@ import javax.validation.ConstraintViolationException
 @ControllerAdvice
 class ExceptionAdvice {
 
-    companion object {
-        val logger: Logger = LoggerFactory.getLogger(ExceptionAdvice::class.java)
-
-        fun createResponse(e: EtchedException): ResponseEntity<ExceptionResponse> {
-            return ResponseEntity(ExceptionResponse(e.message), e.status)
-        }
-
-        fun formatMessage(
-                request: HttpServletRequest,
-                e: EtchedException,
-                message: String? = null
-        ): String {
-            // TODO: Do this a better way
-            // This is clearly not correct. We can add contextual information to the log pattern.
-            val builder = StringBuilder()
-
-            val username = request.remoteUser
-            if (username != null) {
-                builder.append("USER '$username' - ")
-            } else {
-                builder.append("ANONYMOUS - ")
-            }
-
-            builder.append("Caught ${e.javaClass.simpleName} during request to ${request.pathInfo}")
-
-            val errorMessage: String = message ?: e.message
-            builder.append(": $errorMessage")
-            return builder.toString()
-        }
-
-        fun createReadableMethodInvalidMessage(fieldError: FieldError): String {
-            return "Field '${fieldError.field}' ${fieldError.defaultMessage}"
-        }
-
-        //TODO: Do we need @JvmStatic annotations
-        fun badRequest(message: String): ResponseEntity<ExceptionResponse> {
-            return ResponseEntity(ExceptionResponse(message), HttpStatus.BAD_REQUEST)
-        }
-    }
-
     @ResponseBody
     @ExceptionHandler(ClientException::class)
     fun handleClientException(
@@ -127,12 +87,44 @@ class ExceptionAdvice {
 
         val violation = violations[0]
         val errorMsg: String
-        if (violation.invalidValue == null) {
-            errorMsg = "Cannot supply null for key '${violation.propertyPath}'"
+        errorMsg = if (violation.invalidValue == null) {
+            "Cannot supply null for key '${violation.propertyPath}'"
         } else {
-            errorMsg = "Invalid value '${violation.invalidValue}' for ${violation.propertyPath}"
+            "Invalid value '${violation.invalidValue}' for ${violation.propertyPath}"
         }
         return badRequest(errorMsg)
+    }
+
+    companion object {
+        val logger: Logger = LoggerFactory.getLogger(ExceptionAdvice::class.java)
+
+        fun createResponse(e: EtchedException): ResponseEntity<ExceptionResponse> {
+            return ResponseEntity(ExceptionResponse(e.message), e.status)
+        }
+
+        fun formatMessage(
+            request: HttpServletRequest,
+            e: EtchedException,
+            message: String? = null
+        ): String {
+
+            val builder = StringBuilder()
+            val path = request.servletPath
+            builder.append("Caught ${e.javaClass.simpleName} during request to '$path'")
+
+            val errorMessage: String = message ?: e.message
+            builder.append(": $errorMessage")
+            return builder.toString()
+        }
+
+        fun createReadableMethodInvalidMessage(fieldError: FieldError): String {
+            return "Field '${fieldError.field}' ${fieldError.defaultMessage}"
+        }
+
+        //TODO: Do we need @JvmStatic annotations
+        fun badRequest(message: String): ResponseEntity<ExceptionResponse> {
+            return ResponseEntity(ExceptionResponse(message), HttpStatus.BAD_REQUEST)
+        }
     }
 
     class ExceptionResponse(val message: String)

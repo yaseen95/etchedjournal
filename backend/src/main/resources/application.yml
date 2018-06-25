@@ -4,6 +4,7 @@
 #logging.level.org.apache.http: DEBUG
 
 #logging.level.org.keycloak: DEBUG
+logging.pattern.level: '%5p %X{userId}'
 
 spring:
   datasource:

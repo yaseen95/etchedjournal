@@ -38,6 +38,10 @@ class TestAuthService : AuthService {
         return users.getOrElse(user.username, { throw Exception() })
     }
 
+    override fun getUserIdOrNull(): String? {
+        return getRequestingUser().id
+    }
+
     override fun register(username: String, password: String, email: String): EtchedUser {
         if (username in users) {
             throw Exception("User with username and/or email already exists")
