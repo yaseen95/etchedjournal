@@ -7,5 +7,5 @@ interface EtchService {
 
     fun getEtch(entryId: Long, etchId: Long): Etch
 
-    fun create(entryId: Long, etch: Etch): Etch
+    fun create(entryId: Long, etches: List<Etch>): List<Etch>
 }

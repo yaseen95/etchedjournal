@@ -4,6 +4,7 @@
 #logging.level.org.apache.http: DEBUG
 
 #logging.level.org.keycloak: DEBUG
+logging.pattern.level: '%5p %X{userId}'
 
 spring:
   datasource:
@@ -11,6 +12,9 @@ spring:
 
 #    # Must specify this value in order to execute data-h2.sql.
 #    platform: h2
+  h2:
+    console:
+      enabled: true
 
   jpa:
     hibernate:
@@ -21,6 +25,11 @@ spring:
       # This enables jackson to write Instants as millis since epoch (as an int/long).
       write-dates-as-timestamps: true
       write-date-timestamps-as-nanoseconds: false
+
+  mvc:
+    log-resolved-exception:
+      # Disables WARN level log for caught exceptions (enabled by default by spring-boot-devtools)
+      false
 
 keycloak:
   auth-server-url: http://localhost:9001/auth

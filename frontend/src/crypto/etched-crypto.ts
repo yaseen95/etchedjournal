@@ -13,7 +13,7 @@ const PASSPHRASE_HASH_ITERATIONS: number = 100000;
 const PASSPHRASE_HASH_KEY_SIZE: number = 256;
 const PASSPHRASE_HASH_SALT_SIZE: number = 20;
 
-interface PassphraseHashProperties {
+export interface PassphraseHashProperties {
   readonly algo: string;
   readonly iterations: number;
   readonly keySize: number;
@@ -31,13 +31,6 @@ const DEFAULT_PASSPHRASE_HASH_PROPERTIES: PassphraseHashProperties = {
  * Wrapper around a stretched key.
  */
 export class StretchedKey {
-
-  algo: string;
-  stretcherAlgo: string;
-  salt: string;
-  keySize: number;
-  iterations: number;
-  hash: string;
 
   /**
    * Instantiates a StretchedKey object from a string.
@@ -62,24 +55,28 @@ export class StretchedKey {
 
   /**
    *
-   * @param algo {string} Algorithm to use when stretching a passphrase
-   * @param stretcherAlgo {string} algo used
-   * @param salt {string} Salt used as input into the key stretcher
-   * @param keySize {number} Size of key
-   * @param iterations {number} Number of iterations to perform
-   * @param hash {string} The resulting hash once encryption is complete.
+   * @param algo {string} algorithm to use when stretching a passphrase
+   * @param stretcherAlgo {string} algo used during stretching e.g. PBKDF2 is algo and sha1
+   * might be stretcherAlgo
+   * @param salt {string} salt used as input into the key stretcher
+   * @param keySize {number} size of key
+   * @param iterations {number} number of iterations to perform
+   * @param hash {string} output hash of stretching operation
    */
-  constructor(algo: string, stretcherAlgo: string, salt: string, keySize: number, iterations: number, hash: string) {
-    this.algo = algo;
-    this.stretcherAlgo = stretcherAlgo;
-    this.salt = salt;
-    this.keySize = keySize;
-    this.iterations = iterations;
-    this.hash = hash;
+  constructor(
+    readonly algo: string,
+    readonly stretcherAlgo: string,
+    readonly salt: string,
+    readonly keySize: number,
+    readonly iterations: number,
+    readonly hash: string
+  ) {
+
   }
 
   toString() {
-    return [this.algo, this.stretcherAlgo, this.salt, this.keySize, this.iterations, this.hash].join('_');
+    return [this.algo, this.stretcherAlgo, this.salt, this.keySize, this.iterations,
+      this.hash].join('_');
   }
 }
 
@@ -161,8 +158,14 @@ export class EtchedCryptoUtils {
 
     }).then((hashBytes: ArrayBuffer) => {
       let hashString = arrayBufferToHex(hashBytes);
-      return new StretchedKey(hashProps.algo, hashProps.stretcherAlgo, saltStr, hashProps.keySize, hashProps.iterations,
-                              hashString);
+      return new StretchedKey(
+        hashProps.algo,
+        hashProps.stretcherAlgo,
+        saltStr,
+        hashProps.keySize,
+        hashProps.iterations,
+        hashString
+      );
     });
   }
 
@@ -183,16 +186,20 @@ export class EtchedCryptoUtils {
   /**
    * Encrypts a string
    * @param {string} data - content to encrypt
-   * @param {string} key - Optional supply the key used for encryption. Otherwise generate a random one.
-   * @param {string} iv - Optional supply the iv used for encryption. Otherwise generate a random one.
+   * @param {string} key - Optional supply key used for encryption. Otherwise generate one.
+   * @param {string} iv - Optional supply iv used for encryption. Otherwise generate one.
    * @returns {Promise<EncryptWrapper>}
    */
   public static encrypt(data: string, key?: string, iv?: string): Promise<EncryptWrapper> {
 
-    let encryptionKeyStr = key ? key : arrayBufferToHex(getRandomValues(new Uint8Array(AES_KEY_BIT_LENGTH / 8)));
-    let encryptionIvStr = iv ? iv : arrayBufferToHex(getRandomValues(new Uint8Array(AES_IV_BIT_LENGTH / 8)));
+    // If a key or iv isn't provided generate them
+    let encryptionKeyStr =
+      key ? key : arrayBufferToHex(getRandomValues(new Uint8Array(AES_KEY_BIT_LENGTH / 8)));
+    let encryptionIvStr =
+      iv ? iv : arrayBufferToHex(getRandomValues(new Uint8Array(AES_IV_BIT_LENGTH / 8)));
 
-    let encryptionKeyBytes = hexToArrayBuffer(encryptionKeyStr);
+    // Transform them into a byte
+    let encryptionKeyBytes: ArrayBuffer = hexToArrayBuffer(encryptionKeyStr);
     let encryptionIvBytes = hexToArrayBuffer(encryptionIvStr);
 
     let encoder = new TextEncoder('utf-8');

@@ -208,7 +208,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"content\": \"abcdefghijklmnopqrstuvwxyz\",\n\t\"contentKey\": \"contentKey\",\n\t\"contentIv\": \"contentIv\",\n\t\"keyIv\": \"keyIv\",\n\t\"ivIv\": \"ivIv\",\n\t\"position\": 1\n}"
+							"raw": "[\n\t{\n\t\t\"content\": \"thing1\",\n\t\t\"contentKey\": \"contentKey\",\n\t\t\"contentIv\": \"contentIv\",\n\t\t\"keyIv\": \"keyIv\",\n\t\t\"ivIv\": \"ivIv\",\n\t\t\"position\": 1\n\t},\n\t{\n\t\t\"content\": \"thing2\",\n\t\t\"contentKey\": \"contentKey\",\n\t\t\"contentIv\": \"contentIv\",\n\t\t\"keyIv\": \"keyIv\",\n\t\t\"ivIv\": \"ivIv\",\n\t\t\"position\": 2\n\t}\n]"
 						},
 						"url": {
 							"raw": "{{domain}}/api/v1/entries/:entryId/etches/",

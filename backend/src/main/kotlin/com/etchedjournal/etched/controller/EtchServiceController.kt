@@ -26,8 +26,8 @@ class EtchServiceController(private val etchService: EtchService) {
     }
 
     @PostMapping("")
-    fun create(@PathVariable entryId: Long, @Valid @RequestBody etch: Etch): Etch {
-        if (etch.id != null) {
+    fun create(@PathVariable entryId: Long, @RequestBody etch: List<@Valid Etch>): List<Etch> {
+        if (etch.any { it.id != null }) {
             throw InvalidPayloadException("Must not supply id when creating an etch")
         }
         return etchService.create(entryId, etch)

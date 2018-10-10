@@ -19,9 +19,6 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-import org.springframework.web.servlet.config.annotation.CorsRegistry
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
-
 
 @Configuration
 @EnableWebSecurity
@@ -54,7 +51,7 @@ class WebSecurityConfig : KeycloakWebSecurityConfigurerAdapter() {
     fun corsConfigurationSource(): CorsConfigurationSource {
         // https://github.com/spring-projects/spring-boot/issues/5834#issuecomment-296370088
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("*")
+        configuration.allowedOrigins = listOf("http://localhost:3000")
         configuration.allowedMethods = listOf("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH")
         configuration.allowedHeaders = listOf("Authorization", "Cache-Control", "Content-Type")
         val source = UrlBasedCorsConfigurationSource()
@@ -67,12 +64,14 @@ class WebSecurityConfig : KeycloakWebSecurityConfigurerAdapter() {
         // DON'T forget super call!
         super.configure(http)
         http
+                .cors()
+                .and()
                 .authorizeRequests()
                     .antMatchers("/api/v1/auth/authenticate").permitAll()
                     .antMatchers("/api/v1/auth/register").permitAll()
                     .antMatchers("/api/v1/status").permitAll()
                     .antMatchers("/api/v1/**").hasRole("user")
-                    .antMatchers("/h2-console/**").hasRole("admin")
+                    .antMatchers("/h2-console/**").permitAll()
                     .antMatchers("/").permitAll()
                 .and()
                 .csrf()
@@ -88,11 +87,3 @@ class WebSecurityConfig : KeycloakWebSecurityConfigurerAdapter() {
     }
 }
 
-@Configuration
-class WebConfig : WebMvcConfigurerAdapter() {
-    // TODO: Enable this only for local testing!
-    override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**")
-                .allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH")
-    }
-}

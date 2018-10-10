@@ -11,6 +11,11 @@ interface AuthService {
     fun getUserId(): String
 
     /**
+     * Returns id of current user or null if not logged in
+     */
+    fun getUserIdOrNull(): String?
+
+    /**
      * Return full user details of requesting user
      */
     fun getRequestingUser(): EtchedUser

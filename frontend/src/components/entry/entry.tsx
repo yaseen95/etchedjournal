@@ -21,7 +21,7 @@ export class EntryComponent extends React.Component<EntryProps, EntryState> {
   constructor(props: EntryProps) {
     super(props);
     this.state = {
-      decryptedEtches: new Array(this.props.entry.etches.length),
+      decryptedEtches: [],
       decrypting: true,
     };
   }
@@ -43,22 +43,25 @@ export class EntryComponent extends React.Component<EntryProps, EntryState> {
 
   componentDidMount() {
 
-    let decryptionPromises: PromiseLike<Etch>[] = [];
-    this.props.entry.etches.forEach((value: Etch) => {
-      decryptionPromises.push(this.props.encrypter.decrypt(value));
-    });
+    this.props.api.getEtches(this.props.entry.id)
+      .then(encryptedEtches => {
+        let decryptionPromises: Promise<Etch>[] = [];
+        encryptedEtches.forEach((encryptedEtch: Etch) => {
+          decryptionPromises.push(this.props.encrypter.decrypt(encryptedEtch));
+        });
 
-    Promise.all(decryptionPromises)
-      .then((decryptedEtches: Etch[]) => {
-        this.setState({decryptedEtches: decryptedEtches, decrypting: false});
+        Promise.all(decryptionPromises)
+          .then((decryptedEtches: Etch[]) => {
+            this.setState({decryptedEtches: decryptedEtches, decrypting: false});
+          });
       });
   }
 
   render() {
     return (
-      <div>
-        <h1>{this.props.entry.title}</h1>
-        <h3>{this.props.entry.created.toString()}</h3>
+      <div className="has-text-left entry">
+        <h4>{this.props.entry.title}</h4>
+        <h5>{this.props.entry.created.toString()}</h5>
         {this.renderEtches()}
       </div>
     );

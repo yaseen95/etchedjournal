@@ -7,6 +7,8 @@ buildscript {
         resteasyVersion = '3.5.0.Final'
         jacksonVersion = '2.9.4'
         h2Version = '1.4.196'
+        hibernateValidatorVersion = '6.0.10.Final'
+        javaxValidationApiVersion = '2.0.1.Final'
     }
     repositories {
         mavenCentral()
@@ -57,6 +59,10 @@ dependencies {
     compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
 
     compile "org.flywaydb:flyway-core:5.0.6"
+
+    // Using Hibernate validator so we can validate lists
+    compile "org.hibernate.validator:hibernate-validator:${hibernateValidatorVersion}"
+    compile("javax.validation:validation-api:${javaxValidationApiVersion}")
 
     /* JACKSON */
     // This is needed to convert java8 time objects e.g. Instant, LocalDateTime, etc.

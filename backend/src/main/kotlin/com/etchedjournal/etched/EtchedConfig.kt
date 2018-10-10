@@ -10,9 +10,16 @@ import org.keycloak.admin.client.KeycloakBuilder
 import org.keycloak.admin.client.resource.RealmResource
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.stereotype.Component
+import org.springframework.web.filter.OncePerRequestFilter
+import javax.servlet.FilterChain
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 @Configuration
 class EtchedConfig {
@@ -57,5 +64,28 @@ class EtchedConfig {
     @Bean
     fun authService(openIdConnectApi: OpenIdConnectApi, etchedRealm: RealmResource): AuthService {
         return AuthServiceImpl(openIdConnectApi, etchedRealm)
+    }
+}
+
+/**
+ * Configures logging to include user id in log messages
+ *
+ * https://moelholm.com/2016/08/16/spring-boot-enhance-your-logging/
+ */
+@Component
+class UserIdLoggerFilter(private val authService: AuthService) : OncePerRequestFilter() {
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
+        try {
+            SecurityContextHolder.getContext().authentication.principal
+            val userId = authService.getUserIdOrNull() ?: "anonymous"
+            MDC.put("userId", userId)
+            filterChain.doFilter(request, response)
+        } finally {
+            MDC.clear()
+        }
     }
 }

@@ -1,38 +1,50 @@
 import * as React from 'react';
-import { ClassAttributes } from 'react';
 import './App.css';
 import { EtchEncrypter } from './crypto/crypto';
 import { EtchedApi } from './etched-api';
-import { Entry } from './models/entry';
-import { EntryComponent } from './components/entry/entry';
-import { RegisterComponent } from './components/register/register';
+import { Register } from './components/register/register';
 import { EtchedUser } from './models/etched-user';
+import { Login } from './components/login/login';
+import { Redirect, Route, Switch } from 'react-router';
+import { Home } from './components/containers/home';
 import { ConfigurePassphrase } from './components/configure-passphrase/configure-passphrase';
-import { StretchedKey } from './crypto/etched-crypto';
-
-let etchedApi = new EtchedApi();
+import { EntryEditor } from './components/containers/entry-editor';
+import { EnterPassphrase } from './components/enter-passphrase/enter-passphrase';
 
 interface AppState {
-  entries: Entry[] | null;
-  fetchedData: boolean;
-  encrypter: EtchEncrypter | null;
   etchedApi: EtchedApi;
-  user: EtchedUser | null;
+
+  // TODO: This is initialised later
+  encrypter?: EtchEncrypter;
+  user?: EtchedUser;
 }
 
 class App extends React.Component<{}, AppState> {
-  constructor(props: ClassAttributes<{}>) {
+
+  constructor(props: {}) {
     super(props);
     this.state = {
-      entries: null,
-      fetchedData: false,
-      encrypter: null,
-      etchedApi: new EtchedApi(),
-      user: null,
+      etchedApi: new EtchedApi()
     };
   }
 
+  setUser = (user: EtchedUser) => {
+    console.log(`Setting user ${user.username}`);
+    this.setState({user: user});
+  }
+
+  setEncrypter = (encrypter: EtchEncrypter) => {
+    console.log('Setting encrypter');
+    this.setState({encrypter: encrypter});
+  }
+
   render() {
+    const {etchedApi, encrypter, user} = this.state;
+    const setUser = this.setUser;
+    const setEncrypter = this.setEncrypter;
+    const loggedIn = user !== undefined;
+    const encryptionConfigured = user !== undefined && user.encryptionConfigured();
+
     return (
       <div className="App">
         <header className="App-header">
@@ -40,103 +52,62 @@ class App extends React.Component<{}, AppState> {
         </header>
         <section className="section">
           <div className="container">
-            {this.renderEntries()}
-            {this.renderAuthPrompt()}
-            <ConfigurePassphrase/>
+            <Switch>
+              /* root '/' route */
+              <Route
+                exact={true}
+                path="/"
+                render={() => {
+                  if (loggedIn) {
+                    if (encryptionConfigured) {
+                      return <Home etchedApi={etchedApi} encrypter={encrypter!!}/>;
+                    } else {
+                      return <Redirect to="/configure-passphrase"/>;
+                    }
+                  } else {
+                    return <Redirect to="/login"/>;
+                  }
+                }}
+              />
+
+              /* Auth routes */
+              <Route
+                path="/login"
+                render={() => <Login etchedApi={etchedApi} setUser={setUser}/>}
+              />
+              <Route
+                path="/register"
+                render={() => <Register etchedApi={etchedApi} setUser={setUser}/>}
+              />
+              <Route
+                path="/configure-passphrase"
+                render={() => <ConfigurePassphrase
+                  setUser={setUser}
+                  setEncrypter={setEncrypter}
+                  etchedApi={etchedApi}
+                />}
+              />
+              <Route
+                path="/enter-passphrase"
+                render={() => {
+                  if (!loggedIn) {
+                    return <Redirect to="/login"/>;
+                  }
+                  return <EnterPassphrase setEncrypter={setEncrypter} user={this.state.user!!}/>;
+                }}
+              />
+              <Route
+                path="/entries/new"
+                render={() => <EntryEditor
+                  etchedApi={etchedApi}
+                  encrypter={encrypter!!}
+                />}
+              />
+            </Switch>
           </div>
         </section>
       </div>
     );
-  }
-
-  componentDidMount() {
-    if (!this.state.fetchedData) {
-      this.getEntries();
-    }
-  }
-
-  getEntries() {
-    // let passphrase = 'Bonsoir Elliot';
-
-    let stretchedKey = new StretchedKey(
-      'PBKDF2',
-      'sha-1',
-      'd14c66711c7fbfb70290a73d40941a88b83f175e',
-      256,
-      100000,
-      '0e912f3a00c176d2d9cc9b47879c8ee3b1330e7b6738fdd5c1580f2e60c3eb46'
-    );
-
-    // EtchedCryptoUtils.verifyPassphrase('Bonsoir Elliot', stretchedKey)
-    //   .then((matches: boolean) => {
-    //     if (matches) {
-    //       console.log('Passphrase matches');
-    //     } else {
-    //       console.log(`Passphrase doesn't match`);
-    //     }
-    //   });
-
-    let encrypter = new EtchEncrypter(stretchedKey.hash);
-    this.setState({encrypter: encrypter});
-
-    // encrypter.encrypt('Message number 4')
-    //   .then((etch) => {
-    //     console.log(JSON.stringify(etch));
-    //     console.log(`Etch encrypted`);
-    //     etchedApi.postEtch(1, etch)
-    //       .then((_) => {
-    //         console.log(`Etch successfully posted to server`);
-    //       });
-    //   });
-
-    etchedApi.getEntries()
-      .then(entries => {
-        setTimeout(component => {
-          component.setState({entries: entries});
-        },         2000, this);
-        this.setState({fetchedData: true});
-      });
-  }
-
-  renderEntries() {
-    let renderedEntries = [];
-
-    if (this.state.entries == null || this.state.encrypter == null) {
-      // React complains about key not existing.
-      renderedEntries.push(<h2 key={1}>No entries</h2>);
-    } else {
-      for (let i = 0; i < this.state.entries.length; i++) {
-        let e = this.state.entries[i];
-        renderedEntries.push(
-          <EntryComponent key={e.id} entry={e} encrypter={this.state.encrypter} api={this.state.etchedApi}/>
-        );
-      }
-    }
-    return (
-      <div className="columns">
-        <div className="column is-12">{renderedEntries}</div>
-      </div>
-    );
-  }
-
-  renderAuthPrompt() {
-    if (this.state.user === null) {
-      return (<RegisterComponent etchedApi={this.state.etchedApi} setUser={this.setUser}/>);
-    }
-    return (
-      <div>
-        <h4>Hi {this.state.user.username}</h4>
-        <p>Email is <i>{this.state.user.email}</i></p>
-        <p>User id is <i>{this.state.user.id}</i></p>
-        <p>Admin <i>{this.state.user.admin.toString()}</i></p>
-      </div>
-    );
-  }
-
-  setUser = (user: EtchedUser) => {
-    setTimeout((u: EtchedUser) => {
-      this.setState({user: u});
-    },         2000, user);
   }
 }
 
