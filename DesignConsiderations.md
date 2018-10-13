@@ -1,5 +1,22 @@
 # Design Considerations
 
+### Server knows as little as possible
+A key goal is that the server should know as little as possible. The extent to how we do this is 
+subjective and it's important to clarify them.
+
+Knowing as little as possible is achieved in a few ways:
+1. As much as possible is encrypted
+2. Encryption is done client side
+3. Client side encryption **strong** encryption settings. So that it is basically infeasible to 
+decrypt.
+
+#### Up for debate
+- Logging:
+    - Should we log user ids?
+    - Should we log IPs?
+- Crash reporting
+    - Do we use third party providers?
+
 ### Should the backend allow users to update an Etch?
 This is a question of the backend solely i.e. do you we have an "edit etch" endpoint? The frontend
 won't allow it, but should the backend support it?
