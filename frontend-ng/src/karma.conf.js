@@ -7,7 +7,7 @@ module.exports = function (config) {
         frameworks: ['jasmine', '@angular-devkit/build-angular'],
 
         // https://medium.com/@swanandkeskar/angular-5-travis-ci-continuous-integration-deployment-fe9090f460c5
-        browsers: ['Chrome', 'ChromeHeadless', 'ChromeHeadlessNoSandbox'],
+        browsers: ['ChromeHeadless'],
         customLaunchers: {
             ChromeHeadlessNoSandbox: {
                 base: 'ChromeHeadless',
