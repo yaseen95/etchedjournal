@@ -1,2 +1,2 @@
-include 'frontend'
+include 'frontend-ng'
 include 'backend'

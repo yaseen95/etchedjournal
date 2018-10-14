@@ -88,11 +88,11 @@ dependencies {
 }
 
 jar {
-    // Copy the react bundle into the jar.
-    from('../frontend/build') {
+    // Copy the bundle into the jar.
+    from('../frontend-ng/dist/frontend-ng/') {
         into 'static'
     }
 }
 
-test.dependsOn(":frontend:test")
-processResources.dependsOn(":frontend:bundle")
+test.dependsOn(":frontend-ng:test")
+processResources.dependsOn(":frontend-ng:bundle")
