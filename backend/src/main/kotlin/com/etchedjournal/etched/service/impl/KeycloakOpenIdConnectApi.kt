@@ -144,7 +144,13 @@ class KeycloakOpenIdConnectApi(
         payload.add(OAuth2Constants.GRANT_TYPE, OAuth2Constants.REFRESH_TOKEN)
 
         try {
-            return post(tokenUrl, TokenResponse::class.java, payload)
+            return post(
+                url = tokenUrl,
+                responseType = TokenResponse::class.java,
+                payload = payload,
+                // Uses simpleRestTemplate because user may or may not be logged in
+                restTemplate = simpleRestTemplate
+            )
         } catch (e: HttpClientErrorException) {
             handleNonExpectedCode(HttpStatus.BAD_REQUEST, e)
 
