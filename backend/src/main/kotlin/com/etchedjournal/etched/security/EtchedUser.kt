@@ -14,6 +14,6 @@ class EtchedUser(
     var iterations: Long? = null
 ) {
     override fun toString(): String {
-        return "EtchedUser(id=$id, username='$username', email='$email')"
+        return "EtchedUser(id='$id', username='$username', email=$email)"
     }
 }

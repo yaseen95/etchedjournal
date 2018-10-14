@@ -7,6 +7,7 @@ import { map, mergeMap, tap } from 'rxjs/operators';
 import { EtchedUser } from '../models/etched-user';
 
 const LOGIN_URL = `${environment.API_URL}/auth/authenticate`;
+const REGISTER_URL = `${environment.API_URL}/auth/register`;
 const REFRESH_TOKEN_URL = `${environment.API_URL}/auth/refresh-token`;
 const SELF_URL = `${environment.API_URL}/auth/self`;
 
@@ -47,11 +48,25 @@ export class EtchedApiService {
     }
 
     public login(username: string, password: string): Observable<void> {
-        const requestBody = {'username': username, 'password': password};
+        const requestBody = {username, password};
         return this.http.post(LOGIN_URL, requestBody)
             .pipe(
                 tap(() => console.info(`Successfully logged in ${username}`)),
                 map((token: TokenResponse) => this.setTokens(token))
+            );
+    }
+
+    public register(
+        username: string,
+        password: string,
+        email: string | null
+    ): Observable<EtchedUser> {
+        const requestBody = {username, password, email};
+        return this.http.post<EtchedUser>(REGISTER_URL, requestBody)
+            .pipe(
+                tap((user: EtchedUser) => {
+                    console.info(`Successfully registered ${JSON.stringify(user)}`);
+                })
             );
     }
 

@@ -1,7 +1,7 @@
 <div class="columns is-centered">
     <div class="column is-12-mobile is-4-desktop">
         <div *ngIf="user === null">
-            <h3>Login</h3>
+            <h3 class="title">Login</h3>
             <form [formGroup]="loginForm"
                   class="control"
                   (ngSubmit)="onSubmit()">

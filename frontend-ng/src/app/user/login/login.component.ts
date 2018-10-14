@@ -1,12 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { EtchedApiService } from '../services/etched-api.service';
-import { FormBuilder, Validators } from '@angular/forms';
-import { EtchedUser } from '../models/etched-user';
-
-const USERNAME_MIN_LENGTH = 5;
-const USERNAME_MAX_LENGTH = 50;
-const PASSWORD_MIN_LENGTH = 8;
-const PASSWORD_MAX_LENGTH = 256;
+import { EtchedApiService } from '../../services/etched-api.service';
+import { FormBuilder } from '@angular/forms';
+import { EtchedUser } from '../../models/etched-user';
+import { PASSWORD_VALIDATORS, USERNAME_VALIDATORS } from '../form-utils';
 
 @Component({
     selector: 'login',
@@ -16,16 +12,8 @@ const PASSWORD_MAX_LENGTH = 256;
 export class LoginComponent implements OnInit {
 
     loginForm = this.fb.group({
-        username: ['', Validators.compose([
-            Validators.required,
-            Validators.minLength(USERNAME_MIN_LENGTH),
-            Validators.maxLength(USERNAME_MAX_LENGTH),
-        ])],
-        password: ['', Validators.compose([
-            Validators.required,
-            Validators.minLength(PASSWORD_MIN_LENGTH),
-            Validators.maxLength(PASSWORD_MAX_LENGTH),
-        ])],
+        username: ['', USERNAME_VALIDATORS],
+        password: ['', PASSWORD_VALIDATORS],
     });
 
     constructor(private fb: FormBuilder,
