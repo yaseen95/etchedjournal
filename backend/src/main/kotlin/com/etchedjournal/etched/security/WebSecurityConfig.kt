@@ -51,7 +51,7 @@ class WebSecurityConfig : KeycloakWebSecurityConfigurerAdapter() {
     fun corsConfigurationSource(): CorsConfigurationSource {
         // https://github.com/spring-projects/spring-boot/issues/5834#issuecomment-296370088
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("http://localhost:3000")
+        configuration.allowedOrigins = listOf("http://localhost:4200")
         configuration.allowedMethods = listOf("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH")
         configuration.allowedHeaders = listOf("Authorization", "Cache-Control", "Content-Type")
         val source = UrlBasedCorsConfigurationSource()
@@ -69,6 +69,7 @@ class WebSecurityConfig : KeycloakWebSecurityConfigurerAdapter() {
                 .authorizeRequests()
                     .antMatchers("/api/v1/auth/authenticate").permitAll()
                     .antMatchers("/api/v1/auth/register").permitAll()
+                    .antMatchers("/api/v1/auth/refresh-token").permitAll()
                     .antMatchers("/api/v1/status").permitAll()
                     .antMatchers("/api/v1/**").hasRole("user")
                     .antMatchers("/h2-console/**").permitAll()

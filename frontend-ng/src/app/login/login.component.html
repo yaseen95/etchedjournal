@@ -1,0 +1,48 @@
+<div class="columns is-centered">
+    <div class="column is-12-mobile is-4-desktop">
+        <div *ngIf="user === null">
+            <h3>Login</h3>
+            <form [formGroup]="loginForm"
+                  class="control"
+                  (ngSubmit)="onSubmit()">
+                <div class="field">
+                    <div class="control">
+                        <input
+                            class="input"
+                            type="text"
+                            placeholder="Username"
+                            name="username"
+                            formControlName="username"
+                        />
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <input
+                            class="input"
+                            type="password"
+                            placeholder="Password"
+                            name="password"
+                            formControlName="password"
+                        />
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <button
+                            class="button is-primary"
+                            [disabled]="!loginForm.valid">
+                            Login
+                        </button>
+                    </div>
+                </div>
+                <p>
+                    Form Status: {{ loginForm.status }}
+                </p>
+            </form>
+        </div>
+        <div *ngIf="user !== null">
+            <p>Logged in as user {{ user.username }}</p>
+        </div>
+    </div>
+</div>
