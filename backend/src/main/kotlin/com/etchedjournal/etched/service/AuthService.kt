@@ -23,7 +23,7 @@ interface AuthService {
     /**
      * Register a new user with the given attributes
      */
-    fun register(username: String, password: String, email: String): EtchedUser
+    fun register(username: String, password: String, email: String?): EtchedUser
 
     /**
      * Authenticate a user

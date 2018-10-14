@@ -58,7 +58,7 @@ class AuthServiceImpl(
         return repToUser(getUserRepresentation(userId))
     }
 
-    override fun register(username: String, password: String, email: String): EtchedUser {
+    override fun register(username: String, password: String, email: String?): EtchedUser {
         // TODO: Handle usernames as case insensitive
         // I.e. usernames are still displayed with case sensitivity but are treated as case
         // insensitive.
