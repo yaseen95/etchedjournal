@@ -1,3 +1,5 @@
+addons:
+  chrome: stable
 
 script:
   - ./gradlew nodeSetup && ./gradlew frontend-ng:install && ./gradlew clean build
