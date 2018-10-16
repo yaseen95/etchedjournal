@@ -7,8 +7,8 @@ import { EtchedApiService } from '../../services/etched-api.service';
 import { of } from 'rxjs';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { TokenResponse } from '../../services/dtos/token-response';
 import { EtchedUser } from '../../models/etched-user';
+import TestUtils from '../../utils/test-utils.spec';
 
 describe('LoginComponent', () => {
     let component: LoginComponent;
@@ -135,21 +135,17 @@ describe('LoginComponent', () => {
     it('valid form enables button', () => {
         const loginElementDe: DebugElement = fixture.debugElement;
 
-        const formDe = queryExpectOne(loginElementDe, 'form');
-        const usernameInputDe = queryExpectOne(formDe, 'input[type=text]');
-        const passwordInputDe = queryExpectOne(formDe, 'input[type=password]');
-        const submitBtnDe = queryExpectOne(formDe, 'button[type=submit]');
+        const formDe = TestUtils.queryExpectOne(loginElementDe, 'form');
+        const usernameInputDe = TestUtils.queryExpectOne(formDe, 'input[type=text]');
+        const passwordInputDe = TestUtils.queryExpectOne(formDe, 'input[type=password]');
+        const submitBtnDe = TestUtils.queryExpectOne(formDe, 'button[type=submit]');
 
         // The button should be disabled because the form is invalid
         expect(submitBtnDe.nativeElement.disabled).toBeTruthy();
 
         // Update the form with valid values
-        const usernameInputEl: HTMLInputElement = usernameInputDe.nativeElement;
-        const passwordInputEl: HTMLInputElement = passwordInputDe.nativeElement;
-        usernameInputEl.value = 'username';
-        passwordInputEl.value = 'password';
-        usernameInputEl.dispatchEvent(new Event('input'));
-        passwordInputEl.dispatchEvent(new Event('input'));
+        TestUtils.updateValue(usernameInputDe.nativeElement, 'username');
+        TestUtils.updateValue(passwordInputDe.nativeElement, 'password');
 
         // Refresh the UI
         fixture.detectChanges();
@@ -162,18 +158,15 @@ describe('LoginComponent', () => {
         spyOn(component, 'onSubmit');
         const loginElementDe: DebugElement = fixture.debugElement;
 
-        const formDe = queryExpectOne(loginElementDe, 'form');
-        const usernameInputDe = queryExpectOne(formDe, 'input[type=text]');
-        const passwordInputDe = queryExpectOne(formDe, 'input[type=password]');
-        const submitBtnDe = queryExpectOne(formDe, 'button[type=submit]');
+        const formDe = TestUtils.queryExpectOne(loginElementDe, 'form');
+        const usernameInputDe = TestUtils.queryExpectOne(formDe, 'input[type=text]');
+        const passwordInputDe = TestUtils.queryExpectOne(formDe, 'input[type=password]');
+        const submitBtnDe = TestUtils.queryExpectOne(formDe, 'button[type=submit]');
 
         // Update the form with valid values
-        const usernameInputEl: HTMLInputElement = usernameInputDe.nativeElement;
-        const passwordInputEl: HTMLInputElement = passwordInputDe.nativeElement;
-        usernameInputEl.value = 'username';
-        passwordInputEl.value = 'password';
-        usernameInputEl.dispatchEvent(new Event('input'));
-        passwordInputEl.dispatchEvent(new Event('input'));
+        // Update the form with valid values
+        TestUtils.updateValue(usernameInputDe.nativeElement, 'username');
+        TestUtils.updateValue(passwordInputDe.nativeElement, 'password');
 
         // Refresh the UI
         fixture.detectChanges();
@@ -191,7 +184,7 @@ describe('LoginComponent', () => {
         fixture.detectChanges();
 
         const loginElementDe: DebugElement = fixture.debugElement;
-        const paragraphDe = queryExpectOne(loginElementDe, 'p');
+        const paragraphDe = TestUtils.queryExpectOne(loginElementDe, 'p');
         const paragraphEl = paragraphDe.nativeElement as HTMLParagraphElement;
 
         // Login form should not exist
@@ -202,12 +195,6 @@ describe('LoginComponent', () => {
         expect(paragraphEl.textContent).toEqual('Logged in as user samsepiol');
     });
 });
-
-function queryExpectOne(element: DebugElement, queryExpr: string): DebugElement {
-    const matching = element.queryAll(By.css(queryExpr));
-    expect(matching.length).toEqual(1);
-    return matching[0];
-}
 
 const TEST_USER: EtchedUser = {
     id: 'id',

@@ -13,7 +13,7 @@ export class RegisterComponent implements OnInit {
     registerForm = this.fb.group({
         username: ['', USERNAME_VALIDATORS],
         password: ['', PASSWORD_VALIDATORS],
-        email: ['', EMAIL_VALIDATORS],
+        // email: ['', EMAIL_VALIDATORS],
     });
 
     constructor(private fb: FormBuilder,
@@ -25,15 +25,16 @@ export class RegisterComponent implements OnInit {
 
     onSubmit() {
         console.info(this.registerForm.value);
-        let {username, password, email} = this.registerForm.value;
-        if (email === undefined || email.trim() === '') {
-            console.info('Registering without an email');
-            email = null;
-        }
+        let {username, password} = this.registerForm.value;
+        // if (email === undefined || email.trim() === '') {
+        //     console.info('Registering without an email');
+        //     email = null;
+        // }
+        // TODO: Allow optional emails
         this.etchedApi.register(
             username,
             password,
-            email
+            null
         )
             .subscribe(u => {
                 console.info(`Registered ${JSON.stringify(u)}`);
