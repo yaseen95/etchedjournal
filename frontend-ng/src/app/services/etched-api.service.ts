@@ -51,8 +51,13 @@ export class EtchedApiService {
         const requestBody = {username, password};
         return this.http.post(LOGIN_URL, requestBody)
             .pipe(
-                tap(() => console.info(`Successfully logged in ${username}`)),
-                map((token: TokenResponse) => this.setTokens(token))
+                map((token: TokenResponse) => this.setTokens(token)),
+                tap(() => {
+                    console.info(`Successfully logged in ${username}`);
+                    // Immediately after we've logged in, send a request to get the user details
+                    this.self()
+                        .subscribe(() => {})
+                }),
             );
     }
 

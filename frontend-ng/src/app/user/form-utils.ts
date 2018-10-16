@@ -5,6 +5,7 @@ export const USERNAME_VALIDATORS = Validators.compose([
     Validators.required,
     Validators.minLength(User.USERNAME_MIN_LENGTH),
     Validators.maxLength(User.USERNAME_MAX_LENGTH),
+    // TODO: Add regex for username
 ]);
 
 export const PASSWORD_VALIDATORS = Validators.compose([
