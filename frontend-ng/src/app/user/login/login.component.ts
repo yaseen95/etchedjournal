@@ -27,12 +27,8 @@ export class LoginComponent implements OnInit {
         const {username, password} = this.loginForm.value;
         console.info(`logging in ${username}`);
         this.etchedApi.login(username, password)
-            .subscribe(() => {
-                this.etchedApi.self()
-                    .subscribe(() => {
-                        // Do nothing with this subscription
-                    });
-            });
+            // Do nothing with this subscription
+            .subscribe(() => {});
     }
 
     get user(): EtchedUser | null {

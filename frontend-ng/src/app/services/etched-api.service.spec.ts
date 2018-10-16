@@ -54,32 +54,26 @@ describe('EtchedApiService', () => {
 
     it('login saves token to be used later', () => {
         const tokenResponse: TokenResponse = {
-            accessToken: 'access',
+            accessToken: 'foobar',
             expiresIn: 900,
             refreshExpiresIn: 1800,
             refreshToken: 'refresh',
         };
 
         service.login('user', 'password')
-            .subscribe(() => {});
+            .subscribe(() => {
+            });
 
         const loginRequest = httpMock.expectOne(`${environment.API_URL}/auth/authenticate`);
         expect(loginRequest.request.method).toEqual('POST');
         expect(loginRequest.request.headers.has('Authorization')).toBeFalsy();
         loginRequest.flush(tokenResponse);
 
-        // Now try and get the currently logged in user
-        service.self()
-            .subscribe(u => {
-                expect(u.email).toBeNull();
-                expect(u.username).toEqual('abc');
-                expect(u.id).toEqual('123');
-            });
-
+        // Login automatically invokes self() after it receives the auth tokens
         const selfRequest = httpMock.expectOne(`${environment.API_URL}/auth/self`);
         expect(selfRequest.request.method).toEqual('GET');
         // Should use the access token it got from the login request
-        expect(selfRequest.request.headers.get('Authorization')).toEqual(`Bearer access`);
+        expect(selfRequest.request.headers.get('Authorization')).toEqual(`Bearer foobar`);
         selfRequest.flush(USER);
     });
 
@@ -91,17 +85,14 @@ describe('EtchedApiService', () => {
             refreshToken: 'refresh',
         };
 
+        // When the login response is received, the EtchedApiService will send a request to get the
+        // user details (by invoking self()). That should trigger the refresh.
         service.login('user', 'password')
-            .subscribe(() => {});
+            .subscribe(() => {
+            });
 
         const loginRequest = httpMock.expectOne(`${environment.API_URL}/auth/authenticate`);
         loginRequest.flush(tokenResponse);
-
-        // Try getting self, but because the token is near expiry it will refresh the token first
-        service.self()
-            .subscribe(u => {
-                expect(u.username).toEqual('abc');
-            });
 
         const refreshedTokenResponse: TokenResponse = {
             accessToken: 'access2',
@@ -121,6 +112,7 @@ describe('EtchedApiService', () => {
     });
 
     afterEach(() => {
+        // Verify that there aren't any outstanding requests
         httpMock.verify();
     });
 });
