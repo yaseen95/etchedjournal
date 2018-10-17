@@ -5,6 +5,7 @@ import { LoginComponent } from './user/login/login.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SpinnerComponent } from './utils/spinner/spinner.component';
 
 describe('AppComponent', () => {
     beforeEach(async(() => {
@@ -13,6 +14,7 @@ describe('AppComponent', () => {
                 AppComponent,
                 RegisterComponent,
                 LoginComponent,
+                SpinnerComponent
             ],
             imports: [
                 BrowserModule,
