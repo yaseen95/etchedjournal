@@ -128,4 +128,32 @@ describe('RegisterComponent', () => {
         const spinnerEl = spinnerDe.nativeElement as HTMLParagraphElement;
         expect(spinnerEl.textContent).toEqual('Registering');
     });
+
+    it('register response hides spinner', () => {
+        // Display the spinner
+        component.inFlight = true;
+        fixture.detectChanges();
+        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'spinner');
+        const spinnerParaEl = TestUtils.queryExpectOne(spinnerDe, 'p').nativeElement;
+        expect((spinnerParaEl as HTMLParagraphElement).textContent).toEqual('Registering');
+
+        // Add values to the form
+        const passwordControl = registerForm.controls['password'];
+        const usernameControl = registerForm.controls['username'];
+        usernameControl.setValue('jimmymcgill');
+        passwordControl.setValue('saulgoodman');
+
+        // Submit the form, after register is complete it should automatically hide the spinner
+        // Returning an observable of some value so that the `subscribe` can be invoked
+        etchedApiSpy.register.and.returnValue(of(1));
+        component.onSubmit();
+        expect(etchedApiSpy.register).toHaveBeenCalledTimes(1);
+        expect(etchedApiSpy.register).toHaveBeenCalledWith('jimmymcgill', 'saulgoodman', null);
+
+        // Check that the spinner is hidden and the form is visible once again
+        fixture.detectChanges();
+        TestUtils.queryExpectOne(fixture.debugElement, 'form');
+        const spinnerElems = fixture.debugElement.queryAll(By.css('spinner'));
+        expect(spinnerElems.length).toEqual(0);
+    });
 });
