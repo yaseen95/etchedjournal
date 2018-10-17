@@ -16,8 +16,12 @@ export class LoginComponent implements OnInit {
         password: ['', PASSWORD_VALIDATORS],
     });
 
+    /** login request is in flight */
+    inFlight: boolean;
+
     constructor(private fb: FormBuilder,
                 private etchedApi: EtchedApiService) {
+        this.inFlight = false;
     }
 
     ngOnInit() {
@@ -26,9 +30,10 @@ export class LoginComponent implements OnInit {
     onSubmit() {
         const {username, password} = this.loginForm.value;
         console.info(`logging in ${username}`);
+        this.inFlight = true;
         this.etchedApi.login(username, password)
             // Do nothing with this subscription
-            .subscribe(() => {});
+            .subscribe(() => {this.inFlight = false});
     }
 
     get user(): EtchedUser | null {
