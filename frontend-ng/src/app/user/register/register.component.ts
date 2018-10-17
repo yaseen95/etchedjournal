@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { EMAIL_VALIDATORS, PASSWORD_VALIDATORS, USERNAME_VALIDATORS } from '../form-utils';
+import { PASSWORD_VALIDATORS, USERNAME_VALIDATORS } from '../form-utils';
 import { EtchedApiService } from '../../services/etched-api.service';
 
 @Component({
@@ -16,8 +16,12 @@ export class RegisterComponent implements OnInit {
         // email: ['', EMAIL_VALIDATORS],
     });
 
+    /** is the registration request in flight **/
+    inFlight: boolean;
+
     constructor(private fb: FormBuilder,
                 private etchedApi: EtchedApiService) {
+        this.inFlight = false;
     }
 
     ngOnInit() {
@@ -31,13 +35,13 @@ export class RegisterComponent implements OnInit {
         //     email = null;
         // }
         // TODO: Allow optional emails
-        this.etchedApi.register(
-            username,
-            password,
-            null
-        )
+
+        this.inFlight = true;
+        this.etchedApi.register(username, password, null)
             .subscribe(u => {
                 console.info(`Registered ${JSON.stringify(u)}`);
+                this.inFlight = false;
             });
+        // TODO: handle error from register
     }
 }
