@@ -6,6 +6,8 @@ import { EtchedApiService } from '../../services/etched-api.service';
 import { of } from 'rxjs';
 import TestUtils from '../../utils/test-utils.spec';
 import { DebugElement } from '@angular/core';
+import { By } from '@angular/platform-browser';
+import { SpinnerComponent } from '../../utils/spinner/spinner.component';
 
 describe('RegisterComponent', () => {
     let component: RegisterComponent;
@@ -17,7 +19,7 @@ describe('RegisterComponent', () => {
         etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['register']);
 
         TestBed.configureTestingModule({
-            declarations: [RegisterComponent],
+            declarations: [RegisterComponent, SpinnerComponent],
             imports: [
                 ReactiveFormsModule,
             ],
@@ -57,7 +59,7 @@ describe('RegisterComponent', () => {
     it('form invalid when empty', () => {
         expect(registerForm.valid).toBeFalsy();
     });
-    
+
     it('submit registers', () => {
         const passwordControl = registerForm.controls['password'];
         const usernameControl = registerForm.controls['username'];
@@ -113,5 +115,17 @@ describe('RegisterComponent', () => {
         // The form should be valid and button click should trigger a form submit
         (submitBtnDe.nativeElement as HTMLButtonElement).click();
         expect(component.onSubmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('spinner is shown when request is in flight and form is hidden', () => {
+        component.inFlight = true;
+        fixture.detectChanges();
+
+        const formElems = fixture.debugElement.queryAll(By.css('form'));
+        expect(formElems.length).toEqual(0);
+
+        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'p');
+        const spinnerEl = spinnerDe.nativeElement as HTMLParagraphElement;
+        expect(spinnerEl.textContent).toEqual('Registering');
     });
 });
