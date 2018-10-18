@@ -7,6 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RegisterComponent } from './user/register/register.component';
 import { SpinnerComponent } from './utils/spinner/spinner.component';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
     declarations: [
@@ -16,6 +17,7 @@ import { SpinnerComponent } from './utils/spinner/spinner.component';
         SpinnerComponent,
     ],
     imports: [
+        AppRoutingModule,
         BrowserModule,
         HttpClientModule,
         ReactiveFormsModule,
