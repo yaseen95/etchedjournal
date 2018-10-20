@@ -8,6 +8,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RegisterComponent } from './user/register/register.component';
 import { SpinnerComponent } from './utils/spinner/spinner.component';
 import { AppRoutingModule } from './app-routing.module';
+import { ConfigurePassphraseComponent } from './user/configure-passphrase/configure-passphrase.component';
 
 @NgModule({
     declarations: [
@@ -15,6 +16,7 @@ import { AppRoutingModule } from './app-routing.module';
         LoginComponent,
         RegisterComponent,
         SpinnerComponent,
+        ConfigurePassphraseComponent,
     ],
     imports: [
         AppRoutingModule,

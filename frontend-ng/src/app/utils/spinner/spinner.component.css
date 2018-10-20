@@ -52,3 +52,7 @@ https://github.com/tobiasahlin/SpinKit
         -webkit-transform: scale(1.0);
     }
 }
+
+.spinner-text {
+    white-space: nowrap;
+}
