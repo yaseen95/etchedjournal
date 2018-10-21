@@ -1,13 +1,16 @@
 package com.etchedjournal.etched.controller
 
+import com.etchedjournal.etched.ABC_BASE_64_ENCODED
+import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService
+import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
-import com.etchedjournal.etched.entity.Entry
-import com.etchedjournal.etched.entity.EntryState
+import com.etchedjournal.etched.UUID_MATCHER
+import com.etchedjournal.etched.models.OwnerType
+import com.etchedjournal.etched.models.entity.EntryEntity
 import com.etchedjournal.etched.repository.EntryRepository
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
-import org.hamcrest.Matchers.nullValue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,6 +29,8 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import java.time.Instant
+import java.util.Base64
+import java.util.UUID
 import javax.transaction.Transactional
 import javax.ws.rs.core.MediaType
 
@@ -50,10 +55,10 @@ class EntryServiceControllerTests {
     @Before
     fun setup() {
         mockMvc = MockMvcBuilders
-                .webAppContextSetup(webApplicationContext)
-                // Have to apply apply spring security mock
-                .apply<DefaultMockMvcBuilder>(SecurityMockMvcConfigurers.springSecurity())
-                .build()
+            .webAppContextSetup(webApplicationContext)
+            // Have to apply apply spring security mock
+            .apply<DefaultMockMvcBuilder>(SecurityMockMvcConfigurers.springSecurity())
+            .build()
     }
 
     @Test
@@ -61,99 +66,97 @@ class EntryServiceControllerTests {
     fun `GET entries`() {
         // User doesn't have any entries yet
         mockMvc.perform(get(ENTRIES_PATH))
-                .andExpect(status().isOk)
-                .andExpect(jsonPath("$", hasSize<Any>(0)))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$", hasSize<Any>(0)))
 
         // Create an entry and check
-        createEntry("Entry title", TestAuthService.TESTER_USER_ID)
+        val e = createEntry("abc", TestAuthService.TESTER_USER_ID)
 
         mockMvc.perform(get(ENTRIES_PATH))
-                .andExpect(status().isOk)
-                .andExpect(jsonPath("$", hasSize<Any>(1)))
-                .andExpect(jsonPath("$[0].title", `is`("Entry title")))
-                .andExpect(jsonPath("$[0].id").isNumber)
-                .andExpect(jsonPath("$[0].created", `is`(1000)))
-                .andExpect(jsonPath("$[0].finished", nullValue()))
-                .andExpect(jsonPath("$[0].state", `is`("CREATED")))
-                // These shouldn't be in the payload
-                .andExpect(jsonPath("$[0].etches").doesNotExist())
-                .andExpect(jsonPath("$[0].getUserId").doesNotExist())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$", hasSize<Any>(1)))
+            .andExpect(jsonPath("$[0].id", `is`(e.id!!.toString())))
+            .andExpect(jsonPath("$[0].timestamp", `is`(1000)))
+            .andExpect(jsonPath("$[0].content", `is`(ABC_BASE_64_ENCODED)))
+            .andExpect(jsonPath("$[0].owner", `is`(TESTER_USER_ID)))
+            .andExpect(jsonPath("$[0].ownerType", `is`("USER")))
+            // These shouldn't be in the payload
+            .andExpect(jsonPath("$[0].etches").doesNotExist())
+            .andExpect(jsonPath("$[0].getUserId").doesNotExist())
     }
 
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET entry by ID`() {
-        val e = createEntry("title", TestAuthService.TESTER_USER_ID)
+        val e = createEntry("abc", TestAuthService.TESTER_USER_ID)
 
         mockMvc.perform(get("$ENTRIES_PATH/${e.id}"))
-                .andExpect(status().isOk)
-                .andExpect(jsonPath("\$.title", `is`("title")))
-                .andExpect(jsonPath("\$.created", `is`(1000)))
-                .andExpect(jsonPath("\$.id", `is`(e.id!!.toInt())))
-                .andExpect(jsonPath("\$.state", `is`("CREATED")))
-                .andExpect(jsonPath("\$.finished", nullValue()))
-                // These shouldn't be in the payload
-                .andExpect(jsonPath("\$.etches").doesNotExist())
-                .andExpect(jsonPath("\$.getUserId").doesNotExist())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("\$.id", `is`(e.id!!.toString())))
+            .andExpect(jsonPath("\$.timestamp", `is`(1000)))
+            .andExpect(jsonPath("\$.content", `is`(ABC_BASE_64_ENCODED)))
+            .andExpect(jsonPath("\$.owner", `is`(TESTER_USER_ID)))
+            .andExpect(jsonPath("\$.ownerType", `is`("USER")))
+            // These shouldn't be in the payload
+            .andExpect(jsonPath("\$.etches").doesNotExist())
+            .andExpect(jsonPath("\$.getUserId").doesNotExist())
     }
 
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET entry by other user is forbidden`() {
-        val otherUserEntry = createEntry(title = "title", userId = "abc")
+        val otherUserEntry = createEntry(content = "title", userId = "abc")
 
         mockMvc.perform(get("$ENTRIES_PATH/${otherUserEntry.id}"))
-                .andExpect(status().isForbidden)
-                .andExpect(jsonPath("\$.message", `is`("Forbidden")))
+            .andExpect(status().isForbidden)
+            .andExpect(jsonPath("\$.message", `is`("Forbidden")))
     }
 
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET entry 404 not found`() {
-        val entryId = 100_000
+        val entryId = UUID.randomUUID()
         mockMvc.perform(get("$ENTRIES_PATH/$entryId"))
-                .andExpect(status().isNotFound)
-                .andExpect(jsonPath("\$.message", `is`("Unable to find entry with id $entryId")))
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("\$.message", `is`("Unable to find entry with id $entryId")))
     }
 
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `POST entry`() {
         val entryRequest =
-                """
+            """
             {
-                "title": "Entry title"
+                "title": "abcd"
             }
             """
         mockMvc.perform(
-                post(ENTRIES_PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(entryRequest)
+            post(ENTRIES_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(entryRequest)
         )
-                .andExpect(status().isOk)
-                .andExpect(jsonPath("\$.title", `is`("Entry title")))
-                .andExpect(jsonPath("\$.id").isNumber)
-                .andExpect(jsonPath("\$.created").isNumber)
-                .andExpect(jsonPath("\$.state", `is`("CREATED")))
-                .andExpect(jsonPath("\$.userId").doesNotExist())
-                .andExpect(jsonPath("\$.entries").doesNotExist())
-                .andExpect(jsonPath("\$.finished", nullValue()))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("\$.id").value(UUID_MATCHER))
+            .andExpect(jsonPath("\$.timestamp").value(TIMESTAMP_RECENT_MATCHER))
+            .andExpect(jsonPath("\$.content", `is`("abcd")))
+            .andExpect(jsonPath("\$.owner", `is`(TESTER_USER_ID)))
+            .andExpect(jsonPath("\$.ownerType", `is`("USER")))
     }
 
     @Test
     fun `POST entry not authenticated`() {
         val entryRequest =
-                """
-                {
-                    "title": "Entry title"
-                }
-                """
+            """
+            {
+                "title": "Entry title"
+            }
+            """
         mockMvc.perform(
-                post(ENTRIES_PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(entryRequest)
+            post(ENTRIES_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(entryRequest)
         )
-                .andExpect(status().isUnauthorized)
+            .andExpect(status().isUnauthorized)
     }
 
     @Test
@@ -161,12 +164,12 @@ class EntryServiceControllerTests {
     fun `POST entry with empty payload`() {
         val entryRequest = """{}"""
         mockMvc.perform(
-                post(ENTRIES_PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(entryRequest)
+            post(ENTRIES_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(entryRequest)
         )
-                .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("\$.message", `is`("Title can't be null")))
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("\$.message", `is`("Title can't be null")))
     }
 
     @Test
@@ -178,23 +181,25 @@ class EntryServiceControllerTests {
         // DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
         val entryRequest = """{"tomato": "soup", "name": "Sam Sepiol"}"""
         mockMvc.perform(
-                post(ENTRIES_PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(entryRequest)
+            post(ENTRIES_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(entryRequest)
         )
-                .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("\$.message", `is`("Title can't be null")))
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("\$.message", `is`("Title can't be null")))
     }
 
-    fun createEntry(title: String, userId: String, created: Instant? = null): Entry {
-        val e = Entry(
-                title = title,
-                userId = userId,
-                id = null,
-                created = created ?: Instant.ofEpochSecond(1),
-                finished = null,
-                etches = mutableListOf(),
-                state = EntryState.CREATED
+    private fun createEntry(
+        content: String,
+        userId: String,
+        created: Instant? = null
+    ): EntryEntity {
+        val e = EntryEntity(
+            id = null,
+            timestamp = created ?: Instant.ofEpochSecond(1),
+            owner = userId,
+            ownerType = OwnerType.USER,
+            content = Base64.getEncoder().encode(content.toByteArray())
         )
         return entryRepository.save(e)
     }

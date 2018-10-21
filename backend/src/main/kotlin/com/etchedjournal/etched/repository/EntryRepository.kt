@@ -1,8 +1,9 @@
 package com.etchedjournal.etched.repository
 
-import com.etchedjournal.etched.entity.Entry
+import com.etchedjournal.etched.models.entity.EntryEntity
 import org.springframework.data.repository.CrudRepository
+import java.util.UUID
 
-interface EntryRepository: CrudRepository<Entry, Long> {
-    fun findByUserId(userId: String): Iterable<Entry>
+interface EntryRepository : CrudRepository<EntryEntity, UUID> {
+    fun findByOwner(owner: String): Iterable<EntryEntity>
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import javax.servlet.http.HttpServletRequest
 import javax.validation.ConstraintViolationException
 
@@ -94,6 +95,16 @@ class ExceptionAdvice {
         }
         return badRequest(errorMsg)
     }
+
+    @ResponseBody
+    @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+    fun handleMethodArgumentTypeMismatchException(
+        e: MethodArgumentTypeMismatchException
+    ): ResponseEntity<ExceptionResponse> {
+        return badRequest("Invalid parameter type")
+    }
+
+    // TODO: Handle HttpMessageNotReadableException
 
     companion object {
         val logger: Logger = LoggerFactory.getLogger(ExceptionAdvice::class.java)
