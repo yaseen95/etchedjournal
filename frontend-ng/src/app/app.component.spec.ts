@@ -8,6 +8,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SpinnerComponent } from './utils/spinner/spinner.component';
 import { AppRoutingModule } from './app-routing.module';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EntryComponent } from './etches/entry/entry.component';
 
 describe('AppComponent', () => {
     beforeEach(async(() => {
@@ -17,6 +18,7 @@ describe('AppComponent', () => {
                 RegisterComponent,
                 LoginComponent,
                 SpinnerComponent,
+                EntryComponent,
             ],
             imports: [
                 RouterTestingModule,

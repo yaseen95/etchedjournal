@@ -11,6 +11,8 @@ const REGISTER_URL = `${environment.API_URL}/auth/register`;
 const REFRESH_TOKEN_URL = `${environment.API_URL}/auth/refresh-token`;
 const SELF_URL = `${environment.API_URL}/auth/self`;
 
+const ENTRY_URL = `${environment.API_URL}/entries/`;
+
 @Injectable({
     providedIn: 'root'
 })
@@ -91,6 +93,17 @@ export class EtchedApiService {
                     this.user = u;
                 }));
         });
+    }
+
+    public createEntry(content: string): Observable<any> {
+        return this.refreshWrapper(() => {
+            console.info('Creating an entry');
+
+            return this.http.post<any>(ENTRY_URL, {'content': content}, {headers: this.authHeaders})
+                .pipe(tap(e => {
+                    console.info(`Created entry ${e.id}`);
+                }))
+        })
     }
 
     /**

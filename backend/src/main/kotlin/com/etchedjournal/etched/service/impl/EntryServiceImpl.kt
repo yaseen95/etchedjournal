@@ -10,7 +10,6 @@ import com.etchedjournal.etched.service.exception.NotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.util.Base64
 import java.util.UUID
 
 @Service
@@ -40,11 +39,12 @@ class EntryServiceImpl(
         return entryRepository.findByOwner(authService.getUserId()).toList()
     }
 
-    override fun create(title: String): EntryEntity {
+    override fun create(content: ByteArray): EntryEntity {
         logger.info("Creating entry")
+
         return entryRepository.save(
             EntryEntity(
-                content = Base64.getDecoder().decode(title),
+                content = content,
                 owner = authService.getUserId(),
                 ownerType = OwnerType.USER
             )
