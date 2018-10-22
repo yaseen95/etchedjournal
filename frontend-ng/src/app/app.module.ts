@@ -9,6 +9,7 @@ import { RegisterComponent } from './user/register/register.component';
 import { SpinnerComponent } from './utils/spinner/spinner.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ConfigurePassphraseComponent } from './user/configure-passphrase/configure-passphrase.component';
+import { EntryComponent } from './etches/entry/entry.component';
 
 @NgModule({
     declarations: [
@@ -17,6 +18,7 @@ import { ConfigurePassphraseComponent } from './user/configure-passphrase/config
         RegisterComponent,
         SpinnerComponent,
         ConfigurePassphraseComponent,
+        EntryComponent,
     ],
     imports: [
         AppRoutingModule,

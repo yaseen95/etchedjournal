@@ -9,5 +9,5 @@ interface EntryService {
 
     fun getEntries(): List<EntryEntity>
 
-    fun create(title: String): EntryEntity
+    fun create(content: ByteArray): EntryEntity
 }

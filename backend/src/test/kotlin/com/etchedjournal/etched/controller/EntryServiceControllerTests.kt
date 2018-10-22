@@ -105,7 +105,7 @@ class EntryServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET entry by other user is forbidden`() {
-        val otherUserEntry = createEntry(content = "title", userId = "abc")
+        val otherUserEntry = createEntry(content = "content", userId = "abc")
 
         mockMvc.perform(get("$ENTRIES_PATH/${otherUserEntry.id}"))
             .andExpect(status().isForbidden)
@@ -127,7 +127,7 @@ class EntryServiceControllerTests {
         val entryRequest =
             """
             {
-                "title": "abcd"
+                "content": "abcd"
             }
             """
         mockMvc.perform(
@@ -148,7 +148,7 @@ class EntryServiceControllerTests {
         val entryRequest =
             """
             {
-                "title": "Entry title"
+                "content": "Entry content"
             }
             """
         mockMvc.perform(
@@ -169,7 +169,7 @@ class EntryServiceControllerTests {
                 .content(entryRequest)
         )
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("\$.message", `is`("Title can't be null")))
+            .andExpect(jsonPath("\$.message", `is`("Cannot supply null for key 'content'")))
     }
 
     @Test
@@ -186,7 +186,7 @@ class EntryServiceControllerTests {
                 .content(entryRequest)
         )
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("\$.message", `is`("Title can't be null")))
+            .andExpect(jsonPath("\$.message", `is`("Cannot supply null for key 'content'")))
     }
 
     private fun createEntry(

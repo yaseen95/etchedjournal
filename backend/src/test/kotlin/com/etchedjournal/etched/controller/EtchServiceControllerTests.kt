@@ -143,7 +143,7 @@ class EtchServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET etches for entry by other user is forbidden`() {
-        val otherUserEntry = createEntry(content = "title", userId = "abc")
+        val otherUserEntry = createEntry(content = "content", userId = "abc")
 
         mockMvc.perform(get("$ENTRIES_PATH/${otherUserEntry.id}/etches"))
             .andExpect(status().isForbidden)
