@@ -49,8 +49,8 @@ export class EntryComponent implements OnInit {
 
     private decodeCiphertext(ciphertext: string) {
         this.encrypter.decrypt(ciphertext)
-            .then(decreyptedPlaintext => {
-                this.decryptedPlaintext = decreyptedPlaintext;
+            .then(plaintext => {
+                this.decryptedPlaintext = plaintext;
             })
     }
 }

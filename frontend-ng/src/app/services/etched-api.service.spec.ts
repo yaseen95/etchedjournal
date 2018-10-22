@@ -9,6 +9,8 @@ import { EtchedUser } from '../models/etched-user';
 import { environment } from '../../environments/environment';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { TokenResponse } from './dtos/token-response';
+import { Entry } from '../models/entry';
+import { OwnerType } from '../models/owner-type';
 
 describe('EtchedApiService', () => {
     let injector: TestBed;
@@ -115,4 +117,52 @@ describe('EtchedApiService', () => {
         // Verify that there aren't any outstanding requests
         httpMock.verify();
     });
+
+    it('create entry', () => {
+        initAuth();
+        service.createEntry('content')
+            .subscribe(entry => {
+                expect(entry.id).toEqual('entryId');
+                expect(entry.content).toEqual('base64Content');
+                expect(entry.timestamp).toEqual(1);
+                expect(entry.owner).toEqual('user');
+                expect(entry.ownerType).toEqual(OwnerType.USER);
+            });
+
+        const entry: Entry = {
+            id: 'entryId',
+            content: 'base64Content',
+            timestamp: 1,
+            owner: 'user',
+            // Declaring string `as OwnerType` because the API returns it as a string
+            ownerType: 'USER' as OwnerType,
+        };
+
+        const req = httpMock.expectOne(`${environment.API_URL}/entries`);
+        expect(req.request.method).toEqual('POST');
+        expect(req.request.headers.has('Authorization')).toBeTruthy();
+        req.flush(entry);
+    });
+
+    /**
+     * Util that initializes auth so that other tests can skip it
+     */
+    function initAuth() {
+        const tokenResponse: TokenResponse = {
+            accessToken: 'access',
+            expiresIn: 900,
+            refreshExpiresIn: 1800,
+            refreshToken: 'refresh',
+        };
+
+        service.login('user', 'password')
+            .subscribe(() => {});
+
+        const loginRequest = httpMock.expectOne(`${environment.API_URL}/auth/authenticate`);
+        loginRequest.flush(tokenResponse);
+
+        // Login automatically invokes self() after it receives the auth tokens
+        const selfRequest = httpMock.expectOne(`${environment.API_URL}/auth/self`);
+        selfRequest.flush(USER);
+    }
 });
