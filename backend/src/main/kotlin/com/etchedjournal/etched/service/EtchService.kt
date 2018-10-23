@@ -1,5 +1,6 @@
 package com.etchedjournal.etched.service
 
+import com.etchedjournal.etched.dto.EncryptedEntityRequest
 import com.etchedjournal.etched.models.entity.EtchEntity
 import java.util.UUID
 
@@ -8,5 +9,5 @@ interface EtchService {
 
     fun getEtch(entryId: UUID, etchId: UUID): EtchEntity
 
-    fun create(entryId: UUID, etches: List<EtchEntity>): List<EtchEntity>
+    fun create(entryId: UUID, etches: List<EncryptedEntityRequest>): List<EtchEntity>
 }

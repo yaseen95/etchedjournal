@@ -1,6 +1,6 @@
 package com.etchedjournal.etched.controller
 
-import com.etchedjournal.etched.dto.EntryRequest
+import com.etchedjournal.etched.dto.EncryptedEntityRequest
 import com.etchedjournal.etched.models.entity.EntryEntity
 import com.etchedjournal.etched.service.EntryService
 import org.slf4j.LoggerFactory
@@ -37,8 +37,11 @@ class EntryServiceController(private val entryService: EntryService) {
      * Creates a new entry
      */
     @PostMapping("")
-    fun create(@RequestBody @Valid entry: EntryRequest): EntryEntity {
-        return entryService.create(entry.content)
+    fun create(@RequestBody @Valid entry: EncryptedEntityRequest): EntryEntity {
+        logger.info("Creating an entry")
+        val createdEntry = entryService.create(entry.content)
+        logger.info("Created entry {}", createdEntry)
+        return createdEntry
     }
 
     companion object {
