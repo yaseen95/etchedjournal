@@ -1,8 +1,9 @@
 package com.etchedjournal.etched.controller
 
+import com.etchedjournal.etched.dto.EncryptedEntityRequest
 import com.etchedjournal.etched.models.entity.EtchEntity
 import com.etchedjournal.etched.service.EtchService
-import com.etchedjournal.etched.service.exception.InvalidPayloadException
+import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -29,12 +30,15 @@ class EtchServiceController(private val etchService: EtchService) {
     @PostMapping("")
     fun create(
         @PathVariable entryId: UUID,
-        @RequestBody etch: List<@Valid EtchEntity>
-    ):
-        List<EtchEntity> {
-        if (etch.any { it.id != null }) {
-            throw InvalidPayloadException("Must not supply id when creating an etch")
-        }
-        return etchService.create(entryId, etch)
+        @RequestBody etches: List<@Valid EncryptedEntityRequest>
+    ): List<EtchEntity> {
+        logger.info("Creating etches for entry {}", entryId)
+        val createdEtches = etchService.create(entryId, etches)
+        logger.info("Created {} etches for entry {}", createdEtches.size, entryId)
+        return createdEtches
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(EtchServiceController::class.java)
     }
 }

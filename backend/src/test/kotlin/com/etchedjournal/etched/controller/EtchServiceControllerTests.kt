@@ -170,11 +170,14 @@ class EtchServiceControllerTests {
                 .content(etchRequest)
         )
             .andExpect(status().isOk)
+            .andExpect(jsonPath("$", hasSize<Any>(1)))
             .andExpect(jsonPath("\$[0].content", `is`("YWJj")))
             .andExpect(jsonPath("\$[0].id", UUID_MATCHER))
             .andExpect(jsonPath("\$[0].timestamp", TIMESTAMP_RECENT_MATCHER))
             .andExpect(jsonPath("\$[0].owner", `is`(TestAuthService.TESTER_USER_ID)))
             .andExpect(jsonPath("\$[0].ownerType", `is`("USER")))
+            // Should only be the above 5 keys in the json response
+            .andExpect(jsonPath("\$[0].*", hasSize<Any>(5)))
 
         mockMvc.perform(get("$ENTRIES_PATH/${entry.id}/etches"))
             .andExpect(status().isOk)
@@ -201,84 +204,6 @@ class EtchServiceControllerTests {
         )
             .andExpect(status().isBadRequest)
             .andReturn()
-    }
-
-    @Test
-    @WithMockUser(username = "tester", roles = ["user"])
-    fun `POST etch with missing keys`() {
-        val completePayload = mapOf(
-            "content" to "YWJj",
-            "owner" to TestAuthService.TESTER_USER_ID,
-            "ownerType" to "USER"
-        )
-        val errorMessages = completePayload.keys
-            .flatMap {
-                listOf("Field '$it' may not be null", "Cannot supply null for key '$it'")
-            }
-
-        val requestPayload = mutableMapOf<String, Any>()
-        // Iterate over the keys and build the payload until it becomes valid
-        for ((key, value) in completePayload) {
-            // We post a list of etches
-            val payload = listOf(requestPayload)
-            val content = testUtils.asJson(payload)
-
-            mockMvc.perform(
-                post("$ENTRIES_PATH/${entry.id}/etches")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(content)
-            )
-                .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("\$.message", isIn(errorMessages)))
-
-            requestPayload[key] = value
-        }
-
-        // TODO: Do we use 201 HTTP created code?
-        // Payload is valid now, this next post should work fine
-        mockMvc.perform(
-            post("$ENTRIES_PATH/${entry.id}/etches")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(testUtils.asJson(listOf(requestPayload)))
-        )
-            .andExpect(status().isOk)
-            .andExpect(content().json(
-                """
-                    [
-                        {
-                            "content": "YWJj",
-                            "owner": "${TestAuthService.TESTER_USER_ID}",
-                            "ownerType": "USER"
-                        }
-                    ]
-                    """
-
-            ))
-            .andExpect(jsonPath("\$[0].id").value(UUID_MATCHER))
-            .andExpect(jsonPath("\$[0].timestamp").value(TIMESTAMP_RECENT_MATCHER))
-    }
-
-    @Test
-    @WithMockUser(username = "tester", roles = ["user"])
-    fun `POST etch with id raises error`() {
-        // User should not POST an entry with an ID field.
-        val e = EtchEntity(
-            id = UUID.randomUUID(),
-            content = ByteArray(1),
-            entry = null,
-            owner = "owner",
-            ownerType = OwnerType.USER
-        )
-
-        val etches = listOf(e)
-
-        mockMvc.perform(
-            post("$ENTRIES_PATH/${entry.id}/etches")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(testUtils.asJson(etches))
-        )
-            .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("\$.message", `is`("Must not supply id when creating an etch")))
     }
 
     private fun createEntry(
