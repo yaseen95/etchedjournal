@@ -1,5 +1,6 @@
 import * as openpgp from 'openpgp';
 import { DecryptOptions, EncryptedMessage, EncryptOptions, VerifiedMessage } from 'openpgp';
+import { Base64Str } from '../models/encrypted-entity';
 
 // TODO: Fix type definitions for openpgp
 const openpgpUtil = openpgp.util as any;
@@ -59,7 +60,7 @@ export class Encrypter {
      * @param message message to encrypt
      * @return the encrypted message as a Base64 encoded string
      */
-    public async encrypt(message: string): Promise<string> {
+    public async encrypt(message: string): Promise<Base64Str> {
         const options = {
             // Message to encrypt
             message: await openpgp.message.fromText(message),
@@ -89,7 +90,7 @@ export class Encrypter {
      * @param encoded the base64 encoded ciphertext
      * @return the encrypted message
      */
-    public async decrypt(encoded: string): Promise<string> {
+    public async decrypt(encoded: Base64Str): Promise<string> {
         const bytes = openpgpUtil.b64_to_Uint8Array(encoded);
         const msg = await openpgp.message.read(bytes);
 

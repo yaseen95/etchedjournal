@@ -9,7 +9,7 @@ import { EtchedUser } from '../models/etched-user';
 import { environment } from '../../environments/environment';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { TokenResponse } from './dtos/token-response';
-import { Entry } from '../models/entry';
+import { EntryEntity } from '../models/entry-entity';
 import { OwnerType } from '../models/owner-type';
 
 describe('EtchedApiService', () => {
@@ -129,7 +129,7 @@ describe('EtchedApiService', () => {
                 expect(entry.ownerType).toEqual(OwnerType.USER);
             });
 
-        const entry: Entry = {
+        const entry: EntryEntity = {
             id: 'entryId',
             content: 'base64Content',
             timestamp: 1,
