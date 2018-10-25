@@ -9,6 +9,7 @@ import { SpinnerComponent } from './utils/spinner/spinner.component';
 import { AppRoutingModule } from './app-routing.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EntryComponent } from './etches/entry/entry.component';
+import { EntryEditorComponent } from './etches/entry-editor/entry-editor.component';
 
 describe('AppComponent', () => {
     beforeEach(async(() => {
@@ -19,6 +20,7 @@ describe('AppComponent', () => {
                 LoginComponent,
                 SpinnerComponent,
                 EntryComponent,
+                EntryEditorComponent
             ],
             imports: [
                 RouterTestingModule,

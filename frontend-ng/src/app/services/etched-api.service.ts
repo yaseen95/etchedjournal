@@ -5,8 +5,9 @@ import { Observable, of, throwError } from 'rxjs';
 import { TokenResponse } from './dtos/token-response';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { EtchedUser } from '../models/etched-user';
-import { Base64Str } from '../models/encrypted-entity';
-import { Entry } from '../models/entry';
+import { Base64Str, Uuid } from '../models/encrypted-entity';
+import { EntryEntity } from '../models/entry-entity';
+import { EtchEntity } from '../models/etch-entity';
 
 const LOGIN_URL = `${environment.API_URL}/auth/authenticate`;
 const REGISTER_URL = `${environment.API_URL}/auth/register`;
@@ -14,6 +15,10 @@ const REFRESH_TOKEN_URL = `${environment.API_URL}/auth/refresh-token`;
 const SELF_URL = `${environment.API_URL}/auth/self`;
 
 const ENTRIES_URL = `${environment.API_URL}/entries`;
+
+interface EncryptedEntityRequest {
+    content: Base64Str
+}
 
 @Injectable({
     providedIn: 'root'
@@ -97,15 +102,31 @@ export class EtchedApiService {
         });
     }
 
-    public createEntry(content: Base64Str): Observable<Entry> {
+    public createEntry(content: Base64Str): Observable<EntryEntity> {
         return this.refreshWrapper(() => {
             console.info('Creating an entry');
 
-            return this.http.post<Entry>(ENTRIES_URL, {'content': content}, {headers: this.authHeaders})
+            return this.http.post<EntryEntity>(ENTRIES_URL, {'content': content}, {headers: this.authHeaders})
                 .pipe(tap(e => {
                     console.info(`Created entry ${e.id}`);
                 }))
         })
+    }
+
+    public postEtches(entryId: Uuid, etches: Base64Str[]): Observable<EtchEntity[]> {
+        return this.refreshWrapper(() => {
+            console.info(`Creating etches for entry ${entryId}`);
+            const body: EncryptedEntityRequest[] = etches.map((e) => {
+                return {'content': e};
+            });
+
+            return this.post<EncryptedEntityRequest[], EtchEntity[]>(`${ENTRIES_URL}/${entryId}/etches`, body)
+                .pipe(tap(() => console.info(`Created etches for ${entryId}`)));
+        })
+    }
+
+    private post<Request, Response>(url: string, body: Request): Observable<Response> {
+        return this.http.post<Response>(url, body, {headers: this.authHeaders});
     }
 
     /**
