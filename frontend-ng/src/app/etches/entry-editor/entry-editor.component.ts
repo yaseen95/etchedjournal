@@ -23,26 +23,6 @@ const ENTRY_CREATED = 'ENTRY_CREATED';
 })
 export class EntryEditorComponent implements OnInit, OnDestroy {
 
-    // <TITLE STUFF>
-    /** title of entry */
-    title: string;
-
-    /** the previous title before the user began editing the title, used to allow users to
-     * cancel editing the title and revert back to the previous title
-     */
-    private prevTitle: string;
-
-    /** specifies whether the title is currently editable */
-    titleIsEditable: boolean;
-
-    /** the title html element */
-    @ViewChild('titleBox')
-    titleElement: ElementRef;
-
-    /** indicates that the user pressed escape when editing the title */
-    escapedEditingTitle: boolean;
-    // </TITLE STUFF>
-
     /** list of etches */
     etches: string[];
 
@@ -69,16 +49,20 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
     /** The content of the etch that is currently being edited */
     currentEtchContent: string;
 
+    /** Current title */
+    title: string;
+
+    /** Stores the previous title */
+    // Used to check if the title content actually changes between edits
+    prevTitle: string;
+
+    @ViewChild('editor')
+    editorElem: ElementRef;
+
     constructor(protected etchedApi: EtchedApiService) {
     }
 
     ngOnInit() {
-        // title stuff
-        this.title = new Date().toString();
-        this.prevTitle = this.title;
-        this.titleIsEditable = false;
-        this.escapedEditingTitle = false;
-
         this.etches = [];
         this.entry = undefined;
         this.queuedEtches = [];
@@ -86,6 +70,7 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
         this.recentEdit = Date.now();
         this.entryCreationState = ENTRY_NOT_CREATED;
         this.currentEtchContent = '';
+        this.prevTitle = '';
 
         // TODO: Provide the encrypter via injection
         Encrypter.from(TEST_KEY_PAIR, 'passphrase')
@@ -116,38 +101,11 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
         window.clearInterval(this.queuedEtchInterval);
     }
 
-    onTitleClick() {
-        this.prevTitle = this.titleElement.nativeElement.textContent;
-        this.titleIsEditable = true;
-    }
-
-    onTitleChange(key: string) {
-        if (key === ENTER_KEY) {
-            console.info('finished editing title');
-            this.titleElement.nativeElement.blur();
-        } else if (key === ESC_KEY) {
-            console.info('escaping title edit');
-            this.escapedEditingTitle = true;
-            this.titleIsEditable = false;
-        }
-    }
-
-    onTitleBlur(event: FocusEvent) {
-        let newTitle = (event.currentTarget as any).textContent!!.trim();
-
-        // If we pressed escape or title is empty, don't save
-        if (this.escapedEditingTitle || newTitle === null || newTitle.trim() === '') {
-            console.info('resetting title');
-
-            this.title = this.prevTitle;
-            this.titleElement.nativeElement.textContent = this.prevTitle;
-            this.escapedEditingTitle = false;
-        } else {
-            console.info(`Setting title: ${newTitle}`);
-            this.title = newTitle;
-            this.prevTitle = newTitle;
-            this.titleElement.nativeElement.textContent = newTitle;
-            this.titleIsEditable = false;
+    onTitleChange(title: string) {
+        if (title !== this.prevTitle) {
+            this.title = title;
+            this.prevTitle = title;
+            // TODO: Update the title on the backend once editing is allowed
         }
     }
 
@@ -194,12 +152,6 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
      * This actually finalizes the current etch and it can't be edited beyond this point
      */
     etch() {
-        // Create an entry only when the user has writes their first etch
-        // TODO: Allow users to edit entry titles
-        if (this.etches.length > 0 && this.entryCreationState === ENTRY_NOT_CREATED) {
-            this.createEntry();
-        }
-
         const text = this.currentEtchContent.trim();
         if (text === '') {
             return;
@@ -210,8 +162,14 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
         // Push the current etch to the list of etches being displayed
         this.etches.push(text);
 
-        // TODO: Can we bind a variable to the text content of this element?
+        // TODO: Allow users to edit entry titles
+        // Create an entry only when the user has writes their first etch
+        if (this.entryCreationState === ENTRY_NOT_CREATED) {
+            this.createEntry();
+        }
+
         // Reset the etch
+        this.editorElem.nativeElement.innerText = '';
         this.currentEtchContent = '';
 
         // this.etchEditorElement.nativeElement.textContent = '';
@@ -223,8 +181,10 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
      * Creates an entry
      */
     createEntry() {
+        console.info('attempting to create netry');
         if (this.entryCreationState !== ENTRY_NOT_CREATED) {
             // The entry has already been created, don't need to do anything here
+            console.info('entry has already been created or is creating');
             return;
         }
 
@@ -239,7 +199,7 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
                         this.entryCreationState = ENTRY_CREATED;
                         this.entry = entry;
                     });
-            })
+            });
     }
 
     /**

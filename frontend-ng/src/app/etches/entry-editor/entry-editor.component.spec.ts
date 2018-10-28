@@ -2,6 +2,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EntryEditorComponent } from './entry-editor.component';
 import { EtchedApiService } from '../../services/etched-api.service';
+import { EntryTitleComponent } from './entry-title/entry-title.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('EntryEditorComponent', () => {
     let component: EntryEditorComponent;
@@ -14,10 +16,11 @@ describe('EntryEditorComponent', () => {
         etchedApiSpy.getUser.and.returnValue(null);
 
         TestBed.configureTestingModule({
-            declarations: [EntryEditorComponent],
+            declarations: [EntryEditorComponent, EntryTitleComponent],
             providers: [
                 {provide: EtchedApiService, useValue: etchedApiSpy},
             ],
+            imports: [ReactiveFormsModule],
         })
             .compileComponents();
     }));

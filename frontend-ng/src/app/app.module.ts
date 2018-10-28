@@ -11,6 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { ConfigurePassphraseComponent } from './user/configure-passphrase/configure-passphrase.component';
 import { EntryComponent } from './etches/entry/entry.component';
 import { EntryEditorComponent } from './etches/entry-editor/entry-editor.component';
+import { EntryTitleComponent } from './etches/entry-editor/entry-title/entry-title.component';
 
 @NgModule({
     declarations: [
@@ -21,6 +22,7 @@ import { EntryEditorComponent } from './etches/entry-editor/entry-editor.compone
         ConfigurePassphraseComponent,
         EntryComponent,
         EntryEditorComponent,
+        EntryTitleComponent,
     ],
     imports: [
         AppRoutingModule,

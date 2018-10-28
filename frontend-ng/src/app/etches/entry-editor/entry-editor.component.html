@@ -1,42 +1,26 @@
 <div *ngIf="etchedApi.getUser()" class="columns is-centered">
     <div class="column is-12-mobile is-8-tablet is-8-desktop">
-        <div class="columns has-text-left">
-            <h4 class="etched-editable"
-                #titleBox
-                id="entry-title-heading"
-                data-placeholder="Title"
-                (keydown)="onTitleChange($event.key)"
-                (click)="onTitleClick()"
-                (blur)="onTitleBlur($event)"
-                [attr.contenteditable]="titleIsEditable"
-            >
-                {{ title }}
-            </h4>
+        <app-entry-title (titleEmitter)="onTitleChange($event)" class="columns has-text-left">
+        </app-entry-title>
+        <div *ngIf="etches.length > 0" class="columns has-text-left">
+            <div class="column">
+                <ul>
+                    <li *ngFor="let e of etches">{{ e }}</li>
+                </ul>
+            </div>
         </div>
         <div class="columns has-text-left">
-            <ul>
-                <li *ngFor="let e of etches">{{ e }}</li>
-            </ul>
-        </div>
-        <div class="columns has-text-left">
-            <div
-                #entryEditor
-                id="entry-editor"
-                class="etched-editable"
-                contentEditable="true"
-                data-placeholder="What's on your mind?"
-                [textContent]="currentEtchContent"
-                (input)="onEtchInput($event)"
-                (keydown)="onEtchKeydown($event)"
-            ></div>
-            <!--<div-->
-            <!--#etchEditor-->
-            <!--id="entry-editor"-->
-            <!--class="etched-editable"-->
-            <!--contentEditable="true"-->
-            <!--data-placeholder="What's on your mind?"-->
-            <!--(keydown)="onEtchKeydown($event)"-->
-            <!--&gt;</div>-->
+            <div class="column is-full">
+                <div
+                    #editor
+                    id="entry-editor"
+                    class="etched-editable"
+                    contentEditable="true"
+                    data-placeholder="What's on your mind?"
+                    (input)="onEtchInput($event)"
+                    (keydown)="onEtchKeydown($event)"
+                ></div>
+            </div>
         </div>
     </div>
 </div>
