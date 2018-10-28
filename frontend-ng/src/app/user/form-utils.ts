@@ -1,4 +1,4 @@
-import { FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { User } from './constants';
 
 export const USERNAME_VALIDATORS = Validators.compose([
@@ -26,6 +26,14 @@ export const PASSPHRASE_VALIDATORS = Validators.compose([
     // TODO: Should we have a max length?
     // Do we need to have a max length?
 ]);
+
+export const nonWhitespaceValidator: ValidatorFn = (control: FormControl): ValidationErrors | null => {
+    const value = control.value;
+    if (value.trim() === '') {
+        return {isWhitespace: true};
+    }
+    return null;
+};
 
 export const passphraseMatchValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
     // https://scotch.io/@ibrahimalsurkhi/match-password-validation-with-angular-2

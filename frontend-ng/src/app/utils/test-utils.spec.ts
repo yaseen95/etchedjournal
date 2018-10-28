@@ -9,7 +9,7 @@ export default class TestUtils {
      * This method asserts that there is only a single element that matches the given query and
      * will fail if there are 0 or more than 1 matching elements.
      *
-     * @param element the element from which to search from
+     * @param element the element from which to search
      * @param queryExpr css query expression
      * @return the sole element matching the query expression
      */
@@ -27,6 +27,17 @@ export default class TestUtils {
     static updateValue(input: HTMLInputElement, value: string) {
         input.value = value;
         input.dispatchEvent(new Event('input'));
+    }
+
+    /**
+     * Query a debug element and expect no items to match the given query expression
+     *
+     * @param element the element from which to search
+     * @param queryExpr css query expression
+     */
+    static queryExpectNone(element: DebugElement, queryExpr: string): void {
+        const matching = element.queryAll(By.css(queryExpr));
+        expect(matching.length).toEqual(0);
     }
 
     static TEST_USER: EtchedUser = {
