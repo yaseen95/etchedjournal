@@ -6,11 +6,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SpinnerComponent } from './utils/spinner/spinner.component';
-import { AppRoutingModule } from './app-routing.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EntryComponent } from './etches/entry/entry.component';
-import { EntryEditorComponent } from './etches/entry-editor/entry-editor.component';
-import { EntryTitleComponent } from './etches/entry-editor/entry-title/entry-title.component';
+import { EditorContainerComponent } from './etches/editor/editor-container.component';
+import { EntryTitleComponent } from './etches/editor/entry-title/entry-title.component';
+import { EntryEditorComponent } from './etches/editor/entry-editor/entry-editor.component';
 
 describe('AppComponent', () => {
     beforeEach(async(() => {
@@ -21,8 +21,9 @@ describe('AppComponent', () => {
                 LoginComponent,
                 SpinnerComponent,
                 EntryComponent,
-                EntryEditorComponent,
+                EditorContainerComponent,
                 EntryTitleComponent,
+                EntryEditorComponent,
             ],
             imports: [
                 RouterTestingModule,

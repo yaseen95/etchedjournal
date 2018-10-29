@@ -1,13 +1,14 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EntryEditorComponent } from './entry-editor.component';
+import { EditorContainerComponent } from './editor-container.component';
 import { EtchedApiService } from '../../services/etched-api.service';
 import { EntryTitleComponent } from './entry-title/entry-title.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { EntryEditorComponent } from './entry-editor/entry-editor.component';
 
-describe('EntryEditorComponent', () => {
-    let component: EntryEditorComponent;
-    let fixture: ComponentFixture<EntryEditorComponent>;
+describe('EditorContainerComponent', () => {
+    let component: EditorContainerComponent;
+    let fixture: ComponentFixture<EditorContainerComponent>;
     let etchedApiSpy: any;
 
     beforeEach(async(() => {
@@ -16,7 +17,11 @@ describe('EntryEditorComponent', () => {
         etchedApiSpy.getUser.and.returnValue(null);
 
         TestBed.configureTestingModule({
-            declarations: [EntryEditorComponent, EntryTitleComponent],
+            declarations: [
+                EditorContainerComponent,
+                EntryTitleComponent,
+                EntryEditorComponent,
+            ],
             providers: [
                 {provide: EtchedApiService, useValue: etchedApiSpy},
             ],
@@ -26,7 +31,7 @@ describe('EntryEditorComponent', () => {
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(EntryEditorComponent);
+        fixture = TestBed.createComponent(EditorContainerComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

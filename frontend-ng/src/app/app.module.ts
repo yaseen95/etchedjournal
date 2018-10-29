@@ -10,8 +10,7 @@ import { SpinnerComponent } from './utils/spinner/spinner.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ConfigurePassphraseComponent } from './user/configure-passphrase/configure-passphrase.component';
 import { EntryComponent } from './etches/entry/entry.component';
-import { EntryEditorComponent } from './etches/entry-editor/entry-editor.component';
-import { EntryTitleComponent } from './etches/entry-editor/entry-title/entry-title.component';
+import { EditorContainerComponent } from './etches/editor/editor-container.component';
 
 @NgModule({
     declarations: [
@@ -21,8 +20,7 @@ import { EntryTitleComponent } from './etches/entry-editor/entry-title/entry-tit
         SpinnerComponent,
         ConfigurePassphraseComponent,
         EntryComponent,
-        EntryEditorComponent,
-        EntryTitleComponent,
+        EditorContainerComponent,
     ],
     imports: [
         AppRoutingModule,
