@@ -18,25 +18,16 @@ const ENTRY_CREATED = 'ENTRY_CREATED';
 
 @Component({
     selector: 'app-entry-editor',
-    templateUrl: './entry-editor.component.html',
-    styleUrls: ['./entry-editor.component.css'],
+    templateUrl: './editor-container.component.html',
+    styleUrls: ['./editor-container.component.css'],
 })
-export class EntryEditorComponent implements OnInit, OnDestroy {
-
-    /** list of etches */
-    etches: string[];
-
-    /** timestamp of last edit (millis since epoch) */
-    recentEdit: number;
+export class EditorContainerComponent implements OnInit, OnDestroy {
 
     /** etches not yet posted */
     queuedEtches: string[];
 
     /** the timer/interval used to post queued etches */
     queuedEtchInterval: number;
-
-    /** the timer/interval used to etch entries due to inactivity */
-    etchingInterval: number;
 
     /** the current state of the entry */
     entryCreationState: string;
@@ -46,9 +37,6 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
 
     encrypter: Encrypter;
 
-    /** The content of the etch that is currently being edited */
-    currentEtchContent: string;
-
     /** Current title */
     title: string;
 
@@ -56,33 +44,19 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
     // Used to check if the title content actually changes between edits
     prevTitle: string;
 
-    @ViewChild('editor')
-    editorElem: ElementRef;
-
     constructor(protected etchedApi: EtchedApiService) {
     }
 
     ngOnInit() {
-        this.etches = [];
         this.entry = undefined;
         this.queuedEtches = [];
 
-        this.recentEdit = Date.now();
         this.entryCreationState = ENTRY_NOT_CREATED;
-        this.currentEtchContent = '';
         this.prevTitle = '';
 
         // TODO: Provide the encrypter via injection
         Encrypter.from(TEST_KEY_PAIR, 'passphrase')
             .then(encrypter => this.encrypter = encrypter);
-
-        this.etchingInterval = window.setInterval(() => {
-            // If user hasn't made any changes in `ETCH_TIMEOUT` seconds, we update
-            if (this.entryCreationState == ENTRY_CREATED &&
-                (Date.now() - this.recentEdit) >= ETCH_TIMEOUT) {
-                this.etch();
-            }
-        }, 1000);
 
         this.queuedEtchInterval = window.setInterval(() => {
             this.postEtches();
@@ -97,7 +71,6 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
         }
 
         // clear intervals
-        window.clearInterval(this.etchingInterval);
         window.clearInterval(this.queuedEtchInterval);
     }
 
@@ -109,72 +82,8 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
         }
     }
 
-    /**
-     * Responds to key events
-     *
-     * This checks if "enter" was pressed and will finalize the etch if it was.
-     *
-     * This is called before the input event handler `onEtchInput`. This allows us to finalize the
-     * etch when enter is pressed.
-     *
-     * @param event
-     */
-    onEtchKeydown(event: KeyboardEvent) {
-        // Update the recent edit date of the etch
-        this.recentEdit = Date.now();
-
-        // We don't want to update the etch if the user pressed "shift + enter"
-        if (event.key === ENTER_KEY && !event.shiftKey) {
-            // Finalize the etch
-            // preventing default event to prevent a new line
-            // preventing the default event will also stop the event from propagating to onEtchInput
-            event.preventDefault();
-            this.etch();
-        }
-    }
-
-    /**
-     * Responds to input changes on the etch
-     *
-     * This is invoked after `onEtchKeydown` and simply updates the current value with the new
-     * value
-     *
-     * @param event
-     */
-    onEtchInput(event) {
-        // Keydown is called first
-        this.currentEtchContent = event.target.innerText;
-    }
-
-    /**
-     * Etch the current etch
-     *
-     * This actually finalizes the current etch and it can't be edited beyond this point
-     */
-    etch() {
-        const text = this.currentEtchContent.trim();
-        if (text === '') {
-            return;
-        }
-
-        // TODO: Add metadata representation of etch
-        console.info(`Etching ${text}`);
-        // Push the current etch to the list of etches being displayed
-        this.etches.push(text);
-
-        // TODO: Allow users to edit entry titles
-        // Create an entry only when the user has writes their first etch
-        if (this.entryCreationState === ENTRY_NOT_CREATED) {
-            this.createEntry();
-        }
-
-        // Reset the etch
-        this.editorElem.nativeElement.innerText = '';
-        this.currentEtchContent = '';
-
-        // this.etchEditorElement.nativeElement.textContent = '';
-        // Add the etch to the queue so it can be encrypted and posted to the server
-        this.queuedEtches.push(text);
+    onNextEtch(e: string) {
+        this.queuedEtches.push(e);
     }
 
     /**
@@ -215,7 +124,9 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
         }
 
         if (this.entry === undefined || this.entry === null) {
-            console.info('Entry is not yet created, waiting til it is created');
+            console.info('Entry is not yet created');
+            // We create the entry and will post the etches once the entry has been created
+            this.createEntry();
             return;
         }
 

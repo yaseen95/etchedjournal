@@ -1,0 +1,21 @@
+<ng-container *ngIf="etches.length > 0">
+    <div class="columns">
+        <div class="column">
+            <ul id="etches-list">
+                <li *ngFor="let e of etches">{{ e }}</li>
+            </ul>
+        </div>
+    </div>
+</ng-container>
+<div class="columns">
+    <div class="column">
+        <div
+            #editor
+            id="entry-editor"
+            class="etched-editable"
+            contentEditable="true"
+            data-placeholder="What's on your mind?"
+            (keydown)="onEtchKeydown($event)"
+        ></div>
+    </div>
+</div>
