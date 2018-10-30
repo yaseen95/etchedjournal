@@ -17,7 +17,7 @@ const ENTRY_CREATED = 'ENTRY_CREATED';
 // TODO: This feels like it's doing way too much and can be broken down some more
 
 @Component({
-    selector: 'app-entry-editor',
+    selector: 'app-editor-container',
     templateUrl: './editor-container.component.html',
     styleUrls: ['./editor-container.component.css'],
 })
