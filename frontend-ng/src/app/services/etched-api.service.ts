@@ -65,7 +65,7 @@ export class EtchedApiService {
                     console.info(`Successfully logged in ${username}`);
                     // Immediately after we've logged in, send a request to get the user details
                     this.self()
-                        .subscribe(() => {})
+                        .subscribe(() => {});
                 }),
             );
     }
@@ -107,10 +107,8 @@ export class EtchedApiService {
             console.info('Creating an entry');
 
             return this.http.post<EntryEntity>(ENTRIES_URL, {'content': content}, {headers: this.authHeaders})
-                .pipe(tap(e => {
-                    console.info(`Created entry ${e.id}`);
-                }))
-        })
+                .pipe(tap(e => console.info(`Created entry ${e.id}`)));
+        });
     }
 
     public postEtches(entryId: Uuid, etches: Base64Str[]): Observable<EtchEntity[]> {
@@ -122,7 +120,15 @@ export class EtchedApiService {
 
             return this.post<EncryptedEntityRequest[], EtchEntity[]>(`${ENTRIES_URL}/${entryId}/etches`, body)
                 .pipe(tap(() => console.info(`Created etches for ${entryId}`)));
-        })
+        });
+    }
+
+    public getEntries(): Observable<EntryEntity[]> {
+        return this.refreshWrapper(() => {
+            console.info('Getting entries');
+            return this.http.get<EntryEntity[]>(ENTRIES_URL, {headers: this.authHeaders})
+                .pipe(tap(entries => console.info(`Fetched ${entries.length} entries`)));
+        });
     }
 
     private post<Request, Response>(url: string, body: Request): Observable<Response> {
@@ -135,6 +141,7 @@ export class EtchedApiService {
      * @param fn function to invoke after refreshing the tokens
      */
     private refreshWrapper<T>(fn: () => Observable<T>): Observable<T> {
+        // TODO: We should probably add an interceptor that will refresh the token for us
         return this.refreshTokens()
             .pipe(mergeMap(() => fn.call(null)));
     }
