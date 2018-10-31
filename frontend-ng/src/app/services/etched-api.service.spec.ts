@@ -11,6 +11,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { TokenResponse } from './dtos/token-response';
 import { EntryEntity } from '../models/entry-entity';
 import { OwnerType } from '../models/owner-type';
+import { EtchEntity } from '../models/etch-entity';
 
 describe('EtchedApiService', () => {
     let injector: TestBed;
@@ -113,11 +114,6 @@ describe('EtchedApiService', () => {
         selfRequest.flush(USER);
     });
 
-    afterEach(() => {
-        // Verify that there aren't any outstanding requests
-        httpMock.verify();
-    });
-
     it('create entry', () => {
         initAuth();
         service.createEntry('content')
@@ -142,6 +138,77 @@ describe('EtchedApiService', () => {
         expect(req.request.method).toEqual('POST');
         expect(req.request.headers.has('Authorization')).toBeTruthy();
         req.flush(entry);
+    });
+
+    it('post etches', () => {
+        initAuth();
+
+        service.postEtches('entryId', ['etch1', 'etch2'])
+            .subscribe(etches => {
+                expect(etches.length).toEqual(2);
+                expect(etches[0].content).toEqual('etch1');
+                expect(etches[1].content).toEqual('etch2');
+            });
+
+        const etches = new Array<EtchEntity>(2);
+        etches[0] = {
+            content: 'etch1',
+            // Declaring string `as OwnerType` because the API returns it as a string
+            ownerType: OwnerType.USER,
+            owner: 'abc',
+            timestamp: 1,
+            id: '1',
+        };
+        etches[1] = {
+            content: 'etch2',
+            ownerType: OwnerType.USER,
+            owner: 'abc',
+            timestamp: 2,
+            id: '2',
+        };
+
+        const req = httpMock.expectOne(`${environment.API_URL}/entries/entryId/etches`);
+        expect(req.request.method).toEqual('POST');
+        expect(req.request.headers.has('Authorization')).toBeTruthy();
+        req.flush(etches);
+    });
+
+    it('get entries', () => {
+        initAuth();
+
+        service.getEntries()
+            .subscribe(entries => {
+                expect(entries.length).toEqual(2);
+                expect(entries[0].content).toEqual('entry1');
+                expect(entries[1].content).toEqual('entry2');
+            });
+
+        const entries = new Array<EntryEntity>(2);
+        entries[0] = {
+            content: 'entry1',
+            // Declaring string `as OwnerType` because the API returns it as a string
+            ownerType: OwnerType.USER,
+            owner: 'abc',
+            timestamp: 1,
+            id: '1',
+        };
+        entries[1] = {
+            content: 'entry2',
+            ownerType: OwnerType.USER,
+            owner: 'abc',
+            timestamp: 2,
+            id: '2',
+        };
+
+        const req = httpMock.expectOne(`${environment.API_URL}/entries`);
+        expect(req.request.method).toEqual('GET');
+        expect(req.request.headers.has('Authorization')).toBeTruthy();
+        req.flush(entries);
+    });
+
+    afterEach(() => {
+        // Verify that there aren't any outstanding requests
+        httpMock.verify();
     });
 
     /**
