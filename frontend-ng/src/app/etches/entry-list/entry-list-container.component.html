@@ -1,0 +1,11 @@
+<div class="columns is-centered">
+    <div *ngIf="inFlight" class="column is-12-mobile is-4-desktop">
+        <spinner [text]="'Getting entries'"></spinner>
+    </div>
+    <div *ngIf="!inFlight && decrypting" class="column is-12-mobile is-4-desktop">
+        <spinner [text]="'Decrypting entries'"></spinner>
+    </div>
+    <div *ngIf="!inFlight && !decrypting" class="column is-12-mobile is-8-desktop">
+        <app-entry-list [entries]="entries"></app-entry-list>
+    </div>
+</div>

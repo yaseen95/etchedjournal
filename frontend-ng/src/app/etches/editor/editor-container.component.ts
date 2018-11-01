@@ -1,14 +1,9 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { EntryEntity } from '../../models/entry-entity';
 import { EtchedApiService } from '../../services/etched-api.service';
 import { Encrypter, TEST_KEY_PAIR } from '../../services/encrypter';
 import { Base64Str, EncryptedEntity } from '../../models/encrypted-entity';
 import { Observable } from 'rxjs';
-
-const ETCH_TIMEOUT = 5 * 1000;
-
-const ENTER_KEY = 'Enter';
-const ESC_KEY = 'Escape';
 
 const ENTRY_NOT_CREATED = 'NOT_CREATED';
 const ENTRY_CREATING = 'ENTRY_CREATING';
@@ -33,6 +28,7 @@ export class EditorContainerComponent implements OnInit, OnDestroy {
     entryCreationState: string;
 
     /** the current entry */
+    @Input()
     entry?: EntryEntity;
 
     encrypter: Encrypter;
@@ -102,6 +98,7 @@ export class EditorContainerComponent implements OnInit, OnDestroy {
 
         this.encrypter.encrypt(this.title)
             .then(ciphertext => {
+                console.info(`creating entry with title: ${this.title}`);
                 this.etchedApi.createEntry(ciphertext)
                     .subscribe(entry => {
                         console.log(`Created entry with id ${entry.id}`);

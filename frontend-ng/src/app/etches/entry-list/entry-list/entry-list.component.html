@@ -1,0 +1,11 @@
+<div *ngIf="entries.length > 0">
+    <h3>Entries</h3>
+    <app-entry-list-item
+        *ngFor="let e of entries"
+        [entry]="e">
+    </app-entry-list-item>
+</div>
+<div *ngIf="entries.length == 0">
+    <p>No entries</p>
+</div>
+<!--TODO: Add button to create an entry-->

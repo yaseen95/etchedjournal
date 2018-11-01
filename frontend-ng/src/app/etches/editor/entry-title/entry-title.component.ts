@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { nonWhitespaceValidator } from '../../../user/form-utils';
 
@@ -10,7 +10,8 @@ import { nonWhitespaceValidator } from '../../../user/form-utils';
 export class EntryTitleComponent implements OnInit {
 
     /** title of entry */
-    title: string;
+    @Input()
+    title?: string;
 
     @Output()
     titleEmitter: EventEmitter<string>;
@@ -24,7 +25,11 @@ export class EntryTitleComponent implements OnInit {
     TITLE_MAX_LENGTH = 100;
 
     constructor(private fb: FormBuilder) {
-        this.title = new Date().toString();
+        if (this.title === undefined) {
+            // title may be provided if entry already exists
+            // if it doesn't we just use the current time as the title
+            this.title = new Date().toString();
+        }
         this.titleEmitter = new EventEmitter();
         this.titleForm = this.fb.group({
             title: ['', Validators.compose([
@@ -37,6 +42,8 @@ export class EntryTitleComponent implements OnInit {
     }
 
     ngOnInit() {
+        // Emit the first title otherwise it will be undefined
+        this.titleEmitter.emit(this.title);
     }
 
     toggleEdit(update: boolean = false) {
