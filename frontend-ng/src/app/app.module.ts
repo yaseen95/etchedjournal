@@ -13,6 +13,9 @@ import { EntryComponent } from './etches/entry/entry.component';
 import { EditorContainerComponent } from './etches/editor/editor-container.component';
 import { EntryEditorComponent } from './etches/editor/entry-editor/entry-editor.component';
 import { EntryTitleComponent } from './etches/editor/entry-title/entry-title.component';
+import { EntryListContainerComponent } from './etches/entry-list/entry-list-container.component';
+import { EntryListComponent } from './etches/entry-list/entry-list/entry-list.component';
+import { EntryListItemComponent } from './etches/entry-list/entry-list-item/entry-list-item.component';
 
 @NgModule({
     declarations: [
@@ -22,9 +25,16 @@ import { EntryTitleComponent } from './etches/editor/entry-title/entry-title.com
         SpinnerComponent,
         ConfigurePassphraseComponent,
         EntryComponent,
+
+        // Editor components
         EditorContainerComponent,
         EntryEditorComponent,
-        EntryTitleComponent
+        EntryTitleComponent,
+
+        // Entry list components
+        EntryListContainerComponent,
+        EntryListComponent,
+        EntryListItemComponent,
     ],
     imports: [
         AppRoutingModule,
