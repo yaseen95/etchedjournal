@@ -9,7 +9,6 @@ import { RegisterComponent } from './user/register/register.component';
 import { SpinnerComponent } from './utils/spinner/spinner.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ConfigurePassphraseComponent } from './user/configure-passphrase/configure-passphrase.component';
-import { EntryComponent } from './etches/entry/entry.component';
 import { EditorContainerComponent } from './etches/editor/editor-container.component';
 import { EntryEditorComponent } from './etches/editor/entry-editor/entry-editor.component';
 import { EntryTitleComponent } from './etches/editor/entry-title/entry-title.component';
@@ -25,18 +24,17 @@ import { ExistingEntryEditorContainerComponent } from './etches/editor/existing-
         RegisterComponent,
         SpinnerComponent,
         ConfigurePassphraseComponent,
-        EntryComponent,
 
         // Editor components
         EditorContainerComponent,
         EntryEditorComponent,
         EntryTitleComponent,
+        ExistingEntryEditorContainerComponent,
 
         // Entry list components
         EntryListContainerComponent,
         EntryListComponent,
         EntryListItemComponent,
-        ExistingEntryEditorContainerComponent,
     ],
     imports: [
         AppRoutingModule,

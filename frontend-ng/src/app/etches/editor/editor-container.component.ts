@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { EtchedApiService } from '../../services/etched-api.service';
 import { AbstractEditorContainerComponent } from './abstract-editor-container-component/abstract-editor-container.component';
+import { EncrypterService } from '../../services/encrypter.service';
 
 const ENTRY_NOT_CREATED = 'NOT_CREATED';
 const ENTRY_CREATING = 'ENTRY_CREATING';
@@ -17,8 +18,9 @@ export class EditorContainerComponent
     /** the current state of the entry */
     entryCreationState: string;
 
-    constructor(protected etchedApi: EtchedApiService) {
-        super(etchedApi);
+    constructor(etchedApi: EtchedApiService,
+                encrypterService: EncrypterService) {
+        super(etchedApi, encrypterService);
     }
 
     ngOnInit() {

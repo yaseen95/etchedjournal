@@ -1,9 +1,10 @@
 import { Base64Str, EncryptedEntity } from '../../../models/encrypted-entity';
 import { interval, Observable, Subscription } from 'rxjs';
 import { EntryEntity } from '../../../models/entry-entity';
-import { Encrypter, TEST_KEY_PAIR } from '../../../services/encrypter';
+import { Encrypter } from '../../../services/encrypter';
 import { EtchedApiService } from '../../../services/etched-api.service';
 import { OnDestroy, OnInit } from '@angular/core';
+import { EncrypterService } from '../../../services/encrypter.service';
 
 /**
  * Abstract base class used for Editor container components
@@ -35,17 +36,18 @@ export abstract class AbstractEditorContainerComponent implements OnInit, OnDest
     /** Current title */
     title: string;
 
-    protected constructor(protected etchedApi: EtchedApiService) {
+    protected constructor(protected etchedApi: EtchedApiService,
+                          protected encrypterService: EncrypterService) {
         this.queuedEtches = [];
+        if (encrypterService.encrypter === null) {
+            throw new Error('Encrypter is null');
+        }
+        this.encrypter = encrypterService.encrypter;
     }
 
     ngOnInit() {
         this.queueIntervalSubscription = interval(5_000)
             .subscribe(() => this.postEtches());
-
-        // TODO: Provide the encrypter via injection
-        Encrypter.from(TEST_KEY_PAIR, 'passphrase')
-            .then(encrypter => this.encrypter = encrypter);
     }
 
     ngOnDestroy() {

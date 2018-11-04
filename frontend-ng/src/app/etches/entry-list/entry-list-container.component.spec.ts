@@ -8,16 +8,23 @@ import { EtchedApiService } from '../../services/etched-api.service';
 import TestUtils from '../../utils/test-utils.spec';
 import { of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EncrypterService } from '../../services/encrypter.service';
 
 describe('EntryListContainerComponent', () => {
     let component: EntryListContainerComponent;
     let fixture: ComponentFixture<EntryListContainerComponent>;
     let etchedApi: any;
+    let encrypter: any;
+    let encrypterService: EncrypterService;
 
     beforeEach(async(() => {
         etchedApi = jasmine.createSpyObj('EtchedApiService', ['getEntries']);
         // By default getUser should return null
         etchedApi.getEntries.and.returnValue(of([]));
+        encrypter = jasmine.createSpyObj('Encrypter', ['encrypt']);
+
+        encrypterService = new EncrypterService();
+        encrypterService.encrypter = encrypter;
 
         TestBed.configureTestingModule({
             declarations: [
@@ -28,6 +35,7 @@ describe('EntryListContainerComponent', () => {
             ],
             providers: [
                 {provide: EtchedApiService, useValue: etchedApi},
+                {provide: EncrypterService, useValue: encrypterService},
             ],
             imports: [
                 RouterTestingModule,

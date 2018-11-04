@@ -6,11 +6,12 @@ import { OwnerType } from '../../../models/owner-type';
 import { Encrypter } from '../../../services/encrypter';
 import { of } from 'rxjs';
 import { EntryEntity } from '../../../models/entry-entity';
+import { EncrypterService } from '../../../services/encrypter.service';
 
 // Test only implementation
 class TestEditorContainerComponent extends AbstractEditorContainerComponent {
-    constructor(etchedApi: EtchedApiService) {
-        super(etchedApi);
+    constructor(etchedApi: EtchedApiService, encrypterService: EncrypterService) {
+        super(etchedApi, encrypterService);
     }
 }
 
@@ -18,6 +19,7 @@ describe('AbstractEditorContainerComponent', () => {
     let component: AbstractEditorContainerComponent;
     let etchedApi: any;
     let encrypter: any;
+    let encrypterService: any;
 
     let testEntry: EntryEntity = {
         content: 'entry',
@@ -36,8 +38,11 @@ describe('AbstractEditorContainerComponent', () => {
         const encrypterFromSpy = spyOn(Encrypter, 'from');
         encrypterFromSpy.and.returnValue(Promise.resolve(encrypter));
 
+        encrypterService = new EncrypterService();
+        encrypterService.encrypter = encrypter;
+
         etchedApi.postEtches.and.returnValue(of([]));
-        component = new TestEditorContainerComponent(etchedApi);
+        component = new TestEditorContainerComponent(etchedApi, encrypterService);
     });
 
     it('queued should by empty on initialization', () => {

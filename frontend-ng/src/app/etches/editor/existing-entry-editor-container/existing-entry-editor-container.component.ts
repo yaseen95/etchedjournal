@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Base64Str, Uuid } from '../../../models/encrypted-entity';
 import { EtchEntity } from '../../../models/etch-entity';
 import { EntryEntity } from '../../../models/entry-entity';
+import { EncrypterService } from '../../../services/encrypter.service';
 
 export enum EntityState {
     FETCHING = 'FETCHING',
@@ -32,9 +33,10 @@ export class ExistingEntryEditorContainerComponent
 
     constructor(
         etchedApi: EtchedApiService,
+        encrypterService: EncrypterService,
         private route: ActivatedRoute
     ) {
-        super(etchedApi);
+        super(etchedApi, encrypterService);
         this.entryState = EntityState.FETCHING;
         this.etchesState = EntityState.FETCHING;
 
