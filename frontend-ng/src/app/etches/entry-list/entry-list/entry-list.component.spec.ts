@@ -5,6 +5,7 @@ import { EntryListItemComponent } from '../entry-list-item/entry-list-item.compo
 import TestUtils from '../../../utils/test-utils.spec';
 import { OwnerType } from '../../../models/owner-type';
 import { By } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('EntryListComponent', () => {
     let component: EntryListComponent;
@@ -15,6 +16,9 @@ describe('EntryListComponent', () => {
             declarations: [
                 EntryListComponent,
                 EntryListItemComponent,
+            ],
+            imports: [
+                RouterTestingModule,
             ]
         })
             .compileComponents();

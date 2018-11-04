@@ -2,6 +2,7 @@ import {
     Component,
     ElementRef,
     EventEmitter,
+    Input,
     OnDestroy,
     OnInit,
     Optional,
@@ -21,6 +22,7 @@ const ENTER_KEY = 'Enter';
 export class EntryEditorComponent implements OnInit, OnDestroy {
 
     /** list of etches */
+    @Input()
     etches: string[];
 
     /** timestamp of last edit (millis since epoch) */
@@ -44,7 +46,9 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
     etchTimeout: number;
 
     constructor(@Optional() etchTimeout: number) {
-        this.etches = [];
+        if (this.etches === undefined) {
+            this.etches = [];
+        }
         this.recentEdit = Date.now();
         this.etchEmitter = new EventEmitter();
 

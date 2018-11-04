@@ -13,6 +13,9 @@ export class EntryTitleComponent implements OnInit {
     @Input()
     title?: string;
 
+    /** the previous title, stored so that titles are only emitted when it's changed */
+    prevTitle: string;
+
     @Output()
     titleEmitter: EventEmitter<string>;
 
@@ -25,11 +28,6 @@ export class EntryTitleComponent implements OnInit {
     TITLE_MAX_LENGTH = 100;
 
     constructor(private fb: FormBuilder) {
-        if (this.title === undefined) {
-            // title may be provided if entry already exists
-            // if it doesn't we just use the current time as the title
-            this.title = new Date().toString();
-        }
         this.titleEmitter = new EventEmitter();
         this.titleForm = this.fb.group({
             title: ['', Validators.compose([
@@ -42,8 +40,19 @@ export class EntryTitleComponent implements OnInit {
     }
 
     ngOnInit() {
-        // Emit the first title otherwise it will be undefined
-        this.titleEmitter.emit(this.title);
+        if (this.title === undefined) {
+            // title may be provided if entry already exists
+            // if it doesn't we just use the current time as the title
+            this.title = new Date().toString();
+
+            // Emit the first title so that the container is aware of it
+            // Events cannot be emitted in the constructor, so we have to do it in ngOnInit
+            this.titleEmitter.emit(this.title);
+        } else {
+            console.info(`Title was provided as: ${this.title}`);
+        }
+
+        this.prevTitle = this.title;
     }
 
     toggleEdit(update: boolean = false) {
@@ -51,7 +60,11 @@ export class EntryTitleComponent implements OnInit {
             // If were were in edit mode, save the title value from the form
             if (update) {
                 this.title = this.titleForm.controls.title.value.trim();
-                this.titleEmitter.emit(this.title);
+                if (this.title !== this.prevTitle) {
+                    console.info(`Updating title to ${this.title}`);
+                    this.titleEmitter.emit(this.title);
+                    this.prevTitle = this.title;
+                }
             }
         } else {
             // If we were not in edit mode, update the form to display the current title

@@ -65,7 +65,8 @@ export class EtchedApiService {
                     console.info(`Successfully logged in ${username}`);
                     // Immediately after we've logged in, send a request to get the user details
                     this.self()
-                        .subscribe(() => {});
+                        .subscribe(() => {
+                        });
                 }),
             );
     }
@@ -128,6 +129,22 @@ export class EtchedApiService {
             console.info('Getting entries');
             return this.http.get<EntryEntity[]>(ENTRIES_URL, {headers: this.authHeaders})
                 .pipe(tap(entries => console.info(`Fetched ${entries.length} entries`)));
+        });
+    }
+
+    public getEntry(entryId: Uuid): Observable<EntryEntity> {
+        return this.refreshWrapper(() => {
+            console.info(`Getting entry ${entryId}`);
+            return this.http.get<EntryEntity>(`${ENTRIES_URL}/${entryId}`, {headers: this.authHeaders})
+                .pipe(tap(() => console.info(`Fetched entry ${entryId}`)));
+        });
+    }
+
+    public getEtches(entryId: Uuid): Observable<EtchEntity[]> {
+        return this.refreshWrapper(() => {
+            console.info(`Getting etches for entry ${entryId}`);
+            return this.http.get<EtchEntity[]>(`${ENTRIES_URL}/${entryId}/etches`, {headers: this.authHeaders})
+                .pipe(tap(etches => console.info(`Fetched ${etches.length} etches for entry ${entryId}`)));
         });
     }
 

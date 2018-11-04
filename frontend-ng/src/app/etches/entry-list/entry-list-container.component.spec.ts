@@ -7,6 +7,7 @@ import { SpinnerComponent } from '../../utils/spinner/spinner.component';
 import { EtchedApiService } from '../../services/etched-api.service';
 import TestUtils from '../../utils/test-utils.spec';
 import { of } from 'rxjs';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('EntryListContainerComponent', () => {
     let component: EntryListContainerComponent;
@@ -27,6 +28,9 @@ describe('EntryListContainerComponent', () => {
             ],
             providers: [
                 {provide: EtchedApiService, useValue: etchedApi},
+            ],
+            imports: [
+                RouterTestingModule,
             ]
         })
             .compileComponents();

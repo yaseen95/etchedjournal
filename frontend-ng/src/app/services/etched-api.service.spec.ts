@@ -206,6 +206,62 @@ describe('EtchedApiService', () => {
         req.flush(entries);
     });
 
+    it('get entry', () => {
+        initAuth();
+
+        service.getEntry('entry1')
+            .subscribe(entry => {
+                expect(entry.id).toEqual('entry1');
+                expect(entry.timestamp).toEqual(1);
+                expect(entry.owner).toEqual('owner');
+            });
+
+        const entry = {
+            content: 'content',
+            ownerType: OwnerType.USER,
+            owner: 'owner',
+            timestamp: 1,
+            id: 'entry1',
+        };
+
+        const req = httpMock.expectOne(`${environment.API_URL}/entries/entry1`);
+        expect(req.request.method).toEqual('GET');
+        expect(req.request.headers.has('Authorization')).toBeTruthy();
+        req.flush(entry);
+    });
+
+    it('get etches', () => {
+        initAuth();
+
+        service.getEtches('entry1')
+            .subscribe(etches => {
+                expect(etches.length).toEqual(2);
+                expect(etches[0].content).toEqual('etch1');
+                expect(etches[1].content).toEqual('etch2');
+            });
+
+        const entries = new Array<EntryEntity>(2);
+        entries[0] = {
+            content: 'etch1',
+            ownerType: OwnerType.USER,
+            owner: 'owner',
+            timestamp: 1,
+            id: '1',
+        };
+        entries[1] = {
+            content: 'etch2',
+            ownerType: OwnerType.USER,
+            owner: 'owner',
+            timestamp: 2,
+            id: '2',
+        };
+
+        const req = httpMock.expectOne(`${environment.API_URL}/entries/entry1/etches`);
+        expect(req.request.method).toEqual('GET');
+        expect(req.request.headers.has('Authorization')).toBeTruthy();
+        req.flush(entries);
+    });
+
     afterEach(() => {
         // Verify that there aren't any outstanding requests
         httpMock.verify();

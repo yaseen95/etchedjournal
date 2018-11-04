@@ -1,0 +1,22 @@
+<div class="columns is-centered">
+    <div *ngIf="entryState === 'FETCHING' || etchesState === 'FETCHING'"
+         class="column is-12-mobile is-4-desktop">
+        <spinner [text]="'Getting entry'"></spinner>
+    </div>
+    <div *ngIf="entryState === 'DECRYPTING' || etchesState === 'DECRYPTING'"
+         class="column is-12-mobile is-4-desktop">
+        <spinner [text]="'Decrypting'"></spinner>
+    </div>
+    <div *ngIf="entryState === 'DECRYPTED' && etchesState === 'DECRYPTED'"
+         class="column is-12-mobile is-8-tablet is-8-desktop">
+        <app-entry-title
+            (titleEmitter)="onTitleChange($event)"
+            [title]="title"
+            class="columns has-text-left">
+        </app-entry-title>
+        <app-editor
+            (etchEmitter)="queuedEtches.push($event)"
+            [etches]="decryptedEtches">
+        </app-editor>
+    </div>
+</div>
