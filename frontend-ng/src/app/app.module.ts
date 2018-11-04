@@ -16,6 +16,7 @@ import { EntryTitleComponent } from './etches/editor/entry-title/entry-title.com
 import { EntryListContainerComponent } from './etches/entry-list/entry-list-container.component';
 import { EntryListComponent } from './etches/entry-list/entry-list/entry-list.component';
 import { EntryListItemComponent } from './etches/entry-list/entry-list-item/entry-list-item.component';
+import { ExistingEntryEditorContainerComponent } from './etches/editor/existing-entry-editor-container/existing-entry-editor-container.component';
 
 @NgModule({
     declarations: [
@@ -35,6 +36,7 @@ import { EntryListItemComponent } from './etches/entry-list/entry-list-item/entr
         EntryListContainerComponent,
         EntryListComponent,
         EntryListItemComponent,
+        ExistingEntryEditorContainerComponent,
     ],
     imports: [
         AppRoutingModule,

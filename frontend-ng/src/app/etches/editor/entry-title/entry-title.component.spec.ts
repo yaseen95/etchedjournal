@@ -33,6 +33,29 @@ describe('EntryTitleComponent', () => {
         expect(component.isEditing).toBeFalsy();
     });
 
+    it('title is emitted on init when undefined', () => {
+        component.title = undefined;
+        component.ngOnInit();
+        expect(emittedEvents.length).toEqual(1);
+
+        // The default time should be pretty recent
+        expect(new Date(emittedEvents[0]).getTime()).toBeLessThan(Date.now());
+        // Have to subtract by 1 second because the default timestamp string does not have
+        // millis precision and is rounded down to the nearest second
+        expect(new Date(emittedEvents[0]).getTime()).toBeGreaterThan(Date.now() - 1_000);
+
+        expect(component.title).toEqual(emittedEvents[0]);
+        expect(component.prevTitle).toEqual(emittedEvents[0]);
+    });
+
+    it('title provided in input does not emit', () => {
+        component.title = 'title is provided';
+        component.ngOnInit();
+        expect(emittedEvents.length).toEqual(0);
+        expect(component.title).toEqual('title is provided');
+        expect(component.prevTitle).toEqual('title is provided');
+    });
+
     it('title view when not editing', () => {
         component.title = 'test title';
         fixture.detectChanges();
