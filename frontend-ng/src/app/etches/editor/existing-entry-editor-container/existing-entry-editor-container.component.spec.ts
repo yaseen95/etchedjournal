@@ -14,6 +14,7 @@ import { EMPTY, of } from 'rxjs';
 import TestUtils from '../../../utils/test-utils.spec';
 import { OwnerType } from '../../../models/owner-type';
 import { Encrypter } from '../../../services/encrypter';
+import { EncrypterService } from '../../../services/encrypter.service';
 
 describe('ExistingEntryEditorContainerComponent', () => {
     let component: ExistingEntryEditorContainerComponent;
@@ -29,9 +30,8 @@ describe('ExistingEntryEditorContainerComponent', () => {
         encrypterSpy = jasmine.createSpyObj('Encrypter', ['decrypt']);
         encrypterSpy.decrypt.and.returnValue(Promise.resolve('decrypted text'));
 
-        // // Create a spy on that static constructor for Encrypter
-        // const encrypterFromSpy = spyOn(Encrypter, 'from');
-        // encrypterFromSpy.and.returnValue(Promise.resolve(encrypterSpy));
+        const encrypterService = new EncrypterService();
+        encrypterService.encrypter = encrypterSpy;
 
         TestBed.configureTestingModule({
             declarations: [
@@ -43,6 +43,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
             imports: [ReactiveFormsModule],
             providers: [
                 {provide: EtchedApiService, useValue: etchedApiSpy},
+                {provide: EncrypterService, useValue: encrypterService},
                 {
                     provide: ActivatedRoute,
                     useValue: {

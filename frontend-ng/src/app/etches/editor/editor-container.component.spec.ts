@@ -5,16 +5,24 @@ import { EtchedApiService } from '../../services/etched-api.service';
 import { EntryTitleComponent } from './entry-title/entry-title.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EntryEditorComponent } from './entry-editor/entry-editor.component';
+import { EncrypterService } from '../../services/encrypter.service';
 
 describe('EditorContainerComponent', () => {
     let component: EditorContainerComponent;
     let fixture: ComponentFixture<EditorContainerComponent>;
     let etchedApiSpy: any;
+    let encrypterSpy: any;
+    let encrypterService: EncrypterService;
 
     beforeEach(async(() => {
         etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['getUser']);
         // By default getUser should return null
         etchedApiSpy.getUser.and.returnValue(null);
+
+        encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt']);
+
+        encrypterService = new EncrypterService();
+        encrypterService.encrypter = encrypterSpy;
 
         TestBed.configureTestingModule({
             declarations: [
@@ -24,6 +32,7 @@ describe('EditorContainerComponent', () => {
             ],
             providers: [
                 {provide: EtchedApiService, useValue: etchedApiSpy},
+                {provide: EncrypterService, useValue: encrypterService},
             ],
             imports: [ReactiveFormsModule],
         })

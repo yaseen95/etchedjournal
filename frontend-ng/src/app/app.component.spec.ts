@@ -7,7 +7,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SpinnerComponent } from './utils/spinner/spinner.component';
 import { RouterTestingModule } from '@angular/router/testing';
-import { EntryComponent } from './etches/entry/entry.component';
 import { EditorContainerComponent } from './etches/editor/editor-container.component';
 import { EntryTitleComponent } from './etches/editor/entry-title/entry-title.component';
 import { EntryEditorComponent } from './etches/editor/entry-editor/entry-editor.component';
@@ -20,7 +19,6 @@ describe('AppComponent', () => {
                 RegisterComponent,
                 LoginComponent,
                 SpinnerComponent,
-                EntryComponent,
                 EditorContainerComponent,
                 EntryTitleComponent,
                 EntryEditorComponent,

@@ -9,23 +9,31 @@ import { By } from '@angular/platform-browser';
 import { EtchedUser } from '../../models/etched-user';
 import TestUtils from '../../utils/test-utils.spec';
 import { SpinnerComponent } from '../../utils/spinner/spinner.component';
+import { EncrypterService } from '../../services/encrypter.service';
 
 describe('LoginComponent', () => {
     let component: LoginComponent;
     let fixture: ComponentFixture<LoginComponent>;
     let loginForm: FormGroup;
     let etchedApiSpy: any;
+    let encrypterSpy: any;
+    let encrypterService: EncrypterService;
 
     beforeEach(() => {
         etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['login', 'getUser']);
         // By default getUser should return null
         etchedApiSpy.getUser.and.returnValue(null);
 
+        encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt', 'decrypt']);
+        encrypterService = new EncrypterService();
+        encrypterService.encrypter = encrypterSpy;
+
         TestBed.configureTestingModule({
             declarations: [LoginComponent, SpinnerComponent],
             imports: [ReactiveFormsModule],
             providers: [
                 {provide: EtchedApiService, useValue: etchedApiSpy},
+                {provide: EncrypterService, useValue: encrypterService},
             ]
         })
             .compileComponents();
@@ -220,7 +228,10 @@ describe('LoginComponent', () => {
         // Submit the form, after login is complete it should automatically hide the spinner
         // Returning an observable of some value so that the `subscribe` can be invoked
         etchedApiSpy.login.and.returnValue(of(1));
+
         component.onSubmit();
+
+        expect(component.inFlight).toBeFalsy();
         expect(etchedApiSpy.login).toHaveBeenCalledTimes(1);
         expect(etchedApiSpy.login).toHaveBeenCalledWith('samsepiol', 'mrrobot');
 

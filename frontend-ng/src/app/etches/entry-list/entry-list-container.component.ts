@@ -4,6 +4,7 @@ import { EntryEntity } from '../../models/entry-entity';
 import { Encrypter, TEST_KEY_PAIR } from '../../services/encrypter';
 import { forkJoin, from } from 'rxjs';
 import { Base64Str } from '../../models/encrypted-entity';
+import { EncrypterService } from '../../services/encrypter.service';
 
 @Component({
     selector: 'app-entry-list-container',
@@ -22,27 +23,26 @@ export class EntryListContainerComponent implements OnInit {
 
     encrypter?: Encrypter;
 
-    constructor(private etchedApi: EtchedApiService) {
+    constructor(private etchedApi: EtchedApiService,
+                private encrypterService: EncrypterService) {
         this.inFlight = true;
         this.decrypting = false;
         this.fetchedEntries = false;
         this.entries = [];
+        if (encrypterService.encrypter === null) {
+            throw new Error('Expected encrypter to not be null');
+        }
+        console.info(encrypterService.encrypter);
+        this.encrypter = encrypterService.encrypter;
     }
 
     ngOnInit() {
         // Get the entries once the component is initialized
-        const entriesObs = this.etchedApi.getEntries();
-        const encrypterObs = from(Encrypter.from(TEST_KEY_PAIR, 'passphrase'));
-
-        // Wait for both observables to complete
-        forkJoin(entriesObs, encrypterObs)
-            .subscribe(result => {
-                console.info('starting decryption of entries');
+        this.etchedApi.getEntries()
+            .subscribe(entries => {
+                console.info('Starting decryption of entries');
                 this.inFlight = false;
-                this.decrypting = true;
-
-                this.encrypter = result[1];
-                this.decrypt(result[0]);
+                this.decrypt(entries)
             });
     }
 
