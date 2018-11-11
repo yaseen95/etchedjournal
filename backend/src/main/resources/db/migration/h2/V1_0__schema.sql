@@ -16,3 +16,12 @@ CREATE TABLE etches (
   entry_id    UUID          NOT NULL,
   FOREIGN KEY (entry_id) REFERENCES entries (id)
 );
+
+CREATE TABLE keypairs (
+  id          UUID          DEFAULT RANDOM_UUID() PRIMARY KEY,
+  timestamp   TIMESTAMP     NOT NULL,
+  public_key  BINARY        NOT NULL,
+  private_key BINARY        NOT NULL,
+  owner       VARCHAR(60)   NOT NULL,
+  owner_type  VARCHAR(50)   NOT NULL,
+);

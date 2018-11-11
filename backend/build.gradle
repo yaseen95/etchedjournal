@@ -9,6 +9,9 @@ buildscript {
         h2Version = '1.4.196'
         hibernateValidatorVersion = '6.0.10.Final'
         javaxValidationApiVersion = '2.0.1.Final'
+        mockitoKotlinVersion = '2.0.0'
+        mockitoVersion = '2.23.0'
+        bouncyCastleVersion = '1.60'
     }
     repositories {
         mavenCentral()
@@ -80,11 +83,17 @@ dependencies {
     // other library. https://stackoverflow.com/questions/44676732/
     compile('org.hibernate:hibernate-java8:5.0.12.Final')
 
+    // PGP libraries
+    implementation("org.bouncycastle:bcpg-jdk15on:${bouncyCastleVersion}")
+    implementation("org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}")
+
     runtime("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
     runtime("com.h2database:h2:${h2Version}")
 
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     testCompile("org.springframework.security:spring-security-test:${springSecurityVersion}")
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:${mockitoKotlinVersion}"
+    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
 }
 
 jar {
