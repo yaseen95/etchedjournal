@@ -1,66 +1,61 @@
-<div class="columns is-centered">
-    <div *ngIf="inFlight === false" class="column is-12-mobile is-4-desktop">
-        <h3 class="title">Register</h3>
-        <form
-            [formGroup]="registerForm"
-            class="control"
-            (submit)="onSubmit()"
-        >
-            <div class="field">
-                <div class="control">
-                    <label class="label">Username</label>
-                    <input
-                        class="input"
-                        type="text"
-                        placeholder="Username"
-                        name="username"
-                        formControlName="username"
-                    />
-                </div>
+<div>
+    <h3 class="title">Register</h3>
+    <form
+        [formGroup]="registerForm"
+        class="control"
+        (submit)="onSubmit()"
+    >
+        <div class="field">
+            <div class="control">
+                <label class="label">Username</label>
+                <input
+                    class="input"
+                    type="text"
+                    placeholder="Username"
+                    name="username"
+                    formControlName="username"
+                />
             </div>
-            <!--<div class="field">-->
-                <!--<div class="control">-->
-                    <!--<label class="label">Email</label>-->
-                    <!--<input-->
-                        <!--class="input"-->
-                        <!--type="text"-->
-                        <!--placeholder="Email"-->
-                        <!--formControlName="email"-->
-                    <!--/>-->
-                <!--</div>-->
-            <!--</div>-->
-            <div class="field">
-                <div class="control">
-                    <label class="label">Password</label>
-                    <input
-                        class="input"
-                        type="password"
-                        placeholder="Password"
-                        name="password"
-                        formControlName="password"
-                    />
-                </div>
+        </div>
+        <!--<div class="field">-->
+        <!--<div class="control">-->
+        <!--<label class="label">Email</label>-->
+        <!--<input-->
+        <!--class="input"-->
+        <!--type="text"-->
+        <!--placeholder="Email"-->
+        <!--formControlName="email"-->
+        <!--/>-->
+        <!--</div>-->
+        <!--</div>-->
+        <div class="field">
+            <div class="control">
+                <label class="label">Password</label>
+                <input
+                    class="input"
+                    type="password"
+                    placeholder="Password"
+                    name="password"
+                    formControlName="password"
+                />
             </div>
-            <div class="field">
-                <div class="control">
-                    <button
-                        type="submit"
-                        class="button is-primary"
-                        [disabled]="!registerForm.valid">
-                        Submit
-                    </button>
-                </div>
+        </div>
+        <div class="field">
+            <div class="control">
+                <button
+                    type="submit"
+                    class="button is-primary"
+                    [disabled]="!registerForm.valid">
+                    Submit
+                </button>
             </div>
-            <p>
-                Form Status: {{ registerForm.status }}
-            </p>
-            <div style="padding-top: 10px">
-                <!--TODO: Add router link to login page-->
-                Already have an account? <a routerLink="/login">Login here</a>
-            </div>
-        </form>
-    </div>
-    <div *ngIf="inFlight" class="column is-12-mobile is-4-desktop">
-        <spinner [text]="'Registering'"></spinner>
-    </div>
+        </div>
+        <p>
+            Form Status: {{ registerForm.status }}
+        </p>
+        <div style="padding-top: 10px">
+            <!--TODO: Add router link to login page-->
+            Already have an account? <a routerLink="/login">Login here</a>
+        </div>
+    </form>
 </div>

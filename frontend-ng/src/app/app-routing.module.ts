@@ -6,11 +6,12 @@ import { ConfigurePassphraseComponent } from './user/configure-passphrase/config
 import { EditorContainerComponent } from './etches/editor/editor-container.component';
 import { EntryListContainerComponent } from './etches/entry-list/entry-list-container.component';
 import { ExistingEntryEditorContainerComponent } from './etches/editor/existing-entry-editor-container/existing-entry-editor-container.component';
+import { RegisterContainerComponent } from './user/register/register-container/register-container.component';
 
 
 const routes: Routes = [
     {path: 'login', component: LoginComponent},
-    {path: 'register', component: RegisterComponent},
+    {path: 'register', component: RegisterContainerComponent},
     {path: 'configure-passphrase', component: ConfigurePassphraseComponent},
     {path: 'entries/new', component: EditorContainerComponent},
     {path: 'entries/:id', component: ExistingEntryEditorContainerComponent},

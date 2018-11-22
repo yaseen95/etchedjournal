@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
 import {
     PASSPHRASE_MIN_LENGTH,
     PASSPHRASE_VALIDATORS,
     passphraseMatchValidator
 } from '../form-utils';
+import { Encrypter } from '../../services/encrypter';
 
 @Component({
     selector: 'app-configure-passphrase',
@@ -14,13 +15,17 @@ import {
 export class ConfigurePassphraseComponent implements OnInit {
 
     passphraseForm: FormGroup;
-    inFlight: boolean;
     submitClicked: boolean;
 
     PASSPHRASE_MIN_LENGTH: number = PASSPHRASE_MIN_LENGTH;
 
+    @Input()
+    userId: string;
+
+    @Output()
+    passphraseEmitter: EventEmitter<string> = new EventEmitter<string>();
+
     constructor(private fb: FormBuilder) {
-        this.inFlight = false;
         this.submitClicked = false;
     }
 
@@ -44,10 +49,7 @@ export class ConfigurePassphraseComponent implements OnInit {
     }
 
     configurePassphrase() {
-        this.inFlight = true;
-        setTimeout(() => {
-            this.inFlight = false;
-        }, 2000);
+        this.passphraseEmitter.emit(this.passphraseForm.controls.passphrase.value);
     }
 
     getPassphraseError() {

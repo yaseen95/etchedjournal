@@ -157,7 +157,7 @@ class KeypairServiceControllerTest {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `POST keypairs`() {
-        val publicKey = PgpUtilsTest.ABCDEF_RSA_2048_OPENPGPJS_PUBLIC_KEY.replace("\n", "")
+        val publicKey = PgpUtilsTest.TESTER_RSA_4096_OPENPGPJS_PUBLIC_KEY.replace("\n", "")
 
         mockMvc.perform(
             post("/api/v1/keypairs")
@@ -179,6 +179,48 @@ class KeypairServiceControllerTest {
             .andExpect(jsonPath("$.privateKey").value("AQIDBA=="))
             .andExpect(jsonPath("$.owner").value(TESTER_USER_ID))
             .andExpect(jsonPath("$.ownerType").value("USER"))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["user"])
+    fun `POST keypairs - 2048 bit RSA key`() {
+        val publicKey = PgpUtilsTest.TESTER_RSA_2048_OPENPGPJS_PUBLIC_KEY.replace("\n", "")
+
+        mockMvc.perform(
+            post("/api/v1/keypairs")
+                .content(
+                    """
+                    {
+                        "publicKey": "$publicKey",
+                        "privateKey": "AQIDBA=="
+                    }
+                    """.trimIndent()
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.publicKey").value(publicKey))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["user"])
+    fun `POST keypairs - 4096 bit RSA key`() {
+        val publicKey = PgpUtilsTest.TESTER_RSA_4096_OPENPGPJS_PUBLIC_KEY.replace("\n", "")
+
+        mockMvc.perform(
+            post("/api/v1/keypairs")
+                .content(
+                    """
+                    {
+                        "publicKey": "$publicKey",
+                        "privateKey": "AQIDBA=="
+                    }
+                    """.trimIndent()
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.publicKey").value(publicKey))
     }
 
     @Test
@@ -251,6 +293,36 @@ class KeypairServiceControllerTest {
         )
             .andExpect(status().isUnauthorized)
             .andExpect(content().string(""))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["user"])
+    fun `POST keypairs - public key has incorrect user id`() {
+        // user id is "abcdef <abcdef@user.etchedjournal.com>" for this key
+        // But we expect the id to use the uuids not the usernames
+        val publicKey = PgpUtilsTest.ABCDEF_RSA_2048_OPENPGPJS_PUBLIC_KEY.replace("\n", "")
+
+        mockMvc.perform(
+            post("/api/v1/keypairs")
+                .content(
+                    """
+                    {
+                        "publicKey": "$publicKey",
+                        "privateKey": "AQIDBA=="
+                    }
+                    """.trimIndent()
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isBadRequest)
+            // Should we have a better error message?
+            .andExpect(content().json(
+                """
+                {
+                    "message": "Bad request"
+                }
+                """.trimIndent()
+            ))
     }
 
     private fun createKeypair(
