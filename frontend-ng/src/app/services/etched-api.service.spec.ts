@@ -1,10 +1,7 @@
 import { getTestBed, TestBed } from '@angular/core/testing';
 
 import { EtchedApiService } from './etched-api.service';
-import {
-    HttpClientTestingModule,
-    HttpTestingController
-} from '../../../node_modules/@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { EtchedUser } from '../models/etched-user';
 import { environment } from '../../environments/environment';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
@@ -12,6 +9,7 @@ import { TokenResponse } from './dtos/token-response';
 import { EntryEntity } from '../models/entry-entity';
 import { OwnerType } from '../models/owner-type';
 import { EtchEntity } from '../models/etch-entity';
+import { KeyPairEntity } from '../models/key-pair-entity';
 
 describe('EtchedApiService', () => {
     let injector: TestBed;
@@ -260,6 +258,34 @@ describe('EtchedApiService', () => {
         expect(req.request.method).toEqual('GET');
         expect(req.request.headers.has('Authorization')).toBeTruthy();
         req.flush(entries);
+    });
+
+    it('createKeyPair', () => {
+        initAuth();
+
+        service.createKeyPair('pubKey', 'privKey')
+            .subscribe(keyPair => {
+                expect(keyPair.id).toEqual('id');
+                expect(keyPair.owner).toEqual('owner');
+                expect(keyPair.ownerType).toEqual('USER');
+                expect(keyPair.privateKey).toEqual('privKey');
+                expect(keyPair.publicKey).toEqual('pubKey');
+                expect(keyPair.timestamp).toEqual(1);
+            });
+
+        const mockKeyPair: KeyPairEntity = {
+            id: 'id',
+            owner: 'owner',
+            ownerType: OwnerType.USER,
+            privateKey: 'privKey',
+            publicKey: 'pubKey',
+            timestamp: 1,
+        };
+
+        const req = httpMock.expectOne(`${environment.API_URL}/keypairs`);
+        expect(req.request.method).toEqual('POST');
+        expect(req.request.headers.has('Authorization')).toBeTruthy();
+        req.flush(mockKeyPair);
     });
 
     afterEach(() => {

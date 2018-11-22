@@ -16,14 +16,13 @@ import { EntryListContainerComponent } from './etches/entry-list/entry-list-cont
 import { EntryListComponent } from './etches/entry-list/entry-list/entry-list.component';
 import { EntryListItemComponent } from './etches/entry-list/entry-list-item/entry-list-item.component';
 import { ExistingEntryEditorContainerComponent } from './etches/editor/existing-entry-editor-container/existing-entry-editor-container.component';
+import { RegisterContainerComponent } from './user/register/register-container/register-container.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         LoginComponent,
-        RegisterComponent,
         SpinnerComponent,
-        ConfigurePassphraseComponent,
 
         // Editor components
         EditorContainerComponent,
@@ -35,6 +34,11 @@ import { ExistingEntryEditorContainerComponent } from './etches/editor/existing-
         EntryListContainerComponent,
         EntryListComponent,
         EntryListItemComponent,
+
+        // Register components
+        RegisterContainerComponent,
+        ConfigurePassphraseComponent,
+        RegisterComponent,
     ],
     imports: [
         AppRoutingModule,

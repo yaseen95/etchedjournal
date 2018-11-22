@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { PASSWORD_VALIDATORS, USERNAME_VALIDATORS } from '../form-utils';
-import { EtchedApiService } from '../../services/etched-api.service';
+import { RegisterRequest } from '../../services/dtos/register-request';
 
 @Component({
     selector: 'register',
@@ -16,19 +16,16 @@ export class RegisterComponent implements OnInit {
         // email: ['', EMAIL_VALIDATORS],
     });
 
-    /** is the registration request in flight **/
-    inFlight: boolean;
+    @Output()
+    registerEmitter: EventEmitter<RegisterRequest> = new EventEmitter();
 
-    constructor(private fb: FormBuilder,
-                private etchedApi: EtchedApiService) {
-        this.inFlight = false;
+    constructor(private fb: FormBuilder) {
     }
 
     ngOnInit() {
     }
 
     onSubmit() {
-        console.info(this.registerForm.value);
         let {username, password} = this.registerForm.value;
         // if (email === undefined || email.trim() === '') {
         //     console.info('Registering without an email');
@@ -36,12 +33,11 @@ export class RegisterComponent implements OnInit {
         // }
         // TODO: Allow optional emails
 
-        this.inFlight = true;
-        this.etchedApi.register(username, password, null)
-            .subscribe(u => {
-                console.info(`Registered ${JSON.stringify(u)}`);
-                this.inFlight = false;
-            });
-        // TODO: handle error from register
+        const registerRequest: RegisterRequest = {
+            username,
+            password,
+            email: null,
+        };
+        this.registerEmitter.emit(registerRequest);
     }
 }

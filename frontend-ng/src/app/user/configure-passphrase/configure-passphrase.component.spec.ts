@@ -10,6 +10,7 @@ describe('ConfigurePassphraseComponent', () => {
     let component: ConfigurePassphraseComponent;
     let fixture: ComponentFixture<ConfigurePassphraseComponent>;
     let passphraseForm: FormGroup;
+    let emittedPassphrases: Array<string>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -26,6 +27,9 @@ describe('ConfigurePassphraseComponent', () => {
         fixture.detectChanges();
 
         passphraseForm = component.passphraseForm;
+        emittedPassphrases = [];
+
+        component.passphraseEmitter.subscribe(passphrase => emittedPassphrases.push(passphrase));
     });
 
     it('should create', () => {
@@ -34,7 +38,7 @@ describe('ConfigurePassphraseComponent', () => {
 
     it('empty form is invalid', () => {
         expect(passphraseForm.valid).toBeFalsy();
-    })
+    });
 
     it('form valid', () => {
         // Should only be two controls
@@ -47,6 +51,20 @@ describe('ConfigurePassphraseComponent', () => {
         passphraseConfirmControl.setValue('1234567890123456');
 
         expect(passphraseForm.valid).toBeTruthy();
+    });
+
+    it('form click emits passphrase', () => {
+        const passphraseControl = passphraseForm.controls['passphrase'];
+        const passphraseConfirmControl = passphraseForm.controls['passphraseConfirm'];
+        passphraseControl.setValue('passphrasepassphrase');
+        passphraseConfirmControl.setValue('passphrasepassphrase');
+
+        fixture.detectChanges();
+
+        const buttonEl = TestUtils.queryExpectOne(fixture.debugElement, 'button');
+        buttonEl.nativeElement.click();
+
+        expect(emittedPassphrases).toEqual(['passphrasepassphrase']);
     });
 
     it('passphrase is required', () => {
@@ -92,8 +110,7 @@ describe('ConfigurePassphraseComponent', () => {
 
         const confirmErrorMsg = errorMsgs[1];
         const confirmErrorMsgEl = confirmErrorMsg.nativeElement as HTMLParagraphElement;
-        expect(confirmErrorMsgEl.textContent.trim())
-            .toEqual("Passphrase doesn't match");
+        expect(confirmErrorMsgEl.textContent.trim()).toEqual("Passphrase doesn't match");
     });
 
     it('passphrase and confirm dont match', () => {
@@ -116,8 +133,7 @@ describe('ConfigurePassphraseComponent', () => {
 
         const errorMsgDe = TestUtils.queryExpectOne(debugElement, 'p.error-help');
         const confirmErrorMsgEl = errorMsgDe.nativeElement as HTMLParagraphElement;
-        expect(confirmErrorMsgEl.textContent.trim())
-            .toEqual("Passphrase doesn't match");
+        expect(confirmErrorMsgEl.textContent.trim()).toEqual("Passphrase doesn't match");
     });
 
     it('errors are not visible until submit is clicked', () => {
@@ -147,15 +163,7 @@ describe('ConfigurePassphraseComponent', () => {
         expect(notSameErrorMsgEl.textContent.trim()).toEqual("Passphrase doesn't match");
     });
 
-    it('spinner is shown when request is in flight and form is hidden', () => {
-        component.inFlight = true;
-        fixture.detectChanges();
-
-        const formElems = fixture.debugElement.queryAll(By.css('form'));
-        expect(formElems.length).toEqual(0);
-
-        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'p');
-        const spinnerEl = spinnerDe.nativeElement as HTMLParagraphElement;
-        expect(spinnerEl.textContent).toEqual('Setting passphrase');
+    afterEach(() => {
+        emittedPassphrases = [];
     });
 });
