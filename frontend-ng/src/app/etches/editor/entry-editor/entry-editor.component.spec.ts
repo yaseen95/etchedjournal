@@ -1,8 +1,8 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { EntryEditorComponent } from './entry-editor.component';
-import TestUtils from '../../../utils/test-utils.spec';
 import { By } from '@angular/platform-browser';
+import { TestUtils } from '../../../utils/test-utils.spec';
 
 describe('EntryEditorComponent', () => {
     let component: EntryEditorComponent;

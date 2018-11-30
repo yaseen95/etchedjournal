@@ -8,8 +8,7 @@
             <spinner [text]="'Registering'"></spinner>
         </ng-container>
         <ng-container *ngIf="registerState === ENTERING_PASSPHRASE">
-            <app-configure-passphrase [userId]=""
-                                      (passphraseEmitter)="onPassphraseConfigured($event)">
+            <app-configure-passphrase (passphraseEmitter)="onPassphraseConfigured($event)">
             </app-configure-passphrase>
         </ng-container>
         <ng-container *ngIf="registerState === CREATING_KEYS">

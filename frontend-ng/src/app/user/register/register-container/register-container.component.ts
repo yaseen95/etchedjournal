@@ -61,7 +61,7 @@ export class RegisterContainerComponent implements OnInit {
             // 2. Create the encrypter
             .then((k: KeyPair) => this.createEncrypter(k, passphrase))
             // 3. Encrypt the private key using the login password
-            .then((enc: Encrypter) => this.encryptPrivateKey(enc.privateKey))
+            .then((enc: Encrypter) => this.encryptPrivateKey(enc.privateKeyEncrypted))
             // 4. Upload the encrypted keys
             .then((privKeyBase64: Base64Str) => {
                 const encrypter = this.encrypterService.encrypter;

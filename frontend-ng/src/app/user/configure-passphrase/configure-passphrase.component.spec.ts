@@ -3,8 +3,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ConfigurePassphraseComponent } from './configure-passphrase.component';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { SpinnerComponent } from '../../utils/spinner/spinner.component';
-import TestUtils from '../../utils/test-utils.spec';
 import { By } from '@angular/platform-browser';
+import { TestUtils } from '../../utils/test-utils.spec';
 
 describe('ConfigurePassphraseComponent', () => {
     let component: ConfigurePassphraseComponent;

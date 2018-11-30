@@ -5,10 +5,10 @@ import { EntryListComponent } from './entry-list/entry-list.component';
 import { EntryListItemComponent } from './entry-list-item/entry-list-item.component';
 import { SpinnerComponent } from '../../utils/spinner/spinner.component';
 import { EtchedApiService } from '../../services/etched-api.service';
-import TestUtils from '../../utils/test-utils.spec';
 import { of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EncrypterService } from '../../services/encrypter.service';
+import { TestUtils } from '../../utils/test-utils.spec';
 
 describe('EntryListContainerComponent', () => {
     let component: EntryListContainerComponent;

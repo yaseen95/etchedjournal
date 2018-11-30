@@ -1,4 +1,4 @@
-import { async, ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import {
     EntityState,
@@ -10,11 +10,11 @@ import { EntryEditorComponent } from '../entry-editor/entry-editor.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EtchedApiService } from '../../../services/etched-api.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { EMPTY, of } from 'rxjs';
-import TestUtils from '../../../utils/test-utils.spec';
+import { EMPTY } from 'rxjs';
 import { OwnerType } from '../../../models/owner-type';
 import { Encrypter } from '../../../services/encrypter';
 import { EncrypterService } from '../../../services/encrypter.service';
+import { TestUtils } from '../../../utils/test-utils.spec';
 
 describe('ExistingEntryEditorContainerComponent', () => {
     let component: ExistingEntryEditorContainerComponent;

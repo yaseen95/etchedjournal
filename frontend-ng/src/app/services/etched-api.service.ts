@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Observable, of, throwError } from 'rxjs';
+import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { TokenResponse } from './dtos/token-response';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { map, mergeMap, switchMap, switchMapTo, tap } from 'rxjs/operators';
 import { EtchedUser } from '../models/etched-user';
 import { Base64Str, Uuid } from '../models/encrypted-entity';
 import { EntryEntity } from '../models/entry-entity';
@@ -59,18 +59,16 @@ export class EtchedApiService {
         this.user = null;
     }
 
-    public login(username: string, password: string): Observable<void> {
+    public login(username: string, password: string): Observable<EtchedUser> {
         const requestBody = {username, password};
         return this.http.post(LOGIN_URL, requestBody)
             .pipe(
                 map((token: TokenResponse) => this.setTokens(token)),
-                tap(() => {
+                switchMap(() => {
                     console.info(`Successfully logged in ${username}`);
                     // Immediately after we've logged in, send a request to get the user details
-                    this.self()
-                        .subscribe(() => {
-                        });
-                }),
+                    return this.self();
+                })
             );
     }
 
@@ -158,6 +156,14 @@ export class EtchedApiService {
             return this.http.post<KeyPairEntity>(KEYPAIRS_URL, body, {headers: this.authHeaders})
                 .pipe(tap(keypair => console.info(`Created ${JSON.stringify(keypair)}`)));
         });
+    }
+
+    public getKeyPairs(): Observable<KeyPairEntity[]> {
+        return this.refreshWrapper(() => {
+            console.info(`Getting key pairs`);
+            return this.http.get<KeyPairEntity[]>(KEYPAIRS_URL, {headers: this.authHeaders})
+                .pipe(tap(keyPairs => console.info(`Successfully retrieved key pairs`)));
+        })
     }
 
     private post<Request, Response>(url: string, body: Request): Observable<Response> {
