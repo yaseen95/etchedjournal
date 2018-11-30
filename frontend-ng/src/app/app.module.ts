@@ -17,6 +17,8 @@ import { EntryListComponent } from './etches/entry-list/entry-list/entry-list.co
 import { EntryListItemComponent } from './etches/entry-list/entry-list-item/entry-list-item.component';
 import { ExistingEntryEditorContainerComponent } from './etches/editor/existing-entry-editor-container/existing-entry-editor-container.component';
 import { RegisterContainerComponent } from './user/register/register-container/register-container.component';
+import { LoginContainerComponent } from './user/login/login-container/login-container.component';
+import { EnterPassphraseComponent } from './user/passphrase/enter-passphrase/enter-passphrase.component';
 
 @NgModule({
     declarations: [
@@ -39,6 +41,8 @@ import { RegisterContainerComponent } from './user/register/register-container/r
         RegisterContainerComponent,
         ConfigurePassphraseComponent,
         RegisterComponent,
+        LoginContainerComponent,
+        EnterPassphraseComponent,
     ],
     imports: [
         AppRoutingModule,

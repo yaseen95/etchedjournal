@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SpinnerComponent } from './spinner.component';
-import TestUtils from '../test-utils.spec';
+import { TestUtils } from '../test-utils.spec';
 
 describe('SpinnerComponent', () => {
     let component: SpinnerComponent;

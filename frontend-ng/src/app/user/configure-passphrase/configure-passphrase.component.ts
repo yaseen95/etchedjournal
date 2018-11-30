@@ -6,6 +6,7 @@ import {
     passphraseMatchValidator
 } from '../form-utils';
 import { Encrypter } from '../../services/encrypter';
+import { PassphraseUtils } from '../passphrase/passphrase-utils';
 
 @Component({
     selector: 'app-configure-passphrase',
@@ -54,21 +55,9 @@ export class ConfigurePassphraseComponent implements OnInit {
 
     getPassphraseError() {
         const passphrase = this.passphraseForm.controls.passphrase;
-        return this.passphraseErrorMsg(passphrase);
-    }
-
-    private passphraseErrorMsg(control: AbstractControl): string | null {
-        if (!this.submitClicked || control.valid) {
+        if (!this.submitClicked) {
             return null;
         }
-
-        if (control.errors.required) {
-            return 'Passphrase is required';
-        } else if (control.errors.minlength) {
-            const minLength = control.errors.minlength.requiredLength;
-            return `Passphrase must be at least ${minLength} characters long`;
-        }
-        console.warn(`Unexpected form error ${JSON.stringify(control.errors)}`);
-        return 'Passphrase is invalid';
+        return PassphraseUtils.getPassphraseControlError(passphrase);
     }
 }

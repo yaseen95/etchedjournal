@@ -2,7 +2,7 @@ import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { EtchedUser } from '../models/etched-user';
 
-export default class TestUtils {
+export namespace TestUtils {
     /**
      * Query a debug element and get a single element that matches the given query expression
      *
@@ -13,7 +13,7 @@ export default class TestUtils {
      * @param queryExpr css query expression
      * @return the sole element matching the query expression
      */
-    static queryExpectOne(element: DebugElement, queryExpr: string): DebugElement {
+    export function queryExpectOne(element: DebugElement, queryExpr: string): DebugElement {
         const matching = element.queryAll(By.css(queryExpr));
         expect(matching.length).toEqual(1);
         return matching[0];
@@ -24,7 +24,7 @@ export default class TestUtils {
      * @param input the element to update
      * @param value the value to set
      */
-    static updateValue(input: HTMLInputElement, value: string) {
+    export function updateValue(input: HTMLInputElement, value: string) {
         input.value = value;
         input.dispatchEvent(new Event('input'));
     }
@@ -35,14 +35,20 @@ export default class TestUtils {
      * @param element the element from which to search
      * @param queryExpr css query expression
      */
-    static queryExpectNone(element: DebugElement, queryExpr: string): void {
+    export function queryExpectNone(element: DebugElement, queryExpr: string): void {
         const matching = element.queryAll(By.css(queryExpr));
         expect(matching.length).toEqual(0);
     }
 
-    static TEST_USER: EtchedUser = {
+    export const TEST_USER: EtchedUser = {
         username: 'samsepiol',
         email: null,
         id: '123-456'
-    }
+    };
+
+    /** base64 encoded byte array of [1, 2, 3, 4] */
+    export const MOCK_PUB_KEY_BASE_64_STR = 'AQIDBA==';
+
+    /** base64 encoded byte arary of [5, 6, 7, 8] */
+    export const MOCK_PRIV_KEY_BASE_64_STR = 'BQYHCA==';
 }

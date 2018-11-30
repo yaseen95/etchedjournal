@@ -1,54 +1,47 @@
-<div class="columns is-centered">
-    <div *ngIf="!showSpinner()" class="column is-12-mobile is-4-desktop">
-        <div *ngIf="user === null">
-            <h3 class="title">Login</h3>
-            <form [formGroup]="loginForm"
-                  class="control"
-                  (ngSubmit)="onSubmit()">
-                <div class="field">
-                    <div class="control">
-                        <label class="label">Username</label>
-                        <input
-                            class="input"
-                            type="text"
-                            placeholder="Username"
-                            name="username"
-                            formControlName="username"
-                        />
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <label class="label">Password</label>
-                        <input
-                            class="input"
-                            type="password"
-                            placeholder="Password"
-                            name="password"
-                            formControlName="password"
-                        />
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <button
-                            class="button is-primary"
-                            type="submit"
-                            [disabled]="!loginForm.valid">
-                            Login
-                        </button>
-                    </div>
-                </div>
-                <p>
-                    Form Status: {{ loginForm.status }}
-                </p>
-            </form>
+<div *ngIf="user === null">
+    <h3 class="title">Login</h3>
+    <form [formGroup]="loginForm"
+          class="control"
+          (ngSubmit)="onSubmit()">
+        <div class="field">
+            <div class="control">
+                <label class="label">Username</label>
+                <input
+                    class="input"
+                    type="text"
+                    placeholder="Username"
+                    name="username"
+                    formControlName="username"
+                />
+            </div>
         </div>
-        <div *ngIf="user !== null">
-            <p>Logged in as user {{ user.username }}</p>
+        <div class="field">
+            <div class="control">
+                <label class="label">Password</label>
+                <input
+                    class="input"
+                    type="password"
+                    placeholder="Password"
+                    name="password"
+                    formControlName="password"
+                />
+            </div>
         </div>
-    </div>
-    <div *ngIf="showSpinner()" class="column is-12-mobile is-4-desktop">
-        <spinner [text]="'Logging in'"></spinner>
-    </div>
+        <div class="field">
+            <div class="control">
+                <button
+                    class="button is-primary"
+                    type="submit"
+                    [disabled]="!loginForm.valid">
+                    Login
+                </button>
+            </div>
+        </div>
+        <p>
+            Form Status: {{ loginForm.status }}
+        </p>
+    </form>
+</div>
+<div *ngIf="user !== null">
+    <p>Logged in as user {{ user.username }}</p>
 </div>

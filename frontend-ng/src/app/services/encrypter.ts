@@ -1,6 +1,9 @@
 import * as openpgp from 'openpgp';
-import { DecryptOptions, EncryptedMessage, EncryptOptions, UserId, VerifiedMessage } from 'openpgp';
+import { DecryptOptions, EncryptOptions, key, UserId } from 'openpgp';
 import { Base64Str } from '../models/encrypted-entity';
+
+const DEFAULT_CURVE = 'p521';
+const DEFAULT_RSA_BITS = 4096;
 
 // TODO: Can we return Observables instead of Promises?
 // Would make it more consistent with the API
@@ -14,9 +17,9 @@ export class Encrypter {
         const keyOptions: openpgp.KeyOptions = {
             date: new Date(),
             // Specify curve to use ECC
-            // curve: 'p521',
+            curve: DEFAULT_CURVE,
             // Specify numbits to use RSA
-            numBits: 4096,
+            // numBits: DEFAULT_RSA_BITS,
             passphrase: passphrase,
             userIds: [this.createUserId(userId)],
         };
@@ -33,24 +36,61 @@ export class Encrypter {
         const keyResult = await openpgp.key.readArmored(keyPair.privateKeyArmored);
         const privateKey = keyResult.keys[0];
 
-        const decryptResult = await privateKey.decrypt(passphrase);
-        if (!decryptResult) {
-            console.error('Passphrase is incorrect');
-            throw new Error('Passphrase is incorrect');
-        } else {
-            console.info('Passphrase is correct');
-        }
+        // copy the private key (before decrypting it)
+        const privateKeyEncrypted = await Encrypter.copyKey(privateKey);
+        await Encrypter.decryptPrivateKey(privateKey, passphrase);
 
         const publicKeys = (await openpgp.key.readArmored(keyPair.publicKeyArmored)).keys;
-        return new Encrypter(privateKey, publicKeys);
+        return new Encrypter(privateKey, publicKeys, privateKeyEncrypted);
+    }
+
+    public static async from2(privKey: Base64Str, pubKey: Base64Str, passphrase: string): Promise<Encrypter> {
+        const privBytes = openpgp.util.b64_to_Uint8Array(privKey);
+        const pubBytes = openpgp.util.b64_to_Uint8Array(pubKey);
+
+        const privateKey: openpgp.key.Key = (await openpgp.key.read(privBytes)).keys[0];
+        const publicKeys: openpgp.key.Key[] = (await openpgp.key.read(pubBytes)).keys;
+
+        // copy the private key (before decrypting it)
+        const privateKeyEncrypted = await Encrypter.copyKey(privateKey);
+        await Encrypter.decryptPrivateKey(privateKey, passphrase);
+
+        return new Encrypter(privateKey, publicKeys, privateKeyEncrypted);
+    };
+
+    private static async decryptPrivateKey(privKey: openpgp.key.Key, passphrase: string): Promise<void> {
+        try {
+            // TODO: Add test for this
+            await privKey.decrypt(passphrase);
+        } catch (e) {
+            if (e.message === 'Incorrect key passphrase') {
+                console.info('Passphrase is incorrect');
+                throw new IncorrectPassphraseError();
+            } else {
+                console.error(`Unexpected error when decrypting key ${JSON.stringify(e)}`);
+                throw e;
+            }
+        }
+    }
+
+    /**
+     * Creates a copy of a key
+     */
+    private static async copyKey(key: key.Key): Promise<key.Key> {
+        const keys = (await openpgp.key.read(key.toPacketlist().write())).keys;
+        if (keys.length !== 1) {
+            throw new Error(`Unexpected number of keys ${keys.length}`);
+        }
+        return keys[0];
     }
 
     private constructor(
         public privateKey: openpgp.key.Key,
         // TODO: Do we expect more than one public key?
-        public publicKeys: openpgp.key.Key[]
+        public publicKeys: openpgp.key.Key[],
+        // The passphrase protected version of the key
+        public privateKeyEncrypted: openpgp.key.Key
     ) {
-
     }
 
     /**
@@ -73,7 +113,7 @@ export class Encrypter {
             compression: openpgp.enums.compression.zip,
         };
 
-        return Encrypter.encryptAsBytes(options)
+        return Encrypter.encryptAsBytes(options);
     }
 
     /**
@@ -113,7 +153,7 @@ export class Encrypter {
             passwords: password
         };
 
-        return this.encryptAsBytes(options)
+        return this.encryptAsBytes(options);
     }
 
     /**
@@ -166,6 +206,20 @@ export class Encrypter {
             throw e;
         }
         return await openpgp.stream.readToEnd(decrypted.data);
+    }
+}
+
+export class PgpError extends Error {
+    constructor(message?: string) {
+        super(message);
+    }
+}
+
+export class IncorrectPassphraseError extends PgpError {
+    public static MESSAGE = 'Passphrase is incorrect';
+
+    constructor() {
+        super(IncorrectPassphraseError.MESSAGE);
     }
 }
 

@@ -7,10 +7,10 @@ import { ConfigurePassphraseComponent } from '../../configure-passphrase/configu
 import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EtchedApiService } from '../../../services/etched-api.service';
-import TestUtils from '../../../utils/test-utils.spec';
 import { RegisterRequest } from '../../../services/dtos/register-request';
 import { Encrypter } from '../../../services/encrypter';
 import { EMPTY, of } from 'rxjs';
+import { TestUtils } from '../../../utils/test-utils.spec';
 
 describe('RegisterContainerComponent', () => {
     let component: RegisterContainerComponent;
@@ -150,9 +150,9 @@ describe('RegisterContainerComponent', () => {
 
     it('onPassphraseConfigured e2e', fakeAsync(() => {
         // onPassphraseConfigured does a few things
-        // 1. Create a new keypair
-        // 2. Encrypt that keypair using the password
-        // 3. Upload the keypair
+        // 1. Create a new keyPair
+        // 2. Encrypt that keyPair using the password
+        // 3. Upload the keyPair
 
         component.password = 'login password';
 
@@ -166,6 +166,7 @@ describe('RegisterContainerComponent', () => {
         let encrypter = {
             publicKeys: [{toPacketlist: () => mockPubKeyPacket}],
             privateKey: {toPacketlist: () => mockPrivKeyPacket},
+            privateKeyEncrypted: {toPacketlist: () => mockPrivKeyPacket},
         };
         encrypterFromSpy.and.returnValue(Promise.resolve(encrypter));
 

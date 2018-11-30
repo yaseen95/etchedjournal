@@ -7,33 +7,29 @@ import { of } from 'rxjs';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { EtchedUser } from '../../models/etched-user';
-import TestUtils from '../../utils/test-utils.spec';
+import { TestUtils } from '../../utils/test-utils.spec';
 import { SpinnerComponent } from '../../utils/spinner/spinner.component';
 import { EncrypterService } from '../../services/encrypter.service';
+import { LoginRequest } from '../../services/dtos/login-request';
+import { after } from 'selenium-webdriver/testing';
 
 describe('LoginComponent', () => {
     let component: LoginComponent;
     let fixture: ComponentFixture<LoginComponent>;
     let loginForm: FormGroup;
     let etchedApiSpy: any;
-    let encrypterSpy: any;
-    let encrypterService: EncrypterService;
+    let emittedEvents: Array<LoginRequest> = [];
 
     beforeEach(() => {
-        etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['login', 'getUser']);
+        etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['getUser']);
         // By default getUser should return null
         etchedApiSpy.getUser.and.returnValue(null);
-
-        encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt', 'decrypt']);
-        encrypterService = new EncrypterService();
-        encrypterService.encrypter = encrypterSpy;
 
         TestBed.configureTestingModule({
             declarations: [LoginComponent, SpinnerComponent],
             imports: [ReactiveFormsModule],
             providers: [
                 {provide: EtchedApiService, useValue: etchedApiSpy},
-                {provide: EncrypterService, useValue: encrypterService},
             ]
         })
             .compileComponents();
@@ -41,6 +37,7 @@ describe('LoginComponent', () => {
         fixture = TestBed.createComponent(LoginComponent);
         component = fixture.componentInstance;
         component.ngOnInit();
+        component.loginEmitter.subscribe(loginReq => emittedEvents.push(loginReq));
         fixture.detectChanges();
 
         loginForm = component.loginForm;
@@ -123,18 +120,17 @@ describe('LoginComponent', () => {
         }
     });
 
-    it('submit logs in', () => {
+    it('submit emits a login event', () => {
         const passwordControl = loginForm.controls['password'];
         const usernameControl = loginForm.controls['username'];
 
         usernameControl.setValue('submitTest');
         passwordControl.setValue('submitPassword');
 
-        const loginSpy = etchedApiSpy.login.and.returnValue(of());
         component.onSubmit();
 
-        expect(loginSpy.calls.count()).toEqual(1);
-        expect(loginSpy).toHaveBeenCalledWith('submitTest', 'submitPassword');
+        expect(emittedEvents.length).toEqual(1);
+        expect(emittedEvents[0]).toEqual({username: 'submitTest', password: 'submitPassword'});
     });
 
     it('valid form enables button', () => {
@@ -199,48 +195,9 @@ describe('LoginComponent', () => {
         expect(paragraphEl.textContent).toEqual('Logged in as user samsepiol');
     });
 
-    it('spinner is shown when request is in flight and form is hidden', () => {
-        component.inFlight = true;
-        fixture.detectChanges();
-
-        const formElems = fixture.debugElement.queryAll(By.css('form'));
-        expect(formElems.length).toEqual(0);
-
-        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'p');
-        const spinnerEl = spinnerDe.nativeElement as HTMLParagraphElement;
-        expect(spinnerEl.textContent).toEqual('Logging in');
-    });
-
-    it('login response hides spinner', () => {
-        // Display the spinner
-        component.inFlight = true;
-        fixture.detectChanges();
-        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'spinner');
-        const spinnerParaEl = TestUtils.queryExpectOne(spinnerDe, 'p').nativeElement;
-        expect((spinnerParaEl as HTMLParagraphElement).textContent).toEqual('Logging in');
-
-        // Add values to the form
-        const passwordControl = loginForm.controls['password'];
-        const usernameControl = loginForm.controls['username'];
-        usernameControl.setValue('samsepiol');
-        passwordControl.setValue('mrrobot');
-
-        // Submit the form, after login is complete it should automatically hide the spinner
-        // Returning an observable of some value so that the `subscribe` can be invoked
-        etchedApiSpy.login.and.returnValue(of(1));
-
-        component.onSubmit();
-
-        expect(component.inFlight).toBeFalsy();
-        expect(etchedApiSpy.login).toHaveBeenCalledTimes(1);
-        expect(etchedApiSpy.login).toHaveBeenCalledWith('samsepiol', 'mrrobot');
-
-        // Check that the spinner is hidden and the form is visible once again
-        fixture.detectChanges();
-        TestUtils.queryExpectOne(fixture.debugElement, 'form');
-        const spinnerElems = fixture.debugElement.queryAll(By.css('spinner'));
-        expect(spinnerElems.length).toEqual(0);
-    });
+    afterEach(() => {
+        emittedEvents = [];
+    })
 });
 
 const TEST_USER: EtchedUser = {
