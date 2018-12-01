@@ -13,7 +13,9 @@
                     name="passphrase"
                     tabIndex="1"
                     [formGroup]="passphraseForm"
-                    formControlName="passphrase"/>
+                    formControlName="passphrase"
+                    appAutoFocus
+                />
                 <!--Have to set tabIndex otherwise tab navigation goes from this to wiki link-->
                 <p *ngIf="getPassphraseError() !== null"
                    class="help error-help">

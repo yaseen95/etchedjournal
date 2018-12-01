@@ -16,6 +16,8 @@
             contentEditable="true"
             data-placeholder="What's on your mind?"
             (keydown)="onEtchKeydown($event)"
+            (focusout)="onEditorFocusOut()"
+            appAutoFocus
         ></div>
     </div>
 </div>

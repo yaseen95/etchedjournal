@@ -76,17 +76,6 @@ export class EntryTitleComponent implements OnInit {
             // If we were not in edit mode, update the form to display the current title and
             // focus on the title input
             this.titleForm.patchValue({title: this.title});
-
-            setTimeout(() => {
-                // Focus on the input element when moving into edit mode
-
-                // Have to put this in the setTimeout block so that the input element gets rendered
-                // before we focus on the element
-                if (this.titleInputElement === undefined) {
-                    this.titleInputElement = this.renderer.selectRootElement('#title-input');
-                }
-                this.titleInputElement.focus();
-            });
         }
     }
 }

@@ -1,9 +1,4 @@
-<!--
-Using [hidden] because we need to call .focus() on the `title-input`.
-If we used `*ngIf` it wouldn't be rendered in the dom and we can't select it.
-Using [hidden] allows us to select it but not display it.
--->
-<div class="column is-full" id="title-edit-box" [hidden]="!isEditing">
+<div *ngIf="isEditing" class="column is-full">
     <form [formGroup]="titleForm">
         <div class="field is-horizontal">
             <div class="field-body">
@@ -15,6 +10,7 @@ Using [hidden] allows us to select it but not display it.
                         placeholder="Title"
                         name="title"
                         formControlName="title"
+                        appAutoFocus
                     />
                     <p *ngIf="titleForm.controls.title.errors?.required"
                        class="error-help help">

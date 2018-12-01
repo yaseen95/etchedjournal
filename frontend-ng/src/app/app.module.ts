@@ -19,6 +19,7 @@ import { ExistingEntryEditorContainerComponent } from './etches/editor/existing-
 import { RegisterContainerComponent } from './user/register/register-container/register-container.component';
 import { LoginContainerComponent } from './user/login/login-container/login-container.component';
 import { EnterPassphraseComponent } from './user/passphrase/enter-passphrase/enter-passphrase.component';
+import { AppAutoFocusDirective } from './directives/app-auto-focus.directive';
 
 @NgModule({
     declarations: [
@@ -43,6 +44,7 @@ import { EnterPassphraseComponent } from './user/passphrase/enter-passphrase/ent
         RegisterComponent,
         LoginContainerComponent,
         EnterPassphraseComponent,
+        AppAutoFocusDirective,
     ],
     imports: [
         AppRoutingModule,
