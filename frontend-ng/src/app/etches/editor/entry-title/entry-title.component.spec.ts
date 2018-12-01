@@ -65,16 +65,15 @@ describe('EntryTitleComponent', () => {
         expect(titleEl.nativeElement.textContent).toEqual('test title');
 
         // edit button is visible
-        const buttonEl = TestUtils.queryExpectOne(fixture.debugElement, '#edit-button');
+        const buttonEl = TestUtils.queryExpectOne(fixture.debugElement, 'button');
         expect(buttonEl.nativeElement.innerText).toEqual('Edit');
 
-        // The title edit box should be hidden
-        const titleEditBoxDe = TestUtils.queryExpectOne(fixture.debugElement, '#title-edit-box');
-        expect(titleEditBoxDe.nativeElement.hidden).toBeTruthy();
+        // The title input box should not be visible
+        TestUtils.queryExpectNone(fixture.debugElement, 'input');
     });
 
     it('edit button triggers edit mode', () => {
-        const editBtnDe = TestUtils.queryExpectOne(fixture.debugElement, '#edit-button');
+        const editBtnDe = TestUtils.queryExpectOne(fixture.debugElement, 'button');
         expect(editBtnDe.nativeElement.innerText).toEqual('Edit');
 
         // the form should be populated with title when the edit button is clicked, we set it

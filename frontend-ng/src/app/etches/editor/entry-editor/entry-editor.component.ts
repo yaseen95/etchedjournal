@@ -7,6 +7,7 @@ import {
     OnInit,
     Optional,
     Output,
+    Renderer2,
     ViewChild
 } from '@angular/core';
 import { interval, Observable, Subscription } from 'rxjs';
@@ -47,7 +48,8 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
      */
     etchTimeout: number;
 
-    constructor(@Optional() etchTimeout: number) {
+    constructor(private renderer: Renderer2,
+                @Optional() etchTimeout: number) {
         if (this.etches === undefined) {
             this.etches = [];
         }
@@ -93,6 +95,15 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
             // preventing default event to prevent a new line
             event.preventDefault();
             this.etch();
+        }
+    }
+
+    onEditorFocusOut() {
+        // https://stackoverflow.com/a/20737134
+        // Focusing out of a contenteditable div in Firefox inserts a <br/> element
+        // If the content is empty, we clear it fully so the placeholder is displayed again
+        if (this.editorElem.nativeElement.textContent.trim() === '') {
+            this.editorElem.nativeElement.textContent = '';
         }
     }
 
