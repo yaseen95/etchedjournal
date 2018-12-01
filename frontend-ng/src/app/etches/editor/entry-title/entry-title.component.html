@@ -1,4 +1,9 @@
-<div *ngIf="isEditing" class="column is-full">
+<!--
+Using [hidden] because we need to call .focus() on the `title-input`.
+If we used `*ngIf` it wouldn't be rendered in the dom and we can't select it.
+Using [hidden] allows us to select it but not display it.
+-->
+<div class="column is-full" id="title-edit-box" [hidden]="!isEditing">
     <form [formGroup]="titleForm">
         <div class="field is-horizontal">
             <div class="field-body">

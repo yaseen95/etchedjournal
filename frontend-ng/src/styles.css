@@ -38,3 +38,6 @@ h1, h2, h3, h4, h5, h6 {
 p.error-help {
     color: red;
 }
+
+/* http://stackoverflow.com/a/35578093/873282 */
+[hidden] { display: none !important;}
