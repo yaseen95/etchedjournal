@@ -13,6 +13,8 @@ import { interval, Observable, Subscription } from 'rxjs';
 
 const DEFAULT_ETCH_TIMEOUT = 5 * 1000;
 const ENTER_KEY = 'Enter';
+/** millis interval to check if etch is inactive */
+const DEFAULT_ETCHING_INTERVAL = 250;
 
 @Component({
     selector: 'app-editor',
@@ -62,7 +64,7 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
         console.info(`Etching timeout: ${this.etchTimeout} millis`);
 
         // Check if the etch timeout has been exceeded
-        this.etchingInterval = interval(250);
+        this.etchingInterval = interval(DEFAULT_ETCHING_INTERVAL);
         this.intervalSubscription = this.etchingInterval
             .subscribe(() => this.etchIfInactive());
     }

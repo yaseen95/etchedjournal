@@ -98,9 +98,14 @@ describe('EntryEditorComponent', () => {
     it('keydown does not update on shift + enter', () => {
         component.onEtchKeydown(new KeyboardEvent('keydown', {key: 'Enter', shiftKey: true}));
 
+        // onEtchKeydown calls `etch` when the user presses enter
+        // We should check that it DOES NOT get called when the user presses shift + enter
+        const etchSpy = spyOn(component, 'etch').and.callThrough();
+
         // no etches should have been created
         expect(emittedEtches.length).toEqual(0);
         expect(component.etches.length).toEqual(0);
+        expect(etchSpy).toHaveBeenCalledTimes(0);
     });
 
     it('etch is posted if inactive', () => {
@@ -112,10 +117,12 @@ describe('EntryEditorComponent', () => {
         editorEl.textContent = 'posted after timeout';
 
         component.etchIfInactive();
+        fixture.detectChanges();
 
         expect(emittedEtches.length).toEqual(1);
         expect(emittedEtches[0]).toEqual('posted after timeout');
         expect(component.etches.length).toEqual(1);
+        expect(editorEl.textContent).toEqual('');
     });
 
     it('etch is not posted if active', () => {
