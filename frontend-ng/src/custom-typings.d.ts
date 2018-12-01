@@ -58,7 +58,7 @@ declare module "openpgp" {
         /**
          * Reads an unarmored OpenPGP key list and returns one or multiple key objects
          * @param {Uint8Array} data to be parsed
-         * @returns {Promise<{keys: Array<module:key.Key>,
+         * @returns {Promise<{keys: Array<module:key.Key>}
          *            err: (Array<Error>|null)}>} result object with key and error arrays
          */
         function read(data: Uint8Array): Promise<{keys: Array<key.Key>}>
