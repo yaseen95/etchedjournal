@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { nonWhitespaceValidator } from '../../../user/form-utils';
 
@@ -24,10 +24,13 @@ export class EntryTitleComponent implements OnInit {
 
     titleForm: FormGroup;
 
+    titleInputElement?: any;
+
     TITLE_MIN_LENGTH = 1;
     TITLE_MAX_LENGTH = 100;
 
-    constructor(private fb: FormBuilder) {
+    constructor(private fb: FormBuilder,
+                private renderer: Renderer2) {
         this.titleEmitter = new EventEmitter();
         this.titleForm = this.fb.group({
             title: ['', Validators.compose([
@@ -56,7 +59,10 @@ export class EntryTitleComponent implements OnInit {
     }
 
     toggleEdit(update: boolean = false) {
-        if (this.isEditing) {
+        const wasEditing = this.isEditing;
+        this.isEditing = !this.isEditing;
+
+        if (wasEditing) {
             // If were were in edit mode, save the title value from the form
             if (update) {
                 this.title = this.titleForm.controls.title.value.trim();
@@ -67,10 +73,20 @@ export class EntryTitleComponent implements OnInit {
                 }
             }
         } else {
-            // If we were not in edit mode, update the form to display the current title
+            // If we were not in edit mode, update the form to display the current title and
+            // focus on the title input
             this.titleForm.patchValue({title: this.title});
-        }
 
-        this.isEditing = !this.isEditing;
+            setTimeout(() => {
+                // Focus on the input element when moving into edit mode
+
+                // Have to put this in the setTimeout block so that the input element gets rendered
+                // before we focus on the element
+                if (this.titleInputElement === undefined) {
+                    this.titleInputElement = this.renderer.selectRootElement('#title-input');
+                }
+                this.titleInputElement.focus();
+            });
+        }
     }
 }
