@@ -1,4 +1,4 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
@@ -50,7 +50,9 @@ import { EnterPassphraseComponent } from './user/passphrase/enter-passphrase/ent
         HttpClientModule,
         ReactiveFormsModule,
     ],
-    providers: [],
+    providers: [
+        Title,
+    ],
     bootstrap: [AppComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
