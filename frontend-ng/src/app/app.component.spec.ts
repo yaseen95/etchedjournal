@@ -41,7 +41,7 @@ describe('AppComponent', () => {
     it(`should have as title 'frontend-ng'`, () => {
         const fixture = TestBed.createComponent(AppComponent);
         const app = fixture.debugElement.componentInstance;
-        expect(app.title).toEqual('frontend-ng');
+        expect(app.title).toEqual('Etched - Encrypted Journal');
     });
 
     // it('should render title in a h1 tag', () => {
