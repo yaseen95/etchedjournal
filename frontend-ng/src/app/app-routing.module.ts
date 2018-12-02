@@ -8,7 +8,8 @@ import { RegisterContainerComponent } from './user/register/register-container/r
 import { LoginContainerComponent } from './user/login/login-container/login-container.component';
 
 
-const routes: Routes = [
+export const routes: Routes = [
+    {path: '', redirectTo: 'login', pathMatch: 'full'},
     {path: 'login', component: LoginContainerComponent},
     {path: 'register', component: RegisterContainerComponent},
     {path: 'configure-passphrase', component: ConfigurePassphraseComponent},
