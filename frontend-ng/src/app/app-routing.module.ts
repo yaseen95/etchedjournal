@@ -9,7 +9,17 @@ import { LoginContainerComponent } from './user/login/login-container/login-cont
 import { AuthGuard } from './auth/auth.guard';
 import { EtchedRoutes } from './app-routing-utils';
 
-export const AUTH_ROUTES: Routes = [
+export const ALL_ROUTES: Routes = [
+    //
+    // UNAUTHENTICATED ROUTES
+    //
+    {path: '', redirectTo: 'login', pathMatch: 'full'},
+    {path: EtchedRoutes.LOGIN_PATH, component: LoginContainerComponent},
+    {path: EtchedRoutes.REGISTER_PATH, component: RegisterContainerComponent},
+
+    //
+    // AUTHENTICATED ROUTES
+    //
     {
         path: 'configure-passphrase',
         component: ConfigurePassphraseComponent,
@@ -31,14 +41,6 @@ export const AUTH_ROUTES: Routes = [
         canActivate: [AuthGuard],
     },
 ];
-
-export const NO_AUTH_ROUTES: Routes = [
-    {path: '', redirectTo: 'login', pathMatch: 'full'},
-    {path: EtchedRoutes.LOGIN_PATH, component: LoginContainerComponent},
-    {path: EtchedRoutes.REGISTER_PATH, component: RegisterContainerComponent},
-];
-
-export const ALL_ROUTES: Routes = AUTH_ROUTES.concat(NO_AUTH_ROUTES);
 
 @NgModule({
     exports: [RouterModule],
