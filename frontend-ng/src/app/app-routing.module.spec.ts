@@ -1,4 +1,4 @@
-import { AppRoutingModule, routes } from './app-routing.module';
+import { AppRoutingModule, ALL_ROUTES } from './app-routing.module';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { AppComponent } from './app.component';
@@ -27,7 +27,7 @@ describe('AppRoutingModule', () => {
                 BrowserModule,
                 HttpClientModule,
                 ReactiveFormsModule,
-                RouterTestingModule.withRoutes(routes),
+                RouterTestingModule.withRoutes(ALL_ROUTES),
             ],
             declarations: [
                 AppComponent,
