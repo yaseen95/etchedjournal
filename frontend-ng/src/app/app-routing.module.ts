@@ -6,22 +6,46 @@ import { EntryListContainerComponent } from './etches/entry-list/entry-list-cont
 import { ExistingEntryEditorContainerComponent } from './etches/editor/existing-entry-editor-container/existing-entry-editor-container.component';
 import { RegisterContainerComponent } from './user/register/register-container/register-container.component';
 import { LoginContainerComponent } from './user/login/login-container/login-container.component';
+import { AuthGuard } from './auth/auth.guard';
+import { EtchedRoutes } from './app-routing-utils';
 
-
-export const routes: Routes = [
+export const ALL_ROUTES: Routes = [
+    //
+    // UNAUTHENTICATED ROUTES
+    //
     {path: '', redirectTo: 'login', pathMatch: 'full'},
-    {path: 'login', component: LoginContainerComponent},
-    {path: 'register', component: RegisterContainerComponent},
-    {path: 'configure-passphrase', component: ConfigurePassphraseComponent},
-    {path: 'entries/new', component: EditorContainerComponent},
-    {path: 'entries/:id', component: ExistingEntryEditorContainerComponent},
-    {path: 'entries', component: EntryListContainerComponent},
+    {path: EtchedRoutes.LOGIN_PATH, component: LoginContainerComponent},
+    {path: EtchedRoutes.REGISTER_PATH, component: RegisterContainerComponent},
+
+    //
+    // AUTHENTICATED ROUTES
+    //
+    {
+        path: 'configure-passphrase',
+        component: ConfigurePassphraseComponent,
+        canActivate: [AuthGuard],
+    },
+    {
+        path: 'entries',
+        component: EntryListContainerComponent,
+        canActivate: [AuthGuard],
+    },
+    {
+        path: 'entries/new',
+        component: EditorContainerComponent,
+        canActivate: [AuthGuard],
+    },
+    {
+        path: 'entries/:id',
+        component: ExistingEntryEditorContainerComponent,
+        canActivate: [AuthGuard],
+    },
 ];
 
 @NgModule({
     exports: [RouterModule],
     imports: [
-        RouterModule.forRoot(routes),
+        RouterModule.forRoot(ALL_ROUTES),
     ]
 })
 export class AppRoutingModule {
