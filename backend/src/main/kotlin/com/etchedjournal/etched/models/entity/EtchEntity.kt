@@ -28,4 +28,14 @@ class EtchEntity(
     content = content,
     owner = owner,
     ownerType = ownerType
-)
+) {
+    override fun toString(): String {
+        return "EtchEntity(" +
+            "id=$id," +
+            "timestamp=$timestamp," +
+            "owner='$owner'," +
+            "ownerType=$ownerType," +
+            "entryId=${entry?.id}" +
+            ")"
+    }
+}

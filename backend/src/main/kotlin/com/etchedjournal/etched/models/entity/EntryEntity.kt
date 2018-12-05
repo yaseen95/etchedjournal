@@ -23,4 +23,13 @@ class EntryEntity(
     content = content,
     owner = owner,
     ownerType = ownerType
-)
+) {
+    override fun toString(): String {
+        return "EntryEntity(" +
+            "id=$id," +
+            "timestamp=$timestamp," +
+            "owner='$owner'," +
+            "ownerType=$ownerType" +
+            ")"
+    }
+}
