@@ -11,7 +11,6 @@ import com.etchedjournal.etched.service.exception.NotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.PathVariable
 import java.time.Instant
 import java.util.UUID
 
@@ -22,10 +21,6 @@ class EtchServiceImpl(
     private val authService: AuthService
 ) : EtchService {
 
-    companion object {
-        private val logger: Logger = LoggerFactory.getLogger(EtchServiceImpl::class.java)
-    }
-
     override fun getEtches(entryId: UUID): List<EtchEntity> {
         // Defer to entryService.getEntry() to handle 404/permissions checks of Entry
         entryService.getEntry(entryId)
@@ -33,14 +28,9 @@ class EtchServiceImpl(
         return etchRepository.findByEntryId(entryId)
     }
 
-    override fun getEtch(@PathVariable entryId: UUID, @PathVariable etchId: UUID): EtchEntity {
-        // Defer to entryService.getEntry() to handle 404/permissions checks of Entry
-        entryService.getEntry(entryId)
+    override fun getEtch(etchId: UUID): EtchEntity {
         logger.info("Getting EtchEntity(id={})", etchId)
-        return etchRepository
-            // TODO: Should be able to perform a join on both
-            .findByEntryId(entryId)
-            .firstOrNull { etch -> etch.id == etchId }
+        return etchRepository.findOne(etchId)
             ?: throw NotFoundException("No EtchEntity with id $etchId exists.")
     }
 
@@ -61,5 +51,9 @@ class EtchServiceImpl(
             )
         }
         return etchRepository.save(newEtches).toList()
+    }
+
+    companion object {
+        private val logger: Logger = LoggerFactory.getLogger(EtchServiceImpl::class.java)
     }
 }

@@ -165,7 +165,7 @@ describe('EtchedApiService', () => {
             id: '2',
         };
 
-        const req = httpMock.expectOne(`${environment.API_URL}/entries/entryId/etches`);
+        const req = httpMock.expectOne(`${environment.API_URL}/etches?entryId=entryId`);
         expect(req.request.method).toEqual('POST');
         expect(req.request.headers.has('Authorization')).toBeTruthy();
         req.flush(etches);
@@ -254,7 +254,7 @@ describe('EtchedApiService', () => {
             id: '2',
         };
 
-        const req = httpMock.expectOne(`${environment.API_URL}/entries/entry1/etches`);
+        const req = httpMock.expectOne(`${environment.API_URL}/etches?entryId=entry1`);
         expect(req.request.method).toEqual('GET');
         expect(req.request.headers.has('Authorization')).toBeTruthy();
         req.flush(entries);
