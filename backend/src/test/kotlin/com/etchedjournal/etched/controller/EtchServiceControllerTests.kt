@@ -13,7 +13,6 @@ import com.etchedjournal.etched.repository.EntryRepository
 import com.etchedjournal.etched.repository.EtchRepository
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
-import org.hamcrest.Matchers.isIn
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,7 +27,6 @@ import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
@@ -62,7 +60,7 @@ class EtchServiceControllerTests {
     private lateinit var testUtils: TestUtils
 
     companion object {
-        const val ENTRIES_PATH = "/api/v1/entries"
+        const val ETCHES_PATH = "/api/v1/etches"
         val logger: Logger = LoggerFactory.getLogger(EtchServiceControllerTests::class.java)
     }
 
@@ -82,14 +80,14 @@ class EtchServiceControllerTests {
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET etches`() {
         // Entry doesn't have any etches yet
-        mockMvc.perform(get("$ENTRIES_PATH/${entry.id}/etches"))
+        mockMvc.perform(get("$ETCHES_PATH?entryId=${entry.id}"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$", hasSize<Any>(0)))
 
         // Create an etch and check
         val e = createEtch("abc")
 
-        mockMvc.perform(get("$ENTRIES_PATH/${entry.id}/etches"))
+        mockMvc.perform(get("$ETCHES_PATH?entryId=${entry.id}"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$", hasSize<Any>(1)))
             .andExpect(jsonPath("$[0].content", `is`(ABC_BASE_64_ENCODED)))
@@ -106,7 +104,7 @@ class EtchServiceControllerTests {
         // Create an etch and check
         val e = createEtch("abc")
 
-        mockMvc.perform(get("$ENTRIES_PATH/${entry.id}/etches/${e.id}"))
+        mockMvc.perform(get("$ETCHES_PATH/${e.id}"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("\$.content", `is`(ABC_BASE_64_ENCODED)))
             .andExpect(jsonPath("\$.id", `is`(e.id.toString())))
@@ -119,24 +117,14 @@ class EtchServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET etches with entry does not exist`() {
-        mockMvc.perform(get("$ENTRIES_PATH/${UUID.randomUUID()}/etches"))
-            .andExpect(status().isNotFound)
-    }
-
-    @Test
-    @WithMockUser(username = "tester", roles = ["user"])
-    fun `GET etch with entry does not exist`() {
-        // Use a valid etch id but not a valid entry id
-        val e = createEtch("Etch with id")
-
-        mockMvc.perform(get("$ENTRIES_PATH/${UUID.randomUUID()}/etches/${e.id}"))
+        mockMvc.perform(get("$ETCHES_PATH?entryId=${UUID.randomUUID()}"))
             .andExpect(status().isNotFound)
     }
 
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET etch 404 not found`() {
-        mockMvc.perform(get("$ENTRIES_PATH/${entry.id}/etches/${UUID.randomUUID()}"))
+        mockMvc.perform(get("$ETCHES_PATH/${UUID.randomUUID()}"))
             .andExpect(status().isNotFound)
     }
 
@@ -145,7 +133,7 @@ class EtchServiceControllerTests {
     fun `GET etches for entry by other user is forbidden`() {
         val otherUserEntry = createEntry(content = "content", userId = "abc")
 
-        mockMvc.perform(get("$ENTRIES_PATH/${otherUserEntry.id}/etches"))
+        mockMvc.perform(get("$ETCHES_PATH?entryId=${otherUserEntry.id}"))
             .andExpect(status().isForbidden)
             .andExpect(jsonPath("\$.message", `is`("Forbidden")))
     }
@@ -165,7 +153,7 @@ class EtchServiceControllerTests {
             ]
             """
         mockMvc.perform(
-            post("$ENTRIES_PATH/${entry.id}/etches/")
+            post("$ETCHES_PATH?entryId=${entry.id}")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(etchRequest)
         )
@@ -179,7 +167,7 @@ class EtchServiceControllerTests {
             // Should only be the above 5 keys in the json response
             .andExpect(jsonPath("\$[0].*", hasSize<Any>(5)))
 
-        mockMvc.perform(get("$ENTRIES_PATH/${entry.id}/etches"))
+        mockMvc.perform(get("$ETCHES_PATH?entryId=${entry.id}"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$", hasSize<Any>(1)))
     }
@@ -187,7 +175,7 @@ class EtchServiceControllerTests {
     @Test
     fun `POST etch not authenticated`() {
         mockMvc.perform(
-            post("$ENTRIES_PATH/${entry.id}/etches")
+            post(ETCHES_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}")
         )
@@ -198,7 +186,7 @@ class EtchServiceControllerTests {
     @WithMockUser(username = "tester", roles = ["user"])
     fun `POST etch with empty payload`() {
         mockMvc.perform(
-            post("$ENTRIES_PATH/${entry.id}/etches")
+            post(ETCHES_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}")
         )

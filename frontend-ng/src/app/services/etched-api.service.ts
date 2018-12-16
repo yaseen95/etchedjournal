@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { EMPTY, Observable, of, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { TokenResponse } from './dtos/token-response';
-import { map, mergeMap, switchMap, switchMapTo, tap } from 'rxjs/operators';
+import { map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { EtchedUser } from '../models/etched-user';
 import { Base64Str, Uuid } from '../models/encrypted-entity';
 import { EntryEntity } from '../models/entry-entity';
 import { EtchEntity } from '../models/etch-entity';
 import { KeyPairEntity } from '../models/key-pair-entity';
-import { KeyPair } from 'openpgp';
 
 const LOGIN_URL = `${environment.API_URL}/auth/authenticate`;
 const REGISTER_URL = `${environment.API_URL}/auth/register`;
@@ -17,7 +16,12 @@ const REFRESH_TOKEN_URL = `${environment.API_URL}/auth/refresh-token`;
 const SELF_URL = `${environment.API_URL}/auth/self`;
 
 const ENTRIES_URL = `${environment.API_URL}/entries`;
+const ETCHES_URL = `${environment.API_URL}/etches`;
 const KEYPAIRS_URL = `${environment.API_URL}/keypairs`;
+
+// Used for GET params
+const ENTRY_ID = 'entryId';
+const JOURNAL_ID = 'journalId';
 
 interface EncryptedEntityRequest {
     content: Base64Str
@@ -120,7 +124,8 @@ export class EtchedApiService {
                 return {'content': e};
             });
 
-            return this.post<EncryptedEntityRequest[], EtchEntity[]>(`${ENTRIES_URL}/${entryId}/etches`, body)
+            const params = new HttpParams().set(ENTRY_ID, entryId);
+            return this.post<EncryptedEntityRequest[], EtchEntity[]>(ETCHES_URL, body, params)
                 .pipe(tap(() => console.info(`Created etches for ${entryId}`)));
         });
     }
@@ -142,9 +147,11 @@ export class EtchedApiService {
     }
 
     public getEtches(entryId: Uuid): Observable<EtchEntity[]> {
+        const params = new HttpParams().set(ENTRY_ID, entryId);
+        const options = {headers: this.authHeaders, params: params};
         return this.refreshWrapper(() => {
             console.info(`Getting etches for entry ${entryId}`);
-            return this.http.get<EtchEntity[]>(`${ENTRIES_URL}/${entryId}/etches`, {headers: this.authHeaders})
+            return this.http.get<EtchEntity[]>(ETCHES_URL, options)
                 .pipe(tap(etches => console.info(`Fetched ${etches.length} etches for entry ${entryId}`)));
         });
     }
@@ -163,11 +170,11 @@ export class EtchedApiService {
             console.info(`Getting key pairs`);
             return this.http.get<KeyPairEntity[]>(KEYPAIRS_URL, {headers: this.authHeaders})
                 .pipe(tap(keyPairs => console.info(`Successfully retrieved key pairs`)));
-        })
+        });
     }
 
-    private post<Request, Response>(url: string, body: Request): Observable<Response> {
-        return this.http.post<Response>(url, body, {headers: this.authHeaders});
+    private post<Request, Response>(url: string, body: Request, params?: HttpParams): Observable<Response> {
+        return this.http.post<Response>(url, body, {headers: this.authHeaders, params: params});
     }
 
     /**
