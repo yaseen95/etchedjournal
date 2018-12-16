@@ -1,23 +1,17 @@
 package com.etchedjournal.etched.controller
 
-import com.etchedjournal.etched.ABC_BASE_64_ENCODED
 import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService
 import com.etchedjournal.etched.TestConfig
-import com.etchedjournal.etched.TestUtils
+import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.UUID_MATCHER
-import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.entity.EntryEntity
-import com.etchedjournal.etched.models.entity.EtchEntity
-import com.etchedjournal.etched.repository.EntryRepository
-import com.etchedjournal.etched.repository.EtchRepository
+import com.etchedjournal.etched.models.entity.JournalEntity
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.test.context.support.WithMockUser
@@ -32,8 +26,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.time.Instant
-import java.util.Base64
 import java.util.UUID
 import javax.transaction.Transactional
 import javax.ws.rs.core.MediaType
@@ -46,28 +38,18 @@ class EtchServiceControllerTests {
 
     private lateinit var mockMvc: MockMvc
     private lateinit var entry: EntryEntity
+    private lateinit var journal: JournalEntity
 
     @Autowired
     private lateinit var webApplicationContext: WebApplicationContext
 
     @Autowired
-    private lateinit var entryRepository: EntryRepository
-
-    @Autowired
-    private lateinit var etchRepository: EtchRepository
-
-    @Autowired
-    private lateinit var testUtils: TestUtils
-
-    companion object {
-        const val ETCHES_PATH = "/api/v1/etches"
-        val logger: Logger = LoggerFactory.getLogger(EtchServiceControllerTests::class.java)
-    }
+    private lateinit var testRepoUtils: TestRepoUtils
 
     @Before
     fun setup() {
-
-        entry = createEntry("test entry", TestAuthService.TESTER_USER_ID)
+        journal = testRepoUtils.createJournal(content = byteArrayOf(1, 2, 3, 4))
+        entry = testRepoUtils.createEntry(journal, byteArrayOf(5, 6, 7, 8))
 
         mockMvc = MockMvcBuilders
             .webAppContextSetup(webApplicationContext)
@@ -85,14 +67,14 @@ class EtchServiceControllerTests {
             .andExpect(jsonPath("$", hasSize<Any>(0)))
 
         // Create an etch and check
-        val e = createEtch("abc")
+        val e = testRepoUtils.createEtch(entry = entry, content = byteArrayOf(1, 2))
 
         mockMvc.perform(get("$ETCHES_PATH?entryId=${entry.id}"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$", hasSize<Any>(1)))
-            .andExpect(jsonPath("$[0].content", `is`(ABC_BASE_64_ENCODED)))
+            .andExpect(jsonPath("$[0].content", `is`("AQI=")))
             .andExpect(jsonPath("$[0].id", `is`(e.id.toString())))
-            .andExpect(jsonPath("$[0].timestamp", `is`(1000)))
+            .andExpect(jsonPath("$[0].timestamp", `is`(0)))
             .andExpect(jsonPath("$[0].entry").doesNotExist())
             .andExpect(jsonPath("$[0].owner", `is`(TestAuthService.TESTER_USER_ID)))
             .andExpect(jsonPath("$[0].ownerType", `is`("USER")))
@@ -102,13 +84,13 @@ class EtchServiceControllerTests {
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET etch by ID`() {
         // Create an etch and check
-        val e = createEtch("abc")
+        val e = testRepoUtils.createEtch(entry = entry, content = byteArrayOf(1, 2))
 
         mockMvc.perform(get("$ETCHES_PATH/${e.id}"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("\$.content", `is`(ABC_BASE_64_ENCODED)))
+            .andExpect(jsonPath("\$.content", `is`("AQI=")))
             .andExpect(jsonPath("\$.id", `is`(e.id.toString())))
-            .andExpect(jsonPath("\$.timestamp", `is`(1000)))
+            .andExpect(jsonPath("\$.timestamp", `is`(0)))
             .andExpect(jsonPath("\$.entry").doesNotExist())
             .andExpect(jsonPath("\$.owner", `is`(TestAuthService.TESTER_USER_ID)))
             .andExpect(jsonPath("\$.ownerType", `is`("USER")))
@@ -131,7 +113,7 @@ class EtchServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET etches for entry by other user is forbidden`() {
-        val otherUserEntry = createEntry(content = "content", userId = "abc")
+        val otherUserEntry = testRepoUtils.createEntry(journal, byteArrayOf(), owner = "abc")
 
         mockMvc.perform(get("$ETCHES_PATH?entryId=${otherUserEntry.id}"))
             .andExpect(status().isForbidden)
@@ -194,30 +176,7 @@ class EtchServiceControllerTests {
             .andReturn()
     }
 
-    private fun createEntry(
-        content: String,
-        userId: String,
-        created: Instant? = null
-    ): EntryEntity {
-        val e = EntryEntity(
-            id = null,
-            timestamp = created ?: Instant.ofEpochSecond(1),
-            owner = userId,
-            ownerType = OwnerType.USER,
-            content = Base64.getEncoder().encode(content.toByteArray())
-        )
-        return entryRepository.save(e)
-    }
-
-    private fun createEtch(content: String): EtchEntity {
-        val etch = EtchEntity(
-            id = null,
-            timestamp = Instant.ofEpochSecond(1),
-            content = Base64.getEncoder().encode(content.toByteArray()),
-            entry = entry,
-            owner = TestAuthService.TESTER_USER_ID,
-            ownerType = OwnerType.USER
-        )
-        return etchRepository.save(etch)
+    companion object {
+        const val ETCHES_PATH = "/api/v1/etches"
     }
 }

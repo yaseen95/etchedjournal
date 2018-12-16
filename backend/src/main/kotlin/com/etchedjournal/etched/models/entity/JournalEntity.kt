@@ -1,30 +1,19 @@
 package com.etchedjournal.etched.models.entity
 
 import com.etchedjournal.etched.models.OwnerType
-import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.Instant
 import java.util.UUID
 import javax.persistence.Entity
-import javax.persistence.Inheritance
-import javax.persistence.InheritanceType
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
 import javax.persistence.Table
 
 @Entity
-@Table(name = "entries")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-class EntryEntity(
+@Table(name = "journals")
+class JournalEntity(
     id: UUID? = null,
     timestamp: Instant = Instant.now(),
     content: ByteArray,
     owner: String,
-    ownerType: OwnerType,
-
-    @ManyToOne
-    @JoinColumn(name = "journal_id")
-    @JsonIgnore
-    val journal: JournalEntity
+    ownerType: OwnerType
 ) : EncryptedEntity(
     id = id,
     timestamp = timestamp,
@@ -33,12 +22,11 @@ class EntryEntity(
     ownerType = ownerType
 ) {
     override fun toString(): String {
-        return "EntryEntity(" +
+        return "JournalEntity(" +
             "id=$id," +
             "timestamp=$timestamp," +
             "owner='$owner'," +
             "ownerType=$ownerType," +
-            "journalId=${journal.id}" +
             ")"
     }
 }

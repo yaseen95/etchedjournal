@@ -5,6 +5,7 @@ import com.etchedjournal.etched.models.entity.EntryEntity
 import com.etchedjournal.etched.repository.EntryRepository
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.EntryService
+import com.etchedjournal.etched.service.JournalService
 import com.etchedjournal.etched.service.exception.ForbiddenException
 import com.etchedjournal.etched.service.exception.NotFoundException
 import org.slf4j.Logger
@@ -15,7 +16,8 @@ import java.util.UUID
 @Service
 class EntryServiceImpl(
     private val entryRepository: EntryRepository,
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val journalService: JournalService
 ) : EntryService {
 
     override fun getEntry(entryId: UUID): EntryEntity {
@@ -23,9 +25,10 @@ class EntryServiceImpl(
         val entry: EntryEntity = entryRepository.findOne(entryId)
             ?: throw NotFoundException("Unable to find entry with id $entryId")
 
+        // TODO: Create util to check entity access
         if (entry.owner != authService.getUserId()) {
             // TODO: Should we 403 or 404?
-            logger.info(
+            logger.warn(
                 "User attempted to access Entry(id={}) which belongs to another user",
                 entryId
             )
@@ -34,21 +37,30 @@ class EntryServiceImpl(
         return entry
     }
 
-    override fun getEntries(): List<EntryEntity> {
-        logger.info("Getting entries")
-        return entryRepository.findByOwner(authService.getUserId()).toList()
+    override fun getEntries(journalId: UUID): List<EntryEntity> {
+        logger.info("Getting entries for journal {}", journalId)
+        checkJournalExists(journalId)
+        return entryRepository.findByJournal_Id(journalId)
     }
 
-    override fun create(content: ByteArray): EntryEntity {
-        logger.info("Creating entry")
-
+    override fun create(journalId: UUID, content: ByteArray): EntryEntity {
+        logger.info("Creating entry for journal {}", journalId)
+        checkJournalExists(journalId)
         return entryRepository.save(
             EntryEntity(
                 content = content,
                 owner = authService.getUserId(),
-                ownerType = OwnerType.USER
+                ownerType = OwnerType.USER,
+                journal = journalService.getJournal(journalId)
             )
         )
+    }
+
+    private fun checkJournalExists(journalId: UUID) {
+        if (!journalService.exists(journalId)) {
+            // TODO: What if it the journal exists but it's owned by another user?
+            throw NotFoundException(message = "Journal does not exist")
+        }
     }
 
     companion object {
