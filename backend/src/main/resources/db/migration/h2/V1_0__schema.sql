@@ -6,6 +6,7 @@ CREATE TABLE journals (
   -- TODO: Make `owner` a UUID column
   owner       VARCHAR(60)   NOT NULL,
   owner_type  VARCHAR(50)   NOT NULL,
+  default     BOOLEAN       NOT NULL,
 );
 
 CREATE TABLE entries (
