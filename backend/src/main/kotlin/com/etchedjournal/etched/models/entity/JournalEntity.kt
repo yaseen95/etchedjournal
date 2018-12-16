@@ -3,7 +3,6 @@ package com.etchedjournal.etched.models.entity
 import com.etchedjournal.etched.models.OwnerType
 import java.time.Instant
 import java.util.UUID
-import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Table
 
@@ -14,10 +13,7 @@ class JournalEntity(
     timestamp: Instant = Instant.now(),
     content: ByteArray,
     owner: String,
-    ownerType: OwnerType,
-
-    @Column(nullable = false)
-    val default: Boolean = false
+    ownerType: OwnerType
 ) : EncryptedEntity(
     id = id,
     timestamp = timestamp,
@@ -31,19 +27,6 @@ class JournalEntity(
             "timestamp=$timestamp," +
             "owner='$owner'," +
             "ownerType=$ownerType," +
-            "default=$default" +
             ")"
-    }
-
-    companion object {
-        /**
-         * Creates the default journal for [owner]
-         */
-        fun createDefault(owner: String): JournalEntity = JournalEntity(
-            content = byteArrayOf(),
-            owner = owner,
-            ownerType = OwnerType.USER,
-            default = true
-        )
     }
 }

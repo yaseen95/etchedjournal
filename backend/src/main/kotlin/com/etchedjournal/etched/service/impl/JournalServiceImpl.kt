@@ -34,40 +34,24 @@ class JournalServiceImpl(
 
     override fun getJournals(): List<JournalEntity> {
         logger.info("Getting journals for {}", authService.getUserId())
-        var journals = repo.findByOwner(authService.getUserId())
-        if (journals.isEmpty()) {
-            // Create the default journal if the user doesn't have one
-            val j = createDefaultJournal()
-            journals = listOf(j)
-        }
-        return journals
+        return repo.findByOwner(authService.getUserId()).toList()
     }
 
     override fun create(content: ByteArray): JournalEntity {
-        val journal = JournalEntity(
+        logger.info("Creating journal", authService.getUserId())
+        var journal = JournalEntity(
             content = content,
             owner = authService.getUserId(),
             ownerType = OwnerType.USER
         )
-        return createJournal(journal)
+        journal = repo.save(journal)
+        logger.info("Successfully created journal {}", journal.id)
+        return journal
     }
 
     override fun exists(id: UUID): Boolean {
         logger.info("Checking if journal {} exists", id)
         return repo.existsByIdAndOwner(id, authService.getUserId())
-    }
-
-    private fun createDefaultJournal(): JournalEntity  {
-        logger.info("Creating default journal for {}", authService.getUserId())
-        val j = JournalEntity.createDefault(owner = authService.getUserId())
-        return createJournal(j)
-    }
-
-    private fun createJournal(journal: JournalEntity): JournalEntity {
-        logger.info("Creating journal for {}", journal.owner)
-        val j = repo.save(journal)
-        logger.info("Successfully created journal {}", j)
-        return j
     }
 
     companion object {
