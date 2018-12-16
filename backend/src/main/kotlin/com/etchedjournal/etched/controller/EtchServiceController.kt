@@ -33,9 +33,9 @@ class EtchServiceController(private val etchService: EtchService) {
         @RequestParam entryId: UUID,
         @RequestBody etches: List<@Valid EncryptedEntityRequest>
     ): List<EtchEntity> {
-        logger.info("Creating etches for entryId {}", entryId)
+        logger.info("Creating etches for entry {}", entryId)
         val createdEtches = etchService.create(entryId, etches)
-        logger.info("Created {} etches for entryId {}", createdEtches.size, entryId)
+        logger.info("Created {} etches for entry {}", createdEtches.size, entryId)
         return createdEtches
     }
 
