@@ -1,0 +1,47 @@
+<div class="columns is-centered">
+    <div class="column is-12-mobile is-8-desktop">
+        <h3 class="title">Create Journal</h3>
+        <form [formGroup]="createJournalForm"
+              class="control"
+              (ngSubmit)="onSubmit()">
+            <div class="field">
+                <div class="control">
+                    <!-- TODO is this a title or a name? -->
+                    <label class="label">Journal Name</label>
+                    <input
+                        class="input"
+                        type="text"
+                        placeholder="Journal Name"
+                        name="journalName"
+                        [formGroup]="createJournalForm"
+                        formControlName="journalName"
+                        appAutoFocus
+                    />
+                    <p
+                        *ngIf="submitClicked &&
+                        createJournalForm.controls.journalName.errors?.isWhitespace"
+                        class="error-help help">
+                        Cannot be blank
+                    </p>
+                    <p
+                        *ngIf="submitClicked &&
+                        createJournalForm.controls.journalName.errors?.maxlength"
+                        class="error-help help">
+                        Cannot be more than {{ JOURNAL_NAME_MAX_LENGTH }} characters long
+                    </p>
+                    <p class="help">Don't worry, this can be changed later.</p>
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <button class="button is-primary">
+                        <span *ngIf="creatingJournal" class="icon">
+                            <i class="fas fa-sync fa-spin"></i>
+                        </span>
+                        <span>Start Journaling</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

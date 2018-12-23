@@ -6,6 +6,6 @@
         <spinner [text]="'Decrypting entries'"></spinner>
     </div>
     <div *ngIf="!inFlight && !decrypting" class="column is-12-mobile is-8-desktop">
-        <app-entry-list [entries]="entries"></app-entry-list>
+        <app-entry-list [entries]="entries" [journalId]="journalId"></app-entry-list>
     </div>
 </div>

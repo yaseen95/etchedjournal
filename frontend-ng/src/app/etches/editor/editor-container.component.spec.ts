@@ -6,6 +6,7 @@ import { EntryTitleComponent } from './entry-title/entry-title.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EntryEditorComponent } from './entry-editor/entry-editor.component';
 import { EncrypterService } from '../../services/encrypter.service';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('EditorContainerComponent', () => {
     let component: EditorContainerComponent;
@@ -34,7 +35,10 @@ describe('EditorContainerComponent', () => {
                 {provide: EtchedApiService, useValue: etchedApiSpy},
                 {provide: EncrypterService, useValue: encrypterService},
             ],
-            imports: [ReactiveFormsModule],
+            imports: [
+                ReactiveFormsModule,
+                RouterTestingModule,
+            ],
         })
             .compileComponents();
     }));

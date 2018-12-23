@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { EtchedApiService } from '../../services/etched-api.service';
 import { AbstractEditorContainerComponent } from './abstract-editor-container-component/abstract-editor-container.component';
 import { EncrypterService } from '../../services/encrypter.service';
+import { ActivatedRoute } from '@angular/router';
 
 const ENTRY_NOT_CREATED = 'NOT_CREATED';
 const ENTRY_CREATING = 'ENTRY_CREATING';
@@ -18,9 +19,16 @@ export class EditorContainerComponent
     /** the current state of the entry */
     entryCreationState: string;
 
+    journalId: string;
+
     constructor(etchedApi: EtchedApiService,
-                encrypterService: EncrypterService) {
+                encrypterService: EncrypterService,
+                route: ActivatedRoute) {
         super(etchedApi, encrypterService);
+        this.journalId = route.snapshot.queryParamMap.get('journalId');
+        if (this.journalId === null) {
+            console.error('No journal id');
+        }
     }
 
     ngOnInit() {
@@ -46,7 +54,7 @@ export class EditorContainerComponent
         this.encrypter.encrypt(this.title)
             .then(ciphertext => {
                 console.info(`creating entry with title: ${this.title}`);
-                this.etchedApi.createEntry(ciphertext)
+                this.etchedApi.createEntry(this.journalId, ciphertext)
                     .subscribe(entry => {
                         console.log(`Created entry with id ${entry.id}`);
                         this.entryCreationState = ENTRY_CREATED;

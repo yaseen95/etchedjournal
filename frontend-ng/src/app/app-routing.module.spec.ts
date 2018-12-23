@@ -14,6 +14,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { JournalsContainerComponent } from './etches/journals/journals-container/journals-container.component';
+import { CreateJournalComponent } from './etches/journals/create-journal/create-journal.component';
 
 describe('AppRoutingModule', () => {
     let location: Location;
@@ -37,6 +39,8 @@ describe('AppRoutingModule', () => {
                 ExistingEntryEditorContainerComponent,
                 LoginContainerComponent,
                 RegisterContainerComponent,
+                JournalsContainerComponent,
+                CreateJournalComponent,
             ],
             schemas: [NO_ERRORS_SCHEMA],
         });

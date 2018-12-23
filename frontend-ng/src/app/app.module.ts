@@ -20,6 +20,10 @@ import { RegisterContainerComponent } from './user/register/register-container/r
 import { LoginContainerComponent } from './user/login/login-container/login-container.component';
 import { EnterPassphraseComponent } from './user/passphrase/enter-passphrase/enter-passphrase.component';
 import { AppAutoFocusDirective } from './directives/app-auto-focus.directive';
+import { JournalsContainerComponent } from './etches/journals/journals-container/journals-container.component';
+import { JournalListComponent } from './etches/journals/journal-list/journal-list.component';
+import { JournalListItemComponent } from './etches/journals/journal-list-item/journal-list-item.component';
+import { CreateJournalComponent } from './etches/journals/create-journal/create-journal.component';
 
 @NgModule({
     declarations: [
@@ -42,8 +46,18 @@ import { AppAutoFocusDirective } from './directives/app-auto-focus.directive';
         RegisterContainerComponent,
         ConfigurePassphraseComponent,
         RegisterComponent,
+
+        // Login components
         LoginContainerComponent,
         EnterPassphraseComponent,
+
+        // Journals components
+        JournalsContainerComponent,
+        JournalListComponent,
+        JournalListItemComponent,
+        CreateJournalComponent,
+
+        // Directives
         AppAutoFocusDirective,
     ],
     imports: [
