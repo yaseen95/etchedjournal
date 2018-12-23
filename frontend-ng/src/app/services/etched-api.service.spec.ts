@@ -298,7 +298,6 @@ describe('EtchedApiService', () => {
                 expect(journal.timestamp).toEqual(1);
                 expect(journal.owner).toEqual('user');
                 expect(journal.ownerType).toEqual(OwnerType.USER);
-                expect(journal.default).toBeFalsy();
             });
 
         const journal: JournalEntity = {
@@ -308,7 +307,6 @@ describe('EtchedApiService', () => {
             owner: 'user',
             // Declaring string `as OwnerType` because the API returns it as a string
             ownerType: 'USER' as OwnerType,
-            default: false,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/journals`);
@@ -327,7 +325,6 @@ describe('EtchedApiService', () => {
                 expect(journals[0].timestamp).toEqual(1);
                 expect(journals[0].owner).toEqual('user');
                 expect(journals[0].ownerType).toEqual(OwnerType.USER);
-                expect(journals[0].default).toBeFalsy();
             });
 
         const journal: JournalEntity = {
@@ -337,7 +334,6 @@ describe('EtchedApiService', () => {
             owner: 'user',
             // Declaring string `as OwnerType` because the API returns it as a string
             ownerType: 'USER' as OwnerType,
-            default: false,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/journals`);
