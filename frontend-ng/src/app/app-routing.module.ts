@@ -8,6 +8,8 @@ import { RegisterContainerComponent } from './user/register/register-container/r
 import { LoginContainerComponent } from './user/login/login-container/login-container.component';
 import { AuthGuard } from './auth/auth.guard';
 import { EtchedRoutes } from './app-routing-utils';
+import { JournalsContainerComponent } from './etches/journals/journals-container/journals-container.component';
+import { CreateJournalComponent } from './etches/journals/create-journal/create-journal.component';
 
 export const ALL_ROUTES: Routes = [
     //
@@ -25,13 +27,27 @@ export const ALL_ROUTES: Routes = [
         component: ConfigurePassphraseComponent,
         canActivate: [AuthGuard],
     },
+
+    // JOURNALS
     {
-        path: 'entries',
-        component: EntryListContainerComponent,
+        path: EtchedRoutes.JOURNALS_PATH,
+        component: JournalsContainerComponent,
         canActivate: [AuthGuard],
     },
     {
-        path: 'entries/new',
+        path: EtchedRoutes.JOURNALS_CREATE_PATH,
+        component: CreateJournalComponent,
+        canActivate: [AuthGuard],
+    },
+    {
+        path: 'journals/:id',
+        component: EntryListContainerComponent,
+        canActivate: [AuthGuard],
+    },
+
+    // ENTRIES
+    {
+        path: EtchedRoutes.ENTRIES_CREATE_PATH,
         component: EditorContainerComponent,
         canActivate: [AuthGuard],
     },

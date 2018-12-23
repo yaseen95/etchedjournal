@@ -10,6 +10,7 @@ import { EntryEntity } from '../models/entry-entity';
 import { OwnerType } from '../models/owner-type';
 import { EtchEntity } from '../models/etch-entity';
 import { KeyPairEntity } from '../models/key-pair-entity';
+import { JournalEntity } from '../models/journal-entity';
 
 describe('EtchedApiService', () => {
     let injector: TestBed;
@@ -114,7 +115,7 @@ describe('EtchedApiService', () => {
 
     it('create entry', () => {
         initAuth();
-        service.createEntry('content')
+        service.createEntry('journalId', 'content')
             .subscribe(entry => {
                 expect(entry.id).toEqual('entryId');
                 expect(entry.content).toEqual('base64Content');
@@ -132,7 +133,7 @@ describe('EtchedApiService', () => {
             ownerType: 'USER' as OwnerType,
         };
 
-        const req = httpMock.expectOne(`${environment.API_URL}/entries`);
+        const req = httpMock.expectOne(`${environment.API_URL}/entries?journalId=journalId`);
         expect(req.request.method).toEqual('POST');
         expect(req.request.headers.has('Authorization')).toBeTruthy();
         req.flush(entry);
@@ -174,7 +175,7 @@ describe('EtchedApiService', () => {
     it('get entries', () => {
         initAuth();
 
-        service.getEntries()
+        service.getEntries('journalId')
             .subscribe(entries => {
                 expect(entries.length).toEqual(2);
                 expect(entries[0].content).toEqual('entry1');
@@ -198,7 +199,7 @@ describe('EtchedApiService', () => {
             id: '2',
         };
 
-        const req = httpMock.expectOne(`${environment.API_URL}/entries`);
+        const req = httpMock.expectOne(`${environment.API_URL}/entries?journalId=journalId`);
         expect(req.request.method).toEqual('GET');
         expect(req.request.headers.has('Authorization')).toBeTruthy();
         req.flush(entries);
@@ -286,6 +287,59 @@ describe('EtchedApiService', () => {
         expect(req.request.method).toEqual('POST');
         expect(req.request.headers.has('Authorization')).toBeTruthy();
         req.flush(mockKeyPair);
+    });
+
+    it('create journal', () => {
+        initAuth();
+        service.createJournal('content')
+            .subscribe((journal: JournalEntity) => {
+                expect(journal.id).toEqual('entryId');
+                expect(journal.content).toEqual('base64Content');
+                expect(journal.timestamp).toEqual(1);
+                expect(journal.owner).toEqual('user');
+                expect(journal.ownerType).toEqual(OwnerType.USER);
+            });
+
+        const journal: JournalEntity = {
+            id: 'entryId',
+            content: 'base64Content',
+            timestamp: 1,
+            owner: 'user',
+            // Declaring string `as OwnerType` because the API returns it as a string
+            ownerType: 'USER' as OwnerType,
+        };
+
+        const req = httpMock.expectOne(`${environment.API_URL}/journals`);
+        expect(req.request.method).toEqual('POST');
+        expect(req.request.headers.has('Authorization')).toBeTruthy();
+        req.flush(journal);
+    });
+
+    it('get journals', () => {
+        initAuth();
+        service.getJournals()
+            .subscribe((journals: JournalEntity[]) => {
+                expect(journals.length).toEqual(1);
+                expect(journals[0].id).toEqual('entryId');
+                expect(journals[0].content).toEqual('base64Content');
+                expect(journals[0].timestamp).toEqual(1);
+                expect(journals[0].owner).toEqual('user');
+                expect(journals[0].ownerType).toEqual(OwnerType.USER);
+            });
+
+        const journal: JournalEntity = {
+            id: 'entryId',
+            content: 'base64Content',
+            timestamp: 1,
+            owner: 'user',
+            // Declaring string `as OwnerType` because the API returns it as a string
+            ownerType: 'USER' as OwnerType,
+        };
+
+        const req = httpMock.expectOne(`${environment.API_URL}/journals`);
+        expect(req.request.method).toEqual('GET');
+        expect(req.request.headers.has('Authorization')).toBeTruthy();
+        req.flush([journal]);
     });
 
     afterEach(() => {

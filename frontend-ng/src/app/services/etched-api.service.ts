@@ -9,6 +9,7 @@ import { Base64Str, Uuid } from '../models/encrypted-entity';
 import { EntryEntity } from '../models/entry-entity';
 import { EtchEntity } from '../models/etch-entity';
 import { KeyPairEntity } from '../models/key-pair-entity';
+import { JournalEntity } from '../models/journal-entity';
 
 const LOGIN_URL = `${environment.API_URL}/auth/authenticate`;
 const REGISTER_URL = `${environment.API_URL}/auth/register`;
@@ -17,6 +18,7 @@ const SELF_URL = `${environment.API_URL}/auth/self`;
 
 const ENTRIES_URL = `${environment.API_URL}/entries`;
 const ETCHES_URL = `${environment.API_URL}/etches`;
+const JOURNALS_URL = `${environment.API_URL}/journals`;
 const KEYPAIRS_URL = `${environment.API_URL}/keypairs`;
 
 // Used for GET params
@@ -108,33 +110,54 @@ export class EtchedApiService {
         });
     }
 
-    public createEntry(content: Base64Str): Observable<EntryEntity> {
+    public getJournals(): Observable<JournalEntity[]> {
         return this.refreshWrapper(() => {
-            console.info('Creating an entry');
+            console.info('Getting journals');
+            const options = {headers: this.authHeaders};
+            return this.http.get<JournalEntity[]>(JOURNALS_URL, options)
+                .pipe(tap(() => console.info('Fetched journals')));
+        })
+    }
 
-            return this.http.post<EntryEntity>(ENTRIES_URL, {'content': content}, {headers: this.authHeaders})
+    public createJournal(content: Base64Str): Observable<JournalEntity> {
+        return this.refreshWrapper(() => {
+            console.info('Creating journal');
+            const body: EncryptedEntityRequest = {content: content};
+            const options = {headers: this.authHeaders};
+            return this.http.post<JournalEntity>(JOURNALS_URL, body, options)
+                .pipe(tap((j) => console.info(`Created journal ${j.id}`)));
+        })
+    }
+
+    public createEntry(journalId: string, content: Base64Str): Observable<EntryEntity> {
+        return this.refreshWrapper(() => {
+            console.info(`Creating an entry for journal ${journalId}`);
+            const body: EncryptedEntityRequest = {content: content};
+            const params = new HttpParams().set(JOURNAL_ID, journalId);
+            const options = {headers: this.authHeaders, params: params};
+            return this.http.post<EntryEntity>(ENTRIES_URL, body, options)
                 .pipe(tap(e => console.info(`Created entry ${e.id}`)));
+        });
+    }
+
+    public getEntries(journalId: string): Observable<EntryEntity[]> {
+        return this.refreshWrapper(() => {
+            console.info(`Getting entries for ${journalId}`);
+            const params = new HttpParams().set(JOURNAL_ID, journalId);
+            const options = {headers: this.authHeaders, params: params};
+            return this.http.get<EntryEntity[]>(ENTRIES_URL, options)
+                .pipe(tap(entries => console.info(`Fetched ${entries.length} entries`)));
         });
     }
 
     public postEtches(entryId: Uuid, etches: Base64Str[]): Observable<EtchEntity[]> {
         return this.refreshWrapper(() => {
             console.info(`Creating etches for entry ${entryId}`);
-            const body: EncryptedEntityRequest[] = etches.map((e) => {
-                return {'content': e};
-            });
+            const body: EncryptedEntityRequest[] = etches.map((e) => {return {content: e}});
 
             const params = new HttpParams().set(ENTRY_ID, entryId);
             return this.post<EncryptedEntityRequest[], EtchEntity[]>(ETCHES_URL, body, params)
                 .pipe(tap(() => console.info(`Created etches for ${entryId}`)));
-        });
-    }
-
-    public getEntries(): Observable<EntryEntity[]> {
-        return this.refreshWrapper(() => {
-            console.info('Getting entries');
-            return this.http.get<EntryEntity[]>(ENTRIES_URL, {headers: this.authHeaders})
-                .pipe(tap(entries => console.info(`Fetched ${entries.length} entries`)));
         });
     }
 

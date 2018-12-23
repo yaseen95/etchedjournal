@@ -7,7 +7,7 @@ interface EntryService {
 
     fun getEntry(entryId: UUID): EntryEntity
 
-    fun getEntries(): List<EntryEntity>
+    fun getEntries(journalId: UUID): List<EntryEntity>
 
-    fun create(content: ByteArray): EntryEntity
+    fun create(journalId: UUID, content: ByteArray): EntryEntity
 }

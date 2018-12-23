@@ -1,14 +1,11 @@
 package com.etchedjournal.etched.controller
 
-import com.etchedjournal.etched.ABC_BASE_64_ENCODED
 import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
-import com.etchedjournal.etched.TestAuthService
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
+import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.UUID_MATCHER
-import com.etchedjournal.etched.models.OwnerType
-import com.etchedjournal.etched.models.entity.EntryEntity
-import com.etchedjournal.etched.repository.EntryRepository
+import com.etchedjournal.etched.models.entity.JournalEntity
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
 import org.junit.Before
@@ -28,8 +25,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.time.Instant
-import java.util.Base64
 import java.util.UUID
 import javax.transaction.Transactional
 import javax.ws.rs.core.MediaType
@@ -41,16 +36,13 @@ import javax.ws.rs.core.MediaType
 class EntryServiceControllerTests {
 
     private lateinit var mockMvc: MockMvc
+    private lateinit var testJournal: JournalEntity
 
     @Autowired
     private lateinit var webApplicationContext: WebApplicationContext
 
     @Autowired
-    private lateinit var entryRepository: EntryRepository
-
-    companion object {
-        const val ENTRIES_PATH = "/api/v1/entries"
-    }
+    private lateinit var testRepoUtils: TestRepoUtils
 
     @Before
     fun setup() {
@@ -59,25 +51,27 @@ class EntryServiceControllerTests {
             // Have to apply apply spring security mock
             .apply<DefaultMockMvcBuilder>(SecurityMockMvcConfigurers.springSecurity())
             .build()
+
+        testJournal = testRepoUtils.createJournal(content = byteArrayOf(1, 2, 3, 4))
     }
 
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET entries`() {
         // User doesn't have any entries yet
-        mockMvc.perform(get(ENTRIES_PATH))
+        mockMvc.perform(get("$ENTRIES_PATH?journalId=${testJournal.id}"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$", hasSize<Any>(0)))
 
         // Create an entry and check
-        val e = createEntry("abc", TestAuthService.TESTER_USER_ID)
+        val e = testRepoUtils.createEntry(testJournal, byteArrayOf(1, 2))
 
-        mockMvc.perform(get(ENTRIES_PATH))
+        mockMvc.perform(get("$ENTRIES_PATH?journalId=${testJournal.id}"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$", hasSize<Any>(1)))
             .andExpect(jsonPath("$[0].id", `is`(e.id!!.toString())))
-            .andExpect(jsonPath("$[0].timestamp", `is`(1000)))
-            .andExpect(jsonPath("$[0].content", `is`(ABC_BASE_64_ENCODED)))
+            .andExpect(jsonPath("$[0].timestamp", `is`(0)))
+            .andExpect(jsonPath("$[0].content", `is`("AQI=")))
             .andExpect(jsonPath("$[0].owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$[0].ownerType", `is`("USER")))
             // These shouldn't be in the payload
@@ -88,13 +82,13 @@ class EntryServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET entry by ID`() {
-        val e = createEntry("abc", TestAuthService.TESTER_USER_ID)
+        val e = testRepoUtils.createEntry(testJournal, byteArrayOf(1, 2))
 
         mockMvc.perform(get("$ENTRIES_PATH/${e.id}"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("\$.id", `is`(e.id!!.toString())))
-            .andExpect(jsonPath("\$.timestamp", `is`(1000)))
-            .andExpect(jsonPath("\$.content", `is`(ABC_BASE_64_ENCODED)))
+            .andExpect(jsonPath("\$.timestamp", `is`(0)))
+            .andExpect(jsonPath("\$.content", `is`("AQI=")))
             .andExpect(jsonPath("\$.owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("\$.ownerType", `is`("USER")))
             // These shouldn't be in the payload
@@ -105,7 +99,11 @@ class EntryServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET entry by other user is forbidden`() {
-        val otherUserEntry = createEntry(content = "content", userId = "abc")
+        val otherUserEntry = testRepoUtils.createEntry(
+            journal = testJournal,
+            content = byteArrayOf(1, 2),
+            owner = "abc"
+        )
 
         mockMvc.perform(get("$ENTRIES_PATH/${otherUserEntry.id}"))
             .andExpect(status().isForbidden)
@@ -131,7 +129,7 @@ class EntryServiceControllerTests {
             }
             """
         mockMvc.perform(
-            post(ENTRIES_PATH)
+            post("$ENTRIES_PATH?journalId=${testJournal.id}")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(entryRequest)
         )
@@ -189,18 +187,7 @@ class EntryServiceControllerTests {
             .andExpect(jsonPath("\$.message", `is`("Cannot supply null for key 'content'")))
     }
 
-    private fun createEntry(
-        content: String,
-        userId: String,
-        created: Instant? = null
-    ): EntryEntity {
-        val e = EntryEntity(
-            id = null,
-            timestamp = created ?: Instant.ofEpochSecond(1),
-            owner = userId,
-            ownerType = OwnerType.USER,
-            content = Base64.getEncoder().encode(content.toByteArray())
-        )
-        return entryRepository.save(e)
+    companion object {
+        const val ENTRIES_PATH = "/api/v1/entries"
     }
 }

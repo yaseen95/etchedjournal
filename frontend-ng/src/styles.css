@@ -41,3 +41,9 @@ p.error-help {
 
 /* http://stackoverflow.com/a/35578093/873282 */
 [hidden] { display: none !important;}
+
+.fa-spin {
+    /* Spinner is a tad too slow, lets make it faster */
+    -webkit-animation: fa-spin 1.33s infinite linear;
+    animation: fa-spin 1.33s infinite linear;
+}

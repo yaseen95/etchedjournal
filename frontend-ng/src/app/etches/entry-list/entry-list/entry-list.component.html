@@ -8,4 +8,9 @@
 <div *ngIf="entries.length == 0">
     <p>No entries</p>
 </div>
-<!--TODO: Add button to create an entry-->
+<button class="button is-primary" (click)="this.createEntry()">
+    <span class="icon">
+        <i class="fas fa-plus"></i>
+    </span>
+    <span>Create Entry</span>
+</button>

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 import javax.validation.Valid
@@ -29,17 +30,20 @@ class EntryServiceController(private val entryService: EntryService) {
      * Returns all entries.
      */
     @GetMapping("")
-    fun getEntries(): List<EntryEntity> {
-        return entryService.getEntries()
+    fun getEntries(@RequestParam journalId: UUID): List<EntryEntity> {
+        return entryService.getEntries(journalId)
     }
 
     /**
      * Creates a new entry
      */
     @PostMapping("")
-    fun create(@RequestBody @Valid entry: EncryptedEntityRequest): EntryEntity {
-        logger.info("Creating an entry")
-        val createdEntry = entryService.create(entry.content)
+    fun create(
+        @RequestBody @Valid entry: EncryptedEntityRequest,
+        @RequestParam journalId: UUID
+    ): EntryEntity {
+        logger.info("Creating an entry for journal {}", journalId)
+        val createdEntry = entryService.create(journalId, entry.content)
         logger.info("Created entry {}", createdEntry)
         return createdEntry
     }
