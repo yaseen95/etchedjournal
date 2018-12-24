@@ -1,13 +1,12 @@
 package com.etchedjournal.etched.service
 
 import com.etchedjournal.etched.models.entity.EntryEntity
-import java.util.UUID
 
 interface EntryService {
 
-    fun getEntry(entryId: UUID): EntryEntity
+    fun getEntry(entryId: String): EntryEntity
 
-    fun getEntries(journalId: UUID): List<EntryEntity>
+    fun getEntries(journalId: String): List<EntryEntity>
 
-    fun create(journalId: UUID, content: ByteArray): EntryEntity
+    fun create(journalId: String, content: ByteArray): EntryEntity
 }

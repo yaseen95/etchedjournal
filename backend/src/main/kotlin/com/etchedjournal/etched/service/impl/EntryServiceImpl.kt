@@ -8,21 +8,23 @@ import com.etchedjournal.etched.service.EntryService
 import com.etchedjournal.etched.service.JournalService
 import com.etchedjournal.etched.service.exception.ForbiddenException
 import com.etchedjournal.etched.service.exception.NotFoundException
+import com.etchedjournal.etched.utils.id.IdGenerator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.util.UUID
+import java.time.Instant
 
 @Service
 class EntryServiceImpl(
     private val entryRepository: EntryRepository,
     private val authService: AuthService,
-    private val journalService: JournalService
+    private val journalService: JournalService,
+    private val idGenerator: IdGenerator
 ) : EntryService {
 
-    override fun getEntry(entryId: UUID): EntryEntity {
+    override fun getEntry(entryId: String): EntryEntity {
         logger.info("Attempting to get Entry(id={})", entryId)
-        val entry: EntryEntity = entryRepository.findOne(entryId)
+        val entry: EntryEntity = entryRepository.findById(entryId)
             ?: throw NotFoundException("Unable to find entry with id $entryId")
 
         // TODO: Create util to check entity access
@@ -37,26 +39,28 @@ class EntryServiceImpl(
         return entry
     }
 
-    override fun getEntries(journalId: UUID): List<EntryEntity> {
+    override fun getEntries(journalId: String): List<EntryEntity> {
         logger.info("Getting entries for journal {}", journalId)
         checkJournalExists(journalId)
         return entryRepository.findByJournal_Id(journalId)
     }
 
-    override fun create(journalId: UUID, content: ByteArray): EntryEntity {
+    override fun create(journalId: String, content: ByteArray): EntryEntity {
         logger.info("Creating entry for journal {}", journalId)
         checkJournalExists(journalId)
         return entryRepository.save(
             EntryEntity(
+                id = idGenerator.generateId(),
                 content = content,
                 owner = authService.getUserId(),
                 ownerType = OwnerType.USER,
-                journal = journalService.getJournal(journalId)
+                journal = journalService.getJournal(journalId),
+                timestamp = Instant.now()
             )
         )
     }
 
-    private fun checkJournalExists(journalId: UUID) {
+    private fun checkJournalExists(journalId: String) {
         if (!journalService.exists(journalId)) {
             // TODO: What if it the journal exists but it's owned by another user?
             throw NotFoundException(message = "Journal does not exist")

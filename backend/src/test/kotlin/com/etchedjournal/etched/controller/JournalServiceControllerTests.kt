@@ -1,10 +1,10 @@
 package com.etchedjournal.etched.controller
 
+import com.etchedjournal.etched.ID_LENGTH_MATCHER
 import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
-import com.etchedjournal.etched.UUID_MATCHER
 import com.etchedjournal.etched.repository.JournalRepository
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
@@ -70,12 +70,12 @@ class JournalServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET journals - returns created journal`() {
-        val j = testRepoUtils.createJournal(content = byteArrayOf(1, 2))
+        val j = testRepoUtils.createJournal(id = "j1", content = byteArrayOf(1, 2))
 
         mockMvc.perform(get(JOURNALS_URL))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$", hasSize<Any>(1)))
-            .andExpect(jsonPath("$[0].id", `is`(j.id!!.toString())))
+            .andExpect(jsonPath("$[0].id", `is`(j.id)))
             .andExpect(jsonPath("$[0].timestamp", `is`(0)))
             .andExpect(jsonPath("$[0].content", `is`("AQI=")))
             .andExpect(jsonPath("$[0].owner", `is`(TESTER_USER_ID)))
@@ -86,12 +86,12 @@ class JournalServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET journal - returns created journal`() {
-        val j = testRepoUtils.createJournal(content = byteArrayOf(1, 2))
+        val j = testRepoUtils.createJournal(id = "j1", content = byteArrayOf(1, 2))
 
         mockMvc.perform(get("$JOURNALS_URL/${j.id}"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.*", hasSize<Any>(5)))
-            .andExpect(jsonPath("$.id", `is`(j.id!!.toString())))
+            .andExpect(jsonPath("$.id", `is`(j.id)))
             .andExpect(jsonPath("$.timestamp", `is`(0)))
             .andExpect(jsonPath("$.content", `is`("AQI=")))
             .andExpect(jsonPath("$.owner", `is`(TESTER_USER_ID)))
@@ -110,7 +110,7 @@ class JournalServiceControllerTests {
                 .content("""{ "content": "abcd" }""")
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("\$.id").value(UUID_MATCHER))
+            .andExpect(jsonPath("\$.id").value(ID_LENGTH_MATCHER))
             .andExpect(jsonPath("\$.timestamp").value(TIMESTAMP_RECENT_MATCHER))
             .andExpect(jsonPath("\$.content", `is`("abcd")))
             .andExpect(jsonPath("\$.owner", `is`(TESTER_USER_ID)))

@@ -1,7 +1,6 @@
 package com.etchedjournal.etched.service
 
 import com.etchedjournal.etched.models.entity.KeypairEntity
-import java.util.UUID
 
 interface KeypairService {
 
@@ -20,8 +19,8 @@ interface KeypairService {
     /**
      * Get the specified keypair
      *
-     * @param keypairId the id of the keypair
-     * @return the keypair with id [keypairId]
+     * @param id the id of the keypair
+     * @return the keypair with id [id]
      */
-    fun getKeypair(keypairId: UUID): KeypairEntity
+    fun getKeypair(id: String): KeypairEntity
 }

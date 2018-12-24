@@ -7,18 +7,20 @@ import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.JournalService
 import com.etchedjournal.etched.service.exception.ForbiddenException
 import com.etchedjournal.etched.service.exception.NotFoundException
+import com.etchedjournal.etched.utils.id.IdGenerator
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.util.UUID
+import java.time.Instant
 
 @Service
 class JournalServiceImpl(
     private val repo: JournalRepository,
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val idGenerator: IdGenerator
 ) : JournalService {
-    override fun getJournal(id: UUID): JournalEntity {
+    override fun getJournal(id: String): JournalEntity {
         logger.info("Attempting to get journal {}", id)
-        val journal = repo.findOne(id)
+        val journal = repo.findById(id)
         if (journal == null) {
             logger.info("Journal {} not found")
             throw NotFoundException()
@@ -40,16 +42,18 @@ class JournalServiceImpl(
     override fun create(content: ByteArray): JournalEntity {
         logger.info("Creating journal", authService.getUserId())
         var journal = JournalEntity(
+            id = idGenerator.generateId(),
             content = content,
             owner = authService.getUserId(),
-            ownerType = OwnerType.USER
+            ownerType = OwnerType.USER,
+            timestamp = Instant.now()
         )
         journal = repo.save(journal)
         logger.info("Successfully created journal {}", journal.id)
         return journal
     }
 
-    override fun exists(id: UUID): Boolean {
+    override fun exists(id: String): Boolean {
         logger.info("Checking if journal {} exists", id)
         return repo.existsByIdAndOwner(id, authService.getUserId())
     }

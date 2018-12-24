@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
 import javax.validation.Valid
 
 @RequestMapping("/api/v1/entries")
@@ -22,7 +21,7 @@ class EntryServiceController(private val entryService: EntryService) {
      * Returns an Entry with the specified ID.
      */
     @GetMapping("/{entryId}")
-    fun getEntry(@PathVariable entryId: UUID): EntryEntity {
+    fun getEntry(@PathVariable entryId: String): EntryEntity {
         return entryService.getEntry(entryId)
     }
 
@@ -30,7 +29,7 @@ class EntryServiceController(private val entryService: EntryService) {
      * Returns all entries.
      */
     @GetMapping("")
-    fun getEntries(@RequestParam journalId: UUID): List<EntryEntity> {
+    fun getEntries(@RequestParam journalId: String): List<EntryEntity> {
         return entryService.getEntries(journalId)
     }
 
@@ -40,7 +39,7 @@ class EntryServiceController(private val entryService: EntryService) {
     @PostMapping("")
     fun create(
         @RequestBody @Valid entry: EncryptedEntityRequest,
-        @RequestParam journalId: UUID
+        @RequestParam journalId: String
     ): EntryEntity {
         logger.info("Creating an entry for journal {}", journalId)
         val createdEntry = entryService.create(journalId, entry.content)

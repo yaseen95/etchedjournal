@@ -1,9 +1,9 @@
 package com.etchedjournal.etched.controller
 
+import com.etchedjournal.etched.ID_LENGTH_MATCHER
 import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
-import com.etchedjournal.etched.UUID_MATCHER
 import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.entity.KeypairEntity
 import com.etchedjournal.etched.repository.KeypairRepository
@@ -29,7 +29,6 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import java.time.Instant
-import java.util.UUID
 import javax.transaction.Transactional
 import javax.ws.rs.core.MediaType
 
@@ -60,12 +59,12 @@ class KeypairServiceControllerTest {
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET keypairs`() {
         createKeypair(
-            id = UUID(0, 1),
+            id = "k1",
             publicKey = byteArrayOf(1, 2, 3, 4),
             privateKey = byteArrayOf(5, 6, 7, 8)
         )
         createKeypair(
-            id = UUID(0, 2),
+            id = "k2",
             publicKey = byteArrayOf(1, 2),
             privateKey = byteArrayOf(5, 6)
         )
@@ -75,14 +74,14 @@ class KeypairServiceControllerTest {
             .andExpect(jsonPath("$.*", hasSize<Any>(2)))
 
             .andExpect(jsonPath("$[0].*", hasSize<Any>(6)))
-            .andExpect(jsonPath("$[0].id").value(UUID_MATCHER))
+            .andExpect(jsonPath("$[0].id", `is`("k1")))
             .andExpect(jsonPath("$[0].timestamp", `is`(0)))
             .andExpect(jsonPath("$[0].publicKey", `is`("AQIDBA==")))
             .andExpect(jsonPath("$[0].privateKey", `is`("BQYHCA==")))
             .andExpect(jsonPath("$[0].owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$[0].ownerType", `is`("USER")))
 
-            .andExpect(jsonPath("$[1].id").value(UUID_MATCHER))
+            .andExpect(jsonPath("$[1].id", `is`("k2")))
             .andExpect(jsonPath("$[1].timestamp", `is`(0)))
             .andExpect(jsonPath("$[1].publicKey", `is`("AQI=")))
             .andExpect(jsonPath("$[1].privateKey", `is`("BQY=")))
@@ -108,12 +107,12 @@ class KeypairServiceControllerTest {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET keypair`() {
-        val keypair = createKeypair()
+        val keypair = createKeypair(id = "k1")
 
         mockMvc.perform(get("/api/v1/keypairs/${keypair.id}"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.*", hasSize<Any>(6)))
-            .andExpect(jsonPath("$.id", `is`(keypair.id.toString())))
+            .andExpect(jsonPath("$.id", `is`(keypair.id)))
             .andExpect(jsonPath("$.timestamp", `is`(0)))
             .andExpect(jsonPath("$.publicKey", `is`("AQIDBA==")))
             .andExpect(jsonPath("$.privateKey", `is`("BQYHCA==")))
@@ -131,7 +130,7 @@ class KeypairServiceControllerTest {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET keypair - belongs to other user is forbidden`() {
-        val keypair = createKeypair(owner = UUID(1, 1).toString())
+        val keypair = createKeypair(id = "k1", owner = "somebody else")
 
         mockMvc.perform(get("/api/v1/keypairs/${keypair.id}"))
             .andExpect(status().isForbidden)
@@ -147,7 +146,7 @@ class KeypairServiceControllerTest {
 
     @Test
     fun `GET keypair - unauthenticated`() {
-        val keypair = createKeypair()
+        val keypair = createKeypair(id = "k1")
 
         mockMvc.perform(get("/api/v1/keypairs/${keypair.id}"))
             .andExpect(status().isUnauthorized)
@@ -173,7 +172,7 @@ class KeypairServiceControllerTest {
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.*", hasSize<Any>(6)))
-            .andExpect(jsonPath("$.id").value(UUID_MATCHER))
+            .andExpect(jsonPath("$.id").value(ID_LENGTH_MATCHER))
             .andExpect(jsonPath("$.timestamp").value(TIMESTAMP_RECENT_MATCHER))
             .andExpect(jsonPath("$.publicKey").value(publicKey))
             .andExpect(jsonPath("$.privateKey").value("AQIDBA=="))
@@ -326,7 +325,7 @@ class KeypairServiceControllerTest {
     }
 
     private fun createKeypair(
-        id: UUID = UUID.randomUUID(),
+        id: String,
         timestamp: Instant = Instant.EPOCH,
         owner: String = TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER,
