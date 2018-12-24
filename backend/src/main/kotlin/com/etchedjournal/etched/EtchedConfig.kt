@@ -4,6 +4,8 @@ import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.OpenIdConnectApi
 import com.etchedjournal.etched.service.impl.AuthServiceImpl
 import com.etchedjournal.etched.service.impl.KeycloakOpenIdConnectApi
+import com.etchedjournal.etched.utils.id.IdGenerator
+import com.etchedjournal.etched.utils.id.IdGeneratorImpl
 import org.keycloak.OAuth2Constants
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
@@ -23,40 +25,37 @@ import javax.servlet.http.HttpServletResponse
 
 @Configuration
 class EtchedConfig {
-    companion object {
-        val log: Logger = LoggerFactory.getLogger(EtchedConfig::class.java)
-    }
 
     @Bean
     fun openIdConnectApi(
-            @Value("\${keycloak.auth-server-url}") authServerUrl: String,
-            @Value("\${keycloak.realm}") realm: String,
-            @Value("\${keycloak.resource}") resource: String,
-            @Value("\${keycloak.credentials.secret}") clientSecret: String
+        @Value("\${keycloak.auth-server-url}") authServerUrl: String,
+        @Value("\${keycloak.realm}") realm: String,
+        @Value("\${keycloak.resource}") resource: String,
+        @Value("\${keycloak.credentials.secret}") clientSecret: String
     ): OpenIdConnectApi {
         return KeycloakOpenIdConnectApi("$authServerUrl/realms/$realm/", resource, clientSecret)
     }
 
     @Bean
     fun keycloak(
-            @Value("\${keycloak.auth-server-url}") authServerUrl: String,
-            @Value("\${keycloak.realm}") realm: String,
-            @Value("\${keycloak.resource}") resource: String,
-            @Value("\${keycloak.credentials.secret}") clientSecret: String
+        @Value("\${keycloak.auth-server-url}") authServerUrl: String,
+        @Value("\${keycloak.realm}") realm: String,
+        @Value("\${keycloak.resource}") resource: String,
+        @Value("\${keycloak.credentials.secret}") clientSecret: String
     ): Keycloak {
         return KeycloakBuilder.builder()
-                .clientId(resource)
-                .clientSecret(clientSecret)
-                .serverUrl(authServerUrl)
-                .realm(realm)
-                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-                .build()
+            .clientId(resource)
+            .clientSecret(clientSecret)
+            .serverUrl(authServerUrl)
+            .realm(realm)
+            .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+            .build()
     }
 
     @Bean()
     fun etchedRealm(
-            keycloak: Keycloak,
-            @Value("\${keycloak.realm}") realm: String
+        keycloak: Keycloak,
+        @Value("\${keycloak.realm}") realm: String
     ): RealmResource {
         return keycloak.realm(realm)
     }
@@ -64,6 +63,15 @@ class EtchedConfig {
     @Bean
     fun authService(openIdConnectApi: OpenIdConnectApi, etchedRealm: RealmResource): AuthService {
         return AuthServiceImpl(openIdConnectApi, etchedRealm)
+    }
+
+    @Bean
+    fun idGenerator(): IdGenerator {
+        return IdGeneratorImpl.INSTANCE
+    }
+
+    companion object {
+        val log: Logger = LoggerFactory.getLogger(EtchedConfig::class.java)
     }
 }
 

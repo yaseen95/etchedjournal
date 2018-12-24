@@ -1,15 +1,14 @@
 package com.etchedjournal.etched.service
 
 import com.etchedjournal.etched.models.entity.JournalEntity
-import java.util.UUID
 
 interface JournalService {
 
-    fun getJournal(id: UUID): JournalEntity
+    fun getJournal(id: String): JournalEntity
 
     fun getJournals(): List<JournalEntity>
 
     fun create(content: ByteArray): JournalEntity
 
-    fun exists(id: UUID): Boolean
+    fun exists(id: String): Boolean
 }

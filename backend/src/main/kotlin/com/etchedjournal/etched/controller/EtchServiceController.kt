@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
 import javax.validation.Valid
 
 @RequestMapping("/api/v1/etches")
@@ -19,18 +18,18 @@ import javax.validation.Valid
 class EtchServiceController(private val etchService: EtchService) {
 
     @GetMapping("")
-    fun getEtches(@RequestParam entryId: UUID): List<EtchEntity> {
+    fun getEtches(@RequestParam entryId: String): List<EtchEntity> {
         return etchService.getEtches(entryId)
     }
 
     @GetMapping("/{etchId}")
-    fun getEtch(@PathVariable etchId: UUID): EtchEntity {
+    fun getEtch(@PathVariable etchId: String): EtchEntity {
         return etchService.getEtch(etchId)
     }
 
     @PostMapping("")
     fun create(
-        @RequestParam entryId: UUID,
+        @RequestParam entryId: String,
         @RequestBody etches: List<@Valid EncryptedEntityRequest>
     ): List<EtchEntity> {
         logger.info("Creating etches for entry {}", entryId)

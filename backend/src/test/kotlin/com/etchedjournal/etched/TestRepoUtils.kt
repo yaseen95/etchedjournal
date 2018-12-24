@@ -16,6 +16,7 @@ class TestRepoUtils(
 ) {
 
     fun createJournal(
+        id: String,
         content: ByteArray,
         timestamp: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
@@ -23,6 +24,7 @@ class TestRepoUtils(
     ): JournalEntity {
         return journalRepo.save(
             JournalEntity(
+                id = id,
                 timestamp = timestamp,
                 content = content,
                 owner = owner,
@@ -32,6 +34,7 @@ class TestRepoUtils(
     }
 
     fun createEntry(
+        id: String,
         journal: JournalEntity,
         content: ByteArray,
         timestamp: Instant = Instant.EPOCH,
@@ -40,6 +43,7 @@ class TestRepoUtils(
     ): EntryEntity {
         return entryRepo.save(
             EntryEntity(
+                id = id,
                 timestamp = timestamp,
                 content = content,
                 owner = owner,
@@ -50,6 +54,7 @@ class TestRepoUtils(
     }
 
     fun createEtch(
+        id: String,
         entry: EntryEntity,
         content: ByteArray,
         timestamp: Instant = Instant.EPOCH,
@@ -58,6 +63,7 @@ class TestRepoUtils(
     ): EtchEntity {
         return etchRepo.save(
             EtchEntity(
+                id = id,
                 timestamp = timestamp,
                 content = content,
                 owner = owner,

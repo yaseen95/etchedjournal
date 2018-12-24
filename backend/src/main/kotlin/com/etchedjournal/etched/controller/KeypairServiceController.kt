@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
 import javax.validation.Valid
 
 @RestController
@@ -59,7 +58,7 @@ class KeypairServiceController(
     }
 
     @GetMapping("/{keypairId}")
-    fun getKeypair(@PathVariable keypairId: UUID): KeypairEntity {
+    fun getKeypair(@PathVariable keypairId: String): KeypairEntity {
         logger.info("Getting keypair with id {}", keypairId)
         return keypairService.getKeypair(keypairId)
     }

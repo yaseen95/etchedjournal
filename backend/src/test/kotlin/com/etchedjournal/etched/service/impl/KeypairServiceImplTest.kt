@@ -4,6 +4,7 @@ import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.entity.KeypairEntity
 import com.etchedjournal.etched.repository.KeypairRepository
 import com.etchedjournal.etched.service.AuthService
+import com.etchedjournal.etched.utils.id.IdGenerator
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argThat
 import com.nhaarman.mockitokotlin2.mock
@@ -14,24 +15,28 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import java.time.Instant
-import java.util.UUID
 
 class KeypairServiceImplTest {
 
     private lateinit var keypairServiceImpl: KeypairServiceImpl
     private lateinit var keypairRepository: KeypairRepository
     private lateinit var authService: AuthService
+    private lateinit var idGenerator: IdGenerator
 
     @Before
     fun setup() {
         keypairRepository = mock()
         authService = mock()
+        idGenerator = mock()
+
         keypairServiceImpl = KeypairServiceImpl(
             keypairRepository = keypairRepository,
-            authService = authService
+            authService = authService,
+            idGenerator = idGenerator
         )
 
         whenever(authService.getUserId()).thenReturn("user1")
+        whenever(idGenerator.generateId()).thenReturn("id1", "id2")
     }
 
     @Test
@@ -40,7 +45,7 @@ class KeypairServiceImplTest {
         val privKey = byteArrayOf(4, 5, 6)
 
         val keypair = KeypairEntity(
-            id = UUID(1, 1),
+            id = "k1",
             timestamp = Instant.EPOCH,
             publicKey = pubKey,
             privateKey = privKey,
@@ -66,17 +71,20 @@ class KeypairServiceImplTest {
         val privKey = byteArrayOf(4, 5, 6)
 
         val keypair1 = KeypairEntity(
-            id = UUID(1, 1),
+            id = "k1",
             timestamp = Instant.EPOCH,
             publicKey = pubKey,
             privateKey = privKey,
             owner = "user1",
             ownerType = OwnerType.USER
         )
-        val keypair2 = keypair1.copy(
-            id = UUID(2, 2),
+        val keypair2 = KeypairEntity(
+            id = "k2",
             publicKey = byteArrayOf(1),
-            privateKey = byteArrayOf(2)
+            privateKey = byteArrayOf(2),
+            timestamp = Instant.EPOCH,
+            owner = "user1",
+            ownerType = OwnerType.USER
         )
 
         whenever(keypairRepository.findByOwner("user1"))
@@ -87,8 +95,8 @@ class KeypairServiceImplTest {
         assertEquals(2, keypairs.size)
         assertEquals("user1", keypairs[0].owner)
         assertEquals("user1", keypairs[1].owner)
-        assertEquals(UUID(1, 1), keypairs[0].id)
-        assertEquals(UUID(2, 2), keypairs[1].id)
+        assertEquals("k1", keypairs[0].id)
+        assertEquals("k2", keypairs[1].id)
 
         verify(keypairRepository, times(1)).findByOwner("user1")
         verify(keypairRepository, times(1)).findByOwner(any())

@@ -1,10 +1,10 @@
 package com.etchedjournal.etched.controller
 
+import com.etchedjournal.etched.ID_LENGTH_MATCHER
 import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
-import com.etchedjournal.etched.UUID_MATCHER
 import com.etchedjournal.etched.models.entity.JournalEntity
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
@@ -52,7 +52,10 @@ class EntryServiceControllerTests {
             .apply<DefaultMockMvcBuilder>(SecurityMockMvcConfigurers.springSecurity())
             .build()
 
-        testJournal = testRepoUtils.createJournal(content = byteArrayOf(1, 2, 3, 4))
+        testJournal = testRepoUtils.createJournal(
+            id = "journal1",
+            content = byteArrayOf(1, 2, 3, 4)
+        )
     }
 
     @Test
@@ -64,12 +67,12 @@ class EntryServiceControllerTests {
             .andExpect(jsonPath("$", hasSize<Any>(0)))
 
         // Create an entry and check
-        val e = testRepoUtils.createEntry(testJournal, byteArrayOf(1, 2))
+        val e = testRepoUtils.createEntry("e1", testJournal, byteArrayOf(1, 2))
 
         mockMvc.perform(get("$ENTRIES_PATH?journalId=${testJournal.id}"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$", hasSize<Any>(1)))
-            .andExpect(jsonPath("$[0].id", `is`(e.id!!.toString())))
+            .andExpect(jsonPath("$[0].id", `is`(e.id)))
             .andExpect(jsonPath("$[0].timestamp", `is`(0)))
             .andExpect(jsonPath("$[0].content", `is`("AQI=")))
             .andExpect(jsonPath("$[0].owner", `is`(TESTER_USER_ID)))
@@ -82,11 +85,11 @@ class EntryServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET entry by ID`() {
-        val e = testRepoUtils.createEntry(testJournal, byteArrayOf(1, 2))
+        val e = testRepoUtils.createEntry("e1", testJournal, byteArrayOf(1, 2))
 
         mockMvc.perform(get("$ENTRIES_PATH/${e.id}"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("\$.id", `is`(e.id!!.toString())))
+            .andExpect(jsonPath("\$.id", `is`(e.id)))
             .andExpect(jsonPath("\$.timestamp", `is`(0)))
             .andExpect(jsonPath("\$.content", `is`("AQI=")))
             .andExpect(jsonPath("\$.owner", `is`(TESTER_USER_ID)))
@@ -100,6 +103,7 @@ class EntryServiceControllerTests {
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET entry by other user is forbidden`() {
         val otherUserEntry = testRepoUtils.createEntry(
+            id = "otherEntry",
             journal = testJournal,
             content = byteArrayOf(1, 2),
             owner = "abc"
@@ -134,7 +138,7 @@ class EntryServiceControllerTests {
                 .content(entryRequest)
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("\$.id").value(UUID_MATCHER))
+            .andExpect(jsonPath("\$.id").value(ID_LENGTH_MATCHER))
             .andExpect(jsonPath("\$.timestamp").value(TIMESTAMP_RECENT_MATCHER))
             .andExpect(jsonPath("\$.content", `is`("abcd")))
             .andExpect(jsonPath("\$.owner", `is`(TESTER_USER_ID)))

@@ -1,10 +1,10 @@
 package com.etchedjournal.etched.controller
 
+import com.etchedjournal.etched.ID_LENGTH_MATCHER
 import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
-import com.etchedjournal.etched.UUID_MATCHER
 import com.etchedjournal.etched.models.entity.EntryEntity
 import com.etchedjournal.etched.models.entity.JournalEntity
 import org.hamcrest.Matchers.`is`
@@ -48,8 +48,8 @@ class EtchServiceControllerTests {
 
     @Before
     fun setup() {
-        journal = testRepoUtils.createJournal(content = byteArrayOf(1, 2, 3, 4))
-        entry = testRepoUtils.createEntry(journal, byteArrayOf(5, 6, 7, 8))
+        journal = testRepoUtils.createJournal(id = "journal1", content = byteArrayOf(1, 2, 3, 4))
+        entry = testRepoUtils.createEntry("entry1", journal, byteArrayOf(5, 6, 7, 8))
 
         mockMvc = MockMvcBuilders
             .webAppContextSetup(webApplicationContext)
@@ -67,13 +67,13 @@ class EtchServiceControllerTests {
             .andExpect(jsonPath("$", hasSize<Any>(0)))
 
         // Create an etch and check
-        val e = testRepoUtils.createEtch(entry = entry, content = byteArrayOf(1, 2))
+        val e = testRepoUtils.createEtch(id = "e1", entry = entry, content = byteArrayOf(1, 2))
 
         mockMvc.perform(get("$ETCHES_PATH?entryId=${entry.id}"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$", hasSize<Any>(1)))
             .andExpect(jsonPath("$[0].content", `is`("AQI=")))
-            .andExpect(jsonPath("$[0].id", `is`(e.id.toString())))
+            .andExpect(jsonPath("$[0].id", `is`(e.id)))
             .andExpect(jsonPath("$[0].timestamp", `is`(0)))
             .andExpect(jsonPath("$[0].entry").doesNotExist())
             .andExpect(jsonPath("$[0].owner", `is`(TestAuthService.TESTER_USER_ID)))
@@ -84,12 +84,12 @@ class EtchServiceControllerTests {
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET etch by ID`() {
         // Create an etch and check
-        val e = testRepoUtils.createEtch(entry = entry, content = byteArrayOf(1, 2))
+        val e = testRepoUtils.createEtch(id = "e1", entry = entry, content = byteArrayOf(1, 2))
 
         mockMvc.perform(get("$ETCHES_PATH/${e.id}"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("\$.content", `is`("AQI=")))
-            .andExpect(jsonPath("\$.id", `is`(e.id.toString())))
+            .andExpect(jsonPath("\$.id", `is`(e.id)))
             .andExpect(jsonPath("\$.timestamp", `is`(0)))
             .andExpect(jsonPath("\$.entry").doesNotExist())
             .andExpect(jsonPath("\$.owner", `is`(TestAuthService.TESTER_USER_ID)))
@@ -113,7 +113,12 @@ class EtchServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET etches for entry by other user is forbidden`() {
-        val otherUserEntry = testRepoUtils.createEntry(journal, byteArrayOf(), owner = "abc")
+        val otherUserEntry = testRepoUtils.createEntry(
+            id = "e1",
+            journal = journal,
+            content = byteArrayOf(),
+            owner = "abc"
+        )
 
         mockMvc.perform(get("$ETCHES_PATH?entryId=${otherUserEntry.id}"))
             .andExpect(status().isForbidden)
@@ -142,7 +147,7 @@ class EtchServiceControllerTests {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$", hasSize<Any>(1)))
             .andExpect(jsonPath("\$[0].content", `is`("YWJj")))
-            .andExpect(jsonPath("\$[0].id", UUID_MATCHER))
+            .andExpect(jsonPath("\$[0].id", ID_LENGTH_MATCHER))
             .andExpect(jsonPath("\$[0].timestamp", TIMESTAMP_RECENT_MATCHER))
             .andExpect(jsonPath("\$[0].owner", `is`(TestAuthService.TESTER_USER_ID)))
             .andExpect(jsonPath("\$[0].ownerType", `is`("USER")))
