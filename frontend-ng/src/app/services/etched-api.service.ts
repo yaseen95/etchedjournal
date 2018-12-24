@@ -5,7 +5,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { TokenResponse } from './dtos/token-response';
 import { map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { EtchedUser } from '../models/etched-user';
-import { Base64Str, Uuid } from '../models/encrypted-entity';
+import { Base64Str } from '../models/encrypted-entity';
 import { EntryEntity } from '../models/entry-entity';
 import { EtchEntity } from '../models/etch-entity';
 import { KeyPairEntity } from '../models/key-pair-entity';
@@ -150,7 +150,7 @@ export class EtchedApiService {
         });
     }
 
-    public postEtches(entryId: Uuid, etches: Base64Str[]): Observable<EtchEntity[]> {
+    public postEtches(entryId: string, etches: Base64Str[]): Observable<EtchEntity[]> {
         return this.refreshWrapper(() => {
             console.info(`Creating etches for entry ${entryId}`);
             const body: EncryptedEntityRequest[] = etches.map((e) => {return {content: e}});
@@ -161,7 +161,7 @@ export class EtchedApiService {
         });
     }
 
-    public getEntry(entryId: Uuid): Observable<EntryEntity> {
+    public getEntry(entryId: string): Observable<EntryEntity> {
         return this.refreshWrapper(() => {
             console.info(`Getting entry ${entryId}`);
             return this.http.get<EntryEntity>(`${ENTRIES_URL}/${entryId}`, {headers: this.authHeaders})
@@ -169,7 +169,7 @@ export class EtchedApiService {
         });
     }
 
-    public getEtches(entryId: Uuid): Observable<EtchEntity[]> {
+    public getEtches(entryId: string): Observable<EtchEntity[]> {
         const params = new HttpParams().set(ENTRY_ID, entryId);
         const options = {headers: this.authHeaders, params: params};
         return this.refreshWrapper(() => {

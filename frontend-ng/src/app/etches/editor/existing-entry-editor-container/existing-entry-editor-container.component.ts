@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractEditorContainerComponent } from '../abstract-editor-container-component/abstract-editor-container.component';
 import { EtchedApiService } from '../../../services/etched-api.service';
 import { ActivatedRoute } from '@angular/router';
-import { Base64Str, Uuid } from '../../../models/encrypted-entity';
+import { Base64Str } from '../../../models/encrypted-entity';
 import { EtchEntity } from '../../../models/etch-entity';
 import { EntryEntity } from '../../../models/entry-entity';
 import { EncrypterService } from '../../../services/encrypter.service';
@@ -23,7 +23,7 @@ export class ExistingEntryEditorContainerComponent
     extends AbstractEditorContainerComponent
     implements OnInit {
 
-    entryId: Uuid | null;
+    entryId: string | null;
 
     entryState: EntityState;
 
