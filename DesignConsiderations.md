@@ -24,7 +24,8 @@ won't allow it, but should the backend support it?
 A few scenarios arise:
 
 1. A user wishes to encrypt their etches with new keys. Might happen if/when:
-    - User changes the master key
+    - We get hacked
+    - We accidentally expose the private keys
     - There was a bug with how we were encrypting the data
     - There was a bug with a browser specific crypto implementation (really, really doubt this)
 
@@ -36,7 +37,7 @@ A few scenarios arise:
 
 3. We change the format of the etches and want to gracefully upgrade formats
 
-    I don't see having too many data formats, but just in case
+    I don't see having too many data formats, but just in case.
 
 ### How do we enable searching?
 

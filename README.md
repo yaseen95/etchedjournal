@@ -11,19 +11,8 @@ backspace. It feels like a cool enough idea to implement.
 * After {x} seconds, entries cannot be edited
 
 ## Encryption
-### Entry/Etches
-For each etch, an IV and key are randomly generated and used for encryption. The key and iv are 
-then encrypted by the Master Encryption Key (and a new iv) and uploaded alongside the message 
-content to the server.
-
-### Master Encryption Key
-The master encryption key is used to encrypt all the other data sent to the servers. This will
-encrypt the keys and ivs. Because there is only one key, this key is derived by a passphrase.
-
-1. User passphrase is stretched using PBKDF2
-2. Stretching will use very strong values e.g. tens of thousands of iterations
-3. The stretched passphrase becomes the master encryption key.
-
+User content is encrypted using PGP keys. The PGP keys are generated client side and are stored 
+encrypted by a *(strong)* user passphrase. All content is signed with the private key.
 
 ## Keycloak
 Keycloak is used as the backend auth service
