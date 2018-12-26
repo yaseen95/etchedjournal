@@ -115,6 +115,7 @@ export class RegisterContainerComponent implements OnInit {
         this.etchedApi.createKeyPair(publicKey, privateKey)
             .subscribe(result => {
                 this.registerState = this.UPLOADED_KEYS;
+                this.encrypterService.encrypter.keyPairId = result.id
             });
         // TODO: Handle error
     }

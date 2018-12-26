@@ -88,13 +88,16 @@ export class LoginContainerComponent implements OnInit {
     }
 
     decryptKeyPair(passphrase: string): Promise<void> {
-        let encrypter: Encrypter;
-
         console.info('Decrypting private key');
         return this.decryptPrivateKey()
             .then((decPrivateKey: string) => {
                 console.info('Instantiating encrypter');
-                return Encrypter.from2(decPrivateKey, this.keyPair.publicKey, passphrase);
+                return Encrypter.from2(
+                    decPrivateKey,
+                    this.keyPair.publicKey,
+                    passphrase,
+                    this.keyPair.id
+                );
             })
             .then((encrypter: Encrypter) => {
                 this.encrypterService.encrypter = encrypter;

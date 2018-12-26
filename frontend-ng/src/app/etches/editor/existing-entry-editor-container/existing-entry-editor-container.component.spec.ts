@@ -29,6 +29,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
 
         encrypterSpy = jasmine.createSpyObj('Encrypter', ['decrypt']);
         encrypterSpy.decrypt.and.returnValue(Promise.resolve('decrypted text'));
+        encrypterSpy.keyPairId = 'kpId';
 
         const encrypterService = new EncrypterService();
         encrypterService.encrypter = encrypterSpy;
@@ -126,7 +127,8 @@ describe('ExistingEntryEditorContainerComponent', () => {
             owner: 'owner',
             ownerType: OwnerType.USER,
             id: 'entryId',
-            content: 'Entry Title'
+            content: 'Entry Title',
+            keyPairId: 'kpId',
         };
         component.decryptedEtches = ['decrypted etch 1'];
         component.title = 'Entry Title';
@@ -146,7 +148,8 @@ describe('ExistingEntryEditorContainerComponent', () => {
             owner: 'owner',
             ownerType: OwnerType.USER,
             id: 'entryId',
-            content: 'ENCRYPTED'
+            content: 'ENCRYPTED',
+            keyPairId: 'kpId',
         };
 
         component.decryptEntry(entry);
@@ -166,14 +169,16 @@ describe('ExistingEntryEditorContainerComponent', () => {
             owner: 'owner',
             ownerType: OwnerType.USER,
             id: 'etch1',
-            content: 'ENC1'
+            content: 'ENC1',
+            keyPairId: 'kpId',
         };
         const etch2 = {
             timestamp: 1,
             owner: 'owner',
             ownerType: OwnerType.USER,
             id: 'etch1',
-            content: 'ENC2'
+            content: 'ENC2',
+            keyPairId: 'kpId',
         };
 
         component.decryptEtches([etch1, etch2]);

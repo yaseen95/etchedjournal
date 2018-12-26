@@ -18,6 +18,7 @@ describe('JournalListItemComponent', () => {
             owner: 'owner',
             ownerType: OwnerType.USER,
             timestamp: 0,
+            keyPairId: 'kpId',
         };
         TestBed.configureTestingModule({
             declarations: [JournalListItemComponent],

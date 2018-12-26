@@ -44,7 +44,14 @@ export class Encrypter {
         return new Encrypter(privateKey, publicKeys, privateKeyEncrypted);
     }
 
-    public static async from2(privKey: Base64Str, pubKey: Base64Str, passphrase: string): Promise<Encrypter> {
+    // TODO: Update this name
+    // What is from2?
+    public static async from2(
+        privKey: Base64Str,
+        pubKey: Base64Str,
+        passphrase: string,
+        keyPairId: string
+    ): Promise<Encrypter> {
         const privBytes = openpgp.util.b64_to_Uint8Array(privKey);
         const pubBytes = openpgp.util.b64_to_Uint8Array(pubKey);
 
@@ -55,7 +62,7 @@ export class Encrypter {
         const privateKeyEncrypted = await Encrypter.copyKey(privateKey);
         await Encrypter.decryptPrivateKey(privateKey, passphrase);
 
-        return new Encrypter(privateKey, publicKeys, privateKeyEncrypted);
+        return new Encrypter(privateKey, publicKeys, privateKeyEncrypted, keyPairId);
     };
 
     private static async decryptPrivateKey(privKey: openpgp.key.Key, passphrase: string): Promise<void> {
@@ -89,7 +96,10 @@ export class Encrypter {
         // TODO: Do we expect more than one public key?
         public publicKeys: openpgp.key.Key[],
         // The passphrase protected version of the key
-        public privateKeyEncrypted: openpgp.key.Key
+        public privateKeyEncrypted: openpgp.key.Key,
+
+        /** id of key pair */
+        public keyPairId: string | null = null
     ) {
     }
 

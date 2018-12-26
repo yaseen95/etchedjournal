@@ -1,11 +1,13 @@
 package com.etchedjournal.etched.service.impl
 
+import com.etchedjournal.etched.dto.EncryptedEntityRequest
 import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.entity.EntryEntity
 import com.etchedjournal.etched.repository.EntryRepository
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.EntryService
 import com.etchedjournal.etched.service.JournalService
+import com.etchedjournal.etched.service.KeypairService
 import com.etchedjournal.etched.service.exception.ForbiddenException
 import com.etchedjournal.etched.service.exception.NotFoundException
 import com.etchedjournal.etched.utils.id.IdGenerator
@@ -19,7 +21,8 @@ class EntryServiceImpl(
     private val entryRepository: EntryRepository,
     private val authService: AuthService,
     private val journalService: JournalService,
-    private val idGenerator: IdGenerator
+    private val idGenerator: IdGenerator,
+    private val keyPairService: KeypairService
 ) : EntryService {
 
     override fun getEntry(entryId: String): EntryEntity {
@@ -45,17 +48,18 @@ class EntryServiceImpl(
         return entryRepository.findByJournal_Id(journalId)
     }
 
-    override fun create(journalId: String, content: ByteArray): EntryEntity {
+    override fun create(req: EncryptedEntityRequest, journalId: String): EntryEntity {
         logger.info("Creating entry for journal {}", journalId)
         checkJournalExists(journalId)
         return entryRepository.save(
             EntryEntity(
                 id = idGenerator.generateId(),
-                content = content,
+                content = req.content,
                 owner = authService.getUserId(),
                 ownerType = OwnerType.USER,
                 journal = journalService.getJournal(journalId),
-                timestamp = Instant.now()
+                timestamp = Instant.now(),
+                keyPairId = keyPairService.getKeypair(req.keyPairId).id
             )
         )
     }

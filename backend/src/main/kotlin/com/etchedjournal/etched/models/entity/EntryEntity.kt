@@ -26,6 +26,7 @@ class EntryEntity(
     owner: String,
     ownerType: OwnerType,
     timestamp: Instant,
+    keyPairId: String,
 
     @ManyToOne
     @JoinColumn(name = "journal_id")
@@ -36,7 +37,8 @@ class EntryEntity(
     content = content,
     owner = owner,
     ownerType = ownerType,
-    timestamp = timestamp
+    timestamp = timestamp,
+    keyPairId = keyPairId
 ) {
     override fun toString(): String {
         return "EntryEntity(" +

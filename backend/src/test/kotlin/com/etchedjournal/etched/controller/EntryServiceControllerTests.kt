@@ -6,6 +6,7 @@ import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.models.entity.JournalEntity
+import com.etchedjournal.etched.models.entity.KeypairEntity
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
 import org.junit.Before
@@ -37,6 +38,7 @@ class EntryServiceControllerTests {
 
     private lateinit var mockMvc: MockMvc
     private lateinit var testJournal: JournalEntity
+    private lateinit var testKeyPair: KeypairEntity
 
     @Autowired
     private lateinit var webApplicationContext: WebApplicationContext
@@ -52,9 +54,16 @@ class EntryServiceControllerTests {
             .apply<DefaultMockMvcBuilder>(SecurityMockMvcConfigurers.springSecurity())
             .build()
 
+        testKeyPair = testRepoUtils.createKeyPair(
+            id = "keyPair1",
+            publicKey = byteArrayOf(1, 2),
+            privateKey = byteArrayOf(3, 4)
+        )
+
         testJournal = testRepoUtils.createJournal(
             id = "journal1",
-            content = byteArrayOf(1, 2, 3, 4)
+            content = byteArrayOf(1, 2, 3, 4),
+            keyPairId = testKeyPair.id
         )
     }
 
@@ -67,7 +76,7 @@ class EntryServiceControllerTests {
             .andExpect(jsonPath("$", hasSize<Any>(0)))
 
         // Create an entry and check
-        val e = testRepoUtils.createEntry("e1", testJournal, byteArrayOf(1, 2))
+        val e = testRepoUtils.createEntry("e1", testJournal, byteArrayOf(1, 2), testKeyPair.id)
 
         mockMvc.perform(get("$ENTRIES_PATH?journalId=${testJournal.id}"))
             .andExpect(status().isOk)
@@ -85,7 +94,7 @@ class EntryServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET entry by ID`() {
-        val e = testRepoUtils.createEntry("e1", testJournal, byteArrayOf(1, 2))
+        val e = testRepoUtils.createEntry("e1", testJournal, byteArrayOf(1, 2), testKeyPair.id)
 
         mockMvc.perform(get("$ENTRIES_PATH/${e.id}"))
             .andExpect(status().isOk)
@@ -106,7 +115,8 @@ class EntryServiceControllerTests {
             id = "otherEntry",
             journal = testJournal,
             content = byteArrayOf(1, 2),
-            owner = "abc"
+            owner = "abc",
+            keyPairId = testKeyPair.id
         )
 
         mockMvc.perform(get("$ENTRIES_PATH/${otherUserEntry.id}"))
@@ -129,7 +139,8 @@ class EntryServiceControllerTests {
         val entryRequest =
             """
             {
-                "content": "abcd"
+                "content": "abcd",
+                "keyPairId": "${testKeyPair.id}"
             }
             """
         mockMvc.perform(
@@ -143,6 +154,59 @@ class EntryServiceControllerTests {
             .andExpect(jsonPath("\$.content", `is`("abcd")))
             .andExpect(jsonPath("\$.owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("\$.ownerType", `is`("USER")))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["user"])
+    fun `POST entry - not authorised for journal`() {
+        val otherUserJournal = testRepoUtils.createJournal(
+            id = "j2",
+            content = byteArrayOf(1, 2),
+            keyPairId = testKeyPair.id,
+            owner = "somebody else"
+        )
+
+        val entryRequest =
+            """
+            {
+                "content": "abcd",
+                "keyPairId": "${testKeyPair.id}"
+            }
+            """
+        mockMvc.perform(
+            post("$ENTRIES_PATH?journalId=${otherUserJournal.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(entryRequest)
+        )
+            // TODO: Should this return a 404 or a 403?
+            .andExpect(status().isNotFound)
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["user"])
+    fun `POST entry - not authorised for key pair`() {
+        // User should not be able to post an entry that references a key pair belonging to
+        // another user
+        val otherUserKeyPair = testRepoUtils.createKeyPair(
+            id = "kp2",
+            publicKey = byteArrayOf(),
+            privateKey = byteArrayOf(),
+            owner = "foobar"
+        )
+
+        val entryRequest =
+            """
+            {
+                "content": "abcd",
+                "keyPairId": "${otherUserKeyPair.id}"
+            }
+            """
+        mockMvc.perform(
+            post("$ENTRIES_PATH?journalId=${testJournal.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(entryRequest)
+        )
+            .andExpect(status().isForbidden)
     }
 
     @Test
@@ -172,6 +236,18 @@ class EntryServiceControllerTests {
         )
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("\$.message", `is`("Cannot supply null for key 'content'")))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["user"])
+    fun `POST entry with keyPairId missing`() {
+        mockMvc.perform(
+            post(ENTRIES_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""{ "content": "AQI=" }""")
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("\$.message", `is`("Cannot supply null for key 'keyPairId'")))
     }
 
     @Test

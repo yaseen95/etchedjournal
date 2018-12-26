@@ -13,16 +13,11 @@ abstract class EncryptedEntity(
     ownerType: OwnerType,
 
     @Column(nullable = false)
-    val content: ByteArray
+    val content: ByteArray,
 
-    // TODO: Should we store the key id used to encrypt this entity?
-    // I think we should
-    // 1. Users can gradually rotate keys whilst also being able to decrypt older entries/etches
-    // 2. We can add some extra verification when a user deletes an etch/entry. We'd be able to
-    //    set up a "challenge" were we verify that they are holding the private key by sending a
-    //    nonce encrypted by the public key. If they can tell us what the nonce is, they've proven
-    //    ownership of the key
-
+    // Should we reference using the user visible id or the database id?
+    @Column(nullable = false, name = "key_pair_id")
+    val keyPairId: String
 ) : BaseEntity(
     id = id,
     timestamp = timestamp,

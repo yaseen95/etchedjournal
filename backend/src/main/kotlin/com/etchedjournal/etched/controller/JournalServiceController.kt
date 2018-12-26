@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/v1/journals")
@@ -28,7 +29,7 @@ class JournalServiceController(private val journalService: JournalService) {
     }
 
     @PostMapping("")
-    fun createJournal(@RequestBody req: EncryptedEntityRequest): JournalEntity {
-        return journalService.create(content = req.content)
+    fun createJournal(@Valid @RequestBody req: EncryptedEntityRequest): JournalEntity {
+        return journalService.create(req)
     }
 }

@@ -154,6 +154,7 @@ describe('CreateJournalComponent', () => {
             ownerType: OwnerType.USER,
             content: 'content',
             timestamp: 1,
+            keyPairId: 'kpId',
         };
         etchedApiSpy.createJournal.and.returnValue(of(journal));
         component.createJournal();

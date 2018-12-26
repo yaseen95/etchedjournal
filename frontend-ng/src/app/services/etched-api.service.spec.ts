@@ -115,7 +115,7 @@ describe('EtchedApiService', () => {
 
     it('create entry', () => {
         initAuth();
-        service.createEntry('journalId', 'content')
+        service.createEntry('kpId', 'journalId', 'content')
             .subscribe(entry => {
                 expect(entry.id).toEqual('entryId');
                 expect(entry.content).toEqual('base64Content');
@@ -131,6 +131,7 @@ describe('EtchedApiService', () => {
             owner: 'user',
             // Declaring string `as OwnerType` because the API returns it as a string
             ownerType: 'USER' as OwnerType,
+            keyPairId: 'kpId',
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries?journalId=journalId`);
@@ -142,7 +143,7 @@ describe('EtchedApiService', () => {
     it('post etches', () => {
         initAuth();
 
-        service.postEtches('entryId', ['etch1', 'etch2'])
+        service.postEtches('kpId', 'entryId', ['etch1', 'etch2'])
             .subscribe(etches => {
                 expect(etches.length).toEqual(2);
                 expect(etches[0].content).toEqual('etch1');
@@ -157,6 +158,7 @@ describe('EtchedApiService', () => {
             owner: 'abc',
             timestamp: 1,
             id: '1',
+            keyPairId: 'kpId',
         };
         etches[1] = {
             content: 'etch2',
@@ -164,6 +166,7 @@ describe('EtchedApiService', () => {
             owner: 'abc',
             timestamp: 2,
             id: '2',
+            keyPairId: 'kpId',
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/etches?entryId=entryId`);
@@ -190,6 +193,7 @@ describe('EtchedApiService', () => {
             owner: 'abc',
             timestamp: 1,
             id: '1',
+            keyPairId: 'kpId',
         };
         entries[1] = {
             content: 'entry2',
@@ -197,6 +201,7 @@ describe('EtchedApiService', () => {
             owner: 'abc',
             timestamp: 2,
             id: '2',
+            keyPairId: 'kpId',
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries?journalId=journalId`);
@@ -213,14 +218,16 @@ describe('EtchedApiService', () => {
                 expect(entry.id).toEqual('entry1');
                 expect(entry.timestamp).toEqual(1);
                 expect(entry.owner).toEqual('owner');
+                expect(entry.keyPairId).toEqual('kpId');
             });
 
-        const entry = {
+        const entry: EntryEntity = {
             content: 'content',
             ownerType: OwnerType.USER,
             owner: 'owner',
             timestamp: 1,
             id: 'entry1',
+            keyPairId: 'kpId',
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries/entry1`);
@@ -246,6 +253,7 @@ describe('EtchedApiService', () => {
             owner: 'owner',
             timestamp: 1,
             id: '1',
+            keyPairId: 'kpId',
         };
         entries[1] = {
             content: 'etch2',
@@ -253,6 +261,7 @@ describe('EtchedApiService', () => {
             owner: 'owner',
             timestamp: 2,
             id: '2',
+            keyPairId: 'kpId',
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/etches?entryId=entry1`);
@@ -291,13 +300,14 @@ describe('EtchedApiService', () => {
 
     it('create journal', () => {
         initAuth();
-        service.createJournal('content')
+        service.createJournal('kpId', 'content')
             .subscribe((journal: JournalEntity) => {
                 expect(journal.id).toEqual('entryId');
                 expect(journal.content).toEqual('base64Content');
                 expect(journal.timestamp).toEqual(1);
                 expect(journal.owner).toEqual('user');
                 expect(journal.ownerType).toEqual(OwnerType.USER);
+                expect(journal.keyPairId).toEqual('kpId');
             });
 
         const journal: JournalEntity = {
@@ -307,6 +317,7 @@ describe('EtchedApiService', () => {
             owner: 'user',
             // Declaring string `as OwnerType` because the API returns it as a string
             ownerType: 'USER' as OwnerType,
+            keyPairId: 'kpId',
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/journals`);
@@ -325,6 +336,7 @@ describe('EtchedApiService', () => {
                 expect(journals[0].timestamp).toEqual(1);
                 expect(journals[0].owner).toEqual('user');
                 expect(journals[0].ownerType).toEqual(OwnerType.USER);
+                expect(journals[0].keyPairId).toEqual('kpId');
             });
 
         const journal: JournalEntity = {
@@ -334,6 +346,7 @@ describe('EtchedApiService', () => {
             owner: 'user',
             // Declaring string `as OwnerType` because the API returns it as a string
             ownerType: 'USER' as OwnerType,
+            keyPairId: 'kpId',
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/journals`);

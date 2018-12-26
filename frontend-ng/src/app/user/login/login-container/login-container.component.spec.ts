@@ -130,6 +130,7 @@ describe('LoginContainerComponent', () => {
         component.keyPair = {
             privateKey: 'encrypted private key',
             publicKey: 'public key',
+            id: 'kpId',
         } as any;
 
         spyOn(component, 'decryptKeyPair').and.callThrough();
@@ -147,7 +148,7 @@ describe('LoginContainerComponent', () => {
 
         expect(from2Spy).toHaveBeenCalledTimes(1);
         expect(from2Spy).toHaveBeenCalledWith('decrypted private key', 'public key', 'super' +
-            ' secure passphrase');
+            ' secure passphrase', 'kpId');
 
         expect(component.loginState).toEqual(component.DECRYPTED_KEYS);
         expect(component.passphraseIncorrect).toBeFalsy();

@@ -26,8 +26,8 @@ class ExceptionAdvice {
     @ResponseBody
     @ExceptionHandler(ClientException::class)
     fun handleClientException(
-            request: HttpServletRequest,
-            ce: ClientException
+        request: HttpServletRequest,
+        ce: ClientException
     ): ResponseEntity<ExceptionResponse> {
         logger.info(formatMessage(request, ce, ce.logMessage))
         return createResponse(ce)
@@ -36,8 +36,8 @@ class ExceptionAdvice {
     @ResponseBody
     @ExceptionHandler(ServerException::class)
     fun handleServerException(
-            request: HttpServletRequest,
-            se: ServerException
+        request: HttpServletRequest,
+        se: ServerException
     ): ResponseEntity<ExceptionResponse> {
         logger.error(formatMessage(request, se, se.logMessage), se)
         return createResponse(se)
@@ -46,10 +46,10 @@ class ExceptionAdvice {
     @ResponseBody
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValid(
-            manve: MethodArgumentNotValidException
+        manve: MethodArgumentNotValidException
     ): ResponseEntity<ExceptionResponse> {
         val fieldError = manve.bindingResult.fieldErrors.firstOrNull()
-                ?: throw RuntimeException("Unable to find suitable message for a MethodArgumentNotValidException")
+            ?: throw RuntimeException("Unable to find suitable message for a MethodArgumentNotValidException")
         val message = createReadableMethodInvalidMessage(fieldError)
         return badRequest(message)
     }
@@ -57,22 +57,27 @@ class ExceptionAdvice {
     @ResponseBody
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handleHttpMessageNotReadable(
-            htmnre: HttpMessageNotReadableException
+        htmnre: HttpMessageNotReadableException
     ): ResponseEntity<ExceptionResponse> {
 
         // These errors are thrown by Spring due to invalid payloads
         val cause = htmnre.cause
-        val message = when(cause) {
+        val message = when (cause) {
             is MissingKotlinParameterException -> "Cannot supply null for key '${cause.parameter.name}'"
             is InvalidFormatException -> {
                 // Occurs when types don't match e.g. passing a string for a long
-                val fieldName = cause.path.firstOrNull()?.fieldName ?: throw RuntimeException("Expected at least one path in InvalidFormatException")
+                val fieldName = cause.path.firstOrNull()?.fieldName
+                    ?: throw RuntimeException("Expected at least one path in InvalidFormatException")
                 "'${cause.value}' is not a valid value for key '$fieldName'"
             }
             is MismatchedInputException -> "Invalid data format"
-            else -> throw RuntimeException("Unexpected cause for ${htmnre.javaClass.simpleName}")
+            else -> {
+                logger.warn("Unexpected cause of {}", htmnre)
+                "Bad request"
+            }
         }
 
+        logger.info("Received invalid payload: {}", message)
         return badRequest(message)
     }
 
