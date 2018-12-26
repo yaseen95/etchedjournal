@@ -5,6 +5,7 @@ import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
+import com.etchedjournal.etched.models.entity.KeypairEntity
 import com.etchedjournal.etched.repository.JournalRepository
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
@@ -46,9 +47,16 @@ class JournalServiceControllerTests {
     private lateinit var testRepoUtils: TestRepoUtils
 
     private lateinit var mockMvc: MockMvc
+    private lateinit var keyPair: KeypairEntity
 
     @Before
     fun setup() {
+        keyPair = testRepoUtils.createKeyPair(
+            id = "keyPair1",
+            publicKey = byteArrayOf(1, 2),
+            privateKey = byteArrayOf(3, 4)
+        )
+
         mockMvc = MockMvcBuilders
             .webAppContextSetup(webApplicationContext)
             // Have to apply apply spring security mock
@@ -70,7 +78,11 @@ class JournalServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET journals - returns created journal`() {
-        val j = testRepoUtils.createJournal(id = "j1", content = byteArrayOf(1, 2))
+        val j = testRepoUtils.createJournal(
+            id = "j1",
+            content = byteArrayOf(1, 2),
+            keyPair = keyPair
+        )
 
         mockMvc.perform(get(JOURNALS_URL))
             .andExpect(status().isOk)
@@ -86,7 +98,11 @@ class JournalServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET journal - returns created journal`() {
-        val j = testRepoUtils.createJournal(id = "j1", content = byteArrayOf(1, 2))
+        val j = testRepoUtils.createJournal(
+            id = "j1",
+            content = byteArrayOf(1, 2),
+            keyPair = keyPair
+        )
 
         mockMvc.perform(get("$JOURNALS_URL/${j.id}"))
             .andExpect(status().isOk)
@@ -107,7 +123,7 @@ class JournalServiceControllerTests {
         mockMvc.perform(
             post(JOURNALS_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{ "content": "abcd" }""")
+                .content("""{ "content": "abcd", "keyPairId": "${keyPair.id}" }""")
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("\$.id").value(ID_LENGTH_MATCHER))

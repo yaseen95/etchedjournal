@@ -1,19 +1,22 @@
 package com.etchedjournal.etched.dto
 
-import java.util.Arrays
-
-data class EncryptedEntityRequest(val content: ByteArray) {
-
+data class EncryptedEntityRequest(
+    val content: ByteArray,
+    val keyPairId: String
+) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is EncryptedEntityRequest) return false
 
-        if (!Arrays.equals(content, other.content)) return false
+        if (!content.contentEquals(other.content)) return false
+        if (keyPairId != other.keyPairId) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return Arrays.hashCode(content)
+        var result = content.contentHashCode()
+        result = 31 * result + keyPairId.hashCode()
+        return result
     }
 }

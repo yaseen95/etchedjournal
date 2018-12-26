@@ -7,6 +7,7 @@ import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.models.entity.EntryEntity
 import com.etchedjournal.etched.models.entity.JournalEntity
+import com.etchedjournal.etched.models.entity.KeypairEntity
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
 import org.junit.Before
@@ -21,6 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
@@ -39,6 +41,7 @@ class EtchServiceControllerTests {
     private lateinit var mockMvc: MockMvc
     private lateinit var entry: EntryEntity
     private lateinit var journal: JournalEntity
+    private lateinit var keyPair: KeypairEntity
 
     @Autowired
     private lateinit var webApplicationContext: WebApplicationContext
@@ -48,8 +51,23 @@ class EtchServiceControllerTests {
 
     @Before
     fun setup() {
-        journal = testRepoUtils.createJournal(id = "journal1", content = byteArrayOf(1, 2, 3, 4))
-        entry = testRepoUtils.createEntry("entry1", journal, byteArrayOf(5, 6, 7, 8))
+        keyPair = testRepoUtils.createKeyPair(
+            id = "keyPair1",
+            publicKey = byteArrayOf(1, 2),
+            privateKey = byteArrayOf(3, 4)
+        )
+
+        journal = testRepoUtils.createJournal(
+            id = "journal1",
+            content = byteArrayOf(1, 2, 3, 4),
+            keyPair = keyPair
+        )
+        entry = testRepoUtils.createEntry(
+            id = "entry1",
+            journal = journal,
+            content = byteArrayOf(5, 6, 7, 8),
+            keyPair = keyPair
+        )
 
         mockMvc = MockMvcBuilders
             .webAppContextSetup(webApplicationContext)
@@ -67,7 +85,12 @@ class EtchServiceControllerTests {
             .andExpect(jsonPath("$", hasSize<Any>(0)))
 
         // Create an etch and check
-        val e = testRepoUtils.createEtch(id = "e1", entry = entry, content = byteArrayOf(1, 2))
+        val e = testRepoUtils.createEtch(
+            id = "e1",
+            entry = entry,
+            content = byteArrayOf(1, 2),
+            keyPair = keyPair
+        )
 
         mockMvc.perform(get("$ETCHES_PATH?entryId=${entry.id}"))
             .andExpect(status().isOk)
@@ -84,7 +107,12 @@ class EtchServiceControllerTests {
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET etch by ID`() {
         // Create an etch and check
-        val e = testRepoUtils.createEtch(id = "e1", entry = entry, content = byteArrayOf(1, 2))
+        val e = testRepoUtils.createEtch(
+            id = "e1",
+            entry = entry,
+            content = byteArrayOf(1, 2),
+            keyPair = keyPair
+        )
 
         mockMvc.perform(get("$ETCHES_PATH/${e.id}"))
             .andExpect(status().isOk)
@@ -117,7 +145,8 @@ class EtchServiceControllerTests {
             id = "e1",
             journal = journal,
             content = byteArrayOf(),
-            owner = "abc"
+            owner = "abc",
+            keyPair = keyPair
         )
 
         mockMvc.perform(get("$ETCHES_PATH?entryId=${otherUserEntry.id}"))
@@ -129,16 +158,15 @@ class EtchServiceControllerTests {
     @WithMockUser(username = "tester", roles = ["user"])
     fun `POST etch`() {
         val etchRequest =
-
             """
             [
                 {
                     "content": "YWJj",
-                    "owner": "${TestAuthService.TESTER_USER_ID}",
-                    "ownerType": "USER"
+                    "keyPairId": "${keyPair.id}"
                 }
             ]
             """
+
         mockMvc.perform(
             post("$ETCHES_PATH?entryId=${entry.id}")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -160,6 +188,105 @@ class EtchServiceControllerTests {
     }
 
     @Test
+    @WithMockUser(username = "tester", roles = ["user"])
+    fun `POST etch - multiple etches`() {
+        val etchRequest =
+            """
+            [
+                {
+                    "content": "YWJj",
+                    "keyPairId": "${keyPair.id}"
+                },
+                {
+                    "content": "AQI=",
+                    "keyPairId": "${keyPair.id}"
+                }
+            ]
+            """
+
+        mockMvc.perform(
+            post("$ETCHES_PATH?entryId=${entry.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(etchRequest)
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$", hasSize<Any>(2)))
+            .andExpect(jsonPath("\$[0].content", `is`("YWJj")))
+            .andExpect(jsonPath("\$[0].id", ID_LENGTH_MATCHER))
+            .andExpect(jsonPath("\$[0].timestamp", TIMESTAMP_RECENT_MATCHER))
+            .andExpect(jsonPath("\$[0].owner", `is`(TestAuthService.TESTER_USER_ID)))
+            .andExpect(jsonPath("\$[0].ownerType", `is`("USER")))
+
+            .andExpect(jsonPath("\$[1].content", `is`("AQI=")))
+            .andExpect(jsonPath("\$[1].id", ID_LENGTH_MATCHER))
+            .andExpect(jsonPath("\$[1].timestamp", TIMESTAMP_RECENT_MATCHER))
+            .andExpect(jsonPath("\$[1].owner", `is`(TestAuthService.TESTER_USER_ID)))
+            .andExpect(jsonPath("\$[1].ownerType", `is`("USER")))
+
+        mockMvc.perform(get("$ETCHES_PATH?entryId=${entry.id}"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$", hasSize<Any>(2)))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["user"])
+    fun `POST etch - not authorised for entry`() {
+        val otherUserEntry = testRepoUtils.createEntry(
+            id = "entry2",
+            content = byteArrayOf(1, 2),
+            keyPair = keyPair,
+            owner = "somebody else",
+            journal = journal
+        )
+
+        val entryRequest =
+            """
+            [
+                {
+                    "content": "abcd",
+                    "keyPairId": "${keyPair.id}"
+                }
+            ]
+            """
+        mockMvc.perform(
+            post("$ETCHES_PATH?entryId=${otherUserEntry.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(entryRequest)
+        )
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["user"])
+    fun `POST etch - not authorised for key pair`() {
+        // User should not be able to post an etch that references a key pair belonging to
+        // another user
+        val otherUserKeyPair = testRepoUtils.createKeyPair(
+            id = "kp2",
+            publicKey = byteArrayOf(),
+            privateKey = byteArrayOf(),
+            owner = "foobar"
+        )
+
+        val entryRequest =
+            """
+            [
+                {
+
+                    "content": "abcd",
+                    "keyPairId": "${otherUserKeyPair.id}"
+                }
+            ]
+            """
+        mockMvc.perform(
+            post("$ETCHES_PATH?entryId=${entry.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(entryRequest)
+        )
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
     fun `POST etch not authenticated`() {
         mockMvc.perform(
             post(ETCHES_PATH)
@@ -175,10 +302,65 @@ class EtchServiceControllerTests {
         mockMvc.perform(
             post(ETCHES_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{}")
+                .content("[{}]")
         )
             .andExpect(status().isBadRequest)
-            .andReturn()
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["user"])
+    fun `POST etch with keyPairId missing`() {
+        mockMvc.perform(
+            post(ETCHES_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""[ { "content": "AQI=" } ] """)
+        )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["user"])
+    fun `POST etch with content missing`() {
+        mockMvc.perform(
+            post(ETCHES_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""[ { "keyPairId": "${keyPair.id}" } ] """)
+        )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["user"])
+    fun `POST etches - fails when referencing different key pairs`() {
+        val keyPair2 = testRepoUtils.createKeyPair(id = "kp2")
+        val etchRequest =
+            """
+            [
+                {
+                    "content": "YWJj",
+                    "keyPairId": "${keyPair.id}"
+                },
+                {
+                    "content": "AQI=",
+                    "keyPairId": "${keyPair2.id}"
+                }
+            ]
+            """
+
+        mockMvc.perform(
+            post("$ETCHES_PATH?entryId=${entry.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(etchRequest)
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(content().json(
+                """
+                {
+                    "message": "Can only create etches for one key pair at a time"
+                }
+                """.trimIndent(),
+                true
+            ))
     }
 
     companion object {

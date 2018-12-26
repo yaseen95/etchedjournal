@@ -8,5 +8,5 @@ interface EtchService {
 
     fun getEtch(etchId: String): EtchEntity
 
-    fun create(entryId: String, etches: List<EncryptedEntityRequest>): List<EtchEntity>
+    fun create(etches: List<EncryptedEntityRequest>, entryId: String): List<EtchEntity>
 }

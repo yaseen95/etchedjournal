@@ -1,5 +1,6 @@
 package com.etchedjournal.etched.service
 
+import com.etchedjournal.etched.dto.EncryptedEntityRequest
 import com.etchedjournal.etched.models.entity.JournalEntity
 
 interface JournalService {
@@ -8,7 +9,7 @@ interface JournalService {
 
     fun getJournals(): List<JournalEntity>
 
-    fun create(content: ByteArray): JournalEntity
+    fun create(req: EncryptedEntityRequest): JournalEntity
 
     fun exists(id: String): Boolean
 }

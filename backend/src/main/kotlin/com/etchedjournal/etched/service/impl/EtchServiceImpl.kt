@@ -7,6 +7,8 @@ import com.etchedjournal.etched.repository.EtchRepository
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.EntryService
 import com.etchedjournal.etched.service.EtchService
+import com.etchedjournal.etched.service.KeypairService
+import com.etchedjournal.etched.service.exception.BadRequestException
 import com.etchedjournal.etched.service.exception.NotFoundException
 import com.etchedjournal.etched.utils.id.IdGenerator
 import org.slf4j.Logger
@@ -19,7 +21,8 @@ class EtchServiceImpl(
     private val etchRepository: EtchRepository,
     private val entryService: EntryService,
     private val authService: AuthService,
-    private val idGenerator: IdGenerator
+    private val idGenerator: IdGenerator,
+    private val keyPairService: KeypairService
 ) : EtchService {
 
     override fun getEtches(entryId: String): List<EtchEntity> {
@@ -35,9 +38,18 @@ class EtchServiceImpl(
             ?: throw NotFoundException("No EtchEntity with id $etchId exists.")
     }
 
-    override fun create(entryId: String, etches: List<EncryptedEntityRequest>): List<EtchEntity> {
+    override fun create(etches: List<EncryptedEntityRequest>, entryId: String): List<EtchEntity> {
         logger.info("Creating {} etches for entry {}", etches.size, entryId)
         val entry = entryService.getEntry(entryId)
+
+        // TODO: Handle empty list
+        // Should we just return successfully or throw an error? If fails at the next step but
+        // the error message isn't clear what the issue is
+
+        if (etches.map { it.keyPairId }.toSet().size != 1) {
+            throw BadRequestException(message = "Can only create etches for one key pair at a time")
+        }
+        val keyPair = keyPairService.getKeypair(id = etches[0].keyPairId)
 
         val timestamp = Instant.now()
         val newEtches = etches.map {
@@ -49,7 +61,8 @@ class EtchServiceImpl(
                 entry = entry,
                 content = it.content,
                 owner = authService.getUserId(),
-                ownerType = OwnerType.USER
+                ownerType = OwnerType.USER,
+                keyPair = keyPair
             )
         }
         return etchRepository.save(newEtches).toList()

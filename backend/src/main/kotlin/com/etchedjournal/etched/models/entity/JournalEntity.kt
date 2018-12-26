@@ -22,13 +22,15 @@ class JournalEntity(
     content: ByteArray,
     owner: String,
     ownerType: OwnerType,
-    timestamp: Instant
+    timestamp: Instant,
+    keyPair: KeypairEntity
 ) : EncryptedEntity(
     id = id,
     content = content,
     owner = owner,
     ownerType = ownerType,
-    timestamp = timestamp
+    timestamp = timestamp,
+    keyPair = keyPair
 ) {
     override fun toString(): String {
         return "JournalEntity(" +

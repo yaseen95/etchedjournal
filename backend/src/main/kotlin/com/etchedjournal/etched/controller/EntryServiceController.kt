@@ -38,11 +38,11 @@ class EntryServiceController(private val entryService: EntryService) {
      */
     @PostMapping("")
     fun create(
-        @RequestBody @Valid entry: EncryptedEntityRequest,
+        @RequestBody @Valid req: EncryptedEntityRequest,
         @RequestParam journalId: String
     ): EntryEntity {
         logger.info("Creating an entry for journal {}", journalId)
-        val createdEntry = entryService.create(journalId, entry.content)
+        val createdEntry = entryService.create(req, journalId)
         logger.info("Created entry {}", createdEntry)
         return createdEntry
     }

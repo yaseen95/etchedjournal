@@ -4,20 +4,24 @@ import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.entity.EntryEntity
 import com.etchedjournal.etched.models.entity.EtchEntity
 import com.etchedjournal.etched.models.entity.JournalEntity
+import com.etchedjournal.etched.models.entity.KeypairEntity
 import com.etchedjournal.etched.repository.EntryRepository
 import com.etchedjournal.etched.repository.EtchRepository
 import com.etchedjournal.etched.repository.JournalRepository
+import com.etchedjournal.etched.repository.KeypairRepository
 import java.time.Instant
 
 class TestRepoUtils(
     private val journalRepo: JournalRepository,
     private val entryRepo: EntryRepository,
-    private val etchRepo: EtchRepository
+    private val etchRepo: EtchRepository,
+    private val keyPairRepo: KeypairRepository
 ) {
 
     fun createJournal(
         id: String,
         content: ByteArray,
+        keyPair: KeypairEntity,
         timestamp: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER
@@ -28,7 +32,8 @@ class TestRepoUtils(
                 timestamp = timestamp,
                 content = content,
                 owner = owner,
-                ownerType = ownerType
+                ownerType = ownerType,
+                keyPair = keyPair
             )
         )
     }
@@ -37,6 +42,7 @@ class TestRepoUtils(
         id: String,
         journal: JournalEntity,
         content: ByteArray,
+        keyPair: KeypairEntity,
         timestamp: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER
@@ -48,7 +54,8 @@ class TestRepoUtils(
                 content = content,
                 owner = owner,
                 ownerType = ownerType,
-                journal = journal
+                journal = journal,
+                keyPair = keyPair
             )
         )
     }
@@ -57,6 +64,7 @@ class TestRepoUtils(
         id: String,
         entry: EntryEntity,
         content: ByteArray,
+        keyPair: KeypairEntity,
         timestamp: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER
@@ -68,7 +76,28 @@ class TestRepoUtils(
                 content = content,
                 owner = owner,
                 ownerType = ownerType,
-                entry = entry
+                entry = entry,
+                keyPair = keyPair
+            )
+        )
+    }
+
+    fun createKeyPair(
+        id: String,
+        publicKey: ByteArray = byteArrayOf(),
+        privateKey: ByteArray = byteArrayOf(),
+        timestamp: Instant = Instant.EPOCH,
+        owner: String = TestAuthService.TESTER_USER_ID,
+        ownerType: OwnerType = OwnerType.USER
+    ): KeypairEntity {
+        return keyPairRepo.save(
+            KeypairEntity(
+                id = id,
+                publicKey = publicKey,
+                privateKey = privateKey,
+                timestamp = timestamp,
+                owner = owner,
+                ownerType = ownerType
             )
         )
     }
