@@ -27,12 +27,14 @@ describe('AbstractEditorContainerComponent', () => {
         ownerType: OwnerType.USER,
         owner: 'owner',
         timestamp: 1,
+        keyPairId: 'kpId',
     };
 
     beforeEach(() => {
         // Create API and encrypter mocks
         etchedApi = jasmine.createSpyObj('EtchedApiService', ['postEtches']);
         encrypter = jasmine.createSpyObj('Encrypter', ['encrypt']);
+        encrypter.keyPairId = 'kpId';
 
         // Create a spy on that static constructor for Encrypter
         const encrypterFromSpy = spyOn(Encrypter, 'from');
@@ -103,7 +105,7 @@ describe('AbstractEditorContainerComponent', () => {
         tick();
 
         expect(etchedApi.postEtches).toHaveBeenCalledTimes(1);
-        expect(etchedApi.postEtches).toHaveBeenCalledWith('entryId', ['encrypted etch']);
+        expect(etchedApi.postEtches).toHaveBeenCalledWith('kpId', 'entryId', ['encrypted etch']);
         expect(component.queuedEtches).toEqual([]);
     }));
 
@@ -137,7 +139,7 @@ describe('AbstractEditorContainerComponent', () => {
         expect(component.queuedEtches).toEqual(['etch3']);
 
         expect(etchedApi.postEtches).toHaveBeenCalledTimes(1);
-        expect(etchedApi.postEtches).toHaveBeenCalledWith('entryId', ['e', 'e']);
+        expect(etchedApi.postEtches).toHaveBeenCalledWith('kpId', 'entryId', ['e', 'e']);
     }));
 
     it('onTitleChange updates title', () => {

@@ -111,7 +111,11 @@ export abstract class AbstractEditorContainerComponent implements OnInit, OnDest
                 // Break it up against multiple requests???
                 console.info('Encryption finished');
                 console.info(`Posting ${encryptedEtches.length} etches`);
-                return this.etchedApi.postEtches(this.entry.id, encryptedEtches);
+                return this.etchedApi.postEtches(
+                    this.encrypter.keyPairId,
+                    this.entry.id,
+                    encryptedEtches
+                );
             })
             .then((savedEtchesObs: Observable<EncryptedEntity[]>) => {
                 savedEtchesObs.subscribe(savedEtches => {

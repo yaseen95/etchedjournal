@@ -10,6 +10,7 @@ import { EntryEntity } from '../models/entry-entity';
 import { EtchEntity } from '../models/etch-entity';
 import { KeyPairEntity } from '../models/key-pair-entity';
 import { JournalEntity } from '../models/journal-entity';
+import { key } from 'openpgp';
 
 const LOGIN_URL = `${environment.API_URL}/auth/authenticate`;
 const REGISTER_URL = `${environment.API_URL}/auth/register`;
@@ -26,7 +27,8 @@ const ENTRY_ID = 'entryId';
 const JOURNAL_ID = 'journalId';
 
 interface EncryptedEntityRequest {
-    content: Base64Str
+    content: Base64Str,
+    keyPairId: string,
 }
 
 @Injectable({
@@ -119,20 +121,24 @@ export class EtchedApiService {
         })
     }
 
-    public createJournal(content: Base64Str): Observable<JournalEntity> {
+    public createJournal(keyPairId: string, content: Base64Str): Observable<JournalEntity> {
         return this.refreshWrapper(() => {
             console.info('Creating journal');
-            const body: EncryptedEntityRequest = {content: content};
+            const body: EncryptedEntityRequest = {content: content, keyPairId: keyPairId};
             const options = {headers: this.authHeaders};
             return this.http.post<JournalEntity>(JOURNALS_URL, body, options)
                 .pipe(tap((j) => console.info(`Created journal ${j.id}`)));
         })
     }
 
-    public createEntry(journalId: string, content: Base64Str): Observable<EntryEntity> {
+    public createEntry(
+        keyPairId: string,
+        journalId: string,
+        content: Base64Str
+    ): Observable<EntryEntity> {
         return this.refreshWrapper(() => {
             console.info(`Creating an entry for journal ${journalId}`);
-            const body: EncryptedEntityRequest = {content: content};
+            const body: EncryptedEntityRequest = {content: content, keyPairId: keyPairId};
             const params = new HttpParams().set(JOURNAL_ID, journalId);
             const options = {headers: this.authHeaders, params: params};
             return this.http.post<EntryEntity>(ENTRIES_URL, body, options)
@@ -150,10 +156,16 @@ export class EtchedApiService {
         });
     }
 
-    public postEtches(entryId: string, etches: Base64Str[]): Observable<EtchEntity[]> {
+    public postEtches(
+        keyPairId: string,
+        entryId: string,
+        etches: Base64Str[]
+    ): Observable<EtchEntity[]> {
         return this.refreshWrapper(() => {
             console.info(`Creating etches for entry ${entryId}`);
-            const body: EncryptedEntityRequest[] = etches.map((e) => {return {content: e}});
+            const body: EncryptedEntityRequest[] = etches.map((e) => {
+                return {content: e, keyPairId: keyPairId}
+            });
 
             const params = new HttpParams().set(ENTRY_ID, entryId);
             return this.post<EncryptedEntityRequest[], EtchEntity[]>(ETCHES_URL, body, params)

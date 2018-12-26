@@ -23,13 +23,15 @@ describe('JournalListComponent', () => {
                 ownerType: OwnerType.USER,
                 owner: 'tester1',
                 content: 'journal1 content',
+                keyPairId: 'kpId',
             },
             {
                 id: '0000000000000000',
                 timestamp: 1,
                 ownerType: OwnerType.USER,
                 owner: 'tester1',
-                content: 'journal2 content'
+                content: 'journal2 content',
+                keyPairId: 'kpId',
             }
         ];
 

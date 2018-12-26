@@ -47,10 +47,12 @@ export class CreateJournalComponent implements OnInit {
     createJournal() {
         const journalName = this.createJournalForm.controls.journalName.value.trim();
         console.info('Encrypting journal title');
-        this.encrypterService.encrypter.encrypt(journalName)
+
+        const enc = this.encrypterService.encrypter;
+        enc.encrypt(journalName)
             .then((ciphertext: Base64Str) => {
                 console.info('Finished encrypting journal title');
-                return this.etchedApi.createJournal(ciphertext);
+                return this.etchedApi.createJournal(enc.keyPairId, ciphertext);
             })
             .then((savedJournalObs: Observable<JournalEntity>) => {
                 savedJournalObs.subscribe(journal => {

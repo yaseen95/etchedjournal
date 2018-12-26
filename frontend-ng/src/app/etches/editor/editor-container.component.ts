@@ -54,7 +54,7 @@ export class EditorContainerComponent
         this.encrypter.encrypt(this.title)
             .then(ciphertext => {
                 console.info(`creating entry with title: ${this.title}`);
-                this.etchedApi.createEntry(this.journalId, ciphertext)
+                this.etchedApi.createEntry(this.encrypter.keyPairId, this.journalId, ciphertext)
                     .subscribe(entry => {
                         console.log(`Created entry with id ${entry.id}`);
                         this.entryCreationState = ENTRY_CREATED;

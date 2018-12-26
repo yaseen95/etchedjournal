@@ -29,6 +29,7 @@ describe('EntryListItemComponent', () => {
             owner: 'owner',
             ownerType: OwnerType.USER,
             id: 'abcdef',
+            keyPairId: 'kpId',
         };
 
         fixture.detectChanges();

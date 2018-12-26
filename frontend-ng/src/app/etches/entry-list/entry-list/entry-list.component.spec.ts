@@ -50,14 +50,16 @@ describe('EntryListComponent', () => {
                 timestamp: 1_000,
                 owner: 'owner1',
                 ownerType: OwnerType.USER,
-                content: 'title1'
+                content: 'title1',
+                keyPairId: 'kpId',
             },
             {
                 id: 'id2',
                 timestamp: 2_000,
                 owner: 'owner2',
                 ownerType: OwnerType.USER,
-                content: 'title2'
+                content: 'title2',
+                keyPairId: 'kpId',
             }
         ];
         fixture.detectChanges();

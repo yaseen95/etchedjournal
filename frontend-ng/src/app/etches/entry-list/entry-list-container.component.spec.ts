@@ -22,6 +22,7 @@ describe('EntryListContainerComponent', () => {
         // By default getUser should return null
         etchedApi.getEntries.and.returnValue(of([]));
         encrypter = jasmine.createSpyObj('Encrypter', ['encrypt']);
+        encrypter.keyPairId = 'kpId';
 
         encrypterService = new EncrypterService();
         encrypterService.encrypter = encrypter;
