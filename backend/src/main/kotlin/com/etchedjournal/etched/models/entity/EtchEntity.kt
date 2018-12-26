@@ -26,7 +26,7 @@ class EtchEntity(
     content: ByteArray,
     owner: String,
     ownerType: OwnerType,
-    keyPair: KeypairEntity,
+    keyPairId: String,
 
     @ManyToOne
     @JoinColumn(name = "entry_id")
@@ -38,7 +38,7 @@ class EtchEntity(
     content = content,
     owner = owner,
     ownerType = ownerType,
-    keyPair = keyPair
+    keyPairId = keyPairId
 ) {
     override fun toString(): String {
         return "EtchEntity(" +

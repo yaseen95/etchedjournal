@@ -59,7 +59,7 @@ class EntryServiceImpl(
                 ownerType = OwnerType.USER,
                 journal = journalService.getJournal(journalId),
                 timestamp = Instant.now(),
-                keyPair = keyPairService.getKeypair(req.keyPairId)
+                keyPairId = keyPairService.getKeypair(req.keyPairId).id
             )
         )
     }

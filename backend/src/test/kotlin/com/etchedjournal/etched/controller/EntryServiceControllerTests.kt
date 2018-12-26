@@ -63,7 +63,7 @@ class EntryServiceControllerTests {
         testJournal = testRepoUtils.createJournal(
             id = "journal1",
             content = byteArrayOf(1, 2, 3, 4),
-            keyPair = testKeyPair
+            keyPairId = testKeyPair.id
         )
     }
 
@@ -76,7 +76,7 @@ class EntryServiceControllerTests {
             .andExpect(jsonPath("$", hasSize<Any>(0)))
 
         // Create an entry and check
-        val e = testRepoUtils.createEntry("e1", testJournal, byteArrayOf(1, 2), testKeyPair)
+        val e = testRepoUtils.createEntry("e1", testJournal, byteArrayOf(1, 2), testKeyPair.id)
 
         mockMvc.perform(get("$ENTRIES_PATH?journalId=${testJournal.id}"))
             .andExpect(status().isOk)
@@ -94,7 +94,7 @@ class EntryServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET entry by ID`() {
-        val e = testRepoUtils.createEntry("e1", testJournal, byteArrayOf(1, 2), testKeyPair)
+        val e = testRepoUtils.createEntry("e1", testJournal, byteArrayOf(1, 2), testKeyPair.id)
 
         mockMvc.perform(get("$ENTRIES_PATH/${e.id}"))
             .andExpect(status().isOk)
@@ -116,7 +116,7 @@ class EntryServiceControllerTests {
             journal = testJournal,
             content = byteArrayOf(1, 2),
             owner = "abc",
-            keyPair = testKeyPair
+            keyPairId = testKeyPair.id
         )
 
         mockMvc.perform(get("$ENTRIES_PATH/${otherUserEntry.id}"))
@@ -162,7 +162,7 @@ class EntryServiceControllerTests {
         val otherUserJournal = testRepoUtils.createJournal(
             id = "j2",
             content = byteArrayOf(1, 2),
-            keyPair = testKeyPair,
+            keyPairId = testKeyPair.id,
             owner = "somebody else"
         )
 

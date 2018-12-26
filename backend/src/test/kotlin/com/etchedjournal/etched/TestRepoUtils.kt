@@ -21,7 +21,7 @@ class TestRepoUtils(
     fun createJournal(
         id: String,
         content: ByteArray,
-        keyPair: KeypairEntity,
+        keyPairId: String,
         timestamp: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER
@@ -33,7 +33,7 @@ class TestRepoUtils(
                 content = content,
                 owner = owner,
                 ownerType = ownerType,
-                keyPair = keyPair
+                keyPairId = keyPairId
             )
         )
     }
@@ -42,7 +42,7 @@ class TestRepoUtils(
         id: String,
         journal: JournalEntity,
         content: ByteArray,
-        keyPair: KeypairEntity,
+        keyPairId: String,
         timestamp: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER
@@ -55,7 +55,7 @@ class TestRepoUtils(
                 owner = owner,
                 ownerType = ownerType,
                 journal = journal,
-                keyPair = keyPair
+                keyPairId = keyPairId
             )
         )
     }
@@ -64,7 +64,7 @@ class TestRepoUtils(
         id: String,
         entry: EntryEntity,
         content: ByteArray,
-        keyPair: KeypairEntity,
+        keyPairId: String,
         timestamp: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER
@@ -77,7 +77,7 @@ class TestRepoUtils(
                 owner = owner,
                 ownerType = ownerType,
                 entry = entry,
-                keyPair = keyPair
+                keyPairId = keyPairId
             )
         )
     }

@@ -81,7 +81,7 @@ class JournalServiceControllerTests {
         val j = testRepoUtils.createJournal(
             id = "j1",
             content = byteArrayOf(1, 2),
-            keyPair = keyPair
+            keyPairId = keyPair.id
         )
 
         mockMvc.perform(get(JOURNALS_URL))
@@ -92,7 +92,8 @@ class JournalServiceControllerTests {
             .andExpect(jsonPath("$[0].content", `is`("AQI=")))
             .andExpect(jsonPath("$[0].owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$[0].ownerType", `is`("USER")))
-            .andExpect(jsonPath("$[0].*", hasSize<Any>(5)))
+            .andExpect(jsonPath("$[0].keyPairId", `is`(keyPair.id)))
+            .andExpect(jsonPath("$[0].*", hasSize<Any>(6)))
     }
 
     @Test
@@ -101,17 +102,18 @@ class JournalServiceControllerTests {
         val j = testRepoUtils.createJournal(
             id = "j1",
             content = byteArrayOf(1, 2),
-            keyPair = keyPair
+            keyPairId = keyPair.id
         )
 
         mockMvc.perform(get("$JOURNALS_URL/${j.id}"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.*", hasSize<Any>(5)))
+            .andExpect(jsonPath("$.*", hasSize<Any>(6)))
             .andExpect(jsonPath("$.id", `is`(j.id)))
             .andExpect(jsonPath("$.timestamp", `is`(0)))
             .andExpect(jsonPath("$.content", `is`("AQI=")))
             .andExpect(jsonPath("$.owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$.ownerType", `is`("USER")))
+            .andExpect(jsonPath("$.keyPairId", `is`(keyPair.id)))
     }
 
     @Test

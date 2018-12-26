@@ -62,7 +62,7 @@ class EtchServiceImpl(
                 content = it.content,
                 owner = authService.getUserId(),
                 ownerType = OwnerType.USER,
-                keyPair = keyPair
+                keyPairId = keyPair.id
             )
         }
         return etchRepository.save(newEtches).toList()

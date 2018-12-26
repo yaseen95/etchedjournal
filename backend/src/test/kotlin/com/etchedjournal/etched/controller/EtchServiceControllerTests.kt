@@ -60,13 +60,13 @@ class EtchServiceControllerTests {
         journal = testRepoUtils.createJournal(
             id = "journal1",
             content = byteArrayOf(1, 2, 3, 4),
-            keyPair = keyPair
+            keyPairId = keyPair.id
         )
         entry = testRepoUtils.createEntry(
             id = "entry1",
             journal = journal,
             content = byteArrayOf(5, 6, 7, 8),
-            keyPair = keyPair
+            keyPairId = keyPair.id
         )
 
         mockMvc = MockMvcBuilders
@@ -89,7 +89,7 @@ class EtchServiceControllerTests {
             id = "e1",
             entry = entry,
             content = byteArrayOf(1, 2),
-            keyPair = keyPair
+            keyPairId = keyPair.id
         )
 
         mockMvc.perform(get("$ETCHES_PATH?entryId=${entry.id}"))
@@ -111,7 +111,7 @@ class EtchServiceControllerTests {
             id = "e1",
             entry = entry,
             content = byteArrayOf(1, 2),
-            keyPair = keyPair
+            keyPairId = keyPair.id
         )
 
         mockMvc.perform(get("$ETCHES_PATH/${e.id}"))
@@ -146,7 +146,7 @@ class EtchServiceControllerTests {
             journal = journal,
             content = byteArrayOf(),
             owner = "abc",
-            keyPair = keyPair
+            keyPairId = keyPair.id
         )
 
         mockMvc.perform(get("$ETCHES_PATH?entryId=${otherUserEntry.id}"))
@@ -179,8 +179,9 @@ class EtchServiceControllerTests {
             .andExpect(jsonPath("\$[0].timestamp", TIMESTAMP_RECENT_MATCHER))
             .andExpect(jsonPath("\$[0].owner", `is`(TestAuthService.TESTER_USER_ID)))
             .andExpect(jsonPath("\$[0].ownerType", `is`("USER")))
+            .andExpect(jsonPath("\$[0].keyPairId", `is`(keyPair.id)))
             // Should only be the above 5 keys in the json response
-            .andExpect(jsonPath("\$[0].*", hasSize<Any>(5)))
+            .andExpect(jsonPath("\$[0].*", hasSize<Any>(6)))
 
         mockMvc.perform(get("$ETCHES_PATH?entryId=${entry.id}"))
             .andExpect(status().isOk)
@@ -234,7 +235,7 @@ class EtchServiceControllerTests {
         val otherUserEntry = testRepoUtils.createEntry(
             id = "entry2",
             content = byteArrayOf(1, 2),
-            keyPair = keyPair,
+            keyPairId = keyPair.id,
             owner = "somebody else",
             journal = journal
         )

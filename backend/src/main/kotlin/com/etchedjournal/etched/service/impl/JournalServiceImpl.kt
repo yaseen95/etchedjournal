@@ -51,7 +51,7 @@ class JournalServiceImpl(
             owner = authService.getUserId(),
             ownerType = OwnerType.USER,
             timestamp = Instant.now(),
-            keyPair = keyPairService.getKeypair(req.keyPairId)
+            keyPairId = keyPairService.getKeypair(req.keyPairId).id
         )
         journal = repo.save(journal)
         logger.info("Successfully created journal {}", journal.id)
