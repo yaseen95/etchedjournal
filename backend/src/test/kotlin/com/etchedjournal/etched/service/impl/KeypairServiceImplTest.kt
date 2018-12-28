@@ -1,5 +1,6 @@
 package com.etchedjournal.etched.service.impl
 
+import com.etchedjournal.etched.dto.CreateKeypairRequest
 import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.entity.KeypairEntity
 import com.etchedjournal.etched.repository.KeypairRepository
@@ -43,6 +44,8 @@ class KeypairServiceImplTest {
     fun `create keypair saves to database`() {
         val pubKey = byteArrayOf(1, 2, 3)
         val privKey = byteArrayOf(4, 5, 6)
+        val salt = "salt"
+        val iterations = 1
 
         val keypair = KeypairEntity(
             id = "k1",
@@ -50,7 +53,9 @@ class KeypairServiceImplTest {
             publicKey = pubKey,
             privateKey = privKey,
             owner = "user1",
-            ownerType = OwnerType.USER
+            ownerType = OwnerType.USER,
+            salt = "salt",
+            iterations = 1
         )
 
         whenever(keypairRepository.save(argThat<KeypairEntity> {
@@ -61,7 +66,8 @@ class KeypairServiceImplTest {
                 && ownerType == OwnerType.USER
         })).thenReturn(keypair)
 
-        keypairServiceImpl.createKeypair(publicKey = pubKey, privateKey = privKey)
+        val req = CreateKeypairRequest(pubKey, privKey, salt, iterations)
+        keypairServiceImpl.createKeypair(req)
         verify(keypairRepository, times(1)).save(any<KeypairEntity>())
     }
 
@@ -76,7 +82,9 @@ class KeypairServiceImplTest {
             publicKey = pubKey,
             privateKey = privKey,
             owner = "user1",
-            ownerType = OwnerType.USER
+            ownerType = OwnerType.USER,
+            salt = "salt",
+            iterations = 1
         )
         val keypair2 = KeypairEntity(
             id = "k2",
@@ -84,7 +92,9 @@ class KeypairServiceImplTest {
             privateKey = byteArrayOf(2),
             timestamp = Instant.EPOCH,
             owner = "user1",
-            ownerType = OwnerType.USER
+            ownerType = OwnerType.USER,
+            salt = "salt",
+            iterations = 1
         )
 
         whenever(keypairRepository.findByOwner("user1"))

@@ -1,5 +1,6 @@
 package com.etchedjournal.etched.service.impl
 
+import com.etchedjournal.etched.dto.CreateKeypairRequest
 import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.entity.KeypairEntity
 import com.etchedjournal.etched.repository.KeypairRepository
@@ -20,13 +21,15 @@ class KeypairServiceImpl(
     private val idGenerator: IdGenerator
 ) : KeypairService {
 
-    override fun createKeypair(publicKey: ByteArray, privateKey: ByteArray): KeypairEntity {
+    override fun createKeypair(req: CreateKeypairRequest): KeypairEntity {
         val id = idGenerator.generateId()
         logger.info("creating id {}", id)
         val keypair = KeypairEntity(
             id = id,
-            publicKey = publicKey,
-            privateKey = privateKey,
+            publicKey = req.publicKey,
+            privateKey = req.privateKey,
+            iterations = req.iterations,
+            salt = req.salt,
             owner = authService.getUserId(),
             ownerType = OwnerType.USER,
             timestamp = Instant.now()

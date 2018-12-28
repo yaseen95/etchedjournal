@@ -4,8 +4,7 @@ import com.etchedjournal.etched.ID_LENGTH_MATCHER
 import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
-import com.etchedjournal.etched.models.OwnerType
-import com.etchedjournal.etched.models.entity.KeypairEntity
+import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.repository.KeypairRepository
 import com.etchedjournal.etched.utils.PgpUtilsTest
 import org.hamcrest.Matchers.`is`
@@ -28,7 +27,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.time.Instant
 import javax.transaction.Transactional
 import javax.ws.rs.core.MediaType
 
@@ -46,6 +44,9 @@ class KeypairServiceControllerTest {
     @Autowired
     private lateinit var keypairRepository: KeypairRepository
 
+    @Autowired
+    private lateinit var testRepo: TestRepoUtils
+
     @Before
     fun setup() {
         mockMvc = MockMvcBuilders
@@ -58,12 +59,12 @@ class KeypairServiceControllerTest {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET keypairs`() {
-        createKeypair(
+        testRepo.createKeyPair(
             id = "k1",
             publicKey = byteArrayOf(1, 2, 3, 4),
             privateKey = byteArrayOf(5, 6, 7, 8)
         )
-        createKeypair(
+        testRepo.createKeyPair(
             id = "k2",
             publicKey = byteArrayOf(1, 2),
             privateKey = byteArrayOf(5, 6)
@@ -73,13 +74,15 @@ class KeypairServiceControllerTest {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.*", hasSize<Any>(2)))
 
-            .andExpect(jsonPath("$[0].*", hasSize<Any>(6)))
+            .andExpect(jsonPath("$[0].*", hasSize<Any>(8)))
             .andExpect(jsonPath("$[0].id", `is`("k1")))
             .andExpect(jsonPath("$[0].timestamp", `is`(0)))
             .andExpect(jsonPath("$[0].publicKey", `is`("AQIDBA==")))
             .andExpect(jsonPath("$[0].privateKey", `is`("BQYHCA==")))
             .andExpect(jsonPath("$[0].owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$[0].ownerType", `is`("USER")))
+            .andExpect(jsonPath("$[0].salt", `is`("salt")))
+            .andExpect(jsonPath("$[0].iterations", `is`(1)))
 
             .andExpect(jsonPath("$[1].id", `is`("k2")))
             .andExpect(jsonPath("$[1].timestamp", `is`(0)))
@@ -87,6 +90,8 @@ class KeypairServiceControllerTest {
             .andExpect(jsonPath("$[1].privateKey", `is`("BQY=")))
             .andExpect(jsonPath("$[1].owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$[1].ownerType", `is`("USER")))
+            .andExpect(jsonPath("$[1].salt", `is`("salt")))
+            .andExpect(jsonPath("$[1].iterations", `is`(1)))
     }
 
     @Test
@@ -107,17 +112,23 @@ class KeypairServiceControllerTest {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET keypair`() {
-        val keypair = createKeypair(id = "k1")
+        val keypair = testRepo.createKeyPair(
+            id = "k1",
+            publicKey = byteArrayOf(1, 2, 3, 4),
+            privateKey = byteArrayOf(5, 6, 7, 8)
+        )
 
         mockMvc.perform(get("/api/v1/keypairs/${keypair.id}"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.*", hasSize<Any>(6)))
+            .andExpect(jsonPath("$.*", hasSize<Any>(8)))
             .andExpect(jsonPath("$.id", `is`(keypair.id)))
             .andExpect(jsonPath("$.timestamp", `is`(0)))
             .andExpect(jsonPath("$.publicKey", `is`("AQIDBA==")))
             .andExpect(jsonPath("$.privateKey", `is`("BQYHCA==")))
             .andExpect(jsonPath("$.owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$.ownerType", `is`("USER")))
+            .andExpect(jsonPath("$.salt", `is`("salt")))
+            .andExpect(jsonPath("$.iterations", `is`(1)))
     }
 
     @Test
@@ -130,7 +141,7 @@ class KeypairServiceControllerTest {
     @Test
     @WithMockUser(username = "tester", roles = ["user"])
     fun `GET keypair - belongs to other user is forbidden`() {
-        val keypair = createKeypair(id = "k1", owner = "somebody else")
+        val keypair = testRepo.createKeyPair(id = "k1", owner = "somebody else")
 
         mockMvc.perform(get("/api/v1/keypairs/${keypair.id}"))
             .andExpect(status().isForbidden)
@@ -146,7 +157,7 @@ class KeypairServiceControllerTest {
 
     @Test
     fun `GET keypair - unauthenticated`() {
-        val keypair = createKeypair(id = "k1")
+        val keypair = testRepo.createKeyPair(id = "k1")
 
         mockMvc.perform(get("/api/v1/keypairs/${keypair.id}"))
             .andExpect(status().isUnauthorized)
@@ -164,20 +175,24 @@ class KeypairServiceControllerTest {
                     """
                     {
                         "publicKey": "$publicKey",
-                        "privateKey": "AQIDBA=="
+                        "privateKey": "AQIDBA==",
+                        "salt": "salt",
+                        "iterations": 1
                     }
                     """.trimIndent()
                 )
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.*", hasSize<Any>(6)))
+            .andExpect(jsonPath("$.*", hasSize<Any>(8)))
             .andExpect(jsonPath("$.id").value(ID_LENGTH_MATCHER))
             .andExpect(jsonPath("$.timestamp").value(TIMESTAMP_RECENT_MATCHER))
             .andExpect(jsonPath("$.publicKey").value(publicKey))
             .andExpect(jsonPath("$.privateKey").value("AQIDBA=="))
             .andExpect(jsonPath("$.owner").value(TESTER_USER_ID))
             .andExpect(jsonPath("$.ownerType").value("USER"))
+            .andExpect(jsonPath("$.salt", `is`("salt")))
+            .andExpect(jsonPath("$.iterations", `is`(1)))
     }
 
     @Test
@@ -191,7 +206,9 @@ class KeypairServiceControllerTest {
                     """
                     {
                         "publicKey": "$publicKey",
-                        "privateKey": "AQIDBA=="
+                        "privateKey": "AQIDBA==",
+                        "salt": "salt",
+                        "iterations": 1
                     }
                     """.trimIndent()
                 )
@@ -212,7 +229,9 @@ class KeypairServiceControllerTest {
                     """
                     {
                         "publicKey": "$publicKey",
-                        "privateKey": "AQIDBA=="
+                        "privateKey": "AQIDBA==",
+                        "salt": "salt",
+                        "iterations": 1
                     }
                     """.trimIndent()
                 )
@@ -231,7 +250,9 @@ class KeypairServiceControllerTest {
                     """
                     {
                         "publicKey": "!@#$%^&*()",
-                        "privateKey": "AQIDBA=="
+                        "privateKey": "AQIDBA==",
+                        "salt": "salt",
+                        "iterations": 1
                     }
                     """.trimIndent()
                 )
@@ -257,7 +278,9 @@ class KeypairServiceControllerTest {
                     """
                     {
                         "privateKey": "!@#$%^&*()",
-                        "publicKey": "AQIDBA=="
+                        "publicKey": "AQIDBA==",
+                        "salt": "salt",
+                        "iterations": 1
                     }
                     """.trimIndent()
                 )
@@ -284,7 +307,9 @@ class KeypairServiceControllerTest {
                     """
                     {
                         "publicKey": "$publicKey",
-                        "privateKey": "AQIDBA=="
+                        "privateKey": "AQIDBA==",
+                        "salt": "salt",
+                        "iterations": 1
                     }
                     """.trimIndent()
                 )
@@ -307,7 +332,9 @@ class KeypairServiceControllerTest {
                     """
                     {
                         "publicKey": "$publicKey",
-                        "privateKey": "AQIDBA=="
+                        "privateKey": "AQIDBA==",
+                        "salt": "salt",
+                        "iterations": 1
                     }
                     """.trimIndent()
                 )
@@ -322,24 +349,5 @@ class KeypairServiceControllerTest {
                 }
                 """.trimIndent()
             ))
-    }
-
-    private fun createKeypair(
-        id: String,
-        timestamp: Instant = Instant.EPOCH,
-        owner: String = TESTER_USER_ID,
-        ownerType: OwnerType = OwnerType.USER,
-        publicKey: ByteArray = byteArrayOf(1, 2, 3, 4),
-        privateKey: ByteArray = byteArrayOf(5, 6, 7, 8)
-    ): KeypairEntity {
-        val keypair = KeypairEntity(
-            id = id,
-            timestamp = timestamp,
-            publicKey = publicKey,
-            privateKey = privateKey,
-            owner = owner,
-            ownerType = ownerType
-        )
-        return keypairRepository.save(keypair)
     }
 }

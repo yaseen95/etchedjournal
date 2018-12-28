@@ -11,6 +11,12 @@ CREATE TABLE keypairs (
   private_key BINARY        NOT NULL,
   owner       VARCHAR(60)   NOT NULL,
   owner_type  VARCHAR(50)   NOT NULL,
+
+  /* bcrypt salt is 22 chars
+  https://web.archive.org/web/20180814110458/https://asecuritysite.com/encryption/bcrypt
+  */
+  salt        VARCHAR(22)   NOT NULL,
+  iterations  INT           NOT NULL,
   _version    INT           NOT NULL,
 );
 

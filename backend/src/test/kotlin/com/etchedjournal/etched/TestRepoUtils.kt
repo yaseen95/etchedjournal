@@ -86,6 +86,8 @@ class TestRepoUtils(
         id: String,
         publicKey: ByteArray = byteArrayOf(),
         privateKey: ByteArray = byteArrayOf(),
+        iterations: Int = 1,
+        salt: String = "salt",
         timestamp: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER
@@ -95,6 +97,8 @@ class TestRepoUtils(
                 id = id,
                 publicKey = publicKey,
                 privateKey = privateKey,
+                iterations = iterations,
+                salt = salt,
                 timestamp = timestamp,
                 owner = owner,
                 ownerType = ownerType
