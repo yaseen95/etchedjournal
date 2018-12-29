@@ -25,7 +25,13 @@ class KeypairEntity(
     val publicKey: ByteArray,
 
     @Column(name = "private_key", unique = true, nullable = false)
-    val privateKey: ByteArray
+    val privateKey: ByteArray,
+
+    @Column(nullable = false)
+    val salt: String,
+
+    @Column(nullable = false)
+    val iterations: Int
 
     // TODO: Should we store expiration, date created, etc?
 ) : BaseEntity(
@@ -45,6 +51,8 @@ class KeypairEntity(
         if (!privateKey.contentEquals(other.privateKey)) return false
         if (owner != other.owner) return false
         if (ownerType != other.ownerType) return false
+        if (salt != other.salt) return false
+        if (iterations != other.iterations) return false
         if (_version != other._version) return false
 
         return true
@@ -58,6 +66,8 @@ class KeypairEntity(
         result = 31 * result + privateKey.contentHashCode()
         result = 31 * result + owner.hashCode()
         result = 31 * result + ownerType.hashCode()
+        result = 31 * result + salt.hashCode()
+        result = 31 * result + iterations
         result = 31 * result + (_version ?: 0)
         return result
     }

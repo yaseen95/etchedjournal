@@ -8,9 +8,10 @@ import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EtchedApiService } from '../../../services/etched-api.service';
 import { RegisterRequest } from '../../../services/dtos/register-request';
-import { Encrypter } from '../../../services/encrypter';
+import { Encrypter, KeyPair } from '../../../services/encrypter';
 import { EMPTY, of } from 'rxjs';
 import { TestUtils } from '../../../utils/test-utils.spec';
+import { CreateKeyPairRequest } from '../../../services/dtos/create-key-pair-request';
 
 describe('RegisterContainerComponent', () => {
     let component: RegisterContainerComponent;
@@ -31,10 +32,11 @@ describe('RegisterContainerComponent', () => {
         // Spy on the static methods of Encrypter
 
         // Spy on generate key
-        const testKeyPair = {
+        const testKeyPair: KeyPair = {
             publicKeyArmored: 'publicKeyArmored',
             privateKeyArmored: 'privateKeyArmored',
-            key: null,
+            iterations: 10,
+            salt: 'salty',
         };
         encrypterGenKeySpy = spyOn(Encrypter, 'generateKey');
         encrypterGenKeySpy.and.returnValue(Promise.resolve(testKeyPair));
@@ -135,27 +137,7 @@ describe('RegisterContainerComponent', () => {
         expect(etchedApiSpy.login).toHaveBeenCalledWith('username', 'password');
     }));
 
-    it('onRegister updates state and stores password for later', fakeAsync(() => {
-        // Password should not be defined
-        expect(component.password).toBeUndefined();
-
-        // Register
-        const regReq: RegisterRequest = {username: 'username', password: 'password', email: null};
-        etchedApiSpy.register.and.returnValue(EMPTY);
-        component.onRegister(regReq);
-
-        expect(component.password).toEqual('password');
-        expect(component.registerState).toEqual(component.REGISTERING);
-    }));
-
     it('onPassphraseConfigured e2e', fakeAsync(() => {
-        // onPassphraseConfigured does a few things
-        // 1. Create a new keyPair
-        // 2. Encrypt that keyPair using the password
-        // 3. Upload the keyPair
-
-        component.password = 'login password';
-
         // Mock out the user (the users id is used as part of the user details in the key)
         etchedApiSpy.getUser.and.returnValue(TestUtils.TEST_USER);
 
@@ -184,16 +166,16 @@ describe('RegisterContainerComponent', () => {
         // Then instantiate an encrypter from the generated the keys
         expect(encrypterFromSpy).toHaveBeenCalledTimes(1);
 
-        // Symmetrically encrypt the private key using the login password
-        expect(encrypterSymEncryptSpy).toHaveBeenCalledTimes(1);
-        expect(encrypterSymEncryptSpy).toHaveBeenCalledWith('BQYHCA==', 'login password');
-
-        // Then upload the public key (as base64 string) and the encrypted private key
+        // Then upload the public key (as base64 string) and the private key
         expect(etchedApiSpy.createKeyPair).toHaveBeenCalledTimes(1);
         expect(etchedApiSpy.createKeyPair).toHaveBeenCalledWith(
-            // The public key is base64 encoded byte array of [1, 2, 3, 4]
-            'AQIDBA==',
-            'symmetrically encrypted'
+            {
+                // The public key is base64 encoded byte array of [1, 2, 3, 4]
+                publicKey: 'AQIDBA==',
+                privateKey: 'BQYHCA==',
+                salt: 'salty',
+                iterations: 10,
+            }
         );
 
         expect(component.registerState).toEqual(component.UPLOADED_KEYS);

@@ -1,5 +1,6 @@
 package com.etchedjournal.etched.service
 
+import com.etchedjournal.etched.dto.CreateKeypairRequest
 import com.etchedjournal.etched.models.entity.KeypairEntity
 
 interface KeypairService {
@@ -9,7 +10,7 @@ interface KeypairService {
      *
      * @return the created keypair
      */
-    fun createKeypair(publicKey: ByteArray, privateKey: ByteArray): KeypairEntity
+    fun createKeypair(req: CreateKeypairRequest): KeypairEntity
 
     /**
      * Get all keypairs for the given user

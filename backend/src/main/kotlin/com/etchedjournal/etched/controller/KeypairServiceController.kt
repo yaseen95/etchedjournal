@@ -25,14 +25,15 @@ class KeypairServiceController(
 ) {
 
     @PostMapping("")
-    fun create(@RequestBody @Valid request: CreateKeypairRequest): KeypairEntity {
+    fun create(@RequestBody @Valid req: CreateKeypairRequest): KeypairEntity {
         logger.info("Creating keypair")
-        val pubKey = PgpUtils.readPublicKey(request.publicKey)
+        val pubKey = PgpUtils.readPublicKey(req.publicKey)
         logger.info("KeyPair using {} alg, with bit size {}", pubKey.getAlgorithmStr(),
             pubKey.bitStrength)
         // TODO: Prevent keypair creation if key is not strong enough
         // E.g. prevent <= 2048 RSA keys
         // TODO: Validate that key was created recently
+        // TODO: Prevent keypair with weak salt and low iteration count
 
         // Verify that the user id is valid
         val currUserId = authService.getUserId()
@@ -45,10 +46,7 @@ class KeypairServiceController(
         }
         logger.info("Registering key with with user id {}", pubKey.getUserId())
 
-        return keypairService.createKeypair(
-            publicKey = request.publicKey,
-            privateKey = request.privateKey
-        )
+        return keypairService.createKeypair(req = req)
     }
 
     @GetMapping("")

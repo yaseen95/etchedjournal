@@ -7,4 +7,7 @@ export interface KeyPairEntity extends BaseEntity {
 
     /** private key as a base 64 encoded string */
     privateKey: Base64Str,
+
+    salt: string;
+    iterations: number;
 }

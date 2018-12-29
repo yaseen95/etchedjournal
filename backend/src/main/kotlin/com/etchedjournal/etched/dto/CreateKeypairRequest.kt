@@ -4,7 +4,9 @@ import java.util.Arrays
 
 data class CreateKeypairRequest(
     val publicKey: ByteArray,
-    val privateKey: ByteArray
+    val privateKey: ByteArray,
+    val salt: String,
+    val iterations: Int
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -12,6 +14,8 @@ data class CreateKeypairRequest(
 
         if (!publicKey.contentEquals(other.publicKey)) return false
         if (!privateKey.contentEquals(other.privateKey)) return false
+        if (salt != other.salt) return false
+        if (iterations != other.iterations) return false
 
         return true
     }
@@ -19,11 +23,16 @@ data class CreateKeypairRequest(
     override fun hashCode(): Int {
         var result = publicKey.contentHashCode()
         result = 31 * result + privateKey.contentHashCode()
+        result = 31 * result + salt.hashCode()
+        result = 31 * result + iterations
         return result
     }
 
     override fun toString(): String {
         // Overriding toString to prevent accidentally logging private key
-        return "CreateKeypairRequest(publicKey=${Arrays.toString(publicKey)})"
+        return "CreateKeypairRequest(" +
+            "publicKey=${Arrays.toString(publicKey)}, " +
+            "salt='$salt', " +
+            "iterations=$iterations)"
     }
 }
