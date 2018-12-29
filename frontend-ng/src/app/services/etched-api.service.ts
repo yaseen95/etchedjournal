@@ -11,6 +11,7 @@ import { EtchEntity } from '../models/etch-entity';
 import { KeyPairEntity } from '../models/key-pair-entity';
 import { JournalEntity } from '../models/journal-entity';
 import { key } from 'openpgp';
+import { CreateKeyPairRequest } from './dtos/create-key-pair-request';
 
 const LOGIN_URL = `${environment.API_URL}/auth/authenticate`;
 const REGISTER_URL = `${environment.API_URL}/auth/register`;
@@ -191,11 +192,10 @@ export class EtchedApiService {
         });
     }
 
-    public createKeyPair(publicKey: Base64Str, privateKey: Base64Str): Observable<KeyPairEntity> {
+    public createKeyPair(req: CreateKeyPairRequest): Observable<KeyPairEntity> {
         return this.refreshWrapper(() => {
             console.info(`Creating keypair`);
-            const body = {publicKey, privateKey};
-            return this.http.post<KeyPairEntity>(KEYPAIRS_URL, body, {headers: this.authHeaders})
+            return this.http.post<KeyPairEntity>(KEYPAIRS_URL, req, {headers: this.authHeaders})
                 .pipe(tap(keypair => console.info(`Created ${JSON.stringify(keypair)}`)));
         });
     }

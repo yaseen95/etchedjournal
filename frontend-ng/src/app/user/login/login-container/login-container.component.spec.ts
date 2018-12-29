@@ -9,23 +9,20 @@ import { EtchedApiService } from '../../../services/etched-api.service';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { of } from 'rxjs';
 import { LoginRequest } from '../../../services/dtos/login-request';
+import { Encrypter, IncorrectPassphraseError } from '../../../services/encrypter';
+import { OwnerType } from '../../../models/owner-type';
 import MOCK_PUB_KEY_BASE_64_STR = TestUtils.MOCK_PUB_KEY_BASE_64_STR;
 import MOCK_PRIV_KEY_BASE_64_STR = TestUtils.MOCK_PRIV_KEY_BASE_64_STR;
-import { Encrypter, IncorrectPassphraseError } from '../../../services/encrypter';
 
 describe('LoginContainerComponent', () => {
     let component: LoginContainerComponent;
     let fixture: ComponentFixture<LoginContainerComponent>;
     let etchedApiSpy: any;
-    let symDecryptSpy: any;
     let from2Spy: any;
 
     beforeEach(async(() => {
         etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['login', 'getKeyPairs', 'getUser']);
         etchedApiSpy.getUser.and.returnValue(null);
-
-        symDecryptSpy = spyOn(Encrypter, 'symmetricDecrypt');
-        symDecryptSpy.and.returnValue(Promise.resolve('decrypted private key'));
 
         from2Spy = spyOn(Encrypter, 'from2');
         from2Spy.and.returnValue(Promise.resolve({}));
@@ -67,8 +64,6 @@ describe('LoginContainerComponent', () => {
         etchedApiSpy.getKeyPairs.and.returnValue(of(keyPairs));
 
         // Preconditions
-        // login password should only be set after login and keys have been retrieved
-        expect(component.loginPassword).toBeUndefined();
         expect(component.loginState).toEqual(component.NOT_LOGGED_IN);
 
         const req: LoginRequest = {username: 'samsepiol', password: 'cisco'};
@@ -83,8 +78,6 @@ describe('LoginContainerComponent', () => {
         expect(etchedApiSpy.login).toHaveBeenCalledBefore(etchedApiSpy.getKeyPairs);
 
         expect(component.loginState).toEqual(component.ENTERING_PASSPHRASE);
-        // password should be saved later to decrypt the private key
-        expect(component.loginPassword).toEqual('cisco');
         expect(component.keyPair as any).toEqual(keyPairs[0]);
     }));
 
@@ -131,11 +124,14 @@ describe('LoginContainerComponent', () => {
             privateKey: 'encrypted private key',
             publicKey: 'public key',
             id: 'kpId',
-        } as any;
+            salt: 'salt',
+            iterations: 1,
+            owner: 'owner',
+            ownerType: OwnerType.USER,
+            timestamp: 0,
+        };
 
         spyOn(component, 'decryptKeyPair').and.callThrough();
-
-        component.loginPassword = 'login password';
 
         component.onPassphraseConfigured('super secure passphrase');
         tick();
@@ -143,33 +139,12 @@ describe('LoginContainerComponent', () => {
         expect(component.decryptKeyPair).toHaveBeenCalledTimes(1);
         expect(component.decryptKeyPair).toHaveBeenCalledWith('super secure passphrase');
 
-        expect(symDecryptSpy).toHaveBeenCalledTimes(1);
-        expect(symDecryptSpy).toHaveBeenCalledWith('encrypted private key', 'login password');
-
         expect(from2Spy).toHaveBeenCalledTimes(1);
-        expect(from2Spy).toHaveBeenCalledWith('decrypted private key', 'public key', 'super' +
-            ' secure passphrase', 'kpId');
+        expect(from2Spy).toHaveBeenCalledWith('encrypted private key', 'public key', 'super' +
+            ' secure passphrase', 'kpId', 'salt', 1);
 
         expect(component.loginState).toEqual(component.DECRYPTED_KEYS);
         expect(component.passphraseIncorrect).toBeFalsy();
-    }));
-
-    // This test fails because we're not currently handling the case where the login
-    // password does not decrypt the private key
-    it('should handle error when login password cannot decrypt', fakeAsync(() => {
-
-        // symDecryptSpy.and.returnValue(Promise.reject('foo'));
-        //
-        // component.keyPair = {
-        //     privateKey: 'encrypted private key',
-        //     publicKey: 'public key',
-        // } as any;
-        //
-        // component.onPassphraseConfigured('incorrect passphrase');
-        // tick();
-        //
-        // expect(component.passphraseIncorrect).toBeTruthy();
-        // expect(component.loginState).toEqual(component.ENTERING_PASSPHRASE);
     }));
 
     it('should handle error when passphrase is incorrect', fakeAsync(() => {
@@ -177,7 +152,6 @@ describe('LoginContainerComponent', () => {
             privateKey: 'encrypted private key',
             publicKey: 'public key',
         } as any;
-        component.loginPassword = 'login password';
 
         from2Spy.and.returnValue(Promise.reject(new IncorrectPassphraseError()));
 

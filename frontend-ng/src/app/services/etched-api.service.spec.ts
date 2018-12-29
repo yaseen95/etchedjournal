@@ -11,6 +11,7 @@ import { OwnerType } from '../models/owner-type';
 import { EtchEntity } from '../models/etch-entity';
 import { KeyPairEntity } from '../models/key-pair-entity';
 import { JournalEntity } from '../models/journal-entity';
+import { CreateKeyPairRequest } from './dtos/create-key-pair-request';
 
 describe('EtchedApiService', () => {
     let injector: TestBed;
@@ -273,7 +274,13 @@ describe('EtchedApiService', () => {
     it('createKeyPair', () => {
         initAuth();
 
-        service.createKeyPair('pubKey', 'privKey')
+        const req: CreateKeyPairRequest = {
+            publicKey: 'pubKey',
+            privateKey: 'privKey',
+            salt: 'salt',
+            iterations: 10,
+        };
+        service.createKeyPair(req)
             .subscribe(keyPair => {
                 expect(keyPair.id).toEqual('id');
                 expect(keyPair.owner).toEqual('owner');
@@ -281,6 +288,8 @@ describe('EtchedApiService', () => {
                 expect(keyPair.privateKey).toEqual('privKey');
                 expect(keyPair.publicKey).toEqual('pubKey');
                 expect(keyPair.timestamp).toEqual(1);
+                expect(keyPair.salt).toEqual('salt');
+                expect(keyPair.iterations).toEqual(10);
             });
 
         const mockKeyPair: KeyPairEntity = {
@@ -290,12 +299,14 @@ describe('EtchedApiService', () => {
             privateKey: 'privKey',
             publicKey: 'pubKey',
             timestamp: 1,
+            salt: 'salt',
+            iterations: 10,
         };
 
-        const req = httpMock.expectOne(`${environment.API_URL}/keypairs`);
-        expect(req.request.method).toEqual('POST');
-        expect(req.request.headers.has('Authorization')).toBeTruthy();
-        req.flush(mockKeyPair);
+        const mockReq = httpMock.expectOne(`${environment.API_URL}/keypairs`);
+        expect(mockReq.request.method).toEqual('POST');
+        expect(mockReq.request.headers.has('Authorization')).toBeTruthy();
+        mockReq.flush(mockKeyPair);
     });
 
     it('create journal', () => {

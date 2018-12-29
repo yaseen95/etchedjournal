@@ -3,15 +3,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoginComponent } from './login.component';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { EtchedApiService } from '../../services/etched-api.service';
-import { of } from 'rxjs';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { EtchedUser } from '../../models/etched-user';
 import { TestUtils } from '../../utils/test-utils.spec';
 import { SpinnerComponent } from '../../utils/spinner/spinner.component';
-import { EncrypterService } from '../../services/encrypter.service';
 import { LoginRequest } from '../../services/dtos/login-request';
-import { after } from 'selenium-webdriver/testing';
 
 describe('LoginComponent', () => {
     let component: LoginComponent;
@@ -197,7 +194,7 @@ describe('LoginComponent', () => {
 
     afterEach(() => {
         emittedEvents = [];
-    })
+    });
 });
 
 const TEST_USER: EtchedUser = {

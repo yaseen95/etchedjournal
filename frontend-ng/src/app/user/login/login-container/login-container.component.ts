@@ -25,7 +25,6 @@ export class LoginContainerComponent implements OnInit {
     loginState: string;
 
     keyPair?: KeyPairEntity;
-    loginPassword?: string;
     passphraseIncorrect: boolean;
 
     constructor(private encrypterService: EncrypterService,
@@ -58,9 +57,6 @@ export class LoginContainerComponent implements OnInit {
                     throw new Error(`Expected only one key but got ${keys.length} keys`);
                 }
                 this.keyPair = keys[0];
-
-                // Set loginPassword after we have successfully logged in
-                this.loginPassword = loginRequest.password;
                 this.loginState = this.ENTERING_PASSPHRASE;
             });
         // TODO-HIGHEST: Handle invalid login credentials
@@ -89,26 +85,16 @@ export class LoginContainerComponent implements OnInit {
 
     decryptKeyPair(passphrase: string): Promise<void> {
         console.info('Decrypting private key');
-        return this.decryptPrivateKey()
-            .then((decPrivateKey: string) => {
-                console.info('Instantiating encrypter');
-                return Encrypter.from2(
-                    decPrivateKey,
-                    this.keyPair.publicKey,
-                    passphrase,
-                    this.keyPair.id
-                );
-            })
-            .then((encrypter: Encrypter) => {
-                this.encrypterService.encrypter = encrypter;
-            });
-    }
 
-    private decryptPrivateKey(): Promise<Base64Str> {
-        return Encrypter.symmetricDecrypt(this.keyPair.privateKey, this.loginPassword)
-            .then(dec => dec)
-            .catch(e => {
-                throw new Error('Login password was unable to decrypt private key');
-            });
+        return Encrypter.from2(
+            this.keyPair.privateKey,
+            this.keyPair.publicKey,
+            passphrase,
+            this.keyPair.id,
+            this.keyPair.salt,
+            this.keyPair.iterations
+        ).then((encrypter: Encrypter) => {
+            this.encrypterService.encrypter = encrypter;
+        });
     }
 }
