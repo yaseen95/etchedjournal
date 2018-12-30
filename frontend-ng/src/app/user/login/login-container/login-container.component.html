@@ -7,20 +7,5 @@
         <ng-container *ngIf="loginState === LOGGING_IN">
             <spinner [text]="'Logging in'"></spinner>
         </ng-container>
-        <ng-container *ngIf="loginState === DOWNLOADING_KEYS">
-            <spinner [text]="'Downloading keys'"></spinner>
-        </ng-container>
-        <ng-container *ngIf="loginState === ENTERING_PASSPHRASE">
-            <app-enter-passphrase
-                (passphraseEmitter)="onPassphraseConfigured($event)"
-                [passphraseIncorrect]="passphraseIncorrect">
-            </app-enter-passphrase>
-        </ng-container>
-        <ng-container *ngIf="loginState === DECRYPTING_KEYS">
-            <spinner [text]="'Decrypting keys'"></spinner>
-        </ng-container>
-        <ng-container *ngIf="loginState === DECRYPTED_KEYS">
-            <h3>Finished decrypting keys</h3>
-        </ng-container>
     </div>
 </div>

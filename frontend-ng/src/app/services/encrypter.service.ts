@@ -11,7 +11,7 @@ export class EncrypterService {
     constructor() {
     }
 
-    get encrypter(): Encrypter {
+    get encrypter(): Encrypter | null {
         return this._encrypter;
     }
 

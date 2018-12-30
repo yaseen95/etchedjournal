@@ -16,6 +16,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { JournalsContainerComponent } from './etches/journals/journals-container/journals-container.component';
 import { CreateJournalComponent } from './etches/journals/create-journal/create-journal.component';
+import { EnterPassphraseContainer } from './user/passphrase/enter-passphrase/enter-passphrase-container/enter-passphrase-container.component';
 
 describe('AppRoutingModule', () => {
     let location: Location;
@@ -24,6 +25,8 @@ describe('AppRoutingModule', () => {
 
 
     beforeEach(() => {
+        localStorage.clear();
+
         TestBed.configureTestingModule({
             imports: [
                 BrowserModule,
@@ -41,6 +44,7 @@ describe('AppRoutingModule', () => {
                 RegisterContainerComponent,
                 JournalsContainerComponent,
                 CreateJournalComponent,
+                EnterPassphraseContainer,
             ],
             schemas: [NO_ERRORS_SCHEMA],
         });

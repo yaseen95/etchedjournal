@@ -5,4 +5,5 @@ export namespace EtchedRoutes {
     export const JOURNALS_CREATE_PATH = 'journals/new';
     export const ENTRIES_PATH = 'entries';
     export const ENTRIES_CREATE_PATH = 'entries/new';
+    export const ENTER_PASSPHRASE_PATH = 'enter-passphrase';
 }
