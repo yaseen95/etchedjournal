@@ -1,6 +1,6 @@
 import { getTestBed, TestBed } from '@angular/core/testing';
 
-import { EtchedApiService } from './etched-api.service';
+import { EtchedApiService, LOCAL_ACCESS_TOKEN, LOCAL_REFRESH_TOKEN } from './etched-api.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { EtchedUser } from '../models/etched-user';
 import { environment } from '../../environments/environment';
@@ -12,11 +12,13 @@ import { EtchEntity } from '../models/etch-entity';
 import { KeyPairEntity } from '../models/key-pair-entity';
 import { JournalEntity } from '../models/journal-entity';
 import { CreateKeyPairRequest } from './dtos/create-key-pair-request';
+import { TokenDecoder } from '../utils/token-decoder';
 
 describe('EtchedApiService', () => {
     let injector: TestBed;
     let service: EtchedApiService;
     let httpMock: HttpTestingController;
+    let decodeTokenSpy: any;
 
     const USER: EtchedUser = {
         username: 'abc',
@@ -25,6 +27,10 @@ describe('EtchedApiService', () => {
     };
 
     beforeEach(() => {
+        localStorage.clear();
+        decodeTokenSpy = spyOn(TokenDecoder, 'decodeToken');
+        decodeTokenSpy.and.returnValue({});
+
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [EtchedApiService],
@@ -33,11 +39,6 @@ describe('EtchedApiService', () => {
         injector = getTestBed();
         service = injector.get(EtchedApiService);
         httpMock = injector.get(HttpTestingController);
-    });
-
-    it('should be created', () => {
-        const service: EtchedApiService = TestBed.get(EtchedApiService);
-        expect(service).toBeTruthy();
     });
 
 
@@ -51,7 +52,6 @@ describe('EtchedApiService', () => {
 
         const req = httpMock.expectOne(`${environment.API_URL}/auth/register`);
         expect(req.request.method).toEqual('POST');
-        expect(req.request.headers.has('Authorization')).toBeFalsy();
         req.flush(USER);
     });
 
@@ -69,53 +69,20 @@ describe('EtchedApiService', () => {
 
         const loginRequest = httpMock.expectOne(`${environment.API_URL}/auth/authenticate`);
         expect(loginRequest.request.method).toEqual('POST');
-        expect(loginRequest.request.headers.has('Authorization')).toBeFalsy();
         loginRequest.flush(tokenResponse);
 
         // Login automatically invokes self() after it receives the auth tokens
         const selfRequest = httpMock.expectOne(`${environment.API_URL}/auth/self`);
         expect(selfRequest.request.method).toEqual('GET');
-        // Should use the access token it got from the login request
-        expect(selfRequest.request.headers.get('Authorization')).toEqual(`Bearer foobar`);
         selfRequest.flush(USER);
-    });
 
-    it('token refreshes when close to expiry', () => {
-        const tokenResponse: TokenResponse = {
-            accessToken: 'access',
-            expiresIn: -1000, // set expiry to a negative so that it refreshes immediately
-            refreshExpiresIn: 1800,
-            refreshToken: 'refresh',
-        };
-
-        // When the login response is received, the EtchedApiService will send a request to get the
-        // user details (by invoking self()). That should trigger the refresh.
-        service.login('user', 'password')
-            .subscribe(() => {
-            });
-
-        const loginRequest = httpMock.expectOne(`${environment.API_URL}/auth/authenticate`);
-        loginRequest.flush(tokenResponse);
-
-        const refreshedTokenResponse: TokenResponse = {
-            accessToken: 'access2',
-            expiresIn: 900,
-            refreshExpiresIn: 1800,
-            refreshToken: 'refresh2',
-        };
-        const refreshRequest = httpMock.expectOne(`${environment.API_URL}/auth/refresh-token`);
-        expect(refreshRequest.request.method).toEqual('POST');
-        expect(refreshRequest.request.body).toEqual({'refreshToken': 'refresh'});
-        refreshRequest.flush(refreshedTokenResponse);
-
-        const selfRequest = httpMock.expectOne(`${environment.API_URL}/auth/self`);
-        // Should use the refreshed access token it got from the refresh request
-        expect(selfRequest.request.headers.get('Authorization')).toEqual(`Bearer access2`);
-        selfRequest.flush(USER);
+        const accessToken = localStorage.getItem(LOCAL_ACCESS_TOKEN);
+        const refreshToken = localStorage.getItem(LOCAL_REFRESH_TOKEN);
+        expect(accessToken).toEqual('foobar');
+        expect(refreshToken).toEqual('refresh');
     });
 
     it('create entry', () => {
-        initAuth();
         service.createEntry('kpId', 'journalId', 'content')
             .subscribe(entry => {
                 expect(entry.id).toEqual('entryId');
@@ -137,13 +104,10 @@ describe('EtchedApiService', () => {
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries?journalId=journalId`);
         expect(req.request.method).toEqual('POST');
-        expect(req.request.headers.has('Authorization')).toBeTruthy();
         req.flush(entry);
     });
 
     it('post etches', () => {
-        initAuth();
-
         service.postEtches('kpId', 'entryId', ['etch1', 'etch2'])
             .subscribe(etches => {
                 expect(etches.length).toEqual(2);
@@ -172,13 +136,10 @@ describe('EtchedApiService', () => {
 
         const req = httpMock.expectOne(`${environment.API_URL}/etches?entryId=entryId`);
         expect(req.request.method).toEqual('POST');
-        expect(req.request.headers.has('Authorization')).toBeTruthy();
         req.flush(etches);
     });
 
     it('get entries', () => {
-        initAuth();
-
         service.getEntries('journalId')
             .subscribe(entries => {
                 expect(entries.length).toEqual(2);
@@ -207,13 +168,10 @@ describe('EtchedApiService', () => {
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries?journalId=journalId`);
         expect(req.request.method).toEqual('GET');
-        expect(req.request.headers.has('Authorization')).toBeTruthy();
         req.flush(entries);
     });
 
     it('get entry', () => {
-        initAuth();
-
         service.getEntry('entry1')
             .subscribe(entry => {
                 expect(entry.id).toEqual('entry1');
@@ -233,13 +191,10 @@ describe('EtchedApiService', () => {
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries/entry1`);
         expect(req.request.method).toEqual('GET');
-        expect(req.request.headers.has('Authorization')).toBeTruthy();
         req.flush(entry);
     });
 
     it('get etches', () => {
-        initAuth();
-
         service.getEtches('entry1')
             .subscribe(etches => {
                 expect(etches.length).toEqual(2);
@@ -267,13 +222,10 @@ describe('EtchedApiService', () => {
 
         const req = httpMock.expectOne(`${environment.API_URL}/etches?entryId=entry1`);
         expect(req.request.method).toEqual('GET');
-        expect(req.request.headers.has('Authorization')).toBeTruthy();
         req.flush(entries);
     });
 
     it('createKeyPair', () => {
-        initAuth();
-
         const req: CreateKeyPairRequest = {
             publicKey: 'pubKey',
             privateKey: 'privKey',
@@ -305,12 +257,10 @@ describe('EtchedApiService', () => {
 
         const mockReq = httpMock.expectOne(`${environment.API_URL}/keypairs`);
         expect(mockReq.request.method).toEqual('POST');
-        expect(mockReq.request.headers.has('Authorization')).toBeTruthy();
         mockReq.flush(mockKeyPair);
     });
 
     it('create journal', () => {
-        initAuth();
         service.createJournal('kpId', 'content')
             .subscribe((journal: JournalEntity) => {
                 expect(journal.id).toEqual('entryId');
@@ -333,12 +283,10 @@ describe('EtchedApiService', () => {
 
         const req = httpMock.expectOne(`${environment.API_URL}/journals`);
         expect(req.request.method).toEqual('POST');
-        expect(req.request.headers.has('Authorization')).toBeTruthy();
         req.flush(journal);
     });
 
     it('get journals', () => {
-        initAuth();
         service.getJournals()
             .subscribe((journals: JournalEntity[]) => {
                 expect(journals.length).toEqual(1);
@@ -362,7 +310,6 @@ describe('EtchedApiService', () => {
 
         const req = httpMock.expectOne(`${environment.API_URL}/journals`);
         expect(req.request.method).toEqual('GET');
-        expect(req.request.headers.has('Authorization')).toBeTruthy();
         req.flush([journal]);
     });
 
@@ -370,26 +317,4 @@ describe('EtchedApiService', () => {
         // Verify that there aren't any outstanding requests
         httpMock.verify();
     });
-
-    /**
-     * Util that initializes auth so that other tests can skip it
-     */
-    function initAuth() {
-        const tokenResponse: TokenResponse = {
-            accessToken: 'access',
-            expiresIn: 900,
-            refreshExpiresIn: 1800,
-            refreshToken: 'refresh',
-        };
-
-        service.login('user', 'password')
-            .subscribe(() => {});
-
-        const loginRequest = httpMock.expectOne(`${environment.API_URL}/auth/authenticate`);
-        loginRequest.flush(tokenResponse);
-
-        // Login automatically invokes self() after it receives the auth tokens
-        const selfRequest = httpMock.expectOne(`${environment.API_URL}/auth/self`);
-        selfRequest.flush(USER);
-    }
 });

@@ -1,0 +1,19 @@
+<div class="columns is-centered">
+    <div class="column is-12-mobile is-4-desktop">
+        <ng-container *ngIf="state === DOWNLOADING_KEYS">
+            <spinner [text]="'Downloading keys'"></spinner>
+        </ng-container>
+        <ng-container *ngIf="state === ENTERING_PASSPHRASE">
+            <app-enter-passphrase
+                (passphraseEmitter)="onPassphraseConfigured($event)"
+                [passphraseIncorrect]="passphraseIncorrect">
+            </app-enter-passphrase>
+        </ng-container>
+        <ng-container *ngIf="state === DECRYPTING_KEYS">
+            <spinner [text]="'Decrypting keys'"></spinner>
+        </ng-container>
+        <ng-container *ngIf="state === DECRYPTED_KEYS">
+            <h3>Finished decrypting keys</h3>
+        </ng-container>
+    </div>
+</div>

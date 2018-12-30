@@ -3,7 +3,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './user/login/login.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RegisterComponent } from './user/register/register.component';
 import { SpinnerComponent } from './utils/spinner/spinner.component';
@@ -24,6 +24,8 @@ import { JournalsContainerComponent } from './etches/journals/journals-container
 import { JournalListComponent } from './etches/journals/journal-list/journal-list.component';
 import { JournalListItemComponent } from './etches/journals/journal-list-item/journal-list-item.component';
 import { CreateJournalComponent } from './etches/journals/create-journal/create-journal.component';
+import { EnterPassphraseContainer } from './user/passphrase/enter-passphrase/enter-passphrase-container/enter-passphrase-container.component';
+import { AuthInterceptor } from './auth/auth.interceptor';
 
 @NgModule({
     declarations: [
@@ -50,6 +52,7 @@ import { CreateJournalComponent } from './etches/journals/create-journal/create-
         // Login components
         LoginContainerComponent,
         EnterPassphraseComponent,
+        EnterPassphraseContainer,
 
         // Journals components
         JournalsContainerComponent,
@@ -68,6 +71,7 @@ import { CreateJournalComponent } from './etches/journals/create-journal/create-
     ],
     providers: [
         Title,
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     ],
     bootstrap: [AppComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

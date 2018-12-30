@@ -10,12 +10,16 @@ import { AuthGuard } from './auth/auth.guard';
 import { EtchedRoutes } from './app-routing-utils';
 import { JournalsContainerComponent } from './etches/journals/journals-container/journals-container.component';
 import { CreateJournalComponent } from './etches/journals/create-journal/create-journal.component';
+import { EnterPassphraseContainer } from './user/passphrase/enter-passphrase/enter-passphrase-container/enter-passphrase-container.component';
+import { PassphraseGuard } from './user/passphrase/passphrase.guard';
+
+const GUARDS = [AuthGuard, PassphraseGuard];
 
 export const ALL_ROUTES: Routes = [
     //
     // UNAUTHENTICATED ROUTES
     //
-    {path: '', redirectTo: 'login', pathMatch: 'full'},
+    {path: '', redirectTo: EtchedRoutes.LOGIN_PATH, pathMatch: 'full'},
     {path: EtchedRoutes.LOGIN_PATH, component: LoginContainerComponent},
     {path: EtchedRoutes.REGISTER_PATH, component: RegisterContainerComponent},
 
@@ -27,34 +31,43 @@ export const ALL_ROUTES: Routes = [
         component: ConfigurePassphraseComponent,
         canActivate: [AuthGuard],
     },
+    {
+        path: EtchedRoutes.ENTER_PASSPHRASE_PATH,
+        component: EnterPassphraseContainer,
+        canActivate: [AuthGuard],
+    },
+
+    //
+    // AUTHENTICATED AND PASSPHRASE REQUIRED ROUTES
+    //
 
     // JOURNALS
     {
         path: EtchedRoutes.JOURNALS_PATH,
         component: JournalsContainerComponent,
-        canActivate: [AuthGuard],
+        canActivate: GUARDS,
     },
     {
         path: EtchedRoutes.JOURNALS_CREATE_PATH,
         component: CreateJournalComponent,
-        canActivate: [AuthGuard],
+        canActivate: GUARDS,
     },
     {
         path: 'journals/:id',
         component: EntryListContainerComponent,
-        canActivate: [AuthGuard],
+        canActivate: GUARDS,
     },
 
     // ENTRIES
     {
         path: EtchedRoutes.ENTRIES_CREATE_PATH,
         component: EditorContainerComponent,
-        canActivate: [AuthGuard],
+        canActivate: GUARDS,
     },
     {
         path: 'entries/:id',
         component: ExistingEntryEditorContainerComponent,
-        canActivate: [AuthGuard],
+        canActivate: GUARDS,
     },
 ];
 
