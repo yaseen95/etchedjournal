@@ -15,6 +15,7 @@ import { OwnerType } from '../../../models/owner-type';
 import { Encrypter } from '../../../services/encrypter';
 import { EncrypterService } from '../../../services/encrypter.service';
 import { TestUtils } from '../../../utils/test-utils.spec';
+import { EtchV1 } from '../../../models/etch';
 
 describe('ExistingEntryEditorContainerComponent', () => {
     let component: ExistingEntryEditorContainerComponent;
@@ -28,7 +29,6 @@ describe('ExistingEntryEditorContainerComponent', () => {
         etchedApiSpy.getEtches.and.returnValue(EMPTY);
 
         encrypterSpy = jasmine.createSpyObj('Encrypter', ['decrypt']);
-        encrypterSpy.decrypt.and.returnValue(Promise.resolve('decrypted text'));
         encrypterSpy.keyPairId = 'kpId';
 
         const encrypterService = new EncrypterService();
@@ -130,7 +130,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
             content: 'Entry Title',
             keyPairId: 'kpId',
         };
-        component.decryptedEtches = ['decrypted etch 1'];
+        component.etches = [{content: 'decrypted etch 1'}] as EtchV1[];
         component.title = 'Entry Title';
 
         fixture.detectChanges();
@@ -143,6 +143,8 @@ describe('ExistingEntryEditorContainerComponent', () => {
     });
 
     it('decryptEntry', fakeAsync(() => {
+        encrypterSpy.decrypt.and.returnValue(Promise.resolve('decrypted text'));
+
         const entry = {
             timestamp: 1,
             owner: 'owner',
@@ -164,6 +166,8 @@ describe('ExistingEntryEditorContainerComponent', () => {
     }));
 
     it('decryptEtches', fakeAsync(() => {
+        encrypterSpy.decrypt.and.returnValue(Promise.resolve('[{"content":"decrypted text"}]'));
+
         const etch1 = {
             timestamp: 1,
             owner: 'owner',
@@ -189,7 +193,8 @@ describe('ExistingEntryEditorContainerComponent', () => {
         expect(encrypterSpy.decrypt).toHaveBeenCalledTimes(2);
         expect(encrypterSpy.decrypt.calls.allArgs()).toEqual([['ENC1'], ['ENC2']]);
 
-        expect(component.decryptedEtches).toEqual(['decrypted text', 'decrypted text']);
+        const decryptedEtches = [{content: 'decrypted text'}, {content: 'decrypted text'}];
+        expect(component.etches).toEqual(decryptedEtches as EtchV1[]);
         expect(component.etchesState).toEqual(EntityState.DECRYPTED);
     }));
 });

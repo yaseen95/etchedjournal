@@ -5,12 +5,13 @@ import {
     Input,
     OnDestroy,
     OnInit,
-    Optional,
     Output,
     Renderer2,
     ViewChild
 } from '@angular/core';
 import { interval, Observable, Subscription } from 'rxjs';
+import { EtchV1 } from '../../../models/etch';
+import { ClockService } from '../../../services/clock.service';
 
 const DEFAULT_ETCH_TIMEOUT = 5 * 1000;
 const ENTER_KEY = 'Enter';
@@ -26,7 +27,7 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
 
     /** list of etches */
     @Input()
-    etches: string[];
+    etches: EtchV1[];
 
     /** timestamp of last edit (millis since epoch) */
     recentEdit: number;
@@ -37,7 +38,7 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
     intervalSubscription: Subscription;
 
     @Output()
-    etchEmitter: EventEmitter<string>;
+    etchEmitter: EventEmitter<EtchV1>;
 
     @ViewChild('editor')
     editorElem: ElementRef;
@@ -49,20 +50,13 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
     etchTimeout: number;
 
     constructor(private renderer: Renderer2,
-                @Optional() etchTimeout: number) {
+                private clock: ClockService) {
         if (this.etches === undefined) {
             this.etches = [];
         }
-        this.recentEdit = Date.now();
+        this.recentEdit = clock.nowMillis();
         this.etchEmitter = new EventEmitter();
-
-        // https://github.com/angular/angular/issues/25233
-        // Can't use a default with constructor params
-        if (etchTimeout !== null) {
-            this.etchTimeout = etchTimeout;
-        } else {
-            this.etchTimeout = DEFAULT_ETCH_TIMEOUT;
-        }
+        this.etchTimeout = DEFAULT_ETCH_TIMEOUT;
         console.info(`Etching timeout: ${this.etchTimeout} millis`);
 
         // Check if the etch timeout has been exceeded
@@ -87,7 +81,7 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
      */
     onEtchKeydown(event: KeyboardEvent) {
         // Update the recent edit date of the etch
-        this.recentEdit = Date.now();
+        this.recentEdit = this.clock.nowMillis();
 
         // We don't want to update the etch if the user pressed "shift + enter"
         if (event.key === ENTER_KEY && !event.shiftKey) {
@@ -114,7 +108,7 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
     etchIfInactive() {
         // If user hasn't made any changes in `etchTimeout` seconds, we create the etch
         // automatically
-        if ((Date.now() - this.recentEdit) >= this.etchTimeout) {
+        if ((this.clock.nowMillis() - this.recentEdit) >= this.etchTimeout) {
             this.etch();
         }
     }
@@ -132,13 +126,16 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
 
         // TODO: Add metadata representation of etch
         console.info(`Etching: ${text}`);
+
+        const e = new EtchV1(text, this.clock.nowMillis());
+
         // Push the current etch to the list of etches being displayed
-        this.etches.push(text);
+        this.etches.push(e);
 
         // Reset the etch
         this.editorElem.nativeElement.textContent = '';
 
         // Emit the etch
-        this.etchEmitter.emit(text);
+        this.etchEmitter.emit(e);
     }
 }

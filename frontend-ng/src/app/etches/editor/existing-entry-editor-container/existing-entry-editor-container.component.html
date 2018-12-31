@@ -15,8 +15,8 @@
             class="columns has-text-left">
         </app-entry-title>
         <app-editor
-            (etchEmitter)="queuedEtches.push($event)"
-            [etches]="decryptedEtches">
+            (etchEmitter)="onNewEtch($event)"
+            [etches]="etches">
         </app-editor>
     </div>
 </div>

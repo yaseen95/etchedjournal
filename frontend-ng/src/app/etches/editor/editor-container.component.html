@@ -1,8 +1,8 @@
-<div *ngIf="etchedApi.getUser()" class="columns is-centered">
+<div class="columns is-centered">
     <div class="column is-12-mobile is-8-tablet is-8-desktop">
         <app-entry-title (titleEmitter)="onTitleChange($event)" class="columns has-text-left">
         </app-entry-title>
-        <app-editor (etchEmitter)="queuedEtches.push($event)">
+        <app-editor (etchEmitter)="onNewEtch($event)">
         </app-editor>
     </div>
 </div>

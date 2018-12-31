@@ -1,17 +1,26 @@
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EntryEditorComponent } from './entry-editor.component';
 import { By } from '@angular/platform-browser';
 import { TestUtils } from '../../../utils/test-utils.spec';
+import { ClockService } from '../../../services/clock.service';
+import { EtchV1 } from '../../../models/etch';
 
 describe('EntryEditorComponent', () => {
     let component: EntryEditorComponent;
     let fixture: ComponentFixture<EntryEditorComponent>;
-    let emittedEtches: Array<string> = [];
+    let emittedEtches: Array<EtchV1> = [];
+    let clockSpy: any;
 
     beforeEach(async(() => {
+        clockSpy = jasmine.createSpyObj('ClockService', ['now', 'nowMillis']);
+        clockSpy.nowMillis.and.returnValue(0);
+
         TestBed.configureTestingModule({
-            declarations: [EntryEditorComponent]
+            declarations: [EntryEditorComponent],
+            providers: [
+                {provide: ClockService, useValue: clockSpy},
+            ]
         })
             .compileComponents();
     }));
@@ -29,7 +38,10 @@ describe('EntryEditorComponent', () => {
     });
 
     it('etches renders when length greater than 0', () => {
-        component.etches = ['abc', 'def'];
+        component.etches = [
+            new EtchV1('abc', 0),
+            new EtchV1('def', 0),
+        ];
         fixture.detectChanges();
 
         const listDe = TestUtils.queryExpectOne(fixture.debugElement, '#etches-list');
@@ -63,15 +75,13 @@ describe('EntryEditorComponent', () => {
         expect(onKeydownSpy).toHaveBeenCalledWith(event);
     });
 
-    it('keydown updates recentEdit timestamp', fakeAsync(() => {
+    it('keydown updates recentEdit timestamp', () => {
         const recentEdit = component.recentEdit;
-        // This test runs pretty fast, so we add a tick delay so that the edit is in fact
-        // greater than the first edit. If we don't include it, it sometimes fails because it might
-        // run in the same millisecond
-        tick(3);
+        clockSpy.nowMillis.and.returnValue(5);
         component.onEtchKeydown(new KeyboardEvent('keydown', {key: 'a'}));
         expect(component.recentEdit).toBeGreaterThan(recentEdit);
-    }));
+        expect(component.recentEdit).toEqual(5);
+    });
 
     it('keydown updates on enter', () => {
         const editorDe = TestUtils.queryExpectOne(fixture.debugElement, '#entry-editor');
@@ -83,11 +93,11 @@ describe('EntryEditorComponent', () => {
 
         // 1 etch should have been emitted
         expect(emittedEtches.length).toEqual(1);
-        expect(emittedEtches[0]).toEqual('abc');
+        expect(emittedEtches[0]).toEqual(new EtchV1('abc', 0));
 
         // etch should also have been updated and be visible in the etches list
         expect(component.etches.length).toEqual(1);
-        expect(component.etches[0]).toEqual('abc');
+        expect(component.etches[0]).toEqual(new EtchV1('abc', 0));
         const listDe = TestUtils.queryExpectOne(fixture.debugElement, 'li');
         expect(listDe.nativeElement.textContent).toEqual('abc');
 
@@ -112,6 +122,8 @@ describe('EntryEditorComponent', () => {
         // set the recent edit time to 0 so that the etch becomes inactive
         component.recentEdit = 0;
 
+        clockSpy.nowMillis.and.returnValue(5000);
+
         const editorDe = TestUtils.queryExpectOne(fixture.debugElement, '#entry-editor');
         const editorEl = editorDe.nativeElement as HTMLDivElement;
         editorEl.textContent = 'posted after timeout';
@@ -119,8 +131,10 @@ describe('EntryEditorComponent', () => {
         component.etchIfInactive();
         fixture.detectChanges();
 
+        const expected = new EtchV1('posted after timeout', 5000);
+
         expect(emittedEtches.length).toEqual(1);
-        expect(emittedEtches[0]).toEqual('posted after timeout');
+        expect(emittedEtches[0]).toEqual(expected);
         expect(component.etches.length).toEqual(1);
         expect(editorEl.textContent).toEqual('');
     });

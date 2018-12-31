@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractEditorContainerComponent } from '../abstract-editor-container-component/abstract-editor-container.component';
 import { EtchedApiService } from '../../../services/etched-api.service';
 import { ActivatedRoute } from '@angular/router';
-import { Base64Str } from '../../../models/encrypted-entity';
 import { EtchEntity } from '../../../models/etch-entity';
 import { EntryEntity } from '../../../models/entry-entity';
 import { EncrypterService } from '../../../services/encrypter.service';
+import { EtchQueueService } from '../../../services/etch-queue.service';
+import { Encrypter } from '../../../services/encrypter';
+import { EtchV1 } from '../../../models/etch';
 
 export enum EntityState {
     FETCHING = 'FETCHING',
@@ -19,9 +20,7 @@ export enum EntityState {
     templateUrl: './existing-entry-editor-container.component.html',
     styleUrls: ['./existing-entry-editor-container.component.css']
 })
-export class ExistingEntryEditorContainerComponent
-    extends AbstractEditorContainerComponent
-    implements OnInit {
+export class ExistingEntryEditorContainerComponent implements OnInit {
 
     entryId: string | null;
 
@@ -29,33 +28,41 @@ export class ExistingEntryEditorContainerComponent
 
     etchesState: EntityState;
 
-    decryptedEtches: string[];
+    etches: EtchV1[];
+
+    entry?: EntryEntity;
+
+    title?: string;
+
+    encrypter: Encrypter;
 
     constructor(
-        etchedApi: EtchedApiService,
-        encrypterService: EncrypterService,
-        private route: ActivatedRoute
+        private etchedApi: EtchedApiService,
+        private route: ActivatedRoute,
+        private etchQueueService: EtchQueueService,
+        encrypterService: EncrypterService
     ) {
-        super(etchedApi, encrypterService);
-        this.entryState = EntityState.FETCHING;
-        this.etchesState = EntityState.FETCHING;
-
+        if (encrypterService.encrypter === null) {
+            throw new Error('encrypter is null');
+        }
+        this.encrypter = encrypterService.encrypter;
         this.entryId = route.snapshot.paramMap.get('id');
         console.info(`Entry id is ${this.entryId}`);
     }
 
     ngOnInit() {
-        super.ngOnInit();
+        this.entryState = EntityState.FETCHING;
+        this.etchesState = EntityState.FETCHING;
+
         this.etchedApi.getEntry(this.entryId)
-            .subscribe(entry => {
-                this.entry = entry;
-                this.title = entry.content;
-                this.decryptEntry(entry);
+            .subscribe(e => {
+                this.decryptEntry(e);
             });
 
+        // TODO: paginate requests
         this.etchedApi.getEtches(this.entryId)
-            .subscribe(etches => {
-                this.decryptEtches(etches);
+            .subscribe(e => {
+                this.decryptEtches(e);
             });
     }
 
@@ -77,8 +84,7 @@ export class ExistingEntryEditorContainerComponent
         console.info('Decrypting etches');
         this.etchesState = EntityState.DECRYPTING;
 
-        // Create a copy of the encEtches
-        const decrypted: EntryEntity[] = encEtches.slice(0);
+        const decrypted: EtchV1[] = [];
 
         const decryptionPromises = [];
         encEtches.map(entry => {
@@ -87,16 +93,23 @@ export class ExistingEntryEditorContainerComponent
 
         // TODO: Decrypt etches individually and show progress for each entry
         Promise.all(decryptionPromises)
-            .then((decryptedEntries: Base64Str[]) => {
-                console.info(`Decrypted ${decryptedEntries.length} entries`);
-                decryptedEntries.forEach((decResult, index) => {
-                    // Update the entry with the decrypted result
-                    decrypted[index].content = decResult;
+            .then((decryptedEtches: string[]) => {
+                decryptedEtches.forEach(e => {
+                    const etches: EtchV1[] = JSON.parse(e);
+                    decrypted.push(...etches);
                 });
-                // TODO: Fix once responses are paginated
-                // We're just replacing current etches
-                this.decryptedEtches = decrypted.map(e => e.content);
                 this.etchesState = EntityState.DECRYPTED;
+                this.etches = decrypted;
             });
+    }
+
+    onNewEtch(etch: EtchV1) {
+        this.etchQueueService.put(this.entry.id, etch);
+    }
+
+    onTitleChange(title: string) {
+        // TODO: Update the title on the backend once editing is allowed
+        console.info(`Next title is ${title}`);
+        this.title = title;
     }
 }
