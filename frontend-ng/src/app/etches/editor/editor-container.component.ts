@@ -1,8 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EtchedApiService } from '../../services/etched-api.service';
-import { AbstractEditorContainerComponent } from './abstract-editor-container-component/abstract-editor-container.component';
-import { EncrypterService } from '../../services/encrypter.service';
 import { ActivatedRoute } from '@angular/router';
+import { EtchQueueService } from '../../services/etch-queue.service';
+import { EntryEntity } from '../../models/entry-entity';
+import { Encrypter } from '../../services/encrypter';
+import { BehaviorSubject } from 'rxjs';
+import { AbstractEtch, EtchV1 } from '../../models/etch';
+import { EncrypterService } from '../../services/encrypter.service';
 
 const ENTRY_NOT_CREATED = 'NOT_CREATED';
 const ENTRY_CREATING = 'ENTRY_CREATING';
@@ -13,34 +17,57 @@ const ENTRY_CREATED = 'ENTRY_CREATED';
     templateUrl: './editor-container.component.html',
     styleUrls: ['./editor-container.component.css'],
 })
-export class EditorContainerComponent
-    extends AbstractEditorContainerComponent {
+export class EditorContainerComponent implements OnInit, OnDestroy {
+    /** the encryper used to encrypt entries/etches */
+    encrypter: Encrypter;
+
+    /** Current title */
+    title: string;
 
     /** the current state of the entry */
     entryCreationState: string;
 
     journalId: string;
 
-    constructor(etchedApi: EtchedApiService,
-                encrypterService: EncrypterService,
+    queuedEtches: AbstractEtch[] = [];
+
+    entrySubject: BehaviorSubject<EntryEntity>;
+
+    constructor(private etchedApi: EtchedApiService,
+                private etchQueueService: EtchQueueService,
+                private encrypterService: EncrypterService,
                 route: ActivatedRoute) {
-        super(etchedApi, encrypterService);
+        this.entrySubject = new BehaviorSubject(null);
         this.journalId = route.snapshot.queryParamMap.get('journalId');
         if (this.journalId === null) {
             console.error('No journal id');
         }
+        this.encrypter = encrypterService.encrypter;
     }
 
     ngOnInit() {
-        super.ngOnInit();
-        this.entry = undefined;
         this.entryCreationState = ENTRY_NOT_CREATED;
+
+        this.entrySubject.subscribe(entry => {
+            if (entry !== null) {
+                console.info('posting queued etches');
+                const copy = this.queuedEtches.slice();
+                this.queuedEtches = [];
+                copy.forEach(etch => {
+                    this.queueEtch(etch);
+                });
+            }
+        });
+    }
+
+    ngOnDestroy() {
+        this.entrySubject.unsubscribe();
     }
 
     /**
      * Creates an entry
      */
-    createEntry() {
+    private createEntry() {
         console.info('attempting to create entry');
         if (this.entryCreationState !== ENTRY_NOT_CREATED) {
             // The entry has already been created, don't need to do anything here
@@ -58,22 +85,30 @@ export class EditorContainerComponent
                     .subscribe(entry => {
                         console.log(`Created entry with id ${entry.id}`);
                         this.entryCreationState = ENTRY_CREATED;
-                        this.entry = entry;
+                        this.entrySubject.next(entry);
                     });
             });
     }
 
-    /**
-     * Post the queued etches to the backend
-     */
-    postEtches() {
-        if (this.queuedEtches.length === 0) {
-            return;
-        }
+    onNewEtch(etch: EtchV1) {
+        this.queuedEtches.push(etch);
 
-        if (this.entry === undefined || this.entry === null) {
+        const entry = this.entrySubject.getValue();
+        if (entry === null) {
             this.createEntry();
+        } else {
+            this.queueEtch(etch);
         }
-        super.postEtches();
+    }
+
+    private queueEtch(etch: AbstractEtch) {
+        const entry = this.entrySubject.getValue();
+        this.etchQueueService.put(entry.id, etch);
+    }
+
+    onTitleChange(title: string) {
+        // TODO: Update the title on the backend once editing is allowed
+        console.info(`Next title is ${title}`);
+        this.title = title;
     }
 }

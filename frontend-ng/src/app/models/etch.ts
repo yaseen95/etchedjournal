@@ -9,11 +9,15 @@ export class EtchV1 extends AbstractEtch {
     content: string;
 
     /** timestamp the etch was created on the user's computer */
-    localTimestamp: Date;
-
-    /** position of etch within the entry */
-    position: number;
+    timestamp: number;
 
     /** TODO: Enable markdown support */
     usesMarkdown: boolean = false;
+
+    constructor(content: string, timestamp: number, usesMarkdown: boolean = false) {
+        super();
+        this.content = content;
+        this.timestamp = timestamp;
+        this.usesMarkdown = usesMarkdown;
+    }
 }
