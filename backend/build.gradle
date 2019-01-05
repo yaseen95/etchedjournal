@@ -12,6 +12,9 @@ buildscript {
         mockitoKotlinVersion = '2.0.0'
         mockitoVersion = '2.23.0'
         bouncyCastleVersion = '1.60'
+        auth0JavaJwtVersion = '3.4.1'
+        auth0JwksRsaVersion = '0.6.1'
+        jcipAnnotationsVersion = '1.0'
     }
     repositories {
         mavenCentral()
@@ -50,14 +53,6 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
 
-    // Keycloak dependencies/integration
-    compile("org.keycloak:keycloak-spring-boot-starter:${keycloakVersion}")
-    compile("org.keycloak:keycloak-spring-security-adapter:${keycloakVersion}")
-    compile("org.keycloak:keycloak-admin-client:${keycloakVersion}")
-    compile("org.jboss.resteasy:resteasy-jaxrs:${resteasyVersion}")
-    compile("org.jboss.resteasy:resteasy-client:${resteasyVersion}")
-    compile("org.jboss.resteasy:resteasy-jackson2-provider:${resteasyVersion}")
-
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
 
@@ -86,6 +81,10 @@ dependencies {
     // PGP libraries
     implementation("org.bouncycastle:bcpg-jdk15on:${bouncyCastleVersion}")
     implementation("org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}")
+
+    // JWT libraries
+    implementation("com.auth0:java-jwt:${auth0JavaJwtVersion}")
+    implementation("com.auth0:jwks-rsa:${auth0JwksRsaVersion}")
 
     runtime("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
     runtime("com.h2database:h2:${h2Version}")

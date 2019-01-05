@@ -15,6 +15,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
 import org.springframework.test.context.ContextConfiguration
@@ -30,7 +31,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import java.util.UUID
 import javax.transaction.Transactional
-import javax.ws.rs.core.MediaType
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -77,7 +77,7 @@ class EtchServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET etches`() {
         // Entry doesn't have any etches yet
         mockMvc.perform(get("$ETCHES_PATH?entryId=${entry.id}"))
@@ -104,7 +104,7 @@ class EtchServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET etch by ID`() {
         // Create an etch and check
         val e = testRepoUtils.createEtch(
@@ -125,21 +125,21 @@ class EtchServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET etches with entry does not exist`() {
         mockMvc.perform(get("$ETCHES_PATH?entryId=${UUID.randomUUID()}"))
             .andExpect(status().isNotFound)
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET etch 404 not found`() {
         mockMvc.perform(get("$ETCHES_PATH/${UUID.randomUUID()}"))
             .andExpect(status().isNotFound)
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET etches for entry by other user is forbidden`() {
         val otherUserEntry = testRepoUtils.createEntry(
             id = "e1",
@@ -155,7 +155,7 @@ class EtchServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST etch`() {
         val etchRequest =
             """
@@ -189,7 +189,7 @@ class EtchServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST etch - multiple etches`() {
         val etchRequest =
             """
@@ -230,7 +230,7 @@ class EtchServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST etch - not authorised for entry`() {
         val otherUserEntry = testRepoUtils.createEntry(
             id = "entry2",
@@ -258,7 +258,7 @@ class EtchServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST etch - not authorised for key pair`() {
         // User should not be able to post an etch that references a key pair belonging to
         // another user
@@ -298,7 +298,7 @@ class EtchServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST etch with empty payload`() {
         mockMvc.perform(
             post(ETCHES_PATH)
@@ -309,7 +309,7 @@ class EtchServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST etch with keyPairId missing`() {
         mockMvc.perform(
             post(ETCHES_PATH)
@@ -320,7 +320,7 @@ class EtchServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST etch with content missing`() {
         mockMvc.perform(
             post(ETCHES_PATH)
@@ -331,7 +331,7 @@ class EtchServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST etches - fails when referencing different key pairs`() {
         val keyPair2 = testRepoUtils.createKeyPair(id = "kp2")
         val etchRequest =

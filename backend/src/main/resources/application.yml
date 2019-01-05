@@ -6,6 +6,11 @@
 #logging.level.org.keycloak: DEBUG
 logging.pattern.level: '%5p %X{userId}'
 
+# https://aws.amazon.com/premiumsupport/knowledge-center/decode-verify-cognito-json-token/
+# URL of jwks.json is derived using
+# https://cognito-idp.{aws region}.amazonaws.com/{user pool id}/.well-known/jwks.json
+com.etchedjournal.auth.jwk.url: https://cognito-idp.us-east-1.amazonaws.com/us-east-1_0CjdDf90d/.well-known/jwks.json
+
 spring:
   datasource:
     driver-class-name: org.h2.Driver
@@ -32,14 +37,3 @@ spring:
     log-resolved-exception:
       # Disables WARN level log for caught exceptions (enabled by default by spring-boot-devtools)
       false
-
-keycloak:
-  auth-server-url: http://localhost:9001/auth
-  realm: etched
-  resource: etched-backend
-  public-client: false
-#  principal-attribute: preferred_username
-  # Enabling bearer-only so that spring doesn't redirect to /sso/login
-  bearer-only: true
-  credentials:
-    secret: SECRET

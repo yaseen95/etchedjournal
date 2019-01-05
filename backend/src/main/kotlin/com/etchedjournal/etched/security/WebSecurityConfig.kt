@@ -1,21 +1,15 @@
 package com.etchedjournal.etched.security
 
-import org.keycloak.adapters.KeycloakConfigResolver
-import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver
-import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents
-import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper
-import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -23,27 +17,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@ComponentScan(basePackageClasses = [(KeycloakSecurityComponents::class)])
-class WebSecurityConfig : KeycloakWebSecurityConfigurerAdapter() {
-
-    override fun sessionAuthenticationStrategy(): SessionAuthenticationStrategy {
-        // KeycloakWebSecurityConfigurerAdapter requires an implementation. We don't use sessions,
-        // so using the NullAuthenticatedSessionStrategy (which doesn't do anything) is fine.
-        return NullAuthenticatedSessionStrategy()
-    }
-
-
-    @Autowired
-    fun configureGlobal(auth: AuthenticationManagerBuilder) {
-        val provider = keycloakAuthenticationProvider()
-        provider.setGrantedAuthoritiesMapper(SimpleAuthorityMapper())
-        auth.authenticationProvider(provider)
-    }
-
-    @Bean
-    fun keycloakConfigResolver(): KeycloakConfigResolver {
-        return KeycloakSpringBootConfigResolver()
-    }
+class WebSecurityConfig(
+    private val cognitoAuthFilter: CognitoAuthenticationFilter,
+    private val exceptionHandledFilter: ExceptionHandledFilter
+) : WebSecurityConfigurerAdapter() {
 
     // TODO: Enable this only for local testing!
     // This was enabled just to allow react to communicate with the backend locally
@@ -61,30 +38,41 @@ class WebSecurityConfig : KeycloakWebSecurityConfigurerAdapter() {
 
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
-        // DON'T forget super call!
-        super.configure(http)
         http
-                .cors()
-                .and()
-                .authorizeRequests()
-                    .antMatchers("/api/v1/auth/authenticate").permitAll()
-                    .antMatchers("/api/v1/auth/register").permitAll()
-                    .antMatchers("/api/v1/auth/refresh-token").permitAll()
-                    .antMatchers("/api/v1/status").permitAll()
-                    .antMatchers("/api/v1/**").hasRole("user")
-                    .antMatchers("/h2-console/**").permitAll()
-                    .antMatchers("/").permitAll()
-                .and()
-                .csrf()
+            .cors()
+            .and()
+            .authorizeRequests()
+                .antMatchers("/api/v1/**").hasRole("USER")
+            .and()
+            .csrf()
                 // disabling csrf so that we can access the h2-console webpage
-                    .ignoringAntMatchers("/h2-console/**")
-                    .ignoringAntMatchers("/api/**")
-                    .and()
-                .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                .headers()
-                    .frameOptions().sameOrigin()
+                .ignoringAntMatchers("/h2-console/**")
+                .ignoringAntMatchers("/api/**")
+                .and()
+            .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+            .headers()
+                .frameOptions().sameOrigin()
+            .and()
+                // When they're anonymous, return a 401
+                // https://stackoverflow.com/questions/33801468/how-let-spring-security-response-unauthorizedhttp-401-code-if-requesting-uri-w
+                .anonymous()
+                .disable()
+                .exceptionHandling()
+                // Using "Bearer" as the value for the WWW-Authenticate header
+                // https://tools.ietf.org/html/rfc6750#section-3
+                .authenticationEntryPoint(Http401AuthenticationEntryPoint("Bearer"))
+            .and()
+                .addFilterBefore(cognitoAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
+                .addFilterBefore(exceptionHandledFilter, CognitoAuthenticationFilter::class.java)
+    }
+
+    @Throws(Exception::class)
+    override fun configure(web: WebSecurity) {
+        web
+            .ignoring()
+                .antMatchers("/api/v1/status")
+                .antMatchers("/h2-console/**")
     }
 }
-

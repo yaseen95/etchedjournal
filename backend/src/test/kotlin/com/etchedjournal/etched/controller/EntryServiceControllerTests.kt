@@ -14,6 +14,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
 import org.springframework.test.context.ContextConfiguration
@@ -28,7 +29,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import java.util.UUID
 import javax.transaction.Transactional
-import javax.ws.rs.core.MediaType
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -68,7 +68,7 @@ class EntryServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET entries`() {
         // User doesn't have any entries yet
         mockMvc.perform(get("$ENTRIES_PATH?journalId=${testJournal.id}"))
@@ -92,7 +92,7 @@ class EntryServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET entry by ID`() {
         val e = testRepoUtils.createEntry("e1", testJournal, byteArrayOf(1, 2), testKeyPair.id)
 
@@ -109,7 +109,7 @@ class EntryServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET entry by other user is forbidden`() {
         val otherUserEntry = testRepoUtils.createEntry(
             id = "otherEntry",
@@ -125,7 +125,7 @@ class EntryServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET entry 404 not found`() {
         val entryId = UUID.randomUUID()
         mockMvc.perform(get("$ENTRIES_PATH/$entryId"))
@@ -134,7 +134,7 @@ class EntryServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST entry`() {
         val entryRequest =
             """
@@ -157,7 +157,7 @@ class EntryServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST entry - not authorised for journal`() {
         val otherUserJournal = testRepoUtils.createJournal(
             id = "j2",
@@ -183,7 +183,7 @@ class EntryServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST entry - not authorised for key pair`() {
         // User should not be able to post an entry that references a key pair belonging to
         // another user
@@ -226,7 +226,7 @@ class EntryServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST entry with empty payload`() {
         val entryRequest = """{}"""
         mockMvc.perform(
@@ -239,7 +239,7 @@ class EntryServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST entry with keyPairId missing`() {
         mockMvc.perform(
             post(ENTRIES_PATH)
@@ -251,7 +251,7 @@ class EntryServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST entry with extra keys in payload`() {
 
         // We don't fail on unknown properties, so this test doesn't really do much

@@ -8,12 +8,14 @@ import org.springframework.http.HttpStatus
  * @param status Http status to return to user
  * @param message message to return to the user
  * @param logMessage optional - specify log message
+ * @param cause optional - cause of exception
  */
 open class EtchedException(
-        val status: HttpStatus,
-        override val message: String,
-        val logMessage: String? = null
-) : RuntimeException() {
+    val status: HttpStatus,
+    override val message: String,
+    val logMessage: String? = null,
+    cause: Throwable? = null
+) : RuntimeException(message, cause) {
 
     override fun toString(): String {
         return "EtchedException(status=$status, logMessage='$logMessage')"
@@ -32,10 +34,11 @@ open class EtchedException(
  * @throws IllegalArgumentException if status is not a 400 status
  */
 open class ClientException(
-        status: HttpStatus = HttpStatus.BAD_REQUEST,
-        message: String,
-        logMessage: String? = null
-) : EtchedException(status, message, logMessage) {
+    status: HttpStatus = HttpStatus.BAD_REQUEST,
+    message: String,
+    logMessage: String? = null,
+    cause: Throwable? = null
+) : EtchedException(status, message, logMessage, cause) {
     init {
         if (!status.is4xxClientError) {
             throw IllegalArgumentException("Supplied non-400 status $status")
@@ -50,16 +53,11 @@ open class ClientException(
  * @param logMessage optional - specify log message
  */
 open class BadRequestException(
-        status: HttpStatus = HttpStatus.BAD_REQUEST,
-        message: String = "Bad request",
-        logMessage: String? = null
-) : ClientException(status, message, logMessage) {
-    init {
-        if (!status.is4xxClientError) {
-            throw IllegalArgumentException("Supplied non-400 status $status")
-        }
-    }
-}
+    status: HttpStatus = HttpStatus.BAD_REQUEST,
+    message: String = "Bad request",
+    logMessage: String? = null,
+    cause: Throwable? = null
+) : ClientException(status, message, logMessage, cause)
 
 /**
  * Exception thrown due to an invalid payload
@@ -68,9 +66,10 @@ open class BadRequestException(
  * @param logMessage optional - specify log message
  */
 open class InvalidPayloadException(
-        message: String,
-        logMessage: String? = null
-) : BadRequestException(message = message, logMessage = logMessage)
+    message: String,
+    logMessage: String? = null,
+    cause: Throwable? = null
+) : BadRequestException(message = message, logMessage = logMessage, cause = cause)
 
 /**
  * User is unauthorized to perform the requested action
@@ -80,8 +79,9 @@ open class InvalidPayloadException(
  */
 open class UnauthorizedException(
     message: String,
-    logMessage: String? = null
-) : BadRequestException(HttpStatus.UNAUTHORIZED, message, logMessage)
+    logMessage: String? = null,
+    cause: Throwable? = null
+) : ClientException(HttpStatus.UNAUTHORIZED, message, logMessage, cause)
 
 /**
  * Exception thrown when user is forbidden to access requested data
@@ -90,9 +90,10 @@ open class UnauthorizedException(
  * @param logMessage optional - specify log message
  */
 class ForbiddenException(
-        message: String = "Forbidden",
-        logMessage: String? = null
-) : ClientException(HttpStatus.FORBIDDEN, message, logMessage)
+    message: String = "Forbidden",
+    logMessage: String? = null,
+    cause: Throwable? = null
+) : ClientException(HttpStatus.FORBIDDEN, message, logMessage, cause)
 
 /**
  * Exception thrown when user requests something that could not be found
@@ -101,9 +102,10 @@ class ForbiddenException(
  * @param logMessage optional - specify log message
  */
 class NotFoundException(
-        message: String = "Not found",
-        logMessage: String? = null
-) : ClientException(HttpStatus.NOT_FOUND, message, logMessage)
+    message: String = "Not found",
+    logMessage: String? = null,
+    cause: Throwable? = null
+) : ClientException(HttpStatus.NOT_FOUND, message, logMessage, cause)
 
 /**
  * Exception thrown due to an issue with the server
@@ -113,10 +115,11 @@ class NotFoundException(
  * @throws IllegalArgumentException if status is not a 500 status
  */
 open class ServerException(
-        status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
-        message: String = "Unexpected server error",
-        logMessage: String? = null
-) : EtchedException(status, message, logMessage) {
+    status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+    message: String = "Unexpected server error",
+    logMessage: String? = null,
+    cause: Throwable? = null
+) : EtchedException(status, message, logMessage, cause) {
 
     init {
         if (!status.is5xxServerError) {
@@ -132,5 +135,6 @@ open class ServerException(
  */
 class AuthServerException(
     message: String = "Unexpected error with auth server",
-    logMessage: String? = null
-): ServerException(HttpStatus.SERVICE_UNAVAILABLE, message, logMessage)
+    logMessage: String? = null,
+    cause: Throwable? = null
+) : ServerException(HttpStatus.SERVICE_UNAVAILABLE, message, logMessage, cause)
