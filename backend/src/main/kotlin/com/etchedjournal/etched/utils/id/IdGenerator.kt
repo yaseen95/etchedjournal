@@ -1,6 +1,6 @@
 package com.etchedjournal.etched.utils.id
 
-import net.jcip.annotations.ThreadSafe
+import javax.annotation.concurrent.ThreadSafe
 
 /**
  * Generates ids

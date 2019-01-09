@@ -1,7 +1,7 @@
 package com.etchedjournal.etched.utils.id
 
-import net.jcip.annotations.ThreadSafe
 import java.util.concurrent.ThreadLocalRandom
+import javax.annotation.concurrent.ThreadSafe
 
 @ThreadSafe
 class IdGeneratorImpl(private val size: Int): IdGenerator {
