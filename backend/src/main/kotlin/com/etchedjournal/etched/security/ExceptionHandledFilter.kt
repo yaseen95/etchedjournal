@@ -1,5 +1,6 @@
 package com.etchedjournal.etched.security
 
+import com.auth0.jwt.exceptions.JWTDecodeException
 import com.etchedjournal.etched.service.exception.ClientException
 import com.etchedjournal.etched.service.exception.EtchedException
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -29,11 +30,14 @@ class ExceptionHandledFilter(private val mapper: ObjectMapper) : OncePerRequestF
         } catch (e: ClientException) {
             log.info("Client exception: {} - {} - {}", e.javaClass.simpleName, e.message, e.logMessage)
             sendError(status = e.status.value(), message = e.message, response = response)
+        } catch(e: JWTDecodeException) {
+            log.info("jwt decode exception: {}", e.message)
+            sendError(status = HttpStatus.BAD_REQUEST.value(), message = e.message!!, response = response)
         } catch (e: EtchedException) {
             log.error("Etched exception: {}", e)
             sendError(status = e.status.value(), message = e.message, response = response)
         } catch (e: RuntimeException) {
-            log.error("Error: {}", e)
+            log.error("", e)
             sendError(
                 status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 message = e.message ?: "Unexpected server error",
