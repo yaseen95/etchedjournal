@@ -2,7 +2,8 @@
     "extends": "../tsconfig.json",
     "compilerOptions": {
         "outDir": "../out-tsc/app",
-        "types": []
+        // Have to specify node types for cognito js to compile
+        "types": ["node"]
     },
     "exclude": [
         "test.ts",

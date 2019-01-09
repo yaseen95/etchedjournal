@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { EncrypterService } from '../../../services/encrypter.service';
-import { EtchedApiService } from '../../../services/etched-api.service';
 import { LoginRequest } from '../../../services/dtos/login-request';
 import { Router } from '@angular/router';
 import { EtchedRoutes } from '../../../app-routing-utils';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
     selector: 'app-login-container',
@@ -19,7 +19,7 @@ export class LoginContainerComponent implements OnInit {
     loginState: string;
 
     constructor(private encrypterService: EncrypterService,
-                private etchedApiService: EtchedApiService,
+                private authService: AuthService,
                 private router: Router) {
         this.loginState = this.NOT_LOGGED_IN;
     }
@@ -33,8 +33,8 @@ export class LoginContainerComponent implements OnInit {
      */
     onLogin(loginRequest: LoginRequest) {
         this.loginState = this.LOGGING_IN;
-        this.etchedApiService.login(loginRequest.username, loginRequest.password)
-            .subscribe(u => {
+        this.authService.login(loginRequest.username, loginRequest.password)
+            .then(() => {
                 this.router.navigate([EtchedRoutes.ENTER_PASSPHRASE_PATH]);
             });
     }

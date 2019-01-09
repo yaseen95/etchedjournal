@@ -1,94 +1,40 @@
-import {
-    HttpClient,
-    HttpEvent,
-    HttpHandler,
-    HttpInterceptor,
-    HttpRequest
-} from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { from, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
-import {
-    AUTH_REQUIRED_URLS,
-    LOCAL_ACCESS_TOKEN,
-    LOCAL_REFRESH_TOKEN,
-    REFRESH_TOKEN_URL
-} from '../services/etched-api.service';
-import { AccessToken, TokenDecoder } from '../utils/token-decoder';
-import { map, switchMap } from 'rxjs/operators';
-import { TokenResponse } from '../services/dtos/token-response';
-
-export const REFRESH_WINDOW: number = 60 * 1_000;
+import { AUTH_REQUIRED_URLS } from '../services/etched-api.service';
+import { AuthService } from '../services/auth.service';
+import { switchMap } from 'rxjs/operators';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-    constructor(private http: HttpClient) {
+    constructor(private authService: AuthService) {
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        if (!AuthInterceptor.requiresAuth(req)) {
+        // TODO: Should we invert the check?
+        // Should we refresh tokens for all paths except known no-auth paths?
+        // Or should we refresh tokens for known auth-required paths?
+        if (!AuthInterceptor.requiresAuth(req.url)) {
             return next.handle(req);
         }
 
-        return this.getLatestAccessTokenStr()
-            .pipe(switchMap(accessToken => {
-                const req2 = req.clone({setHeaders: {Authorization: `Bearer ${accessToken}`}});
-                return next.handle(req2);
-            }));
+        // https://stackoverflow.com/a/45979654
+        // observables and promises mixing together suck
+        return from(this.authService.refreshIfExpired())
+            .pipe(
+                switchMap(session => {
+                    const token = session.getAccessToken().getJwtToken();
+                    const req2 = req.clone({setHeaders: {Authorization: `Bearer ${token}`}});
+                    return next.handle(req2);
+                })
+            );
     }
 
     // visible for testing
-    static requiresAuth(req: HttpRequest<any>): boolean {
-        return checkAnyStringContains(req.url, AUTH_REQUIRED_URLS);
-    }
-
-    /**
-     * Refreshes tokens if they're expired or near expiring
-     */
-    private refreshIfExpired(): Observable<boolean> {
-        const accessToken = this.getLocalAccessToken();
-        if (accessToken === null) {
-            console.error(`Access token is required`);
-            throw new Error(`Access token is required`);
-        }
-
-        const accessExpiry = accessToken.exp * 1000;
-        if ((new Date().getTime() + REFRESH_WINDOW) < accessExpiry) {
-            // Token hasn't expired and isn't close to expiring
-            return of(true);
-        }
-
-        console.info('Refreshing token');
-        const refreshBody = {'refreshToken': this.getRefreshTokenStr()};
-        return this.http.post(REFRESH_TOKEN_URL, refreshBody)
-            .pipe(map((token: TokenResponse) => {
-                localStorage.setItem(LOCAL_ACCESS_TOKEN, token.accessToken);
-                localStorage.setItem(LOCAL_REFRESH_TOKEN, token.refreshToken);
-                return true;
-            }));
-    }
-
-    private getLatestAccessTokenStr(): Observable<string> {
-        return this.refreshIfExpired()
-            .pipe(map(() => {
-                return this.getAccessTokenStr();
-            }));
-    }
-
-    private getLocalAccessToken(): AccessToken | null {
-        const tokenStr = this.getAccessTokenStr();
-        if (tokenStr === null) {
-            return null;
-        }
-        return TokenDecoder.decodeToken<AccessToken>(tokenStr);
-    }
-
-    private getAccessTokenStr(): string | null {
-        return localStorage.getItem(LOCAL_ACCESS_TOKEN);
-    }
-
-    private getRefreshTokenStr(): string | null {
-        return localStorage.getItem(LOCAL_REFRESH_TOKEN);
+    static requiresAuth(url: string): boolean {
+        // TODO: Should we use regexes instead?
+        return checkAnyStringContains(AUTH_REQUIRED_URLS, url);
     }
 }
 
@@ -97,7 +43,7 @@ export class AuthInterceptor implements HttpInterceptor {
  * @param s
  * @param strings
  */
-export function checkAnyStringContains(s: string, strings: string[]): boolean {
+export function checkAnyStringContains(strings: string[], s: string): boolean {
     for (let i = 0; i < strings.length; i++) {
         const x = strings[i];
         if (s.indexOf(x) >= 0) {

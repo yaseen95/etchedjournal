@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
-import { EtchedApiService } from '../services/etched-api.service';
 import { EtchedRoutes } from '../app-routing-utils';
+import { AuthService } from '../services/auth.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
 
-    constructor(private etchedApiService: EtchedApiService,
+    constructor(private authService: AuthService,
                 private router: Router) {
 
     }
@@ -19,7 +19,7 @@ export class AuthGuard implements CanActivate {
         state: RouterStateSnapshot
     ): Observable<boolean> | Promise<boolean> | boolean {
         // User can access authenticated routes if they're logged in
-        if (this.etchedApiService.getUser() !== null) {
+        if (this.authService.getUser() !== null) {
             return true;
         }
 

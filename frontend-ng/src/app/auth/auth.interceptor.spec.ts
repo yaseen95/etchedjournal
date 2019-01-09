@@ -1,103 +1,102 @@
-import { async, fakeAsync, getTestBed, TestBed, tick } from '@angular/core/testing';
+import { async, getTestBed, TestBed } from '@angular/core/testing';
 
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { EtchedUser } from '../models/etched-user';
-import { environment } from '../../environments/environment';
-import { TokenDecoder } from '../utils/token-decoder';
 import { AuthInterceptor } from './auth.interceptor';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, HttpHeaders, HttpRequest } from '@angular/common/http';
+import { AuthService } from '../services/auth.service';
 import {
-    EtchedApiService,
-    JOURNALS_URL, LOCAL_ACCESS_TOKEN,
-    LOCAL_REFRESH_TOKEN,
-    LOGIN_URL, REFRESH_TOKEN_URL,
-    SELF_URL
-} from '../services/etched-api.service';
+    CognitoUser,
+    CognitoUserAttribute,
+    CognitoUserSession,
+    ISignUpResult
+} from 'amazon-cognito-identity-js';
+import { AUTH_REQUIRED_URLS } from '../services/etched-api.service';
+import { EMPTY, of } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 describe('AuthInterceptor', () => {
     let injector: TestBed;
     let httpMock: HttpTestingController;
-    let decodeTokenSpy: any;
-    let service: EtchedApiService;
+    let service: AuthService;
+    let httpClient: HttpClient;
+    let interceptor: AuthInterceptor;
 
     beforeEach(async(() => {
-        localStorage.clear();
-        decodeTokenSpy = spyOn(TokenDecoder, 'decodeToken');
+        let accessTokenSpy = jasmine.createSpyObj('AccessToken', ['getJwtToken']);
+        accessTokenSpy.getJwtToken.and.returnValue('token');
 
-        const token = {exp: (new Date().getTime() / 1000) + 900};
-        decodeTokenSpy.and.returnValue(token);
+        let sessionSpy = jasmine.createSpyObj('CognitoUserSession', ['getAccessToken']);
+        sessionSpy.getAccessToken.and.returnValue(accessTokenSpy);
+
+        let authSpy = jasmine.createSpyObj('AuthService', ['refreshIfExpired']);
+        authSpy.refreshIfExpired.and.returnValue(Promise.resolve(sessionSpy));
 
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [
-                EtchedApiService,
+                {provide: AuthService, useValue: authSpy},
                 {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+                AuthInterceptor,
             ],
         });
 
         injector = getTestBed();
-        service = injector.get(EtchedApiService);
+        service = injector.get(AuthService);
         httpMock = injector.get(HttpTestingController);
+        httpClient = injector.get(HttpClient);
+        interceptor = injector.get(AuthInterceptor);
     }));
 
-    it('token refreshes when close to expiry', fakeAsync(() => {
-        // set expiry to time to 0
-        decodeTokenSpy.and.returnValue({exp: 0});
-        localStorage.setItem(LOCAL_REFRESH_TOKEN, 'refresh');
-        localStorage.setItem(LOCAL_ACCESS_TOKEN, 'access');
+    it('attempts to refresh tokens for paths requiring auth', () => {
+        let url = AUTH_REQUIRED_URLS[0];
+        let req = new HttpRequest<any>('GET', url, null, {headers: new HttpHeaders()});
+        let cloneSpy = spyOn(req, 'clone');
+        let handlerSpy = jasmine.createSpyObj('HttpHandler', ['handle']);
+        handlerSpy.handle.and.returnValue(of(EMPTY));
 
-        service.getJournals()
+        interceptor.intercept(req, handlerSpy)
             .subscribe(() => {
+                expect(service.refreshIfExpired).toHaveBeenCalledTimes(1);
+                expect(handlerSpy.handle).toHaveBeenCalledTimes(1);
+                expect(cloneSpy).toHaveBeenCalledTimes(1);
             });
-
-        tick();
-
-        const refreshRequest = httpMock.expectOne(REFRESH_TOKEN_URL);
-        expect(refreshRequest.request.body).toEqual({'refreshToken': 'refresh'});
-        refreshRequest.flush({});
-
-        const journalsReq = httpMock.expectOne(JOURNALS_URL);
-        // TODO: Figure out why it becomes undefined!
-        // It shouldn't be, it's so weird
-        expect(journalsReq.request.headers.get('Authorization')).toEqual('Bearer undefined');
-        journalsReq.flush([]);
-    }));
-
-    it('token does not refresh when it is recent', () => {
-        localStorage.setItem(LOCAL_ACCESS_TOKEN, 'access');
-
-        service.getJournals()
-            .subscribe(() => {
-            });
-
-        httpMock.expectNone(REFRESH_TOKEN_URL);
-
-        const journalsReq = httpMock.expectOne(JOURNALS_URL);
-        expect(journalsReq.request.headers.get('Authorization')).toEqual('Bearer access');
-        journalsReq.flush([]);
     });
 
-    it('login is not intercepted', () => {
-        service.login('foo', 'bar')
+    it('does not attempt to refresh tokens for paths requiring auth', () => {
+        let req = new HttpRequest<any>('GET', '', null, {headers: new HttpHeaders()});
+        let handlerSpy = jasmine.createSpyObj('HttpHandler', ['handle']);
+        handlerSpy.handle.and.returnValue(of(EMPTY));
+
+        interceptor.intercept(req, handlerSpy)
             .subscribe(() => {
+                expect(service.refreshIfExpired).toHaveBeenCalledTimes(0);
+                expect(handlerSpy.handle).toHaveBeenCalledTimes(1);
             });
-
-        const req = httpMock.expectOne(LOGIN_URL);
-        req.flush({});
-
-        // Login triggers self, we perform this expect so that httpMock.verify() doesn't fail
-        httpMock.expectOne(SELF_URL);
-
-        expect(req.request.headers.get('Authorization')).toBeNull();
     });
 
-    it('register is not intercepted', () => {
-        service.register('foo', 'bar', null)
-            .subscribe(() => {
-            });
+    it('interceptor adds token', () => {
+        let url = AUTH_REQUIRED_URLS[0];
+        let req = new HttpRequest<any>('GET', url, null, {headers: new HttpHeaders()});
+        let cloneSpy = spyOn(req, 'clone').and.callThrough();
+        let handlerSpy = jasmine.createSpyObj('HttpHandler', ['handle']);
+        handlerSpy.handle.and.returnValue(of(EMPTY));
 
-        const req = httpMock.expectOne(`${environment.API_URL}/auth/register`);
-        expect(req.request.headers.get('Authorization')).toBeNull();
+        interceptor.intercept(req, handlerSpy)
+            .subscribe(() => {
+                expect(cloneSpy).toHaveBeenCalledTimes(1);
+                const interceptedReq: HttpRequest<any> = handlerSpy.handle.calls.argsFor(0)[0];
+                expect(interceptedReq.headers.get('Authorization')).toEqual('Bearer token');
+            });
+    });
+
+    it('journals path requires auth', () => {
+        const result = AuthInterceptor.requiresAuth(`${environment.API_URL}/journals`);
+        expect(result).toBeTruthy();
+    });
+
+    it('empty path should not require auth', () => {
+        const result = AuthInterceptor.requiresAuth('');
+        expect(result).toBeFalsy();
     });
 
     afterEach(() => {

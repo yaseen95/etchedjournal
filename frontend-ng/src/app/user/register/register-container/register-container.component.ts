@@ -3,10 +3,9 @@ import { EtchedApiService } from '../../../services/etched-api.service';
 import { RegisterRequest } from '../../../services/dtos/register-request';
 import { Encrypter, KeyPair } from '../../../services/encrypter';
 import * as openpgp from 'openpgp';
-import { key } from 'openpgp';
-import { switchMap } from 'rxjs/operators';
 import { EncrypterService } from '../../../services/encrypter.service';
 import { Base64Str } from '../../../models/encrypted-entity';
+import { AuthService } from '../../../services/auth.service';
 
 export namespace RegisterState {
 }
@@ -28,7 +27,8 @@ export class RegisterContainerComponent implements OnInit {
     registerState: string;
 
     constructor(private etchedApi: EtchedApiService,
-                private encrypterService: EncrypterService) {
+                private encrypterService: EncrypterService,
+                private authService: AuthService) {
         this.registerState = this.NOT_REGISTERED;
     }
 
@@ -39,13 +39,10 @@ export class RegisterContainerComponent implements OnInit {
         console.info(`Registering ${req.username}`);
         this.registerState = this.REGISTERING;
 
-        console.info('registering');
-
-        // Register first
-        this.etchedApi.register(req.username, req.password, req.email)
-        // Then login to get access tokens
-            .pipe(switchMap(() => this.etchedApi.login(req.username, req.password)))
-            .subscribe(() => this.registerState = this.ENTERING_PASSPHRASE);
+        this.authService.register(req.username, req.password)
+            .then(() => {
+                this.registerState = this.ENTERING_PASSPHRASE;
+            });
     }
 
     onPassphraseConfigured(passphrase: string) {
@@ -57,7 +54,7 @@ export class RegisterContainerComponent implements OnInit {
             // 2. Create the encrypter
             .then((k: KeyPair) => {
                 keyPair = k;
-                return this.createEncrypter(k, passphrase)
+                return this.createEncrypter(k, passphrase);
             })
             // 3. Upload the key pair
             .then((encrypter: Encrypter) => {
@@ -76,10 +73,10 @@ export class RegisterContainerComponent implements OnInit {
      */
     generateKey(passphrase: string): Promise<KeyPair> {
         this.registerState = this.CREATING_KEYS;
-        if (this.etchedApi.getUser() === null) {
+        if (this.authService.getUser() === null) {
             throw new Error('Attempted to generate key without being logged in');
         }
-        return Encrypter.generateKey(passphrase, this.etchedApi.getUser().id)
+        return Encrypter.generateKey(passphrase, this.authService.getUser().id);
     }
 
     /**
@@ -93,7 +90,7 @@ export class RegisterContainerComponent implements OnInit {
                 // Assign the encrypter to the encrypter service so other modules can use it
                 this.encrypterService.encrypter = enc;
                 return enc;
-            })
+            });
     }
 
     /**
@@ -104,7 +101,7 @@ export class RegisterContainerComponent implements OnInit {
         this.etchedApi.createKeyPair({publicKey, privateKey, salt, iterations})
             .subscribe(result => {
                 this.registerState = this.UPLOADED_KEYS;
-                this.encrypterService.encrypter.keyPairId = result.id
+                this.encrypterService.encrypter.keyPairId = result.id;
             });
         // TODO: Handle error
     }

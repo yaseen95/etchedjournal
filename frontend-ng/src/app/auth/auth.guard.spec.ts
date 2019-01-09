@@ -5,19 +5,20 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { EtchedApiService } from '../services/etched-api.service';
 import { Router } from '@angular/router';
 import { TestUtils } from '../utils/test-utils.spec';
+import { AuthService } from '../services/auth.service';
 
 describe('AuthGuard', () => {
-    let etchedApiSpy: any;
+    let authSpy: any;
     let routerSpy: any;
 
     beforeEach(() => {
-        etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['getUser']);
+        authSpy = jasmine.createSpyObj('AuthService', ['getUser']);
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
         TestBed.configureTestingModule({
             providers: [
                 AuthGuard,
-                {provide: EtchedApiService, useValue: etchedApiSpy},
+                {provide: AuthService, useValue: authSpy},
                 {provide: Router, useValue: routerSpy},
             ],
             imports: [
@@ -28,13 +29,13 @@ describe('AuthGuard', () => {
 
     it('should not allow route activation when user not logged in',
         inject([AuthGuard], (guard: AuthGuard) => {
-            etchedApiSpy.getUser.and.returnValue(null);
+            authSpy.getUser.and.returnValue(null);
             expect(guard.canActivate(null, null)).toBeFalsy();
         }));
 
     it('should allow route activation when logged in',
         inject([AuthGuard], (guard: AuthGuard) => {
-            etchedApiSpy.getUser.and.returnValue(TestUtils.TEST_USER);
+            authSpy.getUser.and.returnValue(TestUtils.TEST_USER);
             expect(guard.canActivate(null, null)).toBeTruthy();
         }));
 });

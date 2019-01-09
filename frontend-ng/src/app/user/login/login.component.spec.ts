@@ -2,31 +2,31 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LoginComponent } from './login.component';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { EtchedApiService } from '../../services/etched-api.service';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { EtchedUser } from '../../models/etched-user';
 import { TestUtils } from '../../utils/test-utils.spec';
 import { SpinnerComponent } from '../../utils/spinner/spinner.component';
 import { LoginRequest } from '../../services/dtos/login-request';
+import { AuthService } from '../../services/auth.service';
 
 describe('LoginComponent', () => {
     let component: LoginComponent;
     let fixture: ComponentFixture<LoginComponent>;
     let loginForm: FormGroup;
-    let etchedApiSpy: any;
+    let authSpy: any;
     let emittedEvents: Array<LoginRequest> = [];
 
     beforeEach(() => {
-        etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['getUser']);
+        authSpy = jasmine.createSpyObj('AuthService', ['getUser']);
         // By default getUser should return null
-        etchedApiSpy.getUser.and.returnValue(null);
+        authSpy.getUser.and.returnValue(null);
 
         TestBed.configureTestingModule({
             declarations: [LoginComponent, SpinnerComponent],
             imports: [ReactiveFormsModule],
             providers: [
-                {provide: EtchedApiService, useValue: etchedApiSpy},
+                {provide: AuthService, useValue: authSpy},
             ]
         })
             .compileComponents();
@@ -175,7 +175,7 @@ describe('LoginComponent', () => {
 
     it('logged in user does not show form', () => {
         // When the user is logged in the form displays a <p> saying that the user is logged in
-        etchedApiSpy.getUser.and.returnValue(TEST_USER);
+        authSpy.getUser.and.returnValue(TEST_USER);
 
         // Refresh the UI
         fixture.detectChanges();
