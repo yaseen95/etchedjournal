@@ -2,20 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
-import { TokenResponse } from './dtos/token-response';
-import { map, switchMap, tap } from 'rxjs/operators';
-import { EtchedUser } from '../models/etched-user';
+import { tap } from 'rxjs/operators';
 import { Base64Str } from '../models/encrypted-entity';
 import { EntryEntity } from '../models/entry-entity';
 import { EtchEntity } from '../models/etch-entity';
 import { KeyPairEntity } from '../models/key-pair-entity';
 import { JournalEntity } from '../models/journal-entity';
 import { CreateKeyPairRequest } from './dtos/create-key-pair-request';
-import { RefreshToken, TokenDecoder } from '../utils/token-decoder';
 
-export const LOGIN_URL = `${environment.API_URL}/auth/authenticate`;
-export const REGISTER_URL = `${environment.API_URL}/auth/register`;
-export const REFRESH_TOKEN_URL = `${environment.API_URL}/auth/refresh-token`;
 export const SELF_URL = `${environment.API_URL}/auth/self`;
 
 export const ENTRIES_URL = `${environment.API_URL}/entries`;
@@ -50,78 +44,7 @@ interface EncryptedEntityRequest {
 })
 export class EtchedApiService {
 
-    private user: EtchedUser | null;
-
     constructor(private http: HttpClient) {
-        this.user = null;
-        this.loadUser();
-    }
-
-    /** Loads user from data in localStorage */
-    private loadUser() {
-        const accessToken = localStorage.getItem(LOCAL_ACCESS_TOKEN);
-        const refreshToken = localStorage.getItem(LOCAL_REFRESH_TOKEN);
-        const userDetails = localStorage.getItem(LOCAL_USER_DETAILS);
-
-        if (accessToken === null || refreshToken === null || userDetails == null) {
-            console.info('No saved tokens/details');
-            return;
-        }
-
-        const refreshTokenJwt = TokenDecoder.decodeToken<RefreshToken>(refreshToken);
-        const refreshExpiry = refreshTokenJwt.exp * 1000;
-
-        if (refreshExpiry - 5_000 < new Date().getTime()) {
-            // We only want to set the user if we have a valid refresh token
-            console.info('Refresh token has expired');
-            return;
-        }
-
-        this.user = JSON.parse(userDetails);
-    }
-
-    public login(username: string, password: string): Observable<EtchedUser> {
-        const requestBody = {username, password};
-        return this.http.post(LOGIN_URL, requestBody)
-            .pipe(
-                map((token: TokenResponse) => this.setTokens(token)),
-                switchMap(() => {
-                    console.info(`Successfully logged in ${username}`);
-                    // Immediately after we've logged in, send a request to get the user details
-                    return this.self();
-                })
-            );
-    }
-
-    public register(
-        username: string,
-        password: string,
-        email: string | null
-    ): Observable<EtchedUser> {
-        const requestBody = {username, password, email};
-        return this.http.post<EtchedUser>(REGISTER_URL, requestBody)
-            .pipe(
-                tap((user: EtchedUser) => {
-                    console.info(`Successfully registered ${JSON.stringify(user)}`);
-                })
-            );
-    }
-
-    /**
-     * Get data about self (currently logged in user).
-     *
-     * Requires user to be authenticated.
-     *
-     * @returns {Promise<EtchedUser>}
-     */
-    public self(): Observable<EtchedUser> {
-        console.info('Getting details about user');
-        return this.http.get<EtchedUser>(SELF_URL)
-            .pipe(tap((u: EtchedUser) => {
-                console.info('Fetched user');
-                localStorage.setItem(LOCAL_USER_DETAILS, JSON.stringify(u));
-                this.user = u;
-            }));
     }
 
     public getJournals(): Observable<JournalEntity[]> {
@@ -203,19 +126,5 @@ export class EtchedApiService {
 
     private post<Request, Response>(url: string, body: Request, params?: HttpParams): Observable<Response> {
         return this.http.post<Response>(url, body, {params: params});
-    }
-
-    private setTokens(response: TokenResponse) {
-        localStorage.setItem(LOCAL_ACCESS_TOKEN, response.accessToken);
-        localStorage.setItem(LOCAL_REFRESH_TOKEN, response.refreshToken);
-    }
-
-    /**
-     * Get the current user
-     *
-     * @return the user if they're logged in or null if they're not
-     */
-    public getUser(): EtchedUser | null {
-        return this.user;
     }
 }

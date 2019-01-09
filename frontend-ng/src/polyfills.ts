@@ -78,3 +78,7 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+
+// https://github.com/aws-amplify/amplify-js/issues/678
+// https://github.com/angular/angular-cli/issues/9827#issuecomment-386154063
+(window as any).global = window;

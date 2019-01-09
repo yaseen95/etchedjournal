@@ -1,36 +1,22 @@
 import { getTestBed, TestBed } from '@angular/core/testing';
 
-import { EtchedApiService, LOCAL_ACCESS_TOKEN, LOCAL_REFRESH_TOKEN } from './etched-api.service';
+import { EtchedApiService } from './etched-api.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { EtchedUser } from '../models/etched-user';
 import { environment } from '../../environments/environment';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { TokenResponse } from './dtos/token-response';
 import { EntryEntity } from '../models/entry-entity';
 import { OwnerType } from '../models/owner-type';
 import { EtchEntity } from '../models/etch-entity';
 import { KeyPairEntity } from '../models/key-pair-entity';
 import { JournalEntity } from '../models/journal-entity';
 import { CreateKeyPairRequest } from './dtos/create-key-pair-request';
-import { TokenDecoder } from '../utils/token-decoder';
 
 describe('EtchedApiService', () => {
     let injector: TestBed;
     let service: EtchedApiService;
     let httpMock: HttpTestingController;
-    let decodeTokenSpy: any;
-
-    const USER: EtchedUser = {
-        username: 'abc',
-        email: null,
-        id: '123',
-    };
 
     beforeEach(() => {
-        localStorage.clear();
-        decodeTokenSpy = spyOn(TokenDecoder, 'decodeToken');
-        decodeTokenSpy.and.returnValue({});
-
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [EtchedApiService],
@@ -39,47 +25,6 @@ describe('EtchedApiService', () => {
         injector = getTestBed();
         service = injector.get(EtchedApiService);
         httpMock = injector.get(HttpTestingController);
-    });
-
-
-    it('register', () => {
-        service.register('abc', 'password', null)
-            .subscribe(user => {
-                expect(user.id).toEqual('123');
-                expect(user.username).toEqual('abc');
-                expect(user.email).toBeNull();
-            });
-
-        const req = httpMock.expectOne(`${environment.API_URL}/auth/register`);
-        expect(req.request.method).toEqual('POST');
-        req.flush(USER);
-    });
-
-    it('login saves token to be used later', () => {
-        const tokenResponse: TokenResponse = {
-            accessToken: 'foobar',
-            expiresIn: 900,
-            refreshExpiresIn: 1800,
-            refreshToken: 'refresh',
-        };
-
-        service.login('user', 'password')
-            .subscribe(() => {
-            });
-
-        const loginRequest = httpMock.expectOne(`${environment.API_URL}/auth/authenticate`);
-        expect(loginRequest.request.method).toEqual('POST');
-        loginRequest.flush(tokenResponse);
-
-        // Login automatically invokes self() after it receives the auth tokens
-        const selfRequest = httpMock.expectOne(`${environment.API_URL}/auth/self`);
-        expect(selfRequest.request.method).toEqual('GET');
-        selfRequest.flush(USER);
-
-        const accessToken = localStorage.getItem(LOCAL_ACCESS_TOKEN);
-        const refreshToken = localStorage.getItem(LOCAL_REFRESH_TOKEN);
-        expect(accessToken).toEqual('foobar');
-        expect(refreshToken).toEqual('refresh');
     });
 
     it('create entry', () => {

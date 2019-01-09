@@ -9,17 +9,18 @@ import { EtchedApiService } from '../../../services/etched-api.service';
 import { of } from 'rxjs';
 import { LoginRequest } from '../../../services/dtos/login-request';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
 
 describe('LoginContainerComponent', () => {
     let component: LoginContainerComponent;
     let fixture: ComponentFixture<LoginContainerComponent>;
-    let etchedApiSpy: any;
+    let authSpy: any;
     let routerSpy: any;
 
     beforeEach(async(() => {
-        etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['login', 'getUser']);
+        authSpy = jasmine.createSpyObj('AuthService', ['login', 'getUser']);
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-        etchedApiSpy.getUser.and.returnValue(null);
+        authSpy.getUser.and.returnValue(null);
 
         TestBed.configureTestingModule({
             declarations: [
@@ -32,7 +33,7 @@ describe('LoginContainerComponent', () => {
                 ReactiveFormsModule,
             ],
             providers: [
-                {provide: EtchedApiService, useValue: etchedApiSpy},
+                {provide: AuthService, useValue: authSpy},
                 {provide: Router, useValue: routerSpy},
             ]
         })
@@ -50,15 +51,15 @@ describe('LoginContainerComponent', () => {
     });
 
     it('logging in redirects to enter passphrase', fakeAsync(() => {
-        etchedApiSpy.login.and.returnValue(of({}));
+        authSpy.login.and.returnValue(Promise.resolve({}));
 
         const req: LoginRequest = {username: 'samsepiol', password: 'cisco'};
         component.onLogin(req);
 
         tick();
 
-        expect(etchedApiSpy.login).toHaveBeenCalledTimes(1);
-        expect(etchedApiSpy.login).toHaveBeenCalledWith('samsepiol', 'cisco');
+        expect(authSpy.login).toHaveBeenCalledTimes(1);
+        expect(authSpy.login).toHaveBeenCalledWith('samsepiol', 'cisco');
 
         expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
         expect(routerSpy.navigate).toHaveBeenCalledWith(['enter-passphrase']);

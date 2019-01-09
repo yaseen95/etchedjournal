@@ -15,6 +15,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
 import org.springframework.test.context.ContextConfiguration
@@ -29,7 +30,6 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import javax.transaction.Transactional
-import javax.ws.rs.core.MediaType
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -65,7 +65,7 @@ class JournalServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET journals - returns empty list when no journals`() {
         // Precondition - no journals should exist
         assertEquals(0, journalRepo.findByOwner(TESTER_USER_ID).toList().size)
@@ -76,7 +76,7 @@ class JournalServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET journals - returns created journal`() {
         val j = testRepoUtils.createJournal(
             id = "j1",
@@ -97,7 +97,7 @@ class JournalServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET journal - returns created journal`() {
         val j = testRepoUtils.createJournal(
             id = "j1",
@@ -117,7 +117,7 @@ class JournalServiceControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST journal - creates a journal`() {
         // Precondition - no journals should exist
         assertEquals(0, journalRepo.findByOwner(TESTER_USER_ID).toList().size)

@@ -17,3 +17,19 @@ export function sliceStr(s: string, sliceSize: number): Array<string> {
 
     return chunks;
 }
+
+export const RANDOM_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+export class RandomUtils {
+
+    static randomStr(length: number): string {
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+        const s = new Array<string>(length);
+        for (let i = 0; i < length; i++) {
+            const rand = Math.floor(Math.random() * RANDOM_CHARS.length);
+            s[i] = RANDOM_CHARS[rand];
+        }
+        return s.join('');
+    }
+}
+

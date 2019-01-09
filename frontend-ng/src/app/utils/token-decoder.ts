@@ -2,7 +2,7 @@
 import * as jwt_decode from 'jwt-decode';
 
 export class TokenDecoder {
-    public static decodeToken<T>(token: string): T {
+    public static decodeToken<T extends Token>(token: string): T {
         return jwt_decode<T>(token);
     }
 }
@@ -11,6 +11,10 @@ export interface AccessToken extends Token {
 }
 
 export interface RefreshToken extends Token {
+}
+
+export interface IdToken extends Token {
+    preferred_username: string;
 }
 
 export interface Token {

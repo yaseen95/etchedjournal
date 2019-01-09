@@ -1,9 +1,9 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { EtchedApiService } from '../../services/etched-api.service';
 import { FormBuilder } from '@angular/forms';
 import { EtchedUser } from '../../models/etched-user';
 import { PASSWORD_VALIDATORS, USERNAME_VALIDATORS } from '../form-utils';
 import { LoginRequest } from '../../services/dtos/login-request';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'login',
@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
     loginEmitter: EventEmitter<LoginRequest> = new EventEmitter();
 
     constructor(private fb: FormBuilder,
-                private etchedApiService: EtchedApiService) {
+                private authService: AuthService) {
         this.inFlight = false;
     }
 
@@ -40,6 +40,6 @@ export class LoginComponent implements OnInit {
     }
 
     get user(): EtchedUser | null {
-        return this.etchedApiService.getUser();
+        return this.authService.getUser();
     }
 }

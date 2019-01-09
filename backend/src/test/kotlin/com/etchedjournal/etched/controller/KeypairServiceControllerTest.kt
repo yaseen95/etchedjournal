@@ -14,6 +14,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
 import org.springframework.test.context.ContextConfiguration
@@ -28,7 +29,6 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import javax.transaction.Transactional
-import javax.ws.rs.core.MediaType
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -57,7 +57,7 @@ class KeypairServiceControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET keypairs`() {
         testRepo.createKeyPair(
             id = "k1",
@@ -95,7 +95,7 @@ class KeypairServiceControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET keypairs - no keys`() {
         mockMvc.perform(get("/api/v1/keypairs"))
             .andExpect(status().isOk)
@@ -110,7 +110,7 @@ class KeypairServiceControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET keypair`() {
         val keypair = testRepo.createKeyPair(
             id = "k1",
@@ -132,14 +132,14 @@ class KeypairServiceControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET keypair - not found`() {
         mockMvc.perform(get("/api/v1/keypairs/00000000-0000-0000-0000-000000000001"))
             .andExpect(status().isNotFound)
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET keypair - belongs to other user is forbidden`() {
         val keypair = testRepo.createKeyPair(id = "k1", owner = "somebody else")
 
@@ -165,7 +165,7 @@ class KeypairServiceControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST keypairs`() {
         val publicKey = PgpUtilsTest.TESTER_RSA_4096_OPENPGPJS_PUBLIC_KEY.replace("\n", "")
 
@@ -196,7 +196,7 @@ class KeypairServiceControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST keypairs - 2048 bit RSA key`() {
         val publicKey = PgpUtilsTest.TESTER_RSA_2048_OPENPGPJS_PUBLIC_KEY.replace("\n", "")
 
@@ -219,7 +219,7 @@ class KeypairServiceControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST keypairs - 4096 bit RSA key`() {
         val publicKey = PgpUtilsTest.TESTER_RSA_4096_OPENPGPJS_PUBLIC_KEY.replace("\n", "")
 
@@ -242,7 +242,7 @@ class KeypairServiceControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST keypairs - public key invalid format`() {
         mockMvc.perform(
             post("/api/v1/keypairs")
@@ -270,7 +270,7 @@ class KeypairServiceControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST keypairs - private key invalid format`() {
         mockMvc.perform(
             post("/api/v1/keypairs")
@@ -320,7 +320,7 @@ class KeypairServiceControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "tester", roles = ["user"])
+    @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST keypairs - public key has incorrect user id`() {
         // user id is "abcdef <abcdef@user.etchedjournal.com>" for this key
         // But we expect the id to use the uuids not the usernames

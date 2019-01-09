@@ -28,3 +28,20 @@ describe('ClockService', () => {
         expect(end).toBeGreaterThanOrEqual(actual);
     });
 });
+
+export class FakeClock extends ClockService {
+    public time: number;
+
+    constructor(time: number) {
+        super();
+        this.time = time;
+    }
+
+    nowMillis(): number {
+        return this.time;
+    }
+
+    now(): Date {
+        return new Date(this.time);
+    }
+}

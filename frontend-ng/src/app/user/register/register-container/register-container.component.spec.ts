@@ -12,6 +12,8 @@ import { Encrypter, KeyPair } from '../../../services/encrypter';
 import { EMPTY, of } from 'rxjs';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { CreateKeyPairRequest } from '../../../services/dtos/create-key-pair-request';
+import { AuthService } from '../../../services/auth.service';
+import TEST_USER = TestUtils.TEST_USER;
 
 describe('RegisterContainerComponent', () => {
     let component: RegisterContainerComponent;
@@ -21,13 +23,16 @@ describe('RegisterContainerComponent', () => {
     let encrypterGenKeySpy: any;
     let encrypterSymEncryptSpy: any;
     let encrypterFromSpy: any;
+    let authSpy: any;
 
     beforeEach(async(() => {
-        etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['register', 'login', 'createKeyPair', 'getUser']);
+        etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['createKeyPair']);
 
         encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt']);
         const encrypterService = new EncrypterService();
         encrypterService.encrypter = encrypterSpy;
+
+        authSpy = jasmine.createSpyObj('AuthService', ['getUser', 'register']);
 
         // Spy on the static methods of Encrypter
 
@@ -60,6 +65,7 @@ describe('RegisterContainerComponent', () => {
             providers: [
                 {provide: EtchedApiService, useValue: etchedApiSpy},
                 {provide: EncrypterService, useValue: encrypterService},
+                {provide: AuthService, useValue: authSpy},
             ]
         })
             .compileComponents();
@@ -120,26 +126,20 @@ describe('RegisterContainerComponent', () => {
         expect(h3De.nativeElement.innerText).toEqual('Finished registration');
     });
 
-    it('onRegister registers and logs in', fakeAsync(() => {
-        const regReq: RegisterRequest = {username: 'username', password: 'password', email: null};
+    it('onRegister registers', () => {
+        authSpy.register.and.returnValue(Promise.resolve({}));
 
         // TODO: Handle registration failing e.g. username taken, etc.
-        etchedApiSpy.register.and.returnValue(of({}));
-        etchedApiSpy.login.and.returnValue(of({}));
-
+        const regReq: RegisterRequest = {username: 'username', password: 'password', email: null};
         component.onRegister(regReq);
 
-        tick();
-
-        expect(etchedApiSpy.register).toHaveBeenCalledTimes(1);
-        expect(etchedApiSpy.register).toHaveBeenCalledWith('username', 'password', null);
-        expect(etchedApiSpy.login).toHaveBeenCalledTimes(1);
-        expect(etchedApiSpy.login).toHaveBeenCalledWith('username', 'password');
-    }));
+        expect(authSpy.register).toHaveBeenCalledTimes(1);
+        expect(authSpy.register).toHaveBeenCalledWith('username', 'password');
+    });
 
     it('onPassphraseConfigured e2e', fakeAsync(() => {
         // Mock out the user (the users id is used as part of the user details in the key)
-        etchedApiSpy.getUser.and.returnValue(TestUtils.TEST_USER);
+        authSpy.getUser.and.returnValue(TestUtils.TEST_USER);
 
         // Mock out the public/private keys
         let mockPubKeyPacket = {write: () => new Uint8Array([1, 2, 3, 4])};
