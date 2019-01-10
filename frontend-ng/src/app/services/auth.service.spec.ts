@@ -1,6 +1,11 @@
 import { getTestBed, TestBed } from '@angular/core/testing';
 
-import { AuthService, LOCAL_COGNITO_PREFIX } from './auth.service';
+import {
+    AuthService,
+    InvalidCredentialsError,
+    LOCAL_COGNITO_PREFIX,
+    UserNotFoundError
+} from './auth.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CognitoAuthFactory } from './cognito-auth-factory';
@@ -142,6 +147,40 @@ describe('AuthService', () => {
         mockAuth.currentSession.and.returnValue(Promise.resolve({}));
         await service.refreshIfExpired();
         expect(mockAuth.currentSession).toHaveBeenCalledTimes(1);
+    });
+
+    it('checkInvalidCredentialsError throws', () => {
+        const error = {code: 'NotAuthorizedException', message: 'Incorrect username or password.'};
+
+        try {
+            AuthService.checkInvalidCredentialsError(error);
+            fail('expected error to throw');
+        } catch (error) {
+            expect(error.message).toEqual(InvalidCredentialsError.MESSAGE);
+        }
+    });
+
+    it('checkInvalidCredentialsError doesnt throw', () => {
+        // should not throw if code and message don't match
+        const error = {code: 'NotAuthorizedException', message: 'baz'};
+        AuthService.checkInvalidCredentialsError(error);
+    });
+
+    it('checkInvalidCredentialsError throws', () => {
+        const error = {code: 'UserNotFoundException', message: 'User does not exist.'};
+
+        try {
+            AuthService.checkUserNotFoundError(error);
+            fail('expected error to throw');
+        } catch (error) {
+            expect(error.message).toEqual(UserNotFoundError.MESSAGE);
+        }
+    });
+
+    it('checkInvalidCredentialsError doesnt throw', () => {
+        // should not throw if code and message don't match
+        const error = {code: 'UserNotFoundException', message: 'baz'};
+        AuthService.checkUserNotFoundError(error);
     });
 });
 

@@ -6,26 +6,46 @@
         <div class="field">
             <div class="control">
                 <label class="label">Username</label>
-                <input
-                    class="input"
-                    type="text"
-                    placeholder="Username"
-                    name="username"
-                    formControlName="username"
-                    appAutoFocus
+                <!-- Enable autoFocus only if credentials aren't invalid-->
+                <input *ngIf="!invalidCredentials"
+                       class="input"
+                       type="text"
+                       placeholder="Username"
+                       name="username"
+                       formControlName="username"
+                       appAutoFocus
+                />
+                <input *ngIf="invalidCredentials"
+                       class="input"
+                       type="text"
+                       placeholder="Username"
+                       name="username"
+                       formControlName="username"
                 />
             </div>
         </div>
         <div class="field">
             <div class="control">
                 <label class="label">Password</label>
-                <input
+                <input *ngIf="!invalidCredentials"
                     class="input"
                     type="password"
                     placeholder="Password"
                     name="password"
                     formControlName="password"
                 />
+                <!-- autofocus on password if credentials were invalid -->
+                <input *ngIf="invalidCredentials"
+                       class="input"
+                       type="password"
+                       placeholder="Password"
+                       name="password"
+                       formControlName="password"
+                       appAutoFocus
+                />
+                <p *ngIf="invalidCredentials" class="help error-help">
+                    Invalid username or password
+                </p>
             </div>
         </div>
         <div class="field">
