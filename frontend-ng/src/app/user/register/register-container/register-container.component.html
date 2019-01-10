@@ -7,6 +7,13 @@
         <ng-container *ngIf="registerState === REGISTERING">
             <spinner [text]="'Registering'"></spinner>
         </ng-container>
+        <ng-container *ngIf="registerState === USERNAME_TAKEN">
+            <register (registerEmitter)="onRegister($event)"
+                      [usernameTaken]="true"
+                      [username]="username"
+            >
+            </register>
+        </ng-container>
         <ng-container *ngIf="registerState === ENTERING_PASSPHRASE">
             <app-configure-passphrase (passphraseEmitter)="onPassphraseConfigured($event)">
             </app-configure-passphrase>

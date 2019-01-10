@@ -114,7 +114,31 @@ describe('RegisterComponent', () => {
         expect(component.onSubmit).toHaveBeenCalledTimes(1);
     });
 
+    it('fills username field if username is taken', () => {
+        component.username = 'samsepiol';
+        component.usernameTaken = true;
+
+        component.ngOnInit();
+        fixture.detectChanges();
+
+        const de = fixture.debugElement;
+        const usernameInputDe = TestUtils.queryExpectOne(de, 'input[type=text]');
+        expect(usernameInputDe.nativeElement.value).toEqual('samsepiol');
+    });
+
+    it('displays error if username is taken', () => {
+        component.username = 'samsepiol';
+        component.usernameTaken = true;
+
+        component.ngOnInit();
+        fixture.detectChanges();
+
+        const de = fixture.debugElement;
+        const errorDe = TestUtils.queryExpectOne(de, 'p.error-help');
+        expect(errorDe.nativeElement.innerText).toEqual('Username is already taken');
+    });
+
     afterEach(() => {
         emittedEvents = [];
-    })
+    });
 });
