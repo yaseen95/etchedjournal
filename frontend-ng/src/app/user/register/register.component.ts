@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { PASSWORD_VALIDATORS, USERNAME_VALIDATORS } from '../form-utils';
 import { RegisterRequest } from '../../services/dtos/register-request';
@@ -19,10 +19,26 @@ export class RegisterComponent implements OnInit {
     @Output()
     registerEmitter: EventEmitter<RegisterRequest> = new EventEmitter();
 
+    /**
+     * Boolean indicating that the previous register attempt failed because the username was taken
+     */
+    @Input()
+    usernameTaken?: boolean;
+
+    /**
+     * The username a user attempted to register with previously. MUST be supplied if
+     * usernameTaken is supplied.
+     */
+    @Input()
+    username?: string;
+
     constructor(private fb: FormBuilder) {
     }
 
     ngOnInit() {
+        if (this.usernameTaken && this.username) {
+            this.registerForm.controls.username.setValue(this.username);
+        }
     }
 
     onSubmit() {

@@ -12,7 +12,7 @@ import { Encrypter, KeyPair } from '../../../services/encrypter';
 import { EMPTY, of } from 'rxjs';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { CreateKeyPairRequest } from '../../../services/dtos/create-key-pair-request';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService, UsernameTakenError } from '../../../services/auth.service';
 import TEST_USER = TestUtils.TEST_USER;
 
 describe('RegisterContainerComponent', () => {
@@ -179,5 +179,17 @@ describe('RegisterContainerComponent', () => {
         );
 
         expect(component.registerState).toEqual(component.UPLOADED_KEYS);
+    }));
+
+    it('register handles username already taken', fakeAsync(() => {
+        authSpy.register.and.returnValue(Promise.reject(new UsernameTakenError()));
+
+        const req: RegisterRequest = {username: 'samsepiol', password: 'password', email: ''};
+        component.onRegister(req);
+
+        tick();
+
+        expect(component.registerState).toEqual(component.USERNAME_TAKEN);
+        expect(component.username).toEqual('samsepiol');
     }));
 });
