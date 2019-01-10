@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { EtchedUser } from '../../models/etched-user';
 import { PASSWORD_VALIDATORS, USERNAME_VALIDATORS } from '../form-utils';
@@ -20,6 +20,12 @@ export class LoginComponent implements OnInit {
     /** login request is in flight */
     inFlight: boolean;
 
+    @Input()
+    invalidCredentials?: boolean;
+
+    @Input()
+    username?: string;
+
     @Output()
     loginEmitter: EventEmitter<LoginRequest> = new EventEmitter();
 
@@ -29,6 +35,10 @@ export class LoginComponent implements OnInit {
     }
 
     ngOnInit() {
+        if (this.username !== undefined) {
+            this.loginForm.controls.username.setValue(this.username);
+            this.loginForm.controls.password.setValue('');
+        }
     }
 
     onSubmit() {

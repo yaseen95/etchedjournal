@@ -40,10 +40,6 @@ describe('LoginComponent', () => {
         loginForm = component.loginForm;
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-
     it('form valid', () => {
         expect(loginForm.valid).toBeFalsy();
 
@@ -190,6 +186,19 @@ describe('LoginComponent', () => {
 
         // Paragraph should display logged in user
         expect(paragraphEl.textContent).toEqual('Logged in as user samsepiol');
+    });
+
+    it('displays error when credentials are invalid', () => {
+        component.invalidCredentials = true;
+        component.username = 'username';
+        component.ngOnInit();
+
+        fixture.detectChanges();
+
+        const loginElementDe: DebugElement = fixture.debugElement;
+        const paragraphDe = TestUtils.queryExpectOne(loginElementDe, 'p.error-help');
+        const paragraphEl = paragraphDe.nativeElement as HTMLParagraphElement;
+        expect(paragraphEl.innerText).toEqual('Invalid username or password');
     });
 
     afterEach(() => {

@@ -71,16 +71,24 @@ export class AuthService {
         };
     }
 
-    login(username: string, password: string): Promise<void> {
-        return this.auth.signIn(username, password)
-            .then(user => {
-                const token = user.getSignInUserSession().getIdToken();
-                this.user = {
-                    id: token.payload.sub,
-                    username: token.payload.preferred_username,
-                    email: null,
-                };
-            });
+    async login(username: string, password: string): Promise<void> {
+        let user: CognitoUser;
+        try {
+            user = await this.auth.signIn(username, password);
+        } catch (e) {
+            AuthService.checkInvalidCredentialsError(e);
+            AuthService.checkUserNotFoundError(e);
+
+            console.error(`Unexpected error ${JSON.stringify(e)}`);
+            throw new Error('Unexpected error when signing in');
+        }
+
+        const token = user.getSignInUserSession().getIdToken();
+        this.user = {
+            id: token.payload.sub,
+            username: token.payload.preferred_username,
+            email: null,
+        };
     }
 
     /**
@@ -114,7 +122,7 @@ export class AuthService {
         return AuthService.extractUserDetailsFromIdToken(userIdToken, clock);
     }
 
-    // Visible for testing
+    // @VisibleForTesting
     static extractUserDetailsFromIdToken(idToken: string, clock: ClockService): EtchedUser | null {
         const decoded = TokenDecoder.decodeToken<IdToken>(idToken);
         const tokenValid = this.refreshIsValid(decoded, clock);
@@ -134,7 +142,7 @@ export class AuthService {
         return user;
     }
 
-    // Visible for testing
+    // @VisibleForTesting
     static refreshIsValid(idToken: Token, clock: ClockService): boolean {
         // refresh expires 30 days after tokens
         // To simplify it (Yaseen being lazy), we consider refresh expiry to be 29 days after id
@@ -143,5 +151,54 @@ export class AuthService {
         const refreshExp = idExp + (29 * 24 * 60 * 60 * 1000);
         const now = clock.nowMillis();
         return now <= refreshExp;
+    }
+
+    // @VisibleForTesting
+    static checkInvalidCredentialsError(e: {code: string, message: string}) {
+        // Invalid password error is in the format below
+        // {
+        //   "code": "NotAuthorizedException",
+        //   "name": "NotAuthorizedException",
+        //   "message": "Incorrect username or password."
+        // }
+        if (e.code === 'NotAuthorizedException' && e.message === 'Incorrect username or' +
+            ' password.') {
+            throw new InvalidCredentialsError();
+        }
+    }
+
+    // @VisibleForTesting
+    static checkUserNotFoundError(e: {code: string, message: string}) {
+        // Response from Cognito is in the following format
+        // {
+        //   "code":"UserNotFoundException",
+        //   "name":"UserNotFoundException",
+        //   "message":"User does not exist."
+        // }
+
+        if (e.code === 'UserNotFoundException' && e.message === 'User does not exist.') {
+            throw new UserNotFoundError();
+        }
+    }
+}
+
+export class AuthError extends Error {
+    constructor(message?: string) {
+        super(message);
+    }
+}
+export class InvalidCredentialsError extends AuthError {
+    public static MESSAGE = 'InvalidCredentialsError';
+
+    constructor() {
+        super(InvalidCredentialsError.MESSAGE);
+    }
+}
+
+export class UserNotFoundError extends AuthError {
+    public static MESSAGE = 'UserNotFoundError';
+
+    constructor() {
+        super(UserNotFoundError.MESSAGE);
     }
 }

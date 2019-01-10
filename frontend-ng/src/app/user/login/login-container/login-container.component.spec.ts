@@ -9,7 +9,11 @@ import { EtchedApiService } from '../../../services/etched-api.service';
 import { of } from 'rxjs';
 import { LoginRequest } from '../../../services/dtos/login-request';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../services/auth.service';
+import {
+    AuthService,
+    InvalidCredentialsError,
+    UserNotFoundError
+} from '../../../services/auth.service';
 
 describe('LoginContainerComponent', () => {
     let component: LoginContainerComponent;
@@ -63,5 +67,37 @@ describe('LoginContainerComponent', () => {
 
         expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
         expect(routerSpy.navigate).toHaveBeenCalledWith(['enter-passphrase']);
+    }));
+
+    it('InvalidCredentialsError is handled', fakeAsync(() => {
+        // Preconditions
+        expect(component.loginState).not.toEqual(component.INVALID_CREDENTIALS);
+        expect(component.username).not.toEqual('samsepiol');
+
+        authSpy.login.and.returnValue(Promise.reject(new InvalidCredentialsError()));
+
+        const req: LoginRequest = {username: 'samsepiol', password: 'cisco'};
+        component.onLogin(req);
+
+        tick();
+
+        expect(component.loginState).toEqual(component.INVALID_CREDENTIALS);
+        expect(component.username).toEqual('samsepiol');
+    }));
+
+    it('UserNotFoundError is handled', fakeAsync(() => {
+        // Preconditions
+        expect(component.loginState).not.toEqual(component.INVALID_CREDENTIALS);
+        expect(component.username).not.toEqual('samsepiol');
+
+        authSpy.login.and.returnValue(Promise.reject(new UserNotFoundError()));
+
+        const req: LoginRequest = {username: 'samsepiol', password: 'cisco'};
+        component.onLogin(req);
+
+        tick();
+
+        expect(component.loginState).toEqual(component.INVALID_CREDENTIALS);
+        expect(component.username).toEqual('samsepiol');
     }));
 });

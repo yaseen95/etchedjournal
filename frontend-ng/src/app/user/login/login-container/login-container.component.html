@@ -4,6 +4,12 @@
             <login (loginEmitter)="onLogin($event)">
             </login>
         </ng-container>
+        <ng-container *ngIf="loginState === INVALID_CREDENTIALS">
+            <login (loginEmitter)="onLogin($event)"
+                   [invalidCredentials]="true"
+                   [username]="username">
+            </login>
+        </ng-container>
         <ng-container *ngIf="loginState === LOGGING_IN">
             <spinner [text]="'Logging in'"></spinner>
         </ng-container>
