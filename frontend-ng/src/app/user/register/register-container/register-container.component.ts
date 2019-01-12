@@ -5,7 +5,7 @@ import { Encrypter, KeyPair } from '../../../services/encrypter';
 import * as openpgp from 'openpgp';
 import { EncrypterService } from '../../../services/encrypter.service';
 import { Base64Str } from '../../../models/encrypted-entity';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService, UsernameTakenError } from '../../../services/auth.service';
 
 export namespace RegisterState {
 }
@@ -19,12 +19,19 @@ export class RegisterContainerComponent implements OnInit {
 
     NOT_REGISTERED = 'NOT_REGISTERED';
     REGISTERING = 'REGISTERING';
+    USERNAME_TAKEN = 'USERNAME_TAKEN';
     ENTERING_PASSPHRASE = 'ENTERING_PASSPHRASE';
     CREATING_KEYS = 'CREATING_KEYS';
     UPLOADING_KEYS = 'UPLOADING_KEYS';
     UPLOADED_KEYS = 'UPLOADED_KEYS';
 
     registerState: string;
+
+    /**
+     * Used by RegisterComponent to display the username if they attempt to register with a
+     * taken username.
+     */
+    username: string;
 
     constructor(private etchedApi: EtchedApiService,
                 private encrypterService: EncrypterService,
@@ -42,6 +49,12 @@ export class RegisterContainerComponent implements OnInit {
         this.authService.register(req.username, req.password)
             .then(() => {
                 this.registerState = this.ENTERING_PASSPHRASE;
+            })
+            .catch(e => {
+                if (e.message === UsernameTakenError.MESSAGE) {
+                    this.registerState = this.USERNAME_TAKEN;
+                }
+                this.username = req.username;
             });
     }
 

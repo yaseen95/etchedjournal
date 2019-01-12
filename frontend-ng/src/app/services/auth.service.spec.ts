@@ -1,11 +1,6 @@
 import { getTestBed, TestBed } from '@angular/core/testing';
 
-import {
-    AuthService,
-    InvalidCredentialsError,
-    LOCAL_COGNITO_PREFIX,
-    UserNotFoundError
-} from './auth.service';
+import { AuthService, LOCAL_COGNITO_PREFIX, UsernameTakenError } from './auth.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CognitoAuthFactory } from './cognito-auth-factory';
@@ -119,8 +114,9 @@ describe('AuthService', () => {
         expect(mockAuth.signUp).toHaveBeenCalledTimes(1);
         expect(mockAuth.signUp).toHaveBeenCalledWith({username: 'random', password: 'password'});
 
-        expect(mockAuth.signIn).toHaveBeenCalledTimes(1);
-        expect(mockAuth.signIn).toHaveBeenCalledWith('random', 'password');
+        expect(mockAuth.signIn).toHaveBeenCalledTimes(2);
+        expect(mockAuth.signIn.calls.allArgs())
+            .toEqual([['samsepiol', 'abc'], ['random', 'password']]);
 
         expect(mockAuth.updateUserAttributes)
             .toHaveBeenCalledWith(signInResult, {preferred_username: 'samsepiol'});
@@ -149,38 +145,64 @@ describe('AuthService', () => {
         expect(mockAuth.currentSession).toHaveBeenCalledTimes(1);
     });
 
-    it('checkInvalidCredentialsError throws', () => {
-        const error = {code: 'NotAuthorizedException', message: 'Incorrect username or password.'};
+    it('register checks if username is taken first', async () => {
+        const existsSpy = spyOn(service, 'userExists');
+        existsSpy.and.returnValue(Promise.resolve(true));
 
         try {
-            AuthService.checkInvalidCredentialsError(error);
-            fail('expected error to throw');
-        } catch (error) {
-            expect(error.message).toEqual(InvalidCredentialsError.MESSAGE);
+            await service.register('samsepiol', 'password');
+            fail('Expected register to throw');
+        } catch (e) {
+            expect(e.message).toEqual(UsernameTakenError.MESSAGE);
         }
     });
 
-    it('checkInvalidCredentialsError doesnt throw', () => {
+    it('userExists true', async () => {
+        const err = {code: 'NotAuthorizedException', message: 'Incorrect username or password.'};
+        mockAuth.signIn.and.returnValue(Promise.reject(err));
+        let result = await service.userExists('samsepiol');
+        expect(result).toBeTruthy();
+    });
+
+    it('userExists false', async () => {
+        const err = {code: 'UserNotFoundException', message: 'User does not exist.'};
+        mockAuth.signIn.and.returnValue(Promise.reject(err));
+        let result = await service.userExists('samsepiol');
+        expect(result).toBeFalsy();
+    });
+
+    it('userExists attempts to sign in with invalid password', async () => {
+        const err = {code: 'UserNotFoundException', message: 'User does not exist.'};
+        mockAuth.signIn.and.returnValue(Promise.reject(err));
+
+        await service.userExists('samsepiol');
+
+        expect(mockAuth.signIn).toHaveBeenCalledTimes(1);
+        // signs in with known invalid password 'abc'
+        // passwords are configured to be at least 8 characters
+        expect(mockAuth.signIn).toHaveBeenCalledWith('samsepiol', 'abc');
+    });
+
+    it('isInvalidCredentialsError true', () => {
+        const error = {code: 'NotAuthorizedException', message: 'Incorrect username or password.'};
+        expect(AuthService.isInvalidCredentialsError(error)).toBeTruthy();
+    });
+
+    it('isInvalidCredentialsError false', () => {
         // should not throw if code and message don't match
         const error = {code: 'NotAuthorizedException', message: 'baz'};
-        AuthService.checkInvalidCredentialsError(error);
+        expect(AuthService.isInvalidCredentialsError(error)).toBeFalsy();
     });
 
-    it('checkInvalidCredentialsError throws', () => {
+    it('isInvalidCredentialsError true', () => {
         const error = {code: 'UserNotFoundException', message: 'User does not exist.'};
-
-        try {
-            AuthService.checkUserNotFoundError(error);
-            fail('expected error to throw');
-        } catch (error) {
-            expect(error.message).toEqual(UserNotFoundError.MESSAGE);
-        }
+        expect(AuthService.isUserNotFoundError(error)).toBeTruthy();
     });
 
-    it('checkInvalidCredentialsError doesnt throw', () => {
+    it('isInvalidCredentialsError false', () => {
         // should not throw if code and message don't match
         const error = {code: 'UserNotFoundException', message: 'baz'};
-        AuthService.checkUserNotFoundError(error);
+        expect(AuthService.isUserNotFoundError(error)).toBeFalsy();
     });
 });
 

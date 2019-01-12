@@ -16,6 +16,10 @@
                     formControlName="username"
                     appAutoFocus
                 />
+                <p *ngIf="usernameTaken" class="help error-help">
+                    Username is already taken
+                    <!--TODO: Prevent register again with the same error -->
+                </p>
             </div>
         </div>
         <!--<div class="field">-->
