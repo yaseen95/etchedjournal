@@ -14,63 +14,6 @@ backspace. It feels like a cool enough idea to implement.
 User content is encrypted using PGP keys. The PGP keys are generated client side and are stored 
 encrypted by a *(strong)* user passphrase. All content is signed with the private key.
 
-## Keycloak
-Keycloak is used as the backend auth service
-
-To run keycloak:
-```bash
-docker run -d \
-  --name keycloak \
-  -e KEYCLOAK_USER=admin \
-  -e KEYCLOAK_PASSWORD=admin \
-  -p 9001:8080 \
-  jboss/keycloak 
-```
-### Setup
-#### Manual Setup
-1. Open `http://localhost:9001/auth/admin/master/console`
-2. Login as an admin with the credentials you supplied at runtime
-3. On the left panel, hover over "Master" and click the "Add realm" button
-4. Using the file import option, import `config/keycloak/realm-export.json`. After an import, the
-realm on the left side should now show "Etched" where it showed "Master" in the previous step.
-**NOTE**: Because the keycloak export by default doesn't include the client secret, edit the value
-before importing it or generate a new secret from the Admin interface in the `Credentials` tab of
-the `etched-backend` client.
-5. Due to [KEYCLOAK-5202](https://issues.jboss.org/browse/KEYCLOAK-5202) the required client roles
-aren't exported. To add the client roles:   
-   1. Select `clients` from the left hand side
-   2. Select `etched-backend` from the list
-   3. Select `Service Account Roles` tab
-   4. From the `Client roles` dropdown, select `realm-management`
-   5. Add `manage-users`, `view-users`, and `view-realm` roles
-
-#### CLI Setup
-As an alternative to the above steps, you can execute the following commands.
-```bash
-# Copy file into docker container
-docker cp config/keycloak/realm-export.json keycloak:/opt/jboss/
-
-# Enter docker container - cwd should be /opt/jboss/
-docker exec -it keycloak /bin/bash
-
-ADMIN_CMD="/opt/jboss/keycloak/bin/kcadm.sh"
-
-# Login as admin
-$ADMIN_CMD config credentials \
-  --server http://localhost:8080/auth \
-  --realm master \
-  --user admin \
-  --password admin
-
-# Import 'etched' realm
-# NOTE: See step 4 of manual steps regarding client secret. Specify secret in file or generate new. 
-$ADMIN_CMD create realms -f realm-export.json
-
-# TODO: Add CLI steps for fixing service account role issue
-```
-7. Should be all setup now. To make sure everything works, import the postman config and start
-playing with the REST API.
-
 ## Postman
 Postman config files are also stored in `config/postman/`. It makes it easy to test and verify API
 functionality.
