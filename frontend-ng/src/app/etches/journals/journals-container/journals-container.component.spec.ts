@@ -112,7 +112,7 @@ describe('JournalsContainerComponent', () => {
         expect(component.state).toEqual(component.DECRYPTED);
 
         // Decrypted content is displayed as the journal title
-        const listItemDes = fixture.debugElement.queryAll(By.css('h4.journal-title'));
+        const listItemDes = fixture.debugElement.queryAll(By.css('.journal-title'));
         expect(listItemDes.length).toEqual(2);
         expect(listItemDes[0].nativeElement.innerText).toEqual('dec1');
         expect(listItemDes[1].nativeElement.innerText).toEqual('dec2');

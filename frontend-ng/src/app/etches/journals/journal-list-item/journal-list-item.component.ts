@@ -11,9 +11,12 @@ export class JournalListItemComponent implements OnInit {
     @Input()
     journal: JournalEntity;
 
+    date: string;
+
     constructor() {
     }
 
     ngOnInit() {
+        this.date = new Date(this.journal.timestamp).toLocaleDateString();
     }
 }

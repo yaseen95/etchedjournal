@@ -8,8 +8,13 @@ import { Title } from '@angular/platform-browser';
 })
 export class AppComponent {
     title = 'Etched - Encrypted Journal';
+    burgerIsActive: boolean = false;
 
     public constructor(private titleService: Title) {
         this.titleService.setTitle(this.title);
+    }
+
+    toggleBurgerMenu() {
+        this.burgerIsActive = !this.burgerIsActive;
     }
 }

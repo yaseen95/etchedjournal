@@ -1,0 +1,8 @@
+a.title.is-4 {
+    margin-bottom: 0;
+}
+
+/* Disable blue underline when hovering over title */
+#navbar-title:hover {
+    color: inherit;
+}
