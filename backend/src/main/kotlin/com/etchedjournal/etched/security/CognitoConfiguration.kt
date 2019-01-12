@@ -36,9 +36,13 @@ class CognitoConfiguration {
 
     @Bean
     fun jwkProvider(
-        @Value("\${com.etchedjournal.auth.jwk.url}") jwkUrl: String
+        @Value("\${com.etchedjournal.auth.cognito.userpoolid}") userPoolId: String
     ): JwkProvider {
-        val url = URL(jwkUrl)
+        // https://aws.amazon.com/premiumsupport/knowledge-center/decode-verify-cognito-json-token/
+        // URL of jwks.json is derived using
+        // https://cognito-idp.{aws region}.amazonaws.com/{user pool id}/.well-known/jwks.json
+        val region = userPoolId.split("_")[0]
+        val url = URL("https://cognito-idp.$region.amazonaws.com/$userPoolId/.well-known/jwks.json")
         return JwkProviderBuilder(url).cached(true).build()
     }
 }

@@ -1,0 +1,106 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Cognito Stack
+
+Parameters:
+  Flavor:
+    Type: String
+    Description: Flavor of deployment
+    AllowedValues: ['dev', 'staging', 'prod']
+
+Resources:
+  AutoConfirmLambdaExecutionRole:
+    # Based off of https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-lambda.html
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: !Sub '${Flavor}-auto-confirm-lambda-role-policy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              # Have to specify a policy in order to create the log group
+              # We just set a deny
+              - Effect: Deny
+                Action:
+                  - s3:ListBuckets
+                Resource: arn:aws:s3:::*
+
+  AutoConfirmLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: >
+          exports.handler = (event, context, callback) => {
+            // https://apimeister.com/2016/11/11/auto-confirming-a-newly-created-cognito-user.html
+            event.response.autoConfirmUser = true;
+            callback(null, event);
+          };
+      FunctionName: !Sub '${Flavor}-cognito-auto-confirm-lambda'
+      Handler: 'index.handler'
+      Role: !GetAtt AutoConfirmLambdaExecutionRole.Arn
+      Runtime: 'nodejs8.10'
+
+  AutoConfirmLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:invokeFunction
+      Principal: cognito-idp.amazonaws.com
+      FunctionName: !Ref AutoConfirmLambda
+      SourceArn: !GetAtt UserPool.Arn
+
+  # Creates a user pool in cognito for your app to auth against
+  # This example requires MFA and validates the phone number to use as MFA
+  # Other fields can be added to the schema
+
+  # SMS configuration is required when MFA is required/optional and phone_number is selected for
+  # auto verification (Service: AWSCognitoIdentityProvider; Status Code: 400; Error Code:
+  # InvalidParameterException; Request ID: 91fc8ffd-14cd-11e9-a94f-e375025f0739)
+
+  UserPool:
+    Type: "AWS::Cognito::UserPool"
+    Properties:
+      UserPoolName: !Sub '${Flavor}-user-pool'
+      AliasAttributes:
+        - preferred_username
+        - email
+      AutoVerifiedAttributes: []
+      # We're disabling mfa configuration because we can't enable it for TOTP only atm
+      # https://github.com/awsdocs/aws-cloudformation-user-guide/issues/73
+      # We can make it optional in the future anyway once we support MFA.
+      MfaConfiguration: 'OFF'
+      LambdaConfig:
+        PreSignUp: !GetAtt AutoConfirmLambda.Arn
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: false
+          RequireNumbers: false
+          RequireSymbols: false
+          RequireUppercase: false
+
+  # Creates a User Pool Client to be used by the identity pool
+  UserPoolClient:
+    Type: "AWS::Cognito::UserPoolClient"
+    Properties:
+      ClientName: !Sub '${Flavor}-user-pool-client'
+      GenerateSecret: false
+      UserPoolId: !Ref UserPool
+
+Outputs:
+  UserPoolId:
+    Value: !Ref UserPool
+    Export:
+      Name: 'UserPoolId'
+  UserPoolClientId:
+    Value: !Ref UserPoolClient
+    Export:
+      Name: 'UserPoolClient'
