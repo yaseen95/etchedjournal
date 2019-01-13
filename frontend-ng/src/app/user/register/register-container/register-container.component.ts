@@ -6,9 +6,8 @@ import * as openpgp from 'openpgp';
 import { EncrypterService } from '../../../services/encrypter.service';
 import { Base64Str } from '../../../models/encrypted-entity';
 import { AuthService, UsernameTakenError } from '../../../services/auth.service';
-
-export namespace RegisterState {
-}
+import { Router } from '@angular/router';
+import { EtchedRoutes } from '../../../app-routing-utils';
 
 @Component({
     selector: 'app-register-container',
@@ -35,7 +34,8 @@ export class RegisterContainerComponent implements OnInit {
 
     constructor(private etchedApi: EtchedApiService,
                 private encrypterService: EncrypterService,
-                private authService: AuthService) {
+                private authService: AuthService,
+                private router: Router) {
         this.registerState = this.NOT_REGISTERED;
     }
 
@@ -113,8 +113,11 @@ export class RegisterContainerComponent implements OnInit {
         this.registerState = this.UPLOADING_KEYS;
         this.etchedApi.createKeyPair({publicKey, privateKey, salt, iterations})
             .subscribe(result => {
-                this.registerState = this.UPLOADED_KEYS;
                 this.encrypterService.encrypter.keyPairId = result.id;
+                // navigate to journal creation page once registered
+                // noinspection JSIgnoredPromiseFromCall
+                this.router.navigate([EtchedRoutes.JOURNALS_CREATE_PATH]);
+                this.registerState = this.UPLOADED_KEYS;
             });
         // TODO: Handle error
     }
