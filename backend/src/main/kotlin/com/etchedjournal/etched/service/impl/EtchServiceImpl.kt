@@ -65,7 +65,7 @@ class EtchServiceImpl(
                 keyPairId = keyPair.id
             )
         }
-        return etchRepository.save(newEtches).toList()
+        return etchRepository.saveAll(newEtches).toList()
     }
 
     companion object {
