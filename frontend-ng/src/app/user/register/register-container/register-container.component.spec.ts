@@ -14,6 +14,8 @@ import { TestUtils } from '../../../utils/test-utils.spec';
 import { CreateKeyPairRequest } from '../../../services/dtos/create-key-pair-request';
 import { AuthService, UsernameTakenError } from '../../../services/auth.service';
 import TEST_USER = TestUtils.TEST_USER;
+import { Router } from '@angular/router';
+import { EtchedRoutes } from '../../../app-routing-utils';
 
 describe('RegisterContainerComponent', () => {
     let component: RegisterContainerComponent;
@@ -24,6 +26,7 @@ describe('RegisterContainerComponent', () => {
     let encrypterSymEncryptSpy: any;
     let encrypterFromSpy: any;
     let authSpy: any;
+    let routerSpy: any;
 
     beforeEach(async(() => {
         etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['createKeyPair']);
@@ -33,6 +36,7 @@ describe('RegisterContainerComponent', () => {
         encrypterService.encrypter = encrypterSpy;
 
         authSpy = jasmine.createSpyObj('AuthService', ['getUser', 'register']);
+        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
         // Spy on the static methods of Encrypter
 
@@ -66,6 +70,7 @@ describe('RegisterContainerComponent', () => {
                 {provide: EtchedApiService, useValue: etchedApiSpy},
                 {provide: EncrypterService, useValue: encrypterService},
                 {provide: AuthService, useValue: authSpy},
+                {provide: Router, useValue: routerSpy},
             ]
         })
             .compileComponents();
@@ -117,13 +122,6 @@ describe('RegisterContainerComponent', () => {
         fixture.detectChanges();
         const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'spinner');
         expect(spinnerDe.nativeElement.innerText).toEqual('Uploading keys');
-    });
-
-    it('displays keys uploaded when state is UPLOADED_KEYS', () => {
-        component.registerState = component.UPLOADED_KEYS;
-        fixture.detectChanges();
-        const h3De = TestUtils.queryExpectOne(fixture.debugElement, 'h3');
-        expect(h3De.nativeElement.innerText).toEqual('Finished registration');
     });
 
     it('onRegister registers', () => {
@@ -178,6 +176,9 @@ describe('RegisterContainerComponent', () => {
             }
         );
 
+        // Then redirects ot the journals creation page
+        expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
+        expect(routerSpy.navigate).toHaveBeenCalledWith([EtchedRoutes.JOURNALS_CREATE_PATH]);
         expect(component.registerState).toEqual(component.UPLOADED_KEYS);
     }));
 
