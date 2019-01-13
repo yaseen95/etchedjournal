@@ -79,12 +79,12 @@ dependencies {
     compile('org.hibernate:hibernate-java8:5.0.12.Final')
 
     // PGP libraries
-    implementation("org.bouncycastle:bcpg-jdk15on:${bouncyCastleVersion}")
-    implementation("org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}")
+    compile("org.bouncycastle:bcpg-jdk15on:${bouncyCastleVersion}")
+    compile("org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}")
 
     // JWT libraries
-    implementation("com.auth0:java-jwt:${auth0JavaJwtVersion}")
-    implementation("com.auth0:jwks-rsa:${auth0JwksRsaVersion}")
+    compile("com.auth0:java-jwt:${auth0JavaJwtVersion}")
+    compile("com.auth0:jwks-rsa:${auth0JwksRsaVersion}")
 
     runtime("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
     runtime("com.h2database:h2:${h2Version}")
