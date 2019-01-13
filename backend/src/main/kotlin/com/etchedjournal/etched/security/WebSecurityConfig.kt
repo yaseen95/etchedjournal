@@ -28,7 +28,7 @@ class WebSecurityConfig(
     fun corsConfigurationSource(): CorsConfigurationSource {
         // https://github.com/spring-projects/spring-boot/issues/5834#issuecomment-296370088
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("http://localhost:4200")
+        configuration.allowedOrigins = listOf("*")
         configuration.allowedMethods = listOf("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH")
         configuration.allowedHeaders = listOf("Authorization", "Cache-Control", "Content-Type")
         val source = UrlBasedCorsConfigurationSource()
