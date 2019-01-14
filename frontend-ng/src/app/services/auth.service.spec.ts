@@ -30,7 +30,8 @@ describe('AuthService', () => {
 
         tokenDecoderSpy = spyOn(TokenDecoder, 'decodeToken');
 
-        mockAuth = jasmine.createSpyObj('Auth', ['signIn', 'signUp', 'updateUserAttributes', 'currentSession']);
+        mockAuth = jasmine.createSpyObj('Auth',
+            ['signIn', 'signUp', 'updateUserAttributes', 'currentSession', 'signOut']);
 
         authFactory = jasmine.createSpyObj('CognitoAuthFactory', ['create']);
         authFactory.create.and.returnValue(mockAuth);
@@ -137,6 +138,31 @@ describe('AuthService', () => {
 
         expect(mockAuth.signIn).toHaveBeenCalledTimes(1);
         expect(mockAuth.signIn).toHaveBeenCalledWith('cisco', 'password');
+    });
+
+    it('logout signs out and resets user', async () => {
+        // perform a login to set the user first
+        const token = {payload: {sub: '123', preferred_username: 'samsepiol'}};
+        const session = {getIdToken: () => token};
+        let signInResult = {getSignInUserSession: () => session};
+        mockAuth.signIn.and.returnValue(Promise.resolve(signInResult));
+        await service.login('cisco', 'password');
+        expect(service.getUser()).not.toBeNull();
+
+        // log the user out
+        mockAuth.signOut.and.returnValue(Promise.resolve());
+        await service.logout();
+        expect(service.getUser()).toBeNull();
+        expect(mockAuth.signOut).toHaveBeenCalledTimes(1);
+    });
+
+    it('logout clears local storage', async () => {
+        // TODO: Should we clear local storage on logout?
+        localStorage.setItem('foo', 'bar');
+        localStorage.setItem('bar', 'baz');
+        mockAuth.signOut.and.returnValue(Promise.resolve());
+        await service.logout();
+        expect(Object.keys(localStorage).length).toEqual(0);
     });
 
     it('refreshIfExpired refreshes tokens', async () => {

@@ -110,6 +110,13 @@ export class AuthService {
         return this.user;
     }
 
+    async logout() {
+        await this.auth.signOut();
+        this.user = null;
+        // TODO: Should we clear everything from local storage?
+        localStorage.clear();
+    }
+
     public refreshIfExpired(): Promise<CognitoUserSession> {
         // current session will refresh the tokens if they're close to expiring
         return this.auth.currentSession();
