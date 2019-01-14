@@ -10,6 +10,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { EditorContainerComponent } from './etches/editor/editor-container.component';
 import { EntryTitleComponent } from './etches/editor/entry-title/entry-title.component';
 import { EntryEditorComponent } from './etches/editor/entry-editor/entry-editor.component';
+import { NavComponent } from './nav/nav.component';
 
 describe('AppComponent', () => {
     beforeEach(async(() => {
@@ -22,6 +23,7 @@ describe('AppComponent', () => {
                 EditorContainerComponent,
                 EntryTitleComponent,
                 EntryEditorComponent,
+                NavComponent,
             ],
             imports: [
                 RouterTestingModule,
@@ -36,12 +38,6 @@ describe('AppComponent', () => {
         const fixture = TestBed.createComponent(AppComponent);
         const app = fixture.debugElement.componentInstance;
         expect(app).toBeTruthy();
-    });
-
-    it(`should have as title 'frontend-ng'`, () => {
-        const fixture = TestBed.createComponent(AppComponent);
-        const app = fixture.debugElement.componentInstance;
-        expect(app.title).toEqual('Etched - Encrypted Journal');
     });
 
     // it('should render title in a h1 tag', () => {
