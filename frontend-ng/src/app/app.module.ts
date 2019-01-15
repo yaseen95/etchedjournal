@@ -26,12 +26,14 @@ import { JournalListItemComponent } from './etches/journals/journal-list-item/jo
 import { CreateJournalComponent } from './etches/journals/create-journal/create-journal.component';
 import { EnterPassphraseContainer } from './user/passphrase/enter-passphrase/enter-passphrase-container/enter-passphrase-container.component';
 import { AuthInterceptor } from './auth/auth.interceptor';
+import { NavComponent } from './nav/nav.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         LoginComponent,
         SpinnerComponent,
+        NavComponent,
 
         // Editor components
         EditorContainerComponent,
@@ -71,7 +73,7 @@ import { AuthInterceptor } from './auth/auth.interceptor';
     ],
     providers: [
         Title,
-        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+        {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     ],
     bootstrap: [AppComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

@@ -1,37 +1,4 @@
-<nav class="navbar" role="navigation" aria-label="main navigation">
-    <div class="container">
-        <div class="navbar-brand">
-            <a class="navbar-item title is-4" id="navbar-title" href="/">
-                Etched Journal
-            </a>
-
-            <a role="button"
-               class="navbar-burger burger"
-               aria-label="menu"
-               aria-expanded="false"
-               [ngClass]="{'is-active': burgerIsActive}"
-               (click)="toggleBurgerMenu()"
-            >
-                <!--three spans show three lines on the burger menu-->
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-            </a>
-        </div>
-
-        <div class="navbar-menu"
-             [ngClass]="{'is-active': burgerIsActive}"
-        >
-            <div class="navbar-start">
-                <a class="navbar-item" routerLink="/journals">Journals</a>
-            </div>
-            <div class="navbar-end">
-                <a class="navbar-item" routerLink="/register">Sign Up</a>
-                <a class="navbar-item" routerLink="/login">Login</a>
-            </div>
-        </div>
-    </div>
-</nav>
+<app-nav></app-nav>
 <section class="section">
     <div class="container">
         <router-outlet></router-outlet>
