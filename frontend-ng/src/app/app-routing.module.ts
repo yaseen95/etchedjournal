@@ -19,7 +19,7 @@ export const ALL_ROUTES: Routes = [
     //
     // UNAUTHENTICATED ROUTES
     //
-    {path: '', redirectTo: EtchedRoutes.LOGIN_PATH, pathMatch: 'full'},
+    {path: '', redirectTo: EtchedRoutes.JOURNALS_PATH, pathMatch: 'full'},
     {path: EtchedRoutes.LOGIN_PATH, component: LoginContainerComponent},
     {path: EtchedRoutes.REGISTER_PATH, component: RegisterContainerComponent},
 
