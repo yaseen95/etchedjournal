@@ -111,6 +111,7 @@ export class AuthService {
     }
 
     async logout() {
+        console.info('logging out');
         await this.auth.signOut();
         this.user = null;
         // TODO: Should we clear everything from local storage?

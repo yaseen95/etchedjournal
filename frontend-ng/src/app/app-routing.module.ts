@@ -12,6 +12,7 @@ import { JournalsContainerComponent } from './etches/journals/journals-container
 import { CreateJournalComponent } from './etches/journals/create-journal/create-journal.component';
 import { EnterPassphraseContainer } from './user/passphrase/enter-passphrase/enter-passphrase-container/enter-passphrase-container.component';
 import { PassphraseGuard } from './user/passphrase/passphrase.guard';
+import { LogoutComponent } from './user/logout/logout.component';
 
 const GUARDS = [AuthGuard, PassphraseGuard];
 
@@ -34,6 +35,12 @@ export const ALL_ROUTES: Routes = [
     {
         path: EtchedRoutes.ENTER_PASSPHRASE_PATH,
         component: EnterPassphraseContainer,
+        canActivate: [AuthGuard],
+    },
+    {
+        path: EtchedRoutes.LOGOUT_PATH,
+        component: LogoutComponent,
+        // TODO: Do we need to be logged in, in order to logout
         canActivate: [AuthGuard],
     },
 

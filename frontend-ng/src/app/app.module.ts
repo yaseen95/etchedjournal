@@ -27,6 +27,7 @@ import { CreateJournalComponent } from './etches/journals/create-journal/create-
 import { EnterPassphraseContainer } from './user/passphrase/enter-passphrase/enter-passphrase-container/enter-passphrase-container.component';
 import { AuthInterceptor } from './auth/auth.interceptor';
 import { NavComponent } from './nav/nav.component';
+import { LogoutComponent } from './user/logout/logout.component';
 
 @NgModule({
     declarations: [
@@ -34,6 +35,7 @@ import { NavComponent } from './nav/nav.component';
         LoginComponent,
         SpinnerComponent,
         NavComponent,
+        LogoutComponent,
 
         // Editor components
         EditorContainerComponent,

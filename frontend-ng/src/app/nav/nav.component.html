@@ -31,7 +31,7 @@
                     <a id="login-btn" class="navbar-item" routerLink="/login">Login</a>
                 </ng-container>
                 <ng-container *ngIf="user !== null">
-                    <a id="logout-btn" class="navbar-item" (click)="logout()">Logout</a>
+                    <a id="logout-btn" class="navbar-item" routerLink="/logout">Logout</a>
                 </ng-container>
             </div>
         </div>
