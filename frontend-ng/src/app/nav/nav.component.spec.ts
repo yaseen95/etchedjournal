@@ -9,18 +9,15 @@ import TEST_USER = TestUtils.TEST_USER;
 describe('NavComponent', () => {
     let component: NavComponent;
     let fixture: ComponentFixture<NavComponent>;
-    let routerSpy: any;
     let authSpy: any;
 
     beforeEach(async(() => {
         authSpy = jasmine.createSpyObj('AuthService', ['getUser', 'logout']);
-        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
         TestBed.configureTestingModule({
             declarations: [NavComponent],
             providers: [
                 {provide: AuthService, useValue: authSpy},
-                {provide: Router, useValue: routerSpy},
             ]
         })
             .compileComponents();
@@ -31,20 +28,6 @@ describe('NavComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
-
-    it('logout logs out from auth service', () => {
-        authSpy.logout.and.returnValue(Promise.resolve());
-        component.logout();
-        expect(authSpy.logout).toHaveBeenCalledTimes(1);
-    });
-
-    it('logout redirects to home page after logging out', fakeAsync(() => {
-        authSpy.logout.and.returnValue(Promise.resolve());
-        component.logout();
-        tick();
-        expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
-    }));
 
     it('toggling burger menu active updates classes', () => {
         // Preconditions - not active when `burgerIsActive` is false.
