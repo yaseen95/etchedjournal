@@ -1,5 +1,5 @@
 <div *ngIf="isEditing" class="column is-full">
-    <form [formGroup]="titleForm">
+    <form [formGroup]="titleForm" (ngSubmit)="submitForm()">
         <div class="field is-horizontal">
             <div class="field-body">
                 <div class="field control is-expanded">
