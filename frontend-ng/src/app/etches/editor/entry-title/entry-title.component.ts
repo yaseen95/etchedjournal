@@ -59,6 +59,8 @@ export class EntryTitleComponent implements OnInit {
     }
 
     toggleEdit(update: boolean = false) {
+        // TODO: Fix this method
+        // What was I even thinking, how was this a good idea?
         const wasEditing = this.isEditing;
         this.isEditing = !this.isEditing;
 
@@ -76,6 +78,12 @@ export class EntryTitleComponent implements OnInit {
             // If we were not in edit mode, update the form to display the current title and
             // focus on the title input
             this.titleForm.patchValue({title: this.title});
+        }
+    }
+
+    submitForm() {
+        if (this.titleForm.valid) {
+            this.toggleEdit(true);
         }
     }
 }
