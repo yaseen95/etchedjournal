@@ -45,8 +45,10 @@ export class EnterPassphraseContainer implements OnInit {
     downloadKeys() {
         return this.etchedApiService.getKeyPairs()
             .subscribe(keys => {
-                // TODO-HIGH: If zero keys create a key pair
-                if (keys.length !== 1) {
+                if (keys.length === 0)  {
+                    return this.router.navigate([EtchedRoutes.KEYS_GENERATE_PATH]);
+                }
+                if (keys.length > 1) {
                     throw new Error(`Expected only one key but got ${keys.length} keys`);
                 }
                 this.keyPair = keys[0];

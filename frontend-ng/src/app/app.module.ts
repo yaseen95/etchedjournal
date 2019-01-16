@@ -28,6 +28,7 @@ import { EnterPassphraseContainer } from './user/passphrase/enter-passphrase/ent
 import { AuthInterceptor } from './auth/auth.interceptor';
 import { NavComponent } from './nav/nav.component';
 import { LogoutComponent } from './user/logout/logout.component';
+import { GenerateContainerComponent } from './key-pairs/generate/generate-container.component';
 
 @NgModule({
     declarations: [
@@ -66,6 +67,8 @@ import { LogoutComponent } from './user/logout/logout.component';
 
         // Directives
         AppAutoFocusDirective,
+
+        GenerateContainerComponent,
     ],
     imports: [
         AppRoutingModule,

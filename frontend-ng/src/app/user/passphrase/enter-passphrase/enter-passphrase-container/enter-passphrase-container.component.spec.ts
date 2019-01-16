@@ -12,6 +12,7 @@ import { EtchedApiService } from '../../../../services/etched-api.service';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import MOCK_PUB_KEY_BASE_64_STR = TestUtils.MOCK_PUB_KEY_BASE_64_STR;
 import MOCK_PRIV_KEY_BASE_64_STR = TestUtils.MOCK_PRIV_KEY_BASE_64_STR;
+import { EtchedRoutes } from '../../../../app-routing-utils';
 
 describe('EnterPassphraseContainer', () => {
     let component: EnterPassphraseContainer;
@@ -101,7 +102,7 @@ describe('EnterPassphraseContainer', () => {
         }
     }));
 
-    it('should throw an error if zero key pairs returned', fakeAsync(() => {
+    it('redirects to generate keys page when no keys exist', fakeAsync(() => {
         // This test will break when we configure the login container to create the key pair if
         // one does not exist.
 
@@ -109,13 +110,11 @@ describe('EnterPassphraseContainer', () => {
         const keyPairs = [];
         etchedApiSpy.getKeyPairs.and.returnValue(of(keyPairs));
 
-        try {
-            component.downloadKeys();
-            tick();
-            fail('Expected login to throw');
-        } catch (e) {
-            expect(e.message).toEqual('Expected only one key but got 0 keys');
-        }
+        component.downloadKeys();
+        tick();
+
+        expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
+        expect(routerSpy.navigate).toHaveBeenCalledWith([EtchedRoutes.KEYS_GENERATE_PATH]);
     }));
 
     it('should decrypt private key when passphrase is entered', fakeAsync(() => {

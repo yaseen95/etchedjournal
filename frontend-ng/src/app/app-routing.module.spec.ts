@@ -18,6 +18,7 @@ import { JournalsContainerComponent } from './etches/journals/journals-container
 import { CreateJournalComponent } from './etches/journals/create-journal/create-journal.component';
 import { EnterPassphraseContainer } from './user/passphrase/enter-passphrase/enter-passphrase-container/enter-passphrase-container.component';
 import { LogoutComponent } from './user/logout/logout.component';
+import { GenerateContainerComponent } from './key-pairs/generate/generate-container.component';
 
 describe('AppRoutingModule', () => {
     let location: Location;
@@ -47,6 +48,7 @@ describe('AppRoutingModule', () => {
                 CreateJournalComponent,
                 EnterPassphraseContainer,
                 LogoutComponent,
+                GenerateContainerComponent,
             ],
             schemas: [NO_ERRORS_SCHEMA],
         });
