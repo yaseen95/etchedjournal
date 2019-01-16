@@ -1,0 +1,15 @@
+<div class="columns is-centered">
+    <div class="column is-12-mobile is-4-desktop">
+        <ng-container *ngIf="state === ENTERING_PASSPHRASE">
+            <app-configure-passphrase (passphraseEmitter)="onPassphraseConfigured($event)">
+            </app-configure-passphrase>
+        </ng-container>
+        <ng-container *ngIf="state === CREATING_KEYS">
+            <!-- TODO: "Generating keys" or "generating key"? -->
+            <spinner [text]="'Generating encryption keys'"></spinner>
+        </ng-container>
+        <ng-container *ngIf="state === UPLOADING_KEYS">
+            <spinner [text]="'Uploading keys'"></spinner>
+        </ng-container>
+    </div>
+</div>

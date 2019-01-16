@@ -1,28 +1,18 @@
 <div class="columns is-centered">
     <div class="column is-12-mobile is-4-desktop">
-        <ng-container *ngIf="registerState === NOT_REGISTERED">
+        <ng-container *ngIf="state === NOT_REGISTERED">
             <register (registerEmitter)="onRegister($event)">
             </register>
         </ng-container>
-        <ng-container *ngIf="registerState === REGISTERING">
+        <ng-container *ngIf="state === REGISTERING">
             <spinner [text]="'Registering'"></spinner>
         </ng-container>
-        <ng-container *ngIf="registerState === USERNAME_TAKEN">
+        <ng-container *ngIf="state === USERNAME_TAKEN">
             <register (registerEmitter)="onRegister($event)"
                       [usernameTaken]="true"
                       [username]="username"
             >
             </register>
-        </ng-container>
-        <ng-container *ngIf="registerState === ENTERING_PASSPHRASE">
-            <app-configure-passphrase (passphraseEmitter)="onPassphraseConfigured($event)">
-            </app-configure-passphrase>
-        </ng-container>
-        <ng-container *ngIf="registerState === CREATING_KEYS">
-            <spinner [text]="'Generating encryption keys'"></spinner>
-        </ng-container>
-        <ng-container *ngIf="registerState === UPLOADING_KEYS">
-            <spinner [text]="'Uploading keys'"></spinner>
         </ng-container>
     </div>
 </div>
