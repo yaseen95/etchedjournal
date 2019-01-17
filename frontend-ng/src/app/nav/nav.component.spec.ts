@@ -1,9 +1,9 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
-import { NavComponent } from './nav.component';
-import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 import { TestUtils } from '../utils/test-utils.spec';
+import { NavComponent } from './nav.component';
 import TEST_USER = TestUtils.TEST_USER;
 
 describe('NavComponent', () => {

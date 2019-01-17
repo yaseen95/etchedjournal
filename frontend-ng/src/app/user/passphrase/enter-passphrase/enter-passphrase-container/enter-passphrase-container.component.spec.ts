@@ -1,26 +1,29 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
-import { EnterPassphraseContainer } from './enter-passphrase-container.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { of } from 'rxjs';
+import { EtchedRoutes } from '../../../../app-routing-utils';
 import { OwnerType } from '../../../../models/owner-type';
 import { Encrypter, IncorrectPassphraseError } from '../../../../services/encrypter';
-import { TestUtils } from '../../../../utils/test-utils.spec';
-import { SpinnerComponent } from '../../../../utils/spinner/spinner.component';
-import { EnterPassphraseComponent } from '../enter-passphrase.component';
-import { ReactiveFormsModule } from '@angular/forms';
 import { EtchedApiService } from '../../../../services/etched-api.service';
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import MOCK_PUB_KEY_BASE_64_STR = TestUtils.MOCK_PUB_KEY_BASE_64_STR;
+import { SpinnerComponent } from '../../../../utils/spinner/spinner.component';
+import { TestUtils } from '../../../../utils/test-utils.spec';
+import { EnterPassphraseComponent } from '../enter-passphrase.component';
+import { EnterPassphraseContainerComponent } from './enter-passphrase-container.component';
 import MOCK_PRIV_KEY_BASE_64_STR = TestUtils.MOCK_PRIV_KEY_BASE_64_STR;
-import { EtchedRoutes } from '../../../../app-routing-utils';
+import MOCK_PUB_KEY_BASE_64_STR = TestUtils.MOCK_PUB_KEY_BASE_64_STR;
 
-describe('EnterPassphraseContainer', () => {
-    let component: EnterPassphraseContainer;
-    let fixture: ComponentFixture<EnterPassphraseContainer>;
+describe('EnterPassphraseContainerComponent', () => {
+    let component: EnterPassphraseContainerComponent;
+    let fixture: ComponentFixture<EnterPassphraseContainerComponent>;
     let etchedApiSpy: any;
     let from2Spy: any;
     let routerSpy: any;
-    let testKeyPair = {publicKey: MOCK_PUB_KEY_BASE_64_STR, privateKey: MOCK_PRIV_KEY_BASE_64_STR};
+    const testKeyPair = {
+        publicKey: MOCK_PUB_KEY_BASE_64_STR,
+        privateKey: MOCK_PRIV_KEY_BASE_64_STR
+    };
 
     beforeEach(async(() => {
         etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['getKeyPairs']);
@@ -34,7 +37,7 @@ describe('EnterPassphraseContainer', () => {
         // noinspection JSIgnoredPromiseFromCall
         TestBed.configureTestingModule({
             declarations: [
-                EnterPassphraseContainer,
+                EnterPassphraseContainerComponent,
                 SpinnerComponent,
                 EnterPassphraseComponent,
             ],
@@ -56,7 +59,7 @@ describe('EnterPassphraseContainer', () => {
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(EnterPassphraseContainer);
+        fixture = TestBed.createComponent(EnterPassphraseContainerComponent);
         component = fixture.componentInstance;
         spyOn(component, 'ngOnInit').and.callThrough();
         fixture.detectChanges();

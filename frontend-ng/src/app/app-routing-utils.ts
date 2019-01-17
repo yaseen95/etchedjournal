@@ -7,5 +7,5 @@ export namespace EtchedRoutes {
     export const ENTRIES_CREATE_PATH = 'entries/new';
     export const ENTER_PASSPHRASE_PATH = 'enter-passphrase';
     export const LOGOUT_PATH = 'logout';
-    export const KEYS_GENERATE_PATH = 'keys/generate'
+    export const KEYS_GENERATE_PATH = 'keys/generate';
 }

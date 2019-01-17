@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { EncrypterService } from '../../../services/encrypter.service';
-import { LoginRequest } from '../../../services/dtos/login-request';
 import { Router } from '@angular/router';
 import { EtchedRoutes } from '../../../app-routing-utils';
 import {
@@ -8,6 +6,8 @@ import {
     InvalidCredentialsError,
     UserNotFoundError
 } from '../../../services/auth.service';
+import { LoginRequest } from '../../../services/dtos/login-request';
+import { EncrypterService } from '../../../services/encrypter.service';
 
 @Component({
     selector: 'app-login-container',
@@ -41,7 +41,6 @@ export class LoginContainerComponent implements OnInit {
 
     /**
      * Responds to login requests emitted by {@link LoginComponent.loginEmitter}
-     * @param loginRequest
      */
     onLogin(loginRequest: LoginRequest) {
         this.loginState = this.LOGGING_IN;
@@ -51,7 +50,8 @@ export class LoginContainerComponent implements OnInit {
                 this.router.navigate([EtchedRoutes.ENTER_PASSPHRASE_PATH]);
             })
             .catch(error => {
-                if ([InvalidCredentialsError.MESSAGE, UserNotFoundError.MESSAGE].includes(error.message)) {
+                if (error.message === InvalidCredentialsError.MESSAGE ||
+                    error.message === UserNotFoundError.MESSAGE) {
                     this.loginState = this.INVALID_CREDENTIALS;
                 }
                 // TODO: Figure out how to surface error when it is not one of the above

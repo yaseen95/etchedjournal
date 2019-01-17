@@ -1,19 +1,19 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ConfigurePassphraseComponent } from './user/configure-passphrase/configure-passphrase.component';
-import { EditorContainerComponent } from './etches/editor/editor-container.component';
-import { EntryListContainerComponent } from './etches/entry-list/entry-list-container.component';
-import { ExistingEntryEditorContainerComponent } from './etches/editor/existing-entry-editor-container/existing-entry-editor-container.component';
-import { RegisterContainerComponent } from './user/register/register-container/register-container.component';
-import { LoginContainerComponent } from './user/login/login-container/login-container.component';
-import { AuthGuard } from './auth/auth.guard';
 import { EtchedRoutes } from './app-routing-utils';
-import { JournalsContainerComponent } from './etches/journals/journals-container/journals-container.component';
+import { AuthGuard } from './auth/auth.guard';
+import { EditorContainerComponent } from './etches/editor/editor-container.component';
+import { ExistingEntryEditorContainerComponent } from './etches/editor/existing-entry-editor-container/existing-entry-editor-container.component';
+import { EntryListContainerComponent } from './etches/entry-list/entry-list-container.component';
 import { CreateJournalComponent } from './etches/journals/create-journal/create-journal.component';
-import { EnterPassphraseContainer } from './user/passphrase/enter-passphrase/enter-passphrase-container/enter-passphrase-container.component';
-import { PassphraseGuard } from './user/passphrase/passphrase.guard';
-import { LogoutComponent } from './user/logout/logout.component';
+import { JournalsContainerComponent } from './etches/journals/journals-container/journals-container.component';
 import { GenerateContainerComponent } from './key-pairs/generate/generate-container.component';
+import { ConfigurePassphraseComponent } from './user/configure-passphrase/configure-passphrase.component';
+import { LoginContainerComponent } from './user/login/login-container/login-container.component';
+import { LogoutComponent } from './user/logout/logout.component';
+import { EnterPassphraseContainerComponent } from './user/passphrase/enter-passphrase/enter-passphrase-container/enter-passphrase-container.component';
+import { PassphraseGuard } from './user/passphrase/passphrase.guard';
+import { RegisterContainerComponent } from './user/register/register-container/register-container.component';
 
 const GUARDS = [AuthGuard, PassphraseGuard];
 
@@ -35,7 +35,7 @@ export const ALL_ROUTES: Routes = [
     },
     {
         path: EtchedRoutes.ENTER_PASSPHRASE_PATH,
-        component: EnterPassphraseContainer,
+        component: EnterPassphraseContainerComponent,
         canActivate: [AuthGuard],
     },
     {

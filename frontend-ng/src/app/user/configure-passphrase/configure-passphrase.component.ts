@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
+import { Encrypter } from '../../services/encrypter';
 import {
     PASSPHRASE_MIN_LENGTH,
     PASSPHRASE_VALIDATORS,
     passphraseMatchValidator
 } from '../form-utils';
-import { Encrypter } from '../../services/encrypter';
 import { PassphraseUtils } from '../passphrase/passphrase-utils';
 
 @Component({

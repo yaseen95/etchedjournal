@@ -1,14 +1,14 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EntryListContainerComponent } from './entry-list-container.component';
-import { EntryListComponent } from './entry-list/entry-list.component';
-import { EntryListItemComponent } from './entry-list-item/entry-list-item.component';
-import { SpinnerComponent } from '../../utils/spinner/spinner.component';
-import { EtchedApiService } from '../../services/etched-api.service';
-import { of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
 import { EncrypterService } from '../../services/encrypter.service';
+import { EtchedApiService } from '../../services/etched-api.service';
+import { SpinnerComponent } from '../../utils/spinner/spinner.component';
 import { TestUtils } from '../../utils/test-utils.spec';
+import { EntryListContainerComponent } from './entry-list-container.component';
+import { EntryListItemComponent } from './entry-list-item/entry-list-item.component';
+import { EntryListComponent } from './entry-list/entry-list.component';
 
 describe('EntryListContainerComponent', () => {
     let component: EntryListContainerComponent;
@@ -60,7 +60,7 @@ describe('EntryListContainerComponent', () => {
         fixture.detectChanges();
 
         // spinner p will match any p element that is a descendant of spinner
-        const spinnerText = TestUtils.queryExpectOne(fixture.debugElement, 'spinner p');
+        const spinnerText = TestUtils.queryExpectOne(fixture.debugElement, 'app-spinner p');
         expect(spinnerText.nativeElement.innerText).toEqual('Getting entries');
     });
 
@@ -69,7 +69,7 @@ describe('EntryListContainerComponent', () => {
         component.decrypting = true;
         fixture.detectChanges();
 
-        const spinnerText = TestUtils.queryExpectOne(fixture.debugElement, 'spinner p');
+        const spinnerText = TestUtils.queryExpectOne(fixture.debugElement, 'app-spinner p');
         expect(spinnerText.nativeElement.innerText).toEqual('Decrypting entries');
     });
 

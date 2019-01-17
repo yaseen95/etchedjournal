@@ -1,30 +1,29 @@
-import { AppRoutingModule, ALL_ROUTES } from './app-routing.module';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { AppComponent } from './app.component';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Location } from '@angular/common';
-import { LoginContainerComponent } from './user/login/login-container/login-container.component';
-import { RegisterContainerComponent } from './user/register/register-container/register-container.component';
-import { EntryListContainerComponent } from './etches/entry-list/entry-list-container.component';
-import { ConfigurePassphraseComponent } from './user/configure-passphrase/configure-passphrase.component';
+import { HttpClientModule } from '@angular/common/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ALL_ROUTES, AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
 import { EditorContainerComponent } from './etches/editor/editor-container.component';
 import { ExistingEntryEditorContainerComponent } from './etches/editor/existing-entry-editor-container/existing-entry-editor-container.component';
-import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
-import { ReactiveFormsModule } from '@angular/forms';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { JournalsContainerComponent } from './etches/journals/journals-container/journals-container.component';
+import { EntryListContainerComponent } from './etches/entry-list/entry-list-container.component';
 import { CreateJournalComponent } from './etches/journals/create-journal/create-journal.component';
-import { EnterPassphraseContainer } from './user/passphrase/enter-passphrase/enter-passphrase-container/enter-passphrase-container.component';
-import { LogoutComponent } from './user/logout/logout.component';
+import { JournalsContainerComponent } from './etches/journals/journals-container/journals-container.component';
 import { GenerateContainerComponent } from './key-pairs/generate/generate-container.component';
+import { ConfigurePassphraseComponent } from './user/configure-passphrase/configure-passphrase.component';
+import { LoginContainerComponent } from './user/login/login-container/login-container.component';
+import { LogoutComponent } from './user/logout/logout.component';
+import { EnterPassphraseContainerComponent } from './user/passphrase/enter-passphrase/enter-passphrase-container/enter-passphrase-container.component';
+import { RegisterContainerComponent } from './user/register/register-container/register-container.component';
 
 describe('AppRoutingModule', () => {
     let location: Location;
     let router: Router;
     let fixture;
-
 
     beforeEach(() => {
         localStorage.clear();
@@ -46,7 +45,7 @@ describe('AppRoutingModule', () => {
                 RegisterContainerComponent,
                 JournalsContainerComponent,
                 CreateJournalComponent,
-                EnterPassphraseContainer,
+                EnterPassphraseContainerComponent,
                 LogoutComponent,
                 GenerateContainerComponent,
             ],

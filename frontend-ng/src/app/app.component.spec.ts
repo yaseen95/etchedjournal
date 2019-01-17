@@ -1,16 +1,16 @@
-import { async, TestBed } from '@angular/core/testing';
-import { AppComponent } from './app.component';
-import { RegisterComponent } from './user/register/register.component';
-import { LoginComponent } from './user/login/login.component';
-import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
+import { async, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { SpinnerComponent } from './utils/spinner/spinner.component';
+import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AppComponent } from './app.component';
 import { EditorContainerComponent } from './etches/editor/editor-container.component';
-import { EntryTitleComponent } from './etches/editor/entry-title/entry-title.component';
 import { EntryEditorComponent } from './etches/editor/entry-editor/entry-editor.component';
+import { EntryTitleComponent } from './etches/editor/entry-title/entry-title.component';
 import { NavComponent } from './nav/nav.component';
+import { LoginComponent } from './user/login/login.component';
+import { RegisterComponent } from './user/register/register.component';
+import { SpinnerComponent } from './utils/spinner/spinner.component';
 
 describe('AppComponent', () => {
     beforeEach(async(() => {

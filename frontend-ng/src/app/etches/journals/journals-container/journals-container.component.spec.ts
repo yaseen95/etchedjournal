@@ -1,18 +1,18 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
-import { JournalsContainerComponent } from './journals-container.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
+import { OwnerType } from '../../../models/owner-type';
 import { EncrypterService } from '../../../services/encrypter.service';
 import { EtchedApiService } from '../../../services/etched-api.service';
 import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
-import { JournalListComponent } from '../journal-list/journal-list.component';
-import { JournalListItemComponent } from '../journal-list-item/journal-list-item.component';
-import { CreateJournalComponent } from '../create-journal/create-journal.component';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { of } from 'rxjs';
 import { TestUtils } from '../../../utils/test-utils.spec';
-import { OwnerType } from '../../../models/owner-type';
-import { By } from '@angular/platform-browser';
+import { CreateJournalComponent } from '../create-journal/create-journal.component';
+import { JournalListItemComponent } from '../journal-list-item/journal-list-item.component';
+import { JournalListComponent } from '../journal-list/journal-list.component';
+import { JournalsContainerComponent } from './journals-container.component';
 
 describe('JournalsContainerComponent', () => {
     let component: JournalsContainerComponent;
@@ -61,14 +61,14 @@ describe('JournalsContainerComponent', () => {
     it('displays spinner when getting journals', () => {
         component.state = component.FETCHING;
         fixture.detectChanges();
-        const spinnerText = TestUtils.queryExpectOne(fixture.debugElement, 'spinner p');
+        const spinnerText = TestUtils.queryExpectOne(fixture.debugElement, 'app-spinner p');
         expect(spinnerText.nativeElement.innerText).toEqual('Getting journals');
     });
 
     it('displays spinner when decrypting journals', () => {
         component.state = component.DECRYPTING;
         fixture.detectChanges();
-        const spinnerText = TestUtils.queryExpectOne(fixture.debugElement, 'spinner p');
+        const spinnerText = TestUtils.queryExpectOne(fixture.debugElement, 'app-spinner p');
         expect(spinnerText.nativeElement.innerText).toEqual('Decrypting journals');
     });
 

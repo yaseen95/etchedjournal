@@ -1,18 +1,18 @@
 <div class="columns is-centered">
     <div class="column is-12-mobile is-4-desktop">
         <ng-container *ngIf="state === NOT_REGISTERED">
-            <register (registerEmitter)="onRegister($event)">
-            </register>
+            <app-register (registerEmitter)="onRegister($event)">
+            </app-register>
         </ng-container>
         <ng-container *ngIf="state === REGISTERING">
-            <spinner [text]="'Registering'"></spinner>
+            <app-spinner [text]="'Registering'"></app-spinner>
         </ng-container>
         <ng-container *ngIf="state === USERNAME_TAKEN">
-            <register (registerEmitter)="onRegister($event)"
-                      [usernameTaken]="true"
-                      [username]="username"
+            <app-register (registerEmitter)="onRegister($event)"
+                          [usernameTaken]="true"
+                          [username]="username"
             >
-            </register>
+            </app-register>
         </ng-container>
     </div>
 </div>

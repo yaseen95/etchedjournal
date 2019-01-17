@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { EtchedApiService } from '../../../services/etched-api.service';
 import { ActivatedRoute } from '@angular/router';
-import { EtchEntity } from '../../../models/etch-entity';
 import { EntryEntity } from '../../../models/entry-entity';
+import { EtchV1 } from '../../../models/etch';
+import { EtchEntity } from '../../../models/etch-entity';
+import { Encrypter } from '../../../services/encrypter';
 import { EncrypterService } from '../../../services/encrypter.service';
 import { EtchQueueService } from '../../../services/etch-queue.service';
-import { Encrypter } from '../../../services/encrypter';
-import { EtchV1 } from '../../../models/etch';
+import { EtchedApiService } from '../../../services/etched-api.service';
 
 export enum EntityState {
     FETCHING = 'FETCHING',

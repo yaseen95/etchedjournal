@@ -76,8 +76,6 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
      * Responds to key events
      *
      * This checks if "enter" was pressed and will finalize the etch if it was.
-     *
-     * @param event
      */
     onEtchKeydown(event: KeyboardEvent) {
         // Update the recent edit date of the etch

@@ -6,10 +6,10 @@
         </ng-container>
         <ng-container *ngIf="state === CREATING_KEYS">
             <!-- TODO: "Generating keys" or "generating key"? -->
-            <spinner [text]="'Generating encryption keys'"></spinner>
+            <app-spinner [text]="'Generating encryption keys'"></app-spinner>
         </ng-container>
         <ng-container *ngIf="state === UPLOADING_KEYS">
-            <spinner [text]="'Uploading keys'"></spinner>
+            <app-spinner [text]="'Uploading keys'"></app-spinner>
         </ng-container>
     </div>
 </div>

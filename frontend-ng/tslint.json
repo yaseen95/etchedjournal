@@ -29,7 +29,11 @@
         "label-position": true,
         "max-line-length": [
             true,
-            140
+            // Ignore line length for import statements
+            {
+                "limit": 100,
+                "ignore-pattern": "^import|http"
+            }
         ],
         "member-access": false,
         "member-ordering": [
@@ -38,6 +42,7 @@
                 "order": [
                     "static-field",
                     "instance-field",
+                    "constructor",
                     "static-method",
                     "instance-method"
                 ]
@@ -46,7 +51,7 @@
         "no-arg": true,
         "no-bitwise": true,
         "no-console": [
-            true,
+            false,
             "debug",
             "info",
             "time",
@@ -57,12 +62,9 @@
         "no-debugger": true,
         "no-duplicate-super": true,
         "no-empty": false,
-        "no-empty-interface": true,
+        "no-empty-interface": false,
         "no-eval": true,
-        "no-inferrable-types": [
-            true,
-            "ignore-params"
-        ],
+        "no-inferrable-types": false,
         "no-misused-new": true,
         "no-non-null-assertion": true,
         "no-redundant-jsdoc": true,
@@ -73,7 +75,7 @@
         "no-trailing-whitespace": true,
         "no-unnecessary-initializer": true,
         "no-unused-expression": true,
-        "no-use-before-declare": true,
+        "no-use-before-declare": false,
         "no-var-keyword": true,
         "object-literal-sort-keys": false,
         "one-line": [
@@ -83,6 +85,7 @@
             "check-else",
             "check-whitespace"
         ],
+        "ordered-imports": true,
         "prefer-const": true,
         "quotemark": [
             true,

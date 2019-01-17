@@ -1,9 +1,9 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
+import { EMPTY, of } from 'rxjs';
+import { EncrypterService } from './encrypter.service';
 import { EtchQueueService } from './etch-queue.service';
 import { EtchedApiService } from './etched-api.service';
-import { EncrypterService } from './encrypter.service';
-import { EMPTY, of } from 'rxjs';
 
 describe('EtchQueueService', () => {
     let service: EtchQueueService;

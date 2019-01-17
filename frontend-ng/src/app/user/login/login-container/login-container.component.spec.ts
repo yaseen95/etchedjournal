@@ -1,19 +1,19 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
-import { LoginContainerComponent } from './login-container.component';
-import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
-import { LoginComponent } from '../login.component';
-import { EnterPassphraseComponent } from '../../passphrase/enter-passphrase/enter-passphrase.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { EtchedApiService } from '../../../services/etched-api.service';
-import { of } from 'rxjs';
-import { LoginRequest } from '../../../services/dtos/login-request';
 import { Router } from '@angular/router';
+import { of } from 'rxjs';
 import {
     AuthService,
     InvalidCredentialsError,
     UserNotFoundError
 } from '../../../services/auth.service';
+import { LoginRequest } from '../../../services/dtos/login-request';
+import { EtchedApiService } from '../../../services/etched-api.service';
+import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
+import { EnterPassphraseComponent } from '../../passphrase/enter-passphrase/enter-passphrase.component';
+import { LoginComponent } from '../login.component';
+import { LoginContainerComponent } from './login-container.component';
 
 describe('LoginContainerComponent', () => {
     let component: LoginContainerComponent;

@@ -1,9 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EnterPassphraseComponent } from './enter-passphrase.component';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { DebugElement } from '@angular/core';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TestUtils } from '../../../utils/test-utils.spec';
+import { EnterPassphraseComponent } from './enter-passphrase.component';
 
 describe('EnterPassphraseComponent', () => {
     let component: EnterPassphraseComponent;
@@ -103,5 +103,5 @@ describe('EnterPassphraseComponent', () => {
 
     afterEach(() => {
         passphraseEvents = [];
-    })
+    });
 });

@@ -1,7 +1,7 @@
 <div class="columns is-centered">
     <div class="column is-12-mobile is-4-desktop">
         <ng-container *ngIf="state === DOWNLOADING_KEYS">
-            <spinner [text]="'Downloading keys'"></spinner>
+            <app-spinner [text]="'Downloading keys'"></app-spinner>
         </ng-container>
         <ng-container *ngIf="state === ENTERING_PASSPHRASE">
             <app-enter-passphrase
@@ -10,7 +10,7 @@
             </app-enter-passphrase>
         </ng-container>
         <ng-container *ngIf="state === DECRYPTING_KEYS">
-            <spinner [text]="'Decrypting keys'"></spinner>
+            <app-spinner [text]="'Decrypting keys'"></app-spinner>
         </ng-container>
         <ng-container *ngIf="state === DECRYPTED_KEYS">
             <h3>Finished decrypting keys</h3>

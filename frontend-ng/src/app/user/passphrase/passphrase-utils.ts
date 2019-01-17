@@ -4,8 +4,6 @@ export class PassphraseUtils {
 
     /**
      * Checks the passphrase control for any errors and returns an error message
-     *
-     * @param control
      */
     public static getPassphraseControlError(control: AbstractControl): string | null {
         if (control.valid) {

@@ -1,14 +1,20 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { from, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { AUTH_REQUIRED_URLS } from '../services/etched-api.service';
-import { AuthService } from '../services/auth.service';
+import { from, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { AuthService } from '../services/auth.service';
+import { AUTH_REQUIRED_URLS } from '../services/etched-api.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
     constructor(private authService: AuthService) {
+    }
+
+    // visible for testing
+    static requiresAuth(url: string): boolean {
+        // TODO: Should we use regexes instead?
+        return checkAnyStringContains(AUTH_REQUIRED_URLS, url);
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -30,18 +36,10 @@ export class AuthInterceptor implements HttpInterceptor {
                 })
             );
     }
-
-    // visible for testing
-    static requiresAuth(url: string): boolean {
-        // TODO: Should we use regexes instead?
-        return checkAnyStringContains(AUTH_REQUIRED_URLS, url);
-    }
 }
 
 /**
  * Check that any of the strings in `strings` contains string `s`
- * @param s
- * @param strings
  */
 export function checkAnyStringContains(strings: string[], s: string): boolean {
     for (let i = 0; i < strings.length; i++) {

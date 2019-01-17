@@ -1,10 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ConfigurePassphraseComponent } from './configure-passphrase.component';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { SpinnerComponent } from '../../utils/spinner/spinner.component';
 import { By } from '@angular/platform-browser';
+import { SpinnerComponent } from '../../utils/spinner/spinner.component';
 import { TestUtils } from '../../utils/test-utils.spec';
+import { ConfigurePassphraseComponent } from './configure-passphrase.component';
 
 describe('ConfigurePassphraseComponent', () => {
     let component: ConfigurePassphraseComponent;
@@ -110,7 +110,7 @@ describe('ConfigurePassphraseComponent', () => {
 
         const confirmErrorMsg = errorMsgs[1];
         const confirmErrorMsgEl = confirmErrorMsg.nativeElement as HTMLParagraphElement;
-        expect(confirmErrorMsgEl.textContent.trim()).toEqual("Passphrase doesn't match");
+        expect(confirmErrorMsgEl.textContent.trim()).toEqual(`Passphrase doesn't match`);
     });
 
     it('passphrase and confirm dont match', () => {
@@ -133,7 +133,7 @@ describe('ConfigurePassphraseComponent', () => {
 
         const errorMsgDe = TestUtils.queryExpectOne(debugElement, 'p.error-help');
         const confirmErrorMsgEl = errorMsgDe.nativeElement as HTMLParagraphElement;
-        expect(confirmErrorMsgEl.textContent.trim()).toEqual("Passphrase doesn't match");
+        expect(confirmErrorMsgEl.textContent.trim()).toEqual(`Passphrase doesn't match`);
     });
 
     it('errors are not visible until submit is clicked', () => {
@@ -160,7 +160,7 @@ describe('ConfigurePassphraseComponent', () => {
 
         expect(shortErrorMsgEl.textContent.trim())
             .toEqual('Passphrase must be at least 16 characters long');
-        expect(notSameErrorMsgEl.textContent.trim()).toEqual("Passphrase doesn't match");
+        expect(notSameErrorMsgEl.textContent.trim()).toEqual(`Passphrase doesn't match`);
     });
 
     afterEach(() => {

@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { Encrypter, IncorrectPassphraseError } from '../../../../services/encrypter';
-import { KeyPairEntity } from '../../../../models/key-pair-entity';
-import { EncrypterService } from '../../../../services/encrypter.service';
-import { EtchedApiService } from '../../../../services/etched-api.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EtchedRoutes } from '../../../../app-routing-utils';
+import { KeyPairEntity } from '../../../../models/key-pair-entity';
+import { Encrypter, IncorrectPassphraseError } from '../../../../services/encrypter';
+import { EncrypterService } from '../../../../services/encrypter.service';
+import { EtchedApiService } from '../../../../services/etched-api.service';
 
 @Component({
     selector: 'app-enter-passphrase-container',
     templateUrl: './enter-passphrase-container.component.html',
     styleUrls: ['./enter-passphrase-container.component.css']
 })
-export class EnterPassphraseContainer implements OnInit {
+export class EnterPassphraseContainerComponent implements OnInit {
 
     DOWNLOADING_KEYS = 'DOWNLOADING_KEYS';
     ENTERING_PASSPHRASE = 'ENTERING_PASSPHRASE';
@@ -45,7 +45,7 @@ export class EnterPassphraseContainer implements OnInit {
     downloadKeys() {
         return this.etchedApiService.getKeyPairs()
             .subscribe(keys => {
-                if (keys.length === 0)  {
+                if (keys.length === 0) {
                     return this.router.navigate([EtchedRoutes.KEYS_GENERATE_PATH]);
                 }
                 if (keys.length > 1) {

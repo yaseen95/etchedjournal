@@ -1,17 +1,17 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
-import { GenerateContainerComponent } from './generate-container.component';
-import { EncrypterService } from '../../services/encrypter.service';
-import { Encrypter, KeyPair } from '../../services/encrypter';
-import { TestUtils } from '../../utils/test-utils.spec';
-import { SpinnerComponent } from '../../utils/spinner/spinner.component';
-import { ConfigurePassphraseComponent } from '../../user/configure-passphrase/configure-passphrase.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { EtchedApiService } from '../../services/etched-api.service';
-import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { EtchedRoutes } from '../../app-routing-utils';
+import { AuthService } from '../../services/auth.service';
+import { Encrypter, KeyPair } from '../../services/encrypter';
+import { EncrypterService } from '../../services/encrypter.service';
+import { EtchedApiService } from '../../services/etched-api.service';
+import { ConfigurePassphraseComponent } from '../../user/configure-passphrase/configure-passphrase.component';
+import { SpinnerComponent } from '../../utils/spinner/spinner.component';
+import { TestUtils } from '../../utils/test-utils.spec';
+import { GenerateContainerComponent } from './generate-container.component';
 
 describe('GenerateContainerComponent', () => {
     let component: GenerateContainerComponent;
@@ -84,14 +84,14 @@ describe('GenerateContainerComponent', () => {
     it('displays generating keys spinner when state is CREATING_KEYS', () => {
         component.state = component.CREATING_KEYS;
         fixture.detectChanges();
-        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'spinner');
+        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'app-spinner');
         expect(spinnerDe.nativeElement.innerText).toEqual('Generating encryption keys');
     });
 
     it('displays uploading keys spinner when state is UPLOADING_KEYS', () => {
         component.state = component.UPLOADING_KEYS;
         fixture.detectChanges();
-        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'spinner');
+        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'app-spinner');
         expect(spinnerDe.nativeElement.innerText).toEqual('Uploading keys');
     });
 
@@ -100,10 +100,10 @@ describe('GenerateContainerComponent', () => {
         authSpy.getUser.and.returnValue(TestUtils.TEST_USER);
 
         // Mock out the public/private keys
-        let mockPubKeyPacket = {write: () => new Uint8Array([1, 2, 3, 4])};
-        let mockPrivKeyPacket = {write: () => new Uint8Array([5, 6, 7, 8])};
+        const mockPubKeyPacket = {write: () => new Uint8Array([1, 2, 3, 4])};
+        const mockPrivKeyPacket = {write: () => new Uint8Array([5, 6, 7, 8])};
 
-        let encrypter = {
+        const encrypter = {
             publicKeys: [{toPacketlist: () => mockPubKeyPacket}],
             privateKey: {toPacketlist: () => mockPrivKeyPacket},
             privateKeyEncrypted: {toPacketlist: () => mockPrivKeyPacket},

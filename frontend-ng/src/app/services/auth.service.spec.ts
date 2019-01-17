@@ -1,21 +1,25 @@
-import { getTestBed, TestBed } from '@angular/core/testing';
-
-import { AuthService, LOCAL_COGNITO_PREFIX, UsernameTakenError } from './auth.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { CognitoAuthFactory } from './cognito-auth-factory';
-import { environment } from '../../environments/environment';
-import { EtchedUser } from '../models/etched-user';
-import { IdToken, TokenDecoder } from '../utils/token-decoder';
-import { TestUtils } from '../utils/test-utils.spec';
-import { FakeClock } from './clock.service.spec';
-import { RandomUtils } from '../utils/text-utils';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import {
     CognitoUser,
     CognitoUserAttribute,
     CognitoUserSession,
     ISignUpResult
 } from 'amazon-cognito-identity-js';
+import { environment } from '../../environments/environment';
+import { EtchedUser } from '../models/etched-user';
+import { TestUtils } from '../utils/test-utils.spec';
+import { RandomUtils } from '../utils/text-utils';
+import { IdToken, TokenDecoder } from '../utils/token-decoder';
+import {
+    AuthService,
+    cognitoPrefix,
+    LOCAL_COGNITO_PREFIX,
+    UsernameTakenError
+} from './auth.service';
+import { FakeClock } from './clock.service.spec';
+import { CognitoAuthFactory } from './cognito-auth-factory';
 import TEST_USER = TestUtils.TEST_USER;
 
 describe('AuthService', () => {
@@ -44,7 +48,7 @@ describe('AuthService', () => {
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
         });
-        let injector = getTestBed();
+        const injector = getTestBed();
         service = injector.get(AuthService);
         httpMock = injector.get(HttpTestingController);
     });
@@ -57,7 +61,7 @@ describe('AuthService', () => {
         setUsernameInLocalStorage(TEST_USER, 'username');
         setIdTokenInLocalStorage('username');
 
-        let token = {
+        const token = {
             preferred_username: 'pref',
             sub: 'sub',
             exp: 0,
@@ -65,9 +69,9 @@ describe('AuthService', () => {
         tokenDecoderSpy.and.returnValue(token);
 
         const fakeClock = new FakeClock(0);
-        const service = new AuthService(fakeClock, authFactory);
+        const service2 = new AuthService(fakeClock, authFactory);
 
-        const user = service.getUser();
+        const user = service2.getUser();
         expect(user).not.toBeNull();
         expect(user.username).toEqual('pref');
         expect(user.id).toEqual('sub');
@@ -83,7 +87,7 @@ describe('AuthService', () => {
             aud: '',
         };
 
-        let clock = new FakeClock(0);
+        const clock = new FakeClock(0);
         expect(AuthService.refreshIsValid(token, clock)).toBeTruthy();
 
         clock.time += (29 * 24 * 60 * 60 * 1_000);
@@ -97,12 +101,12 @@ describe('AuthService', () => {
     it('register e2e', async () => {
         mockAuth.signUp.and.returnValue(Promise.resolve());
 
-        let randomStrSpy = spyOn(RandomUtils, 'randomStr');
+        const randomStrSpy = spyOn(RandomUtils, 'randomStr');
         randomStrSpy.and.returnValue('random');
 
         const token = {payload: {sub: 'userSubject'}};
         const session = {getIdToken: () => token};
-        let signInResult = {getSignInUserSession: () => session};
+        const signInResult = {getSignInUserSession: () => session};
         mockAuth.signIn.and.returnValue(Promise.resolve(signInResult));
 
         await service.register('samsepiol', 'password');
@@ -126,7 +130,7 @@ describe('AuthService', () => {
     it('login signs in and sets user', async () => {
         const token = {payload: {sub: '12345', preferred_username: 'cisco'}};
         const session = {getIdToken: () => token};
-        let signInResult = {getSignInUserSession: () => session};
+        const signInResult = {getSignInUserSession: () => session};
         mockAuth.signIn.and.returnValue(Promise.resolve(signInResult));
 
         await service.login('cisco', 'password');
@@ -144,7 +148,7 @@ describe('AuthService', () => {
         // perform a login to set the user first
         const token = {payload: {sub: '123', preferred_username: 'samsepiol'}};
         const session = {getIdToken: () => token};
-        let signInResult = {getSignInUserSession: () => session};
+        const signInResult = {getSignInUserSession: () => session};
         mockAuth.signIn.and.returnValue(Promise.resolve(signInResult));
         await service.login('cisco', 'password');
         expect(service.getUser()).not.toBeNull();
@@ -186,14 +190,14 @@ describe('AuthService', () => {
     it('userExists true', async () => {
         const err = {code: 'NotAuthorizedException', message: 'Incorrect username or password.'};
         mockAuth.signIn.and.returnValue(Promise.reject(err));
-        let result = await service.userExists('samsepiol');
+        const result = await service.userExists('samsepiol');
         expect(result).toBeTruthy();
     });
 
     it('userExists false', async () => {
         const err = {code: 'UserNotFoundException', message: 'User does not exist.'};
         mockAuth.signIn.and.returnValue(Promise.reject(err));
-        let result = await service.userExists('samsepiol');
+        const result = await service.userExists('samsepiol');
         expect(result).toBeFalsy();
     });
 
@@ -233,11 +237,11 @@ describe('AuthService', () => {
 });
 
 function setUsernameInLocalStorage(user: EtchedUser, username: string) {
-    let userKey = `${LOCAL_COGNITO_PREFIX}.${environment.auth.userPoolWebClientId}.LastAuthUser`;
+    const userKey = `${cognitoPrefix()}.LastAuthUser`;
     localStorage.setItem(userKey, username);
 }
 
 function setIdTokenInLocalStorage(username: string) {
-    let idTokenKey = `${LOCAL_COGNITO_PREFIX}.${environment.auth.userPoolWebClientId}.${username}.idToken`;
+    const idTokenKey = `${cognitoPrefix()}.${username}.idToken`;
     localStorage.setItem(idTokenKey, 'token');
 }

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { combineLatest, from, interval } from 'rxjs';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { combineLatest, from, interval } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { EtchedRoutes } from '../../app-routing-utils';
+import { AuthService } from '../../services/auth.service';
 
 /**
  * Very basic component that displays a logout spinner (with a fake delay)

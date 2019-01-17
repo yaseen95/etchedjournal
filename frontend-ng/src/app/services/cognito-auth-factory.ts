@@ -1,6 +1,6 @@
-import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { AuthClass as Auth } from '@aws-amplify/auth';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { EtchedApiService } from '../../../services/etched-api.service';
-import { EncrypterService } from '../../../services/encrypter.service';
-import { JournalEntity } from '../../../models/journal-entity';
-import { Encrypter } from '../../../services/encrypter';
 import { Base64Str } from '../../../models/encrypted-entity';
 import { EntryEntity } from '../../../models/entry-entity';
+import { JournalEntity } from '../../../models/journal-entity';
+import { Encrypter } from '../../../services/encrypter';
+import { EncrypterService } from '../../../services/encrypter.service';
+import { EtchedApiService } from '../../../services/etched-api.service';
 
 @Component({
     selector: 'app-journals-container',
@@ -40,7 +40,7 @@ export class JournalsContainerComponent implements OnInit {
         const decPromises = journals.map(j => this.encrypter.decrypt(j.content));
 
         Promise.all(decPromises)
-            .then((decJournals: Base64Str[])=> {
+            .then((decJournals: Base64Str[]) => {
                 console.info(`Decrypted ${decJournals.length} journals`);
                 decJournals.forEach((decResult, index) => {
                     decrypted[index].content = decResult;

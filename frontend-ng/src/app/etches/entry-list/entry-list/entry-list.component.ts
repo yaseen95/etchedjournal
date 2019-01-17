@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { EntryEntity } from '../../../models/entry-entity';
 import { Router } from '@angular/router';
 import { EtchedRoutes } from '../../../app-routing-utils';
+import { EntryEntity } from '../../../models/entry-entity';
 
 @Component({
     selector: 'app-entry-list',

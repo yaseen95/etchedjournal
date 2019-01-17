@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
-import { EtchedApiService } from './etched-api.service';
-import { EncrypterService } from './encrypter.service';
 import { AbstractEtch } from '../models/etch';
+import { EncrypterService } from './encrypter.service';
+import { EtchedApiService } from './etched-api.service';
 
 /**
  * Queues etches and posts them as batches to the server
@@ -33,8 +33,6 @@ export class EtchQueueService {
 
     /**
      * Puts an etch on the queue
-     * @param entryId
-     * @param etch
      */
     public put(entryId: string, etch: AbstractEtch) {
         let etches = this.queuedEtches.get(entryId);
@@ -54,7 +52,7 @@ export class EtchQueueService {
         const copy = this.queuedEtches;
         this.queuedEtches = new Map();
 
-        for (let [entryId, etches] of Array.from(copy.entries())) {
+        for (const [entryId, etches] of Array.from(copy.entries())) {
             this.postEtches(entryId, etches);
         }
     }
@@ -70,7 +68,8 @@ export class EtchQueueService {
             })
             .then(etchesObs => {
                 etchesObs.subscribe(() => {
-                    console.info(`Successfully posted ${etches.length} etches for entry ${entryId}`);
+                    console.info(`Successfully posted ${etches.length} etches for entry` +
+                        `${entryId}`);
                 });
             });
     }

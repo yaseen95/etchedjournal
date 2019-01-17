@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 import { Base64Str } from '../models/encrypted-entity';
 import { EntryEntity } from '../models/entry-entity';
 import { EtchEntity } from '../models/etch-entity';
-import { KeyPairEntity } from '../models/key-pair-entity';
 import { JournalEntity } from '../models/journal-entity';
+import { KeyPairEntity } from '../models/key-pair-entity';
 import { CreateKeyPairRequest } from './dtos/create-key-pair-request';
 
 export const SELF_URL = `${environment.API_URL}/auth/self`;
@@ -35,8 +35,8 @@ export const AUTH_REQUIRED_URLS = [
 ];
 
 interface EncryptedEntityRequest {
-    content: Base64Str,
-    keyPairId: string,
+    content: Base64Str;
+    keyPairId: string;
 }
 
 @Injectable({
@@ -124,7 +124,8 @@ export class EtchedApiService {
             .pipe(tap(keyPairs => console.info(`Successfully retrieved key pairs`)));
     }
 
-    private post<Request, Response>(url: string, body: Request, params?: HttpParams): Observable<Response> {
+    private post<Request, Response>(url: string, body: Request, params?: HttpParams):
+        Observable<Response> {
         return this.http.post<Response>(url, body, {params: params});
     }
 }

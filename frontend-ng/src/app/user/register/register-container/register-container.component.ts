@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { RegisterRequest } from '../../../services/dtos/register-request';
-import { AuthService, UsernameTakenError } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { EtchedRoutes } from '../../../app-routing-utils';
+import { AuthService, UsernameTakenError } from '../../../services/auth.service';
+import { RegisterRequest } from '../../../services/dtos/register-request';
 
 @Component({
     selector: 'app-register-container',

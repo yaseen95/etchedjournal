@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { PASSWORD_VALIDATORS, USERNAME_VALIDATORS } from '../form-utils';
 import { RegisterRequest } from '../../services/dtos/register-request';
+import { PASSWORD_VALIDATORS, USERNAME_VALIDATORS } from '../form-utils';
 
 @Component({
-    selector: 'register',
+    selector: 'app-register',
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.css']
 })
@@ -42,7 +42,7 @@ export class RegisterComponent implements OnInit {
     }
 
     onSubmit() {
-        let {username, password} = this.registerForm.value;
+        const {username, password} = this.registerForm.value;
         // if (email === undefined || email.trim() === '') {
         //     console.info('Registering without an email');
         //     email = null;

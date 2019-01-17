@@ -1,10 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EntryEditorComponent } from './entry-editor.component';
 import { By } from '@angular/platform-browser';
-import { TestUtils } from '../../../utils/test-utils.spec';
-import { ClockService } from '../../../services/clock.service';
 import { EtchV1 } from '../../../models/etch';
+import { ClockService } from '../../../services/clock.service';
+import { TestUtils } from '../../../utils/test-utils.spec';
+import { EntryEditorComponent } from './entry-editor.component';
 
 describe('EntryEditorComponent', () => {
     let component: EntryEditorComponent;

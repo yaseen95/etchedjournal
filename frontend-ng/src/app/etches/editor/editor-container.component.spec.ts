@@ -1,12 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EditorContainerComponent } from './editor-container.component';
-import { EtchedApiService } from '../../services/etched-api.service';
-import { EntryTitleComponent } from './entry-title/entry-title.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { EntryEditorComponent } from './entry-editor/entry-editor.component';
-import { EncrypterService } from '../../services/encrypter.service';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EncrypterService } from '../../services/encrypter.service';
+import { EtchedApiService } from '../../services/etched-api.service';
+import { EditorContainerComponent } from './editor-container.component';
+import { EntryEditorComponent } from './entry-editor/entry-editor.component';
+import { EntryTitleComponent } from './entry-title/entry-title.component';
 
 describe('EditorContainerComponent', () => {
     let component: EditorContainerComponent;

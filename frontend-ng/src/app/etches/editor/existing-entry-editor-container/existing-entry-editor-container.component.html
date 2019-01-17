@@ -1,11 +1,11 @@
 <div class="columns is-centered">
     <div *ngIf="entryState === 'FETCHING' || etchesState === 'FETCHING'"
          class="column is-12-mobile is-4-desktop">
-        <spinner [text]="'Getting entry'"></spinner>
+        <app-spinner [text]="'Getting entry'"></app-spinner>
     </div>
     <div *ngIf="entryState === 'DECRYPTING' || etchesState === 'DECRYPTING'"
          class="column is-12-mobile is-4-desktop">
-        <spinner [text]="'Decrypting'"></spinner>
+        <app-spinner [text]="'Decrypting'"></app-spinner>
     </div>
     <div *ngIf="entryState === 'DECRYPTED' && etchesState === 'DECRYPTED'"
          class="column is-12-mobile is-8-tablet is-8-desktop">

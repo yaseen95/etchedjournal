@@ -1,9 +1,9 @@
 import { async, ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 
-import { LogoutComponent } from './logout.component';
-import { SpinnerComponent } from '../../utils/spinner/spinner.component';
-import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { SpinnerComponent } from '../../utils/spinner/spinner.component';
+import { LogoutComponent } from './logout.component';
 
 describe('LogoutComponent', () => {
     let component: LogoutComponent;

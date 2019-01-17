@@ -1,11 +1,11 @@
 import { inject, TestBed } from '@angular/core/testing';
 
-import { PassphraseGuard } from './passphrase.guard';
-import { Router, RouterStateSnapshot } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { EncrypterService } from '../../services/encrypter.service';
+import { Router, RouterStateSnapshot } from '@angular/router';
 import { AuthGuard } from '../../auth/auth.guard';
 import { Encrypter } from '../../services/encrypter';
+import { EncrypterService } from '../../services/encrypter.service';
+import { PassphraseGuard } from './passphrase.guard';
 
 describe('PassphraseGuard', () => {
     let routerSpy: any;

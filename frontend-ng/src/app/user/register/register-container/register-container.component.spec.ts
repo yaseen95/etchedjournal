@@ -1,14 +1,14 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
-import { RegisterContainerComponent } from './register-container.component';
-import { RegisterComponent } from '../register.component';
-import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RegisterRequest } from '../../../services/dtos/register-request';
-import { TestUtils } from '../../../utils/test-utils.spec';
-import { AuthService, UsernameTakenError } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { EtchedRoutes } from '../../../app-routing-utils';
+import { AuthService, UsernameTakenError } from '../../../services/auth.service';
+import { RegisterRequest } from '../../../services/dtos/register-request';
+import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
+import { TestUtils } from '../../../utils/test-utils.spec';
+import { RegisterComponent } from '../register.component';
+import { RegisterContainerComponent } from './register-container.component';
 
 describe('RegisterContainerComponent', () => {
     let component: RegisterContainerComponent;
@@ -44,18 +44,18 @@ describe('RegisterContainerComponent', () => {
     it('displays register when state is NOT_REGISTERED', () => {
         component.state = component.NOT_REGISTERED;
         fixture.detectChanges();
-        TestUtils.queryExpectOne(fixture.debugElement, 'register');
+        TestUtils.queryExpectOne(fixture.debugElement, 'app-register');
     });
 
     it('displays register on load', () => {
         // Should display the register form by default
-        TestUtils.queryExpectOne(fixture.debugElement, 'register');
+        TestUtils.queryExpectOne(fixture.debugElement, 'app-register');
     });
 
     it('displays registering spinner when state is REGISTERING', () => {
         component.state = component.REGISTERING;
         fixture.detectChanges();
-        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'spinner');
+        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'app-spinner');
         expect(spinnerDe.nativeElement.innerText).toEqual('Registering');
     });
 

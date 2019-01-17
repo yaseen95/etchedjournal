@@ -1,9 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EntryListItemComponent } from './entry-list-item.component';
-import { OwnerType } from '../../../models/owner-type';
 import { RouterTestingModule } from '@angular/router/testing';
+import { OwnerType } from '../../../models/owner-type';
 import { TestUtils } from '../../../utils/test-utils.spec';
+import { EntryListItemComponent } from './entry-list-item.component';
 
 describe('EntryListItemComponent', () => {
     let component: EntryListItemComponent;

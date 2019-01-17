@@ -1,16 +1,16 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
-import { CreateJournalComponent } from './create-journal.component';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { EtchedApiService } from '../../../services/etched-api.service';
-import { EncrypterService } from '../../../services/encrypter.service';
-import { RouterTestingModule } from '@angular/router/testing';
-import { NavigationExtras, Router } from '@angular/router';
 import { By } from '@angular/platform-browser';
-import { TestUtils } from '../../../utils/test-utils.spec';
+import { NavigationExtras, Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
 import { JournalEntity } from '../../../models/journal-entity';
 import { OwnerType } from '../../../models/owner-type';
-import { of } from 'rxjs';
+import { EncrypterService } from '../../../services/encrypter.service';
+import { EtchedApiService } from '../../../services/etched-api.service';
+import { TestUtils } from '../../../utils/test-utils.spec';
+import { CreateJournalComponent } from './create-journal.component';
 
 describe('CreateJournalComponent', () => {
     let component: CreateJournalComponent;
@@ -54,14 +54,14 @@ describe('CreateJournalComponent', () => {
     it('displays spinning icon in button while creating journal', () => {
         component.creatingJournal = true;
         fixture.detectChanges();
-        let iconDe = fixture.debugElement.query(By.css('button.span.icon'));
+        const iconDe = fixture.debugElement.query(By.css('button.span.icon'));
         expect(iconDe).toBeDefined();
     });
 
     it('does not display spinning icon in button when not creating journal', () => {
         component.creatingJournal = false;
         fixture.detectChanges();
-        let iconDe = fixture.debugElement.query(By.css('button.span.icon'));
+        const iconDe = fixture.debugElement.query(By.css('button.span.icon'));
         expect(iconDe).toBeNull();
     });
 

@@ -1,12 +1,12 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
+import * as openpgp from 'openpgp';
+import { EtchedRoutes } from '../../app-routing-utils';
+import { Base64Str } from '../../models/encrypted-entity';
+import { AuthService } from '../../services/auth.service';
 import { Encrypter, KeyPair } from '../../services/encrypter';
 import { EncrypterService } from '../../services/encrypter.service';
-import { AuthService } from '../../services/auth.service';
-import * as openpgp from 'openpgp';
-import { Base64Str } from '../../models/encrypted-entity';
-import { EtchedRoutes } from '../../app-routing-utils';
 import { EtchedApiService } from '../../services/etched-api.service';
-import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-generate',
@@ -59,7 +59,6 @@ export class GenerateContainerComponent implements OnInit {
 
     /**
      * Generate a PGP key protected with the given passphrase
-     * @param passphrase
      */
     generateKey(passphrase: string): Promise<KeyPair> {
         this.state = this.CREATING_KEYS;
@@ -68,8 +67,6 @@ export class GenerateContainerComponent implements OnInit {
 
     /**
      * Create an encrypter to protect the
-     * @param keyPair
-     * @param passphrase
      */
     createEncrypter(keyPair: KeyPair, passphrase: string): Promise<Encrypter> {
         return Encrypter.from(keyPair, passphrase)

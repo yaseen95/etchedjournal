@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { EtchedApiService } from '../../services/etched-api.service';
 import { ActivatedRoute } from '@angular/router';
-import { EtchQueueService } from '../../services/etch-queue.service';
-import { EntryEntity } from '../../models/entry-entity';
-import { Encrypter } from '../../services/encrypter';
 import { BehaviorSubject } from 'rxjs';
+import { EntryEntity } from '../../models/entry-entity';
 import { AbstractEtch, EtchV1 } from '../../models/etch';
+import { Encrypter } from '../../services/encrypter';
 import { EncrypterService } from '../../services/encrypter.service';
+import { EtchQueueService } from '../../services/etch-queue.service';
+import { EtchedApiService } from '../../services/etched-api.service';
 
 const ENTRY_NOT_CREATED = 'NOT_CREATED';
 const ENTRY_CREATING = 'ENTRY_CREATING';

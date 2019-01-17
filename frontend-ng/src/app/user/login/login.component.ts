@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { EtchedUser } from '../../models/etched-user';
-import { PASSWORD_VALIDATORS, USERNAME_VALIDATORS } from '../form-utils';
-import { LoginRequest } from '../../services/dtos/login-request';
 import { AuthService } from '../../services/auth.service';
+import { LoginRequest } from '../../services/dtos/login-request';
+import { PASSWORD_VALIDATORS, USERNAME_VALIDATORS } from '../form-utils';
 
 @Component({
-    selector: 'login',
+    selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.css']
 })

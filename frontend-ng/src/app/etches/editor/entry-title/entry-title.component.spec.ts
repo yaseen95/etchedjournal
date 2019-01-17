@@ -1,8 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EntryTitleComponent } from './entry-title.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TestUtils } from '../../../utils/test-utils.spec';
+import { EntryTitleComponent } from './entry-title.component';
 
 describe('EntryTitleComponent', () => {
     let component: EntryTitleComponent;

@@ -1,15 +1,15 @@
 import { getTestBed, TestBed } from '@angular/core/testing';
 
-import { EtchedApiService } from './etched-api.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { environment } from '../../environments/environment';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { environment } from '../../environments/environment';
 import { EntryEntity } from '../models/entry-entity';
-import { OwnerType } from '../models/owner-type';
 import { EtchEntity } from '../models/etch-entity';
-import { KeyPairEntity } from '../models/key-pair-entity';
 import { JournalEntity } from '../models/journal-entity';
+import { KeyPairEntity } from '../models/key-pair-entity';
+import { OwnerType } from '../models/owner-type';
 import { CreateKeyPairRequest } from './dtos/create-key-pair-request';
+import { EtchedApiService } from './etched-api.service';
 
 describe('EtchedApiService', () => {
     let injector: TestBed;
@@ -29,12 +29,12 @@ describe('EtchedApiService', () => {
 
     it('create entry', () => {
         service.createEntry('kpId', 'journalId', 'content')
-            .subscribe(entry => {
-                expect(entry.id).toEqual('entryId');
-                expect(entry.content).toEqual('base64Content');
-                expect(entry.timestamp).toEqual(1);
-                expect(entry.owner).toEqual('user');
-                expect(entry.ownerType).toEqual(OwnerType.USER);
+            .subscribe(result => {
+                expect(result.id).toEqual('entryId');
+                expect(result.content).toEqual('base64Content');
+                expect(result.timestamp).toEqual(1);
+                expect(result.owner).toEqual('user');
+                expect(result.ownerType).toEqual(OwnerType.USER);
             });
 
         const entry: EntryEntity = {
@@ -54,10 +54,10 @@ describe('EtchedApiService', () => {
 
     it('post etches', () => {
         service.postEtches('kpId', 'entryId', ['etch1', 'etch2'])
-            .subscribe(etches => {
-                expect(etches.length).toEqual(2);
-                expect(etches[0].content).toEqual('etch1');
-                expect(etches[1].content).toEqual('etch2');
+            .subscribe((result: EtchEntity[]) => {
+                expect(result.length).toEqual(2);
+                expect(result[0].content).toEqual('etch1');
+                expect(result[1].content).toEqual('etch2');
             });
 
         const etches = new Array<EtchEntity>(2);
@@ -86,10 +86,10 @@ describe('EtchedApiService', () => {
 
     it('get entries', () => {
         service.getEntries('journalId')
-            .subscribe(entries => {
-                expect(entries.length).toEqual(2);
-                expect(entries[0].content).toEqual('entry1');
-                expect(entries[1].content).toEqual('entry2');
+            .subscribe((result: EntryEntity[]) => {
+                expect(result.length).toEqual(2);
+                expect(result[0].content).toEqual('entry1');
+                expect(result[1].content).toEqual('entry2');
             });
 
         const entries = new Array<EntryEntity>(2);
@@ -118,11 +118,11 @@ describe('EtchedApiService', () => {
 
     it('get entry', () => {
         service.getEntry('entry1')
-            .subscribe(entry => {
-                expect(entry.id).toEqual('entry1');
-                expect(entry.timestamp).toEqual(1);
-                expect(entry.owner).toEqual('owner');
-                expect(entry.keyPairId).toEqual('kpId');
+            .subscribe(result => {
+                expect(result.id).toEqual('entry1');
+                expect(result.timestamp).toEqual(1);
+                expect(result.owner).toEqual('owner');
+                expect(result.keyPairId).toEqual('kpId');
             });
 
         const entry: EntryEntity = {
@@ -207,13 +207,13 @@ describe('EtchedApiService', () => {
 
     it('create journal', () => {
         service.createJournal('kpId', 'content')
-            .subscribe((journal: JournalEntity) => {
-                expect(journal.id).toEqual('entryId');
-                expect(journal.content).toEqual('base64Content');
-                expect(journal.timestamp).toEqual(1);
-                expect(journal.owner).toEqual('user');
-                expect(journal.ownerType).toEqual(OwnerType.USER);
-                expect(journal.keyPairId).toEqual('kpId');
+            .subscribe((result: JournalEntity) => {
+                expect(result.id).toEqual('entryId');
+                expect(result.content).toEqual('base64Content');
+                expect(result.timestamp).toEqual(1);
+                expect(result.owner).toEqual('user');
+                expect(result.ownerType).toEqual(OwnerType.USER);
+                expect(result.keyPairId).toEqual('kpId');
             });
 
         const journal: JournalEntity = {

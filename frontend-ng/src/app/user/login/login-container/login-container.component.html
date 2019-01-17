@@ -1,17 +1,17 @@
 <div class="columns is-centered">
     <div class="column is-12-mobile is-4-desktop">
         <ng-container *ngIf="loginState === NOT_LOGGED_IN">
-            <login (loginEmitter)="onLogin($event)">
-            </login>
+            <app-login (loginEmitter)="onLogin($event)">
+            </app-login>
         </ng-container>
         <ng-container *ngIf="loginState === INVALID_CREDENTIALS">
-            <login (loginEmitter)="onLogin($event)"
-                   [invalidCredentials]="true"
-                   [username]="username">
-            </login>
+            <app-login (loginEmitter)="onLogin($event)"
+                       [invalidCredentials]="true"
+                       [username]="username">
+            </app-login>
         </ng-container>
         <ng-container *ngIf="loginState === LOGGING_IN">
-            <spinner [text]="'Logging in'"></spinner>
+            <app-spinner [text]="'Logging in'"></app-spinner>
         </ng-container>
     </div>
 </div>

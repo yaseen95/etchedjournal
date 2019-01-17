@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { JOURNAL_NAME_VALIDATORS, JournalFormUtils } from '../../../user/form-utils';
-import { EtchedApiService } from '../../../services/etched-api.service';
-import { EncrypterService } from '../../../services/encrypter.service';
-import { Base64Str } from '../../../models/encrypted-entity';
-import { Observable } from 'rxjs';
-import { JournalEntity } from '../../../models/journal-entity';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { EtchedRoutes } from '../../../app-routing-utils';
+import { Base64Str } from '../../../models/encrypted-entity';
+import { JournalEntity } from '../../../models/journal-entity';
+import { EncrypterService } from '../../../services/encrypter.service';
+import { EtchedApiService } from '../../../services/etched-api.service';
+import { JOURNAL_NAME_VALIDATORS, JournalFormUtils } from '../../../user/form-utils';
 
 @Component({
     selector: 'app-create-journal',

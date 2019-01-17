@@ -1,7 +1,7 @@
 import { async, TestBed } from '@angular/core/testing';
-import { Encrypter, KeyPair } from './encrypter';
 
 import * as openpgp from 'openpgp';
+import { Encrypter, KeyPair } from './encrypter';
 
 describe('Encrypter', () => {
 
@@ -28,8 +28,8 @@ describe('Encrypter', () => {
 
     it('generated key pair can instantiate Encrypter.from', async () => {
         const keyPair = await Encrypter.generateKey('passphrase', 'samsepiol');
-        const encrypter = await Encrypter.from(keyPair, 'passphrase');
-        expect(encrypter).toBeDefined();
+        const enc = await Encrypter.from(keyPair, 'passphrase');
+        expect(enc).toBeDefined();
     });
 
     it('encrypt and decrypt', async () => {
@@ -62,14 +62,16 @@ describe('Encrypter', () => {
     });
 
     it('symmetric decrypt existing message', async () => {
-        const decrypted = await Encrypter.symmetricDecrypt(TEST_DATA_SYMMETRICALLY_ENCRYPTED, 'password');
+        const decrypted = await Encrypter.symmetricDecrypt(TEST_DATA_SYMMETRICALLY_ENCRYPTED,
+            'password');
         expect(decrypted).toEqual('test data');
     });
 
     it('symmetric decrypt with incorrect password fails', async () => {
         let decrypted;
         try {
-            decrypted = await Encrypter.symmetricDecrypt(TEST_DATA_SYMMETRICALLY_ENCRYPTED, 'PASSWORD');
+            decrypted = await Encrypter.symmetricDecrypt(TEST_DATA_SYMMETRICALLY_ENCRYPTED,
+                'PASSWORD');
             fail();
         } catch (e) {
             expect(e.message).toEqual('Password is incorrect');

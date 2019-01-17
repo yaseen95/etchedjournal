@@ -1,13 +1,13 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { JournalListComponent } from './journal-list.component';
-import { JournalListItemComponent } from '../journal-list-item/journal-list-item.component';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ReactiveFormsModule } from '@angular/forms';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
 import { JournalEntity } from '../../../models/journal-entity';
 import { OwnerType } from '../../../models/owner-type';
-import { By } from '@angular/platform-browser';
+import { JournalListItemComponent } from '../journal-list-item/journal-list-item.component';
+import { JournalListComponent } from './journal-list.component';
 
 describe('JournalListComponent', () => {
     let component: JournalListComponent;
@@ -63,5 +63,5 @@ describe('JournalListComponent', () => {
     it('lists journals', () => {
         const de = fixture.debugElement.queryAll(By.css('app-journal-list-item'));
         expect(de.length).toEqual(2);
-    })
+    });
 });

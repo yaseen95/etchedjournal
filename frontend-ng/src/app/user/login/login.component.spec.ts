@@ -1,14 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LoginComponent } from './login.component';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { DebugElement } from '@angular/core';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { EtchedUser } from '../../models/etched-user';
-import { TestUtils } from '../../utils/test-utils.spec';
-import { SpinnerComponent } from '../../utils/spinner/spinner.component';
-import { LoginRequest } from '../../services/dtos/login-request';
 import { AuthService } from '../../services/auth.service';
+import { LoginRequest } from '../../services/dtos/login-request';
+import { SpinnerComponent } from '../../utils/spinner/spinner.component';
+import { TestUtils } from '../../utils/test-utils.spec';
+import { LoginComponent } from './login.component';
 
 describe('LoginComponent', () => {
     let component: LoginComponent;
@@ -79,7 +79,7 @@ describe('LoginComponent', () => {
             'abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijz', // 51 chars
         ];
 
-        for (let username of invalidUsernames) {
+        for (const username of invalidUsernames) {
             usernameControl.setValue(username);
             expect(usernameControl.valid).toBeFalsy(`"${username}" was expected to be invalid`);
             expect(loginForm.valid).toBeFalsy();
@@ -106,7 +106,7 @@ describe('LoginComponent', () => {
             'a'.repeat(257), // 257 chars
         ];
 
-        for (let password of invalidPasswords) {
+        for (const password of invalidPasswords) {
             passwordControl.setValue(password);
             expect(passwordControl.valid).toBeFalsy(`"${password}" was expected to be invalid`);
             expect(loginForm.valid).toBeFalsy();

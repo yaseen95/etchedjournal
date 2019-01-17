@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { AuthClass as Auth } from '@aws-amplify/auth';
-import { environment } from '../../environments/environment';
-import { RandomUtils } from '../utils/text-utils';
 import {
     CognitoUser,
     CognitoUserAttribute,
     CognitoUserSession,
     ISignUpResult
 } from 'amazon-cognito-identity-js';
+import { environment } from '../../environments/environment';
 import { EtchedUser } from '../models/etched-user';
+import { RandomUtils } from '../utils/text-utils';
 import { IdToken, Token, TokenDecoder } from '../utils/token-decoder';
-import { CognitoAuthFactory } from './cognito-auth-factory';
 import { ClockService } from './clock.service';
+import { CognitoAuthFactory } from './cognito-auth-factory';
 
 // The cognito js library stores data in local storage. The keys for the items in local storage
 // are prefixed with the string below.
@@ -33,6 +33,78 @@ export class AuthService {
             // noinspection JSIgnoredPromiseFromCall
             this.refreshIfExpired();
         }
+    }
+
+    private static extractUserDetailsFromStorage(clock: ClockService): EtchedUser {
+        const lastUserKey = `${cognitoPrefix()}.LastAuthUser`;
+        const username = localStorage.getItem(lastUserKey);
+        if (username == null) {
+            return null;
+        }
+
+        // TODO: Add a test that checks that user is only set if BOTH id token and username are set
+        const userIdTokenKey = `${cognitoPrefix()}.${username}.idToken`;
+        const userIdToken = localStorage.getItem(userIdTokenKey);
+        if (userIdToken == null) {
+            return null;
+        }
+
+        return AuthService.extractUserDetailsFromIdToken(userIdToken, clock);
+    }
+
+    // @VisibleForTesting
+    static extractUserDetailsFromIdToken(idToken: string, clock: ClockService): EtchedUser | null {
+        const decoded = TokenDecoder.decodeToken<IdToken>(idToken);
+        const tokenValid = this.refreshIsValid(decoded, clock);
+
+        let user: EtchedUser | null;
+        if (tokenValid) {
+            console.info('token is valid');
+            user = {
+                id: decoded.sub,
+                username: decoded.preferred_username,
+                email: null,
+            };
+        } else {
+            console.info('token is invalid');
+            user = null;
+        }
+        return user;
+    }
+
+    // @VisibleForTesting
+    static refreshIsValid(idToken: Token, clock: ClockService): boolean {
+        // refresh expires 30 days after tokens
+        // To simplify it (Yaseen being lazy), we consider refresh expiry to be 29 days after id
+        // token expiry
+        const idExp = idToken.exp * 1000;
+        const refreshExp = idExp + (29 * 24 * 60 * 60 * 1000);
+        const now = clock.nowMillis();
+        return now <= refreshExp;
+    }
+
+    // @VisibleForTesting
+    static isInvalidCredentialsError(e: { code: string, message: string }): boolean {
+        // Invalid password error is in the format below
+        // {
+        //   "code": "NotAuthorizedException",
+        //   "name": "NotAuthorizedException",
+        //   "message": "Incorrect username or password."
+        // }
+        return e.code === 'NotAuthorizedException'
+            && e.message === 'Incorrect username or password.';
+    }
+
+    // @VisibleForTesting
+    static isUserNotFoundError(e: { code: string, message: string }): boolean {
+        // Response from Cognito is in the following format
+        // {
+        //   "code":"UserNotFoundException",
+        //   "name":"UserNotFoundException",
+        //   "message":"User does not exist."
+        // }
+
+        return e.code === 'UserNotFoundException' && e.message === 'User does not exist.';
     }
 
     async register(preferredUsername: string, password: string): Promise<void> {
@@ -57,7 +129,7 @@ export class AuthService {
         });
 
         // sign in to get first set of credentials
-        let signInResult: CognitoUser = await this.auth.signIn(username, password);
+        const signInResult: CognitoUser = await this.auth.signIn(username, password);
 
         // TODO: Handle username is already taken
 
@@ -123,23 +195,6 @@ export class AuthService {
         return this.auth.currentSession();
     }
 
-    private static extractUserDetailsFromStorage(clock: ClockService): EtchedUser {
-        const lastUserKey = `${LOCAL_COGNITO_PREFIX}.${environment.auth.userPoolWebClientId}.LastAuthUser`;
-        const username = localStorage.getItem(lastUserKey);
-        if (username == null) {
-            return null;
-        }
-
-        // TODO: Add a test that checks that user is only set if BOTH id token and username are set
-        const userIdTokenKey = `${LOCAL_COGNITO_PREFIX}.${environment.auth.userPoolWebClientId}.${username}.idToken`;
-        const userIdToken = localStorage.getItem(userIdTokenKey);
-        if (userIdToken == null) {
-            return null;
-        }
-
-        return AuthService.extractUserDetailsFromIdToken(userIdToken, clock);
-    }
-
     // @VisibleForTesting
     async userExists(preferredUsername: string): Promise<boolean> {
         try {
@@ -159,61 +214,10 @@ export class AuthService {
             throw new Error(msg);
         }
     }
+}
 
-    // @VisibleForTesting
-    static extractUserDetailsFromIdToken(idToken: string, clock: ClockService): EtchedUser | null {
-        const decoded = TokenDecoder.decodeToken<IdToken>(idToken);
-        const tokenValid = this.refreshIsValid(decoded, clock);
-
-        let user: EtchedUser | null;
-        if (tokenValid) {
-            console.info('token is valid');
-            user = {
-                id: decoded.sub,
-                username: decoded.preferred_username,
-                email: null,
-            };
-        } else {
-            console.info('token is invalid');
-            user = null;
-        }
-        return user;
-    }
-
-    // @VisibleForTesting
-    static refreshIsValid(idToken: Token, clock: ClockService): boolean {
-        // refresh expires 30 days after tokens
-        // To simplify it (Yaseen being lazy), we consider refresh expiry to be 29 days after id
-        // token expiry
-        const idExp = idToken.exp * 1000;
-        const refreshExp = idExp + (29 * 24 * 60 * 60 * 1000);
-        const now = clock.nowMillis();
-        return now <= refreshExp;
-    }
-
-    // @VisibleForTesting
-    static isInvalidCredentialsError(e: { code: string, message: string }): boolean {
-        // Invalid password error is in the format below
-        // {
-        //   "code": "NotAuthorizedException",
-        //   "name": "NotAuthorizedException",
-        //   "message": "Incorrect username or password."
-        // }
-        return e.code === 'NotAuthorizedException'
-            && e.message === 'Incorrect username or password.';
-    }
-
-    // @VisibleForTesting
-    static isUserNotFoundError(e: { code: string, message: string }): boolean {
-        // Response from Cognito is in the following format
-        // {
-        //   "code":"UserNotFoundException",
-        //   "name":"UserNotFoundException",
-        //   "message":"User does not exist."
-        // }
-
-        return e.code === 'UserNotFoundException' && e.message === 'User does not exist.';
-    }
+export function cognitoPrefix(): string {
+    return `${LOCAL_COGNITO_PREFIX}.${environment.auth.userPoolWebClientId}`;
 }
 
 export class AuthError extends Error {

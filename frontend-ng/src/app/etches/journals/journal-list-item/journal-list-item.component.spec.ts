@@ -1,10 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { JournalListItemComponent } from './journal-list-item.component';
+import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { JournalEntity } from '../../../models/journal-entity';
 import { OwnerType } from '../../../models/owner-type';
-import { By } from '@angular/platform-browser';
+import { JournalListItemComponent } from './journal-list-item.component';
 
 describe('JournalListItemComponent', () => {
     let component: JournalListItemComponent;
@@ -41,5 +41,5 @@ describe('JournalListItemComponent', () => {
     it('links to journal page', () => {
         const de = fixture.debugElement.query(By.css('a'));
         expect(de.properties.href).toEqual('/journals/1234567890abcdef');
-    })
+    });
 });

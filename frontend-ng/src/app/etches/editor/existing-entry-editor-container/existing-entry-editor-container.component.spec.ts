@@ -1,21 +1,21 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
+import { ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { EMPTY } from 'rxjs';
+import { EtchV1 } from '../../../models/etch';
+import { OwnerType } from '../../../models/owner-type';
+import { Encrypter } from '../../../services/encrypter';
+import { EncrypterService } from '../../../services/encrypter.service';
+import { EtchedApiService } from '../../../services/etched-api.service';
+import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
+import { TestUtils } from '../../../utils/test-utils.spec';
+import { EntryEditorComponent } from '../entry-editor/entry-editor.component';
+import { EntryTitleComponent } from '../entry-title/entry-title.component';
 import {
     EntityState,
     ExistingEntryEditorContainerComponent
 } from './existing-entry-editor-container.component';
-import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
-import { EntryTitleComponent } from '../entry-title/entry-title.component';
-import { EntryEditorComponent } from '../entry-editor/entry-editor.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { EtchedApiService } from '../../../services/etched-api.service';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { EMPTY } from 'rxjs';
-import { OwnerType } from '../../../models/owner-type';
-import { Encrypter } from '../../../services/encrypter';
-import { EncrypterService } from '../../../services/encrypter.service';
-import { TestUtils } from '../../../utils/test-utils.spec';
-import { EtchV1 } from '../../../models/etch';
 
 describe('ExistingEntryEditorContainerComponent', () => {
     let component: ExistingEntryEditorContainerComponent;
@@ -84,7 +84,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
 
         fixture.detectChanges();
 
-        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'spinner');
+        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'app-spinner');
         expect(spinnerDe.nativeElement.innerText).toEqual('Getting entry');
     });
 
@@ -94,7 +94,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
 
         fixture.detectChanges();
 
-        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'spinner');
+        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'app-spinner');
         expect(spinnerDe.nativeElement.innerText).toEqual('Getting entry');
     });
 
@@ -104,7 +104,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
 
         fixture.detectChanges();
 
-        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'spinner');
+        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'app-spinner');
         expect(spinnerDe.nativeElement.innerText).toEqual('Decrypting');
     });
 
@@ -114,7 +114,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
 
         fixture.detectChanges();
 
-        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'spinner');
+        const spinnerDe = TestUtils.queryExpectOne(fixture.debugElement, 'app-spinner');
         expect(spinnerDe.nativeElement.innerText).toEqual('Decrypting');
     });
 

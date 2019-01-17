@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { EtchedApiService } from '../../services/etched-api.service';
+import { ActivatedRoute } from '@angular/router';
+import { Base64Str } from '../../models/encrypted-entity';
 import { EntryEntity } from '../../models/entry-entity';
 import { Encrypter } from '../../services/encrypter';
-import { Base64Str } from '../../models/encrypted-entity';
 import { EncrypterService } from '../../services/encrypter.service';
-import { ActivatedRoute } from '@angular/router';
+import { EtchedApiService } from '../../services/etched-api.service';
 
 @Component({
     selector: 'app-entry-list-container',
