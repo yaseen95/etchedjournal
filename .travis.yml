@@ -3,7 +3,4 @@ addons:
   chrome: stable
 
 script:
-  - ./gradlew nodeSetup && \
-    ./gradlew frontend-ng:install && \
-    ./gradlew frontend-ng:lint && \
-    ./gradlew clean build
+  - ./build.sh
