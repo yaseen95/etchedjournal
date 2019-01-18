@@ -6,3 +6,7 @@ a.title.is-4 {
 #navbar-title:hover {
     color: inherit;
 }
+
+section.section {
+    padding-top: 1rem;
+}

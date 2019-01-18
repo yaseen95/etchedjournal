@@ -1,45 +1,46 @@
 <div *ngIf="isEditing" class="column is-full">
     <form [formGroup]="titleForm" (ngSubmit)="submitForm()">
-        <div class="field is-horizontal">
-            <div class="field-body">
-                <div class="field control is-expanded">
-                    <input
-                        id="title-input"
-                        class="input"
-                        type="text"
-                        placeholder="Title"
-                        name="title"
-                        formControlName="title"
-                        appAutoFocus
-                    />
-                    <p *ngIf="titleForm.controls.title.errors?.required"
-                       class="error-help help">
-                        Cannot be empty
-                    </p>
-                    <p *ngIf="titleForm.controls.title.errors?.maxlength"
-                       class="error-help help">
-                        Title cannot be more than
-                        {{ TITLE_MAX_LENGTH }} characters
-                        long
-                    </p>
-                    <p
-                        *ngIf="titleForm.controls.title.errors?.isWhitespace &&
+        <!--https://bulma.io/documentation/form/general/#form-group-->
+        <div class="field is-grouped">
+            <div class="control is-expanded">
+                <input
+                    id="title-input"
+                    class="input"
+                    type="text"
+                    placeholder="Title"
+                    name="title"
+                    formControlName="title"
+                    appAutoFocus
+                />
+                <p *ngIf="titleForm.controls.title.errors?.required"
+                   class="error-help help">
+                    Cannot be empty
+                </p>
+                <p *ngIf="titleForm.controls.title.errors?.maxlength"
+                   class="error-help help">
+                    Title cannot be more than
+                    {{ TITLE_MAX_LENGTH }} characters
+                    long
+                </p>
+                <p
+                    *ngIf="titleForm.controls.title.errors?.isWhitespace &&
                             !titleForm.controls.title.errors?.required"
-                        class="error-help help">
-                        Title cannot be blank
-                    </p>
-                </div>
-                <div class="field is-narrow control">
-                    <button
-                        id="save-button"
-                        class="button is-primary"
-                        type="button"
-                        (click)="toggleEdit(true)"
-                        [disabled]="!titleForm.valid"
-                    >
-                        Save
-                    </button>
-                </div>
+                    class="error-help help">
+                    Title cannot be blank
+                </p>
+            </div>
+            <div class="control">
+                <button
+                    id="save-button"
+                    class="button is-primary"
+                    type="button"
+                    (click)="toggleEdit(true)"
+                    [disabled]="!titleForm.valid"
+                >
+                    Save
+                </button>
+            </div>
+            <div class="control">
                 <div class="field is-narrow control">
                     <button
                         id="cancel-button"
@@ -55,16 +56,20 @@
 </div>
 <ng-container *ngIf="!isEditing">
     <div class="column">
-        <h4>{{ title }}</h4>
-    </div>
-    <div class="column is-narrow">
-        <button
-            id="edit-button"
-            class="button is-small is-pulled-right"
-            type="button"
-            (click)="toggleEdit()"
-        >
-            Edit
-        </button>
+        <div class="field is-grouped">
+            <div class="control is-expanded">
+                <h4>{{ title }}</h4>
+            </div>
+            <div class="control">
+                <button
+                    id="edit-button"
+                    class="button is-small"
+                    type="button"
+                    (click)="toggleEdit()"
+                >
+                    Edit
+                </button>
+            </div>
+        </div>
     </div>
 </ng-container>
