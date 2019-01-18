@@ -1,0 +1,4 @@
+<div class="etch-item" (click)="toggleExpand()">
+    <p class="etch-content">{{etch.content}}</p>
+    <p *ngIf="isExpanded" class="help etch-ts">{{timestamp}}</p>
+</div>

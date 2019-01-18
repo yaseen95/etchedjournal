@@ -2,7 +2,9 @@
     <div class="columns">
         <div class="column">
             <ul id="etches-list">
-                <li *ngFor="let e of etches">{{ e.content }}</li>
+                <li *ngFor="let e of etches">
+                    <app-etch-item [etch]="e"></app-etch-item>
+                </li>
             </ul>
         </div>
     </div>
