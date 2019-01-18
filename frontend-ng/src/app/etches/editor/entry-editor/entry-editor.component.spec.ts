@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 import { EtchV1 } from '../../../models/etch';
 import { ClockService } from '../../../services/clock.service';
 import { TestUtils } from '../../../utils/test-utils.spec';
+import { EtchItemComponent } from '../etch-item/etch-item.component';
 import { EntryEditorComponent } from './entry-editor.component';
 
 describe('EntryEditorComponent', () => {
@@ -17,7 +18,10 @@ describe('EntryEditorComponent', () => {
         clockSpy.nowMillis.and.returnValue(0);
 
         TestBed.configureTestingModule({
-            declarations: [EntryEditorComponent],
+            declarations: [
+                EntryEditorComponent,
+                EtchItemComponent,
+            ],
             providers: [
                 {provide: ClockService, useValue: clockSpy},
             ]
@@ -33,10 +37,6 @@ describe('EntryEditorComponent', () => {
         component.etchEmitter.subscribe(e => emittedEtches.push(e));
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-
     it('etches renders when length greater than 0', () => {
         component.etches = [
             new EtchV1('abc', 0),
@@ -46,11 +46,11 @@ describe('EntryEditorComponent', () => {
 
         const listDe = TestUtils.queryExpectOne(fixture.debugElement, '#etches-list');
 
-        const listItems = listDe.queryAll(By.css('li'));
+        const listItems = listDe.queryAll(By.css('app-etch-item'));
         expect(listItems.length).toEqual(2);
 
-        expect(listItems[0].nativeElement.innerText).toEqual('abc');
-        expect(listItems[1].nativeElement.innerText).toEqual('def');
+        expect(listItems[0].nativeElement.innerText.trim()).toEqual('abc');
+        expect(listItems[1].nativeElement.innerText.trim()).toEqual('def');
     });
 
     it('etches not visible when no etches', () => {

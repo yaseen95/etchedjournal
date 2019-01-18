@@ -12,6 +12,7 @@ import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { EntryEditorComponent } from '../entry-editor/entry-editor.component';
 import { EntryTitleComponent } from '../entry-title/entry-title.component';
+import { EtchItemComponent } from '../etch-item/etch-item.component';
 import {
     EntityState,
     ExistingEntryEditorContainerComponent
@@ -40,6 +41,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
                 SpinnerComponent,
                 EntryTitleComponent,
                 EntryEditorComponent,
+                EtchItemComponent,
             ],
             imports: [ReactiveFormsModule],
             providers: [
@@ -138,8 +140,8 @@ describe('ExistingEntryEditorContainerComponent', () => {
         const titleDe = TestUtils.queryExpectOne(fixture.debugElement, 'app-entry-title h4');
         expect(titleDe.nativeElement.innerText).toEqual('Entry Title');
 
-        const etchListDe = TestUtils.queryExpectOne(fixture.debugElement, 'app-editor ul li');
-        expect(etchListDe.nativeElement.innerText).toEqual('decrypted etch 1');
+        const etchListDe = TestUtils.queryExpectOne(fixture.debugElement, 'app-etch-item');
+        expect(etchListDe.nativeElement.innerText.trim()).toEqual('decrypted etch 1');
     });
 
     it('decryptEntry', fakeAsync(() => {

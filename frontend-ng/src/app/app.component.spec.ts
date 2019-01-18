@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { EditorContainerComponent } from './etches/editor/editor-container.component';
 import { EntryEditorComponent } from './etches/editor/entry-editor/entry-editor.component';
 import { EntryTitleComponent } from './etches/editor/entry-title/entry-title.component';
+import { EtchItemComponent } from './etches/editor/etch-item/etch-item.component';
 import { NavComponent } from './nav/nav.component';
 import { LoginComponent } from './user/login/login.component';
 import { RegisterComponent } from './user/register/register.component';
@@ -24,6 +25,7 @@ describe('AppComponent', () => {
                 EntryTitleComponent,
                 EntryEditorComponent,
                 NavComponent,
+                EtchItemComponent,
             ],
             imports: [
                 RouterTestingModule,

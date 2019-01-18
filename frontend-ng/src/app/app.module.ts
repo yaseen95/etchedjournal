@@ -1,8 +1,7 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
-import { BrowserModule, Title } from '@angular/platform-browser';
-
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthInterceptor } from './auth/auth.interceptor';
@@ -10,6 +9,7 @@ import { AppAutoFocusDirective } from './directives/app-auto-focus.directive';
 import { EditorContainerComponent } from './etches/editor/editor-container.component';
 import { EntryEditorComponent } from './etches/editor/entry-editor/entry-editor.component';
 import { EntryTitleComponent } from './etches/editor/entry-title/entry-title.component';
+import { EtchItemComponent } from './etches/editor/etch-item/etch-item.component';
 import { ExistingEntryEditorContainerComponent } from './etches/editor/existing-entry-editor-container/existing-entry-editor-container.component';
 import { EntryListContainerComponent } from './etches/entry-list/entry-list-container.component';
 import { EntryListItemComponent } from './etches/entry-list/entry-list-item/entry-list-item.component';
@@ -43,6 +43,7 @@ import { SpinnerComponent } from './utils/spinner/spinner.component';
         EntryEditorComponent,
         EntryTitleComponent,
         ExistingEntryEditorContainerComponent,
+        EtchItemComponent,
 
         // Entry list components
         EntryListContainerComponent,

@@ -7,6 +7,7 @@ import { EtchedApiService } from '../../services/etched-api.service';
 import { EditorContainerComponent } from './editor-container.component';
 import { EntryEditorComponent } from './entry-editor/entry-editor.component';
 import { EntryTitleComponent } from './entry-title/entry-title.component';
+import { EtchItemComponent } from './etch-item/etch-item.component';
 
 describe('EditorContainerComponent', () => {
     let component: EditorContainerComponent;
@@ -30,6 +31,7 @@ describe('EditorContainerComponent', () => {
                 EditorContainerComponent,
                 EntryTitleComponent,
                 EntryEditorComponent,
+                EtchItemComponent,
             ],
             providers: [
                 {provide: EtchedApiService, useValue: etchedApiSpy},
@@ -52,4 +54,6 @@ describe('EditorContainerComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    // TODO: Add some tests here
 });
