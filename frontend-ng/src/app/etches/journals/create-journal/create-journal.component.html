@@ -1,6 +1,8 @@
 <div class="columns is-centered">
     <div class="column is-12-mobile is-8-desktop">
         <h3 class="title">Create Journal</h3>
+        <p id="journal-desc">You can create as many journals as you like. You can organize them
+            by idea e.g. Personal, Work, Finances. Or keep everything in a single journal.</p>
         <form [formGroup]="createJournalForm"
               class="control"
               (ngSubmit)="onSubmit()">
@@ -29,7 +31,7 @@
                         class="error-help help">
                         Cannot be more than {{ JOURNAL_NAME_MAX_LENGTH }} characters long
                     </p>
-                    <p class="help">Don't worry, this can be changed later.</p>
+                    <p class="help">Don't worry, the name can be changed later.</p>
                 </div>
             </div>
             <div class="field">
