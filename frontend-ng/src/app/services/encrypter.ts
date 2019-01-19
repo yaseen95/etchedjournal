@@ -1,11 +1,16 @@
 import * as bcrypt from 'bcryptjs';
 import * as openpgp from 'openpgp';
 import { DecryptOptions, EncryptOptions, UserId } from 'openpgp';
+import { environment } from '../../environments/environment';
 import { Base64Str } from '../models/encrypted-entity';
 
 const DEFAULT_CURVE = 'p521';
 
 const DEFAULT_STRETCHING_ROUNDS: number = 10;
+
+if (!environment.test) {
+    openpgp.initWorker({path: 'assets/openpgp.worker.min.js'});
+}
 
 // TODO: Can we return Observables instead of Promises?
 // Would make it more consistent with the API

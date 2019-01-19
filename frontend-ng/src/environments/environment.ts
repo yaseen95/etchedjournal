@@ -9,6 +9,7 @@ export const environment = {
         userPoolId: 'us-east-1_OjrfHbPY4',
         userPoolWebClientId: '5sb8fjovam8pn5t8j4n10i2e79',
     },
+    test: false,
 };
 
 /*
