@@ -1,6 +1,9 @@
 import { async, TestBed } from '@angular/core/testing';
 
 import * as openpgp from 'openpgp';
+import { interval } from 'rxjs';
+import { take } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 import { Encrypter, KeyPair } from './encrypter';
 
 describe('Encrypter', () => {
@@ -8,6 +11,9 @@ describe('Encrypter', () => {
     let encrypter: Encrypter;
 
     beforeEach(async(() => {
+        // Used to disable openpgp workers
+        environment.test = true;
+
         TestBed.configureTestingModule({});
         Encrypter.from2(
             TEST_PRIVATE_KEY,
@@ -18,6 +24,12 @@ describe('Encrypter', () => {
             TEST_KEY_PAIR.iterations
         )
             .then(enc => encrypter = enc);
+
+        // TODO: Figure out why openpgp.encrypt is not defined
+        // Some tests fail because it's not defined.
+        // Adding this delay fixes things.
+        const intervalObs = interval(1000).pipe(take(1));
+        intervalObs.subscribe(() => {});
     }));
 
     it('generate key pair stretches passphrase', async () => {
