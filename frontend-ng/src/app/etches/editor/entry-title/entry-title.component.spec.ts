@@ -37,13 +37,9 @@ describe('EntryTitleComponent', () => {
         component.title = undefined;
         component.ngOnInit();
         expect(emittedEvents.length).toEqual(1);
-
-        // The default time should be pretty recent
-        expect(new Date(emittedEvents[0]).getTime()).toBeLessThan(Date.now());
-        // Have to subtract by 1 second because the default timestamp string does not have
-        // millis precision and is rounded down to the nearest second
-        expect(new Date(emittedEvents[0]).getTime()).toBeGreaterThan(Date.now() - 1_000);
-
+        // expect non empty string as the total
+        // Title emitted is usually Date.toLocaleString() e.g. 19/01/2019
+        expect(emittedEvents[0].trim().length).toBeGreaterThan(1);
         expect(component.title).toEqual(emittedEvents[0]);
         expect(component.prevTitle).toEqual(emittedEvents[0]);
     });

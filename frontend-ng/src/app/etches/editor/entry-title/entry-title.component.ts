@@ -46,7 +46,7 @@ export class EntryTitleComponent implements OnInit {
         if (this.title === undefined) {
             // title may be provided if entry already exists
             // if it doesn't we just use the current time as the title
-            this.title = new Date().toString();
+            this.title = new Date().toLocaleDateString();
 
             // Emit the first title so that the container is aware of it
             // Events cannot be emitted in the constructor, so we have to do it in ngOnInit
