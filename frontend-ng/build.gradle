@@ -5,7 +5,16 @@ plugins {
 version '0.0.1'
 
 task bundle(type: NpmTask) {
-    args = ['run', 'build']
+    if ("dev" == project.flavor) {
+        logger.info("Building dev bundle")
+        args = ['run', 'build-dev']
+    } else if ("prod" == project.flavor) {
+        logger.info("Building prod bundle")
+        args = ['run', 'build-prod']
+    } else {
+        logger.info("Building local bundle")
+        args = ['run', 'build']
+    }
 }
 
 task start(type: NpmTask) {

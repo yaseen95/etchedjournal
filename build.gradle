@@ -1,0 +1,5 @@
+if (System.getenv('ETCHED_FLAVOR') == null) {
+    throw new InvalidUserDataException("Must specify build flavor using 'ETCHED_FLAVOR' env var")
+}
+
+project.ext.set("flavor", System.getenv('ETCHED_FLAVOR'))
