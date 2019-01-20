@@ -14,6 +14,7 @@ buildscript {
         auth0JwksRsaVersion = '0.6.1'
         jcipAnnotationsVersion = '1.0'
         flywayVersion = '5.2.4'
+        postgresqlVersion = '42.2.5'
     }
     repositories {
         mavenCentral()
@@ -87,6 +88,7 @@ dependencies {
 
     runtime("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
     runtime("com.h2database:h2:${h2Version}")
+    compile("org.postgresql:postgresql:${postgresqlVersion}")
 
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     testCompile("org.springframework.security:spring-security-test:${springSecurityVersion}")
