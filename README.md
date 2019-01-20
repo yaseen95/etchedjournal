@@ -14,6 +14,20 @@ backspace. It feels like a cool enough idea to implement.
 User content is encrypted using PGP keys. The PGP keys are generated client side and are stored 
 encrypted by a *(strong)* user passphrase. All content is signed with the private key.
 
+## Running
+### DB Setup
+```
+docker-compose up
+```
+
+### Building
+Building for the first time can be done by running `build.sh`.
+
+Subsequent builds can be run with
+```bash
+./gradlew clean build
+```
+
 ## Postman
 Postman config files are also stored in `config/postman/`. It makes it easy to test and verify API
 functionality.

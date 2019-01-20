@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:10.6
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 'dolphins'
+      POSTGRES_USER: etched
+      POSTGRES_DB: etched
+    container_name: etched-db
+    ports:
+      - '5432:5432'

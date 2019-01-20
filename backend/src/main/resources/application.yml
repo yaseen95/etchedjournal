@@ -8,19 +8,24 @@ logging.pattern.level: '%5p %X{userId}'
 
 spring:
   datasource:
-    driver-class-name: org.h2.Driver
-
-#    # Must specify this value in order to execute data-h2.sql.
-#    platform: h2
-  h2:
-    console:
-      enabled: true
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_URL}:5432/etched
+    username: etched
+    password: ${DB_PASSWORD}
+    platform: postgresql
 
   jpa:
     hibernate:
       ddl-auto: validate
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
+
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            # https://github.com/spring-projects/spring-boot/issues/12007
+            non_contextual_creation: true
 
   jackson:
     serialization:
@@ -36,3 +41,8 @@ spring:
   profiles:
     # Reference the flavor using an environment variable
     active: ${ETCHED_FLAVOR}
+
+  flyway:
+    locations:
+      - 'classpath:/db/migration/{vendor}'
+
