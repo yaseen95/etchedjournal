@@ -8,7 +8,9 @@ import com.etchedjournal.etched.service.exception.BadRequestException
 import com.etchedjournal.etched.utils.PgpUtils
 import com.etchedjournal.etched.utils.getAlgorithmStr
 import com.etchedjournal.etched.utils.getUserId
+import com.etchedjournal.etched.utils.id.IsEtchedId
 import org.slf4j.LoggerFactory
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,6 +21,7 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/v1/keypairs")
+@Validated
 class KeypairServiceController(
     private val keypairService: KeypairService,
     private val authService: AuthService
@@ -56,7 +59,7 @@ class KeypairServiceController(
     }
 
     @GetMapping("/{keypairId}")
-    fun getKeypair(@PathVariable keypairId: String): KeypairEntity {
+    fun getKeypair(@PathVariable @Valid @IsEtchedId keypairId: String): KeypairEntity {
         logger.info("Getting keypair with id {}", keypairId)
         return keypairService.getKeypair(keypairId)
     }

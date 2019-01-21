@@ -1,6 +1,5 @@
 package com.etchedjournal.etched
 
-import com.etchedjournal.etched.utils.id.IdGeneratorImpl
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 import java.time.Duration
@@ -45,4 +44,4 @@ class StringLengthMatcher(val length: Int) : TypeSafeMatcher<String?>() {
     }
 }
 
-val ID_LENGTH_MATCHER = StringLengthMatcher(length = IdGeneratorImpl.ID_LENGTH)
+val ID_LENGTH_MATCHER = StringLengthMatcher(length = 11)

@@ -3,6 +3,8 @@ package com.etchedjournal.etched.controller
 import com.etchedjournal.etched.dto.EncryptedEntityRequest
 import com.etchedjournal.etched.models.entity.JournalEntity
 import com.etchedjournal.etched.service.JournalService
+import com.etchedjournal.etched.utils.id.IsEtchedId
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -13,6 +15,7 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/v1/journals")
+@Validated
 class JournalServiceController(private val journalService: JournalService) {
 
     /**
@@ -24,7 +27,7 @@ class JournalServiceController(private val journalService: JournalService) {
     }
 
     @GetMapping("/{journalId}")
-    fun getJournal(@PathVariable journalId: String): JournalEntity {
+    fun getJournal(@PathVariable @Valid @IsEtchedId journalId: String): JournalEntity {
         return journalService.getJournal(journalId)
     }
 

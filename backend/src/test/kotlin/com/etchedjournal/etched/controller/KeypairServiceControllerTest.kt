@@ -1,6 +1,7 @@
 package com.etchedjournal.etched.controller
 
 import com.etchedjournal.etched.ID_LENGTH_MATCHER
+import com.etchedjournal.etched.INVALID_ETCHED_IDS
 import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
@@ -75,7 +76,7 @@ class KeypairServiceControllerTest {
             .andExpect(jsonPath("$.*", hasSize<Any>(2)))
 
             .andExpect(jsonPath("$[0].*", hasSize<Any>(8)))
-            .andExpect(jsonPath("$[0].id", `is`("k1")))
+            .andExpect(jsonPath("$[0].id", `is`("k1".padEnd(11, '0'))))
             .andExpect(jsonPath("$[0].timestamp", `is`(0)))
             .andExpect(jsonPath("$[0].publicKey", `is`("AQIDBA==")))
             .andExpect(jsonPath("$[0].privateKey", `is`("BQYHCA==")))
@@ -84,7 +85,7 @@ class KeypairServiceControllerTest {
             .andExpect(jsonPath("$[0].salt", `is`("salt")))
             .andExpect(jsonPath("$[0].iterations", `is`(1)))
 
-            .andExpect(jsonPath("$[1].id", `is`("k2")))
+            .andExpect(jsonPath("$[1].id", `is`("k2".padEnd(11, '0'))))
             .andExpect(jsonPath("$[1].timestamp", `is`(0)))
             .andExpect(jsonPath("$[1].publicKey", `is`("AQI=")))
             .andExpect(jsonPath("$[1].privateKey", `is`("BQY=")))
@@ -134,7 +135,7 @@ class KeypairServiceControllerTest {
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET keypair - not found`() {
-        mockMvc.perform(get("/api/v1/keypairs/00000000-0000-0000-0000-000000000001"))
+        mockMvc.perform(get("/api/v1/keypairs/foobarbaz10"))
             .andExpect(status().isNotFound)
     }
 
@@ -162,6 +163,16 @@ class KeypairServiceControllerTest {
         mockMvc.perform(get("/api/v1/keypairs/${keypair.id}"))
             .andExpect(status().isUnauthorized)
             .andExpect(content().string(""))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["USER"])
+    fun `GET keypair - invalid etched id returns 400`() {
+        for (id in INVALID_ETCHED_IDS) {
+            mockMvc.perform(get("/api/v1/keypairs/$id"))
+                .andExpect(status().isBadRequest)
+                .andExpect(content().json("""{"message": "Invalid value '$id' for keypairId"}"""))
+        }
     }
 
     @Test

@@ -1,8 +1,10 @@
 package com.etchedjournal.etched.dto
 
+import com.etchedjournal.etched.utils.id.IsEtchedId
+
 data class EncryptedEntityRequest(
     val content: ByteArray,
-    val keyPairId: String
+    @IsEtchedId val keyPairId: String
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

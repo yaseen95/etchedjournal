@@ -3,7 +3,9 @@ package com.etchedjournal.etched.controller
 import com.etchedjournal.etched.dto.EncryptedEntityRequest
 import com.etchedjournal.etched.models.entity.EtchEntity
 import com.etchedjournal.etched.service.EtchService
+import com.etchedjournal.etched.utils.id.IsEtchedId
 import org.slf4j.LoggerFactory
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -15,21 +17,22 @@ import javax.validation.Valid
 
 @RequestMapping("/api/v1/etches")
 @RestController
+@Validated
 class EtchServiceController(private val etchService: EtchService) {
 
     @GetMapping("")
-    fun getEtches(@RequestParam entryId: String): List<EtchEntity> {
+    fun getEtches(@RequestParam @Valid @IsEtchedId entryId: String): List<EtchEntity> {
         return etchService.getEtches(entryId)
     }
 
     @GetMapping("/{etchId}")
-    fun getEtch(@PathVariable etchId: String): EtchEntity {
+    fun getEtch(@PathVariable @Valid @IsEtchedId etchId: String): EtchEntity {
         return etchService.getEtch(etchId)
     }
 
     @PostMapping("")
     fun create(
-        @RequestParam entryId: String,
+        @RequestParam @Valid @IsEtchedId entryId: String,
         @RequestBody etches: List<@Valid EncryptedEntityRequest>
     ): List<EtchEntity> {
         logger.info("Creating etches for entry {}", entryId)

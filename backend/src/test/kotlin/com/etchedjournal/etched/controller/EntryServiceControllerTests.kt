@@ -1,6 +1,7 @@
 package com.etchedjournal.etched.controller
 
 import com.etchedjournal.etched.ID_LENGTH_MATCHER
+import com.etchedjournal.etched.INVALID_ETCHED_IDS
 import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
@@ -27,7 +28,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.util.UUID
 import javax.transaction.Transactional
 
 @RunWith(SpringRunner::class)
@@ -91,6 +91,9 @@ class EntryServiceControllerTests {
             .andExpect(jsonPath("$[0].getUserId").doesNotExist())
     }
 
+    // TODO: Add test for getting entries by journal not existing
+    // TODO: Add test for getting entries by journal belongs to another user
+
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET entry by ID`() {
@@ -127,10 +130,20 @@ class EntryServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET entry 404 not found`() {
-        val entryId = UUID.randomUUID()
-        mockMvc.perform(get("$ENTRIES_PATH/$entryId"))
+        val entryId = "foobarbaz10"
+        mockMvc.perform(get("$ENTRIES_PATH/foobarbaz10"))
             .andExpect(status().isNotFound)
             .andExpect(jsonPath("\$.message", `is`("Unable to find entry with id $entryId")))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["USER"])
+    fun `GET entry - invalid etched id returns 400`() {
+        for (id in INVALID_ETCHED_IDS) {
+            mockMvc.perform(get("$ENTRIES_PATH/$id"))
+                .andExpect(status().isBadRequest)
+                .andExpect(jsonPath("\$.message", `is`("Invalid value '$id' for entryId")))
+        }
     }
 
     @Test

@@ -4,17 +4,10 @@ import com.etchedjournal.etched.models.OwnerType
 import java.time.Instant
 import javax.persistence.Column
 import javax.persistence.Entity
-import javax.persistence.SequenceGenerator
 import javax.persistence.Table
 
 @Entity
 @Table(name = "keypairs")
-@SequenceGenerator(
-    name = "id_generator",
-    sequenceName = "key_pairs_id_sequence",
-    initialValue = 1,
-    allocationSize = 1
-)
 class KeypairEntity(
     id: String,
     timestamp: Instant,
@@ -44,7 +37,6 @@ class KeypairEntity(
         if (this === other) return true
         if (other !is KeypairEntity) return false
 
-        if (_id != other._id) return false
         if (id != other.id) return false
         if (timestamp != other.timestamp) return false
         if (!publicKey.contentEquals(other.publicKey)) return false
@@ -59,8 +51,7 @@ class KeypairEntity(
     }
 
     override fun hashCode(): Int {
-        var result = _id?.hashCode() ?: 0
-        result = 31 * result + id.hashCode()
+        var result = id.hashCode()
         result = 31 * result + timestamp.hashCode()
         result = 31 * result + publicKey.contentHashCode()
         result = 31 * result + privateKey.contentHashCode()

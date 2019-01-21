@@ -6,6 +6,7 @@ import com.etchedjournal.etched.service.exception.ServerException
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
+import org.hibernate.validator.internal.engine.path.PathImpl
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -96,8 +97,10 @@ class ExceptionAdvice {
         errorMsg = if (violation.invalidValue == null) {
             "Cannot supply null for key '${violation.propertyPath}'"
         } else {
-            "Invalid value '${violation.invalidValue}' for ${violation.propertyPath}"
+            val fieldName = (violation.propertyPath as PathImpl).leafNode.name
+            "Invalid value '${violation.invalidValue}' for $fieldName"
         }
+        logger.info(errorMsg)
         return badRequest(errorMsg)
     }
 
