@@ -28,7 +28,7 @@ class TestRepoUtils(
     ): JournalEntity {
         return journalRepo.save(
             JournalEntity(
-                id = id,
+                id = id.padEnd(11, '0'),
                 timestamp = timestamp,
                 content = content,
                 owner = owner,
@@ -49,7 +49,7 @@ class TestRepoUtils(
     ): EntryEntity {
         return entryRepo.save(
             EntryEntity(
-                id = id,
+                id = id.padEnd(11, '0'),
                 timestamp = timestamp,
                 content = content,
                 owner = owner,
@@ -71,7 +71,7 @@ class TestRepoUtils(
     ): EtchEntity {
         return etchRepo.save(
             EtchEntity(
-                id = id,
+                id = id.padEnd(11, '0'),
                 timestamp = timestamp,
                 content = content,
                 owner = owner,
@@ -94,7 +94,7 @@ class TestRepoUtils(
     ): KeypairEntity {
         return keyPairRepo.save(
             KeypairEntity(
-                id = id,
+                id = id.padEnd(11, '0'),
                 publicKey = publicKey,
                 privateKey = privateKey,
                 iterations = iterations,

@@ -30,3 +30,14 @@ class TestUtils(private val mapper: ObjectMapper) {
         return mapper.readTree(s)
     }
 }
+
+val INVALID_ETCHED_IDS = listOf(
+    "abc", // too short
+    "           ",  // all whitespace
+    "abcdefghij",   // too short
+    "abcdefghijgh", // too long
+    " abcdefghij",  // leading whitespace
+    "abcdefghij ",  // trailing whitespace
+    "abcdefghij=",  // we remove the padding, it should not be included
+    "abcdefghij("   // symbols
+)

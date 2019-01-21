@@ -1,8 +1,9 @@
 package com.etchedjournal.etched
 
 import com.etchedjournal.etched.security.ExceptionHandledFilter
+import com.etchedjournal.etched.utils.id.CamflakeIdGenerator
 import com.etchedjournal.etched.utils.id.IdGenerator
-import com.etchedjournal.etched.utils.id.IdGeneratorImpl
+import com.etchedjournal.etched.utils.id.camflake.Camflake
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.MDC
 import org.springframework.context.annotation.Bean
@@ -19,8 +20,13 @@ import javax.servlet.http.HttpServletResponse
 class EtchedConfig {
 
     @Bean
-    fun idGenerator(): IdGenerator {
-        return IdGeneratorImpl.INSTANCE
+    fun idGenerator(camflake: Camflake): IdGenerator {
+        return CamflakeIdGenerator(camflake)
+    }
+
+    @Bean
+    fun camflake(): Camflake {
+        return Camflake()
     }
 
     @Bean

@@ -6,21 +6,16 @@ import java.time.Instant
 import javax.persistence.Column
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.IdClass
 import javax.persistence.MappedSuperclass
 import javax.persistence.Version
 
 @MappedSuperclass
+// Used to get around restriction around converting id columns
+@IdClass(EntityIdClass::class)
 abstract class BaseEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_generator")
-    @Column(nullable = false, unique = true, updatable = false, insertable = true)
-    @JsonIgnore
-    var _id: Long? = null,
-
-    @Column(unique = true, nullable = false, updatable = false, insertable = true)
     val id: String,
 
     /** Represents the created time of the entity */

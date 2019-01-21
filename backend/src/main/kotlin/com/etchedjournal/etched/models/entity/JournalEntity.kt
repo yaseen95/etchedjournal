@@ -5,18 +5,11 @@ import java.time.Instant
 import javax.persistence.Entity
 import javax.persistence.Inheritance
 import javax.persistence.InheritanceType
-import javax.persistence.SequenceGenerator
 import javax.persistence.Table
 
 @Entity
 @Table(name = "journals")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@SequenceGenerator(
-    name = "id_generator",
-    sequenceName = "journals_id_sequence",
-    initialValue = 1,
-    allocationSize = 1
-)
 class JournalEntity(
     id: String,
     content: ByteArray,

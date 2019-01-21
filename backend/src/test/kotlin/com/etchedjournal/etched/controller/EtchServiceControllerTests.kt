@@ -1,6 +1,7 @@
 package com.etchedjournal.etched.controller
 
 import com.etchedjournal.etched.ID_LENGTH_MATCHER
+import com.etchedjournal.etched.INVALID_ETCHED_IDS
 import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService
 import com.etchedjournal.etched.TestConfig
@@ -29,7 +30,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.util.UUID
 import javax.transaction.Transactional
 
 @RunWith(SpringRunner::class)
@@ -127,14 +127,14 @@ class EtchServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET etches with entry does not exist`() {
-        mockMvc.perform(get("$ETCHES_PATH?entryId=${UUID.randomUUID()}"))
+        mockMvc.perform(get("$ETCHES_PATH?entryId=foobarbaz10"))
             .andExpect(status().isNotFound)
     }
 
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET etch 404 not found`() {
-        mockMvc.perform(get("$ETCHES_PATH/${UUID.randomUUID()}"))
+        mockMvc.perform(get("$ETCHES_PATH/foobarbaz10"))
             .andExpect(status().isNotFound)
     }
 
@@ -152,6 +152,16 @@ class EtchServiceControllerTests {
         mockMvc.perform(get("$ETCHES_PATH?entryId=${otherUserEntry.id}"))
             .andExpect(status().isForbidden)
             .andExpect(jsonPath("\$.message", `is`("Forbidden")))
+    }
+
+    @Test
+    @WithMockUser
+    fun `GET etches - invalid etched id returns 400`() {
+        for (id in INVALID_ETCHED_IDS) {
+            mockMvc.perform(get("$ETCHES_PATH/$id"))
+                .andExpect(status().isBadRequest)
+                .andExpect(content().json("""{"message": "Invalid value '$id' for etchId"}"""))
+        }
     }
 
     @Test

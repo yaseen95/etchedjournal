@@ -1,6 +1,7 @@
 package com.etchedjournal.etched.controller
 
 import com.etchedjournal.etched.ID_LENGTH_MATCHER
+import com.etchedjournal.etched.INVALID_ETCHED_IDS
 import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
@@ -114,6 +115,16 @@ class JournalServiceControllerTests {
             .andExpect(jsonPath("$.owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$.ownerType", `is`("USER")))
             .andExpect(jsonPath("$.keyPairId", `is`(keyPair.id)))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["USER"])
+    fun `GET journal - invalid etched id returns 400`() {
+        for (id in INVALID_ETCHED_IDS) {
+            mockMvc.perform(get("$JOURNALS_URL/$id"))
+                .andExpect(status().isBadRequest)
+                .andExpect(content().json("""{"message": "Invalid value '$id' for journalId"}"""))
+        }
     }
 
     @Test

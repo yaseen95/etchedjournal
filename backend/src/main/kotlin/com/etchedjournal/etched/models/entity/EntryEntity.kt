@@ -8,18 +8,11 @@ import javax.persistence.Inheritance
 import javax.persistence.InheritanceType
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
-import javax.persistence.SequenceGenerator
 import javax.persistence.Table
 
 @Entity
 @Table(name = "entries")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@SequenceGenerator(
-    name = "id_generator",
-    sequenceName = "entries_id_sequence",
-    initialValue = 1,
-    allocationSize = 1
-)
 class EntryEntity(
     id: String,
     content: ByteArray,
