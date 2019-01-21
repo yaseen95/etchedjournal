@@ -32,7 +32,7 @@ class EntryServiceController(private val entryService: EntryService) {
      * Returns all entries.
      */
     @GetMapping("")
-    fun getEntries(@RequestParam @Valid journalId: String): List<EntryEntity> {
+    fun getEntries(@RequestParam @Valid @IsEtchedId journalId: String): List<EntryEntity> {
         return entryService.getEntries(journalId)
     }
 
