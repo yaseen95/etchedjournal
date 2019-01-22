@@ -7,3 +7,5 @@ server:
     keyStoreType: PKCS12
     keyAlias: etchedapp
   port: 443
+logging:
+  file: /home/ubuntu/logs/etched-log.log
