@@ -53,6 +53,8 @@ export class EntryListContainerComponent implements OnInit {
     }
 
     decrypt(encryptedEntries: EntryEntity[]) {
+        this.decrypting = true;
+
         // Create a copy of the encryptedEntries
         const decrypted: EntryEntity[] = encryptedEntries.slice(0);
 
