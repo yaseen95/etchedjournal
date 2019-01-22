@@ -4,6 +4,7 @@ import { combineLatest, from, interval } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { EtchedRoutes } from '../../app-routing-utils';
 import { AuthService } from '../../services/auth.service';
+import { LocationService } from '../../services/location.service';
 
 /**
  * Very basic component that displays a logout spinner (with a fake delay)
@@ -16,7 +17,8 @@ import { AuthService } from '../../services/auth.service';
 export class LogoutComponent implements OnInit {
 
     constructor(private router: Router,
-                private authService: AuthService) {
+                private authService: AuthService,
+                private locationService: LocationService) {
     }
 
     ngOnInit() {
@@ -27,6 +29,9 @@ export class LogoutComponent implements OnInit {
         const intervalObs = interval(500 + jitter).pipe(take(1));
 
         combineLatest(authObs, intervalObs)
-            .subscribe(() => this.router.navigate(['']));
+            .subscribe(() => {
+                this.router.navigate([EtchedRoutes.JOURNALS_PATH])
+                    .then(() => this.locationService.reload());
+            });
     }
 }
