@@ -5,7 +5,7 @@ services:
     image: postgres:10.6
     restart: always
     environment:
-      POSTGRES_PASSWORD: 'dolphins'
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_USER: etched
       POSTGRES_DB: etched
     container_name: etched-db
