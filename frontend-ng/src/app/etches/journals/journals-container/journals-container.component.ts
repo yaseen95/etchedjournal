@@ -4,7 +4,7 @@ import { EntryEntity } from '../../../models/entry-entity';
 import { JournalEntity } from '../../../models/journal-entity';
 import { Encrypter } from '../../../services/encrypter';
 import { EncrypterService } from '../../../services/encrypter.service';
-import { EtchedApiService } from '../../../services/etched-api.service';
+import { JournalsService } from '../../../services/journals.service';
 
 @Component({
     selector: 'app-journals-container',
@@ -21,14 +21,14 @@ export class JournalsContainerComponent implements OnInit {
     state: string;
     encrypter: Encrypter;
 
-    constructor(private etchedApi: EtchedApiService,
+    constructor(private journalsService: JournalsService,
                 encrypterService: EncrypterService) {
         this.encrypter = encrypterService.encrypter;
     }
 
     ngOnInit() {
         this.state = this.FETCHING;
-        this.etchedApi.getJournals()
+        this.journalsService.getJournals()
             .subscribe(journals => this.decryptJournals(journals));
     }
 

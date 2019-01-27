@@ -6,7 +6,7 @@ import { EtchedRoutes } from '../../../app-routing-utils';
 import { Base64Str } from '../../../models/encrypted-entity';
 import { JournalEntity } from '../../../models/journal-entity';
 import { EncrypterService } from '../../../services/encrypter.service';
-import { EtchedApiService } from '../../../services/etched-api.service';
+import { JournalsService } from '../../../services/journals.service';
 import { JOURNAL_NAME_VALIDATORS, JournalFormUtils } from '../../../user/form-utils';
 
 @Component({
@@ -23,7 +23,7 @@ export class CreateJournalComponent implements OnInit {
     JOURNAL_NAME_MAX_LENGTH = JournalFormUtils.JOURNAL_NAME_MAX_LENGTH;
 
     constructor(private fb: FormBuilder,
-                private etchedApi: EtchedApiService,
+                private journalsService: JournalsService,
                 private encrypterService: EncrypterService,
                 private router: Router) {
         this.submitClicked = false;
@@ -52,7 +52,7 @@ export class CreateJournalComponent implements OnInit {
         enc.encrypt(journalName)
             .then((ciphertext: Base64Str) => {
                 console.info('Finished encrypting journal title');
-                return this.etchedApi.createJournal(enc.keyPairId, ciphertext);
+                return this.journalsService.createJournal(enc.keyPairId, ciphertext);
             })
             .then((savedJournalObs: Observable<JournalEntity>) => {
                 savedJournalObs.subscribe(journal => {

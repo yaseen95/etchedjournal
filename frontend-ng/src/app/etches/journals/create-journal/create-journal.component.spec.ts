@@ -9,20 +9,21 @@ import { JournalEntity } from '../../../models/journal-entity';
 import { OwnerType } from '../../../models/owner-type';
 import { EncrypterService } from '../../../services/encrypter.service';
 import { EtchedApiService } from '../../../services/etched-api.service';
+import { JournalsService } from '../../../services/journals.service';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { CreateJournalComponent } from './create-journal.component';
 
 describe('CreateJournalComponent', () => {
     let component: CreateJournalComponent;
     let fixture: ComponentFixture<CreateJournalComponent>;
-    let etchedApiSpy: any;
+    let journalsServiceSpy: any;
     let encrypterSpy: any;
     let encrypterService: EncrypterService;
     let routerSpy: any;
     let createJournalForm: FormGroup;
 
     beforeEach(async(() => {
-        etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['createJournal']);
+        journalsServiceSpy = jasmine.createSpyObj('JournalsService', ['createJournal']);
         encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt']);
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
@@ -36,7 +37,7 @@ describe('CreateJournalComponent', () => {
                 RouterTestingModule,
             ],
             providers: [
-                {provide: EtchedApiService, useValue: etchedApiSpy},
+                {provide: JournalsService, useValue: journalsServiceSpy},
                 {provide: EncrypterService, useValue: encrypterService},
                 {provide: Router, useValue: routerSpy},
             ]
@@ -156,7 +157,7 @@ describe('CreateJournalComponent', () => {
             timestamp: 1,
             keyPairId: 'kpId',
         };
-        etchedApiSpy.createJournal.and.returnValue(of(journal));
+        journalsServiceSpy.createJournal.and.returnValue(of(journal));
         component.createJournal();
 
         tick();

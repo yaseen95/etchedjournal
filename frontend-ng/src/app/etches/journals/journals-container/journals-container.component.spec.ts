@@ -7,6 +7,7 @@ import { of } from 'rxjs';
 import { OwnerType } from '../../../models/owner-type';
 import { EncrypterService } from '../../../services/encrypter.service';
 import { EtchedApiService } from '../../../services/etched-api.service';
+import { JournalsService } from '../../../services/journals.service';
 import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { CreateJournalComponent } from '../create-journal/create-journal.component';
@@ -17,13 +18,13 @@ import { JournalsContainerComponent } from './journals-container.component';
 describe('JournalsContainerComponent', () => {
     let component: JournalsContainerComponent;
     let fixture: ComponentFixture<JournalsContainerComponent>;
-    let etchedApiSpy: any;
+    let journalsServiceSpy: any;
     let encrypterSpy: any;
 
     beforeEach(async(() => {
-        etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['getJournals']);
+        journalsServiceSpy = jasmine.createSpyObj('JournalsService', ['getJournals']);
         encrypterSpy = jasmine.createSpyObj('Encrypter', ['decrypt']);
-        etchedApiSpy.getJournals.and.returnValue(of([]));
+        journalsServiceSpy.getJournals.and.returnValue(of([]));
 
         const encrypterService = new EncrypterService();
         encrypterService.encrypter = encrypterSpy;
@@ -37,7 +38,7 @@ describe('JournalsContainerComponent', () => {
                 CreateJournalComponent,
             ],
             providers: [
-                {provide: EtchedApiService, useValue: etchedApiSpy},
+                {provide: JournalsService, useValue: journalsServiceSpy},
                 {provide: EncrypterService, useValue: encrypterService},
             ],
             imports: [
@@ -80,7 +81,7 @@ describe('JournalsContainerComponent', () => {
     });
 
     it('decrypts journal content', fakeAsync(() => {
-        etchedApiSpy.getJournals.and.returnValue(of(
+        journalsServiceSpy.getJournals.and.returnValue(of(
             [
                 {
                     id: '1234567890abcdef',
