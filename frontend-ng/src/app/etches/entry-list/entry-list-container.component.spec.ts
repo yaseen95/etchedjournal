@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { EncrypterService } from '../../services/encrypter.service';
-import { EtchedApiService } from '../../services/etched-api.service';
+import { EntriesService } from '../../services/entries.service';
 import { SpinnerComponent } from '../../utils/spinner/spinner.component';
 import { TestUtils } from '../../utils/test-utils.spec';
 import { EntryListContainerComponent } from './entry-list-container.component';
@@ -13,14 +13,14 @@ import { EntryListComponent } from './entry-list/entry-list.component';
 describe('EntryListContainerComponent', () => {
     let component: EntryListContainerComponent;
     let fixture: ComponentFixture<EntryListContainerComponent>;
-    let etchedApi: any;
+    let entriesServiceSpy: any;
     let encrypter: any;
     let encrypterService: EncrypterService;
 
     beforeEach(async(() => {
-        etchedApi = jasmine.createSpyObj('EtchedApiService', ['getEntries']);
+        entriesServiceSpy = jasmine.createSpyObj('EntriesService', ['getEntries']);
         // By default getUser should return null
-        etchedApi.getEntries.and.returnValue(of([]));
+        entriesServiceSpy.getEntries.and.returnValue(of([]));
         encrypter = jasmine.createSpyObj('Encrypter', ['encrypt']);
         encrypter.keyPairId = 'kpId';
 
@@ -35,7 +35,7 @@ describe('EntryListContainerComponent', () => {
                 SpinnerComponent,
             ],
             providers: [
-                {provide: EtchedApiService, useValue: etchedApi},
+                {provide: EntriesService, useValue: entriesServiceSpy},
                 {provide: EncrypterService, useValue: encrypterService},
             ],
             imports: [

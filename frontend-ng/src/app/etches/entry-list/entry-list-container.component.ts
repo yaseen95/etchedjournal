@@ -4,7 +4,7 @@ import { Base64Str } from '../../models/encrypted-entity';
 import { EntryEntity } from '../../models/entry-entity';
 import { Encrypter } from '../../services/encrypter';
 import { EncrypterService } from '../../services/encrypter.service';
-import { EtchedApiService } from '../../services/etched-api.service';
+import { EntriesService } from '../../services/entries.service';
 
 @Component({
     selector: 'app-entry-list-container',
@@ -26,7 +26,7 @@ export class EntryListContainerComponent implements OnInit {
     journalId: string;
 
     constructor(
-        private etchedApi: EtchedApiService,
+        private entriesService: EntriesService,
         private encrypterService: EncrypterService,
         private route: ActivatedRoute
     ) {
@@ -44,7 +44,7 @@ export class EntryListContainerComponent implements OnInit {
 
     ngOnInit() {
         // Get the entries once the component is initialized
-        this.etchedApi.getEntries(this.journalId)
+        this.entriesService.getEntries(this.journalId)
             .subscribe(entries => {
                 console.info('Starting decryption of entries');
                 this.inFlight = false;

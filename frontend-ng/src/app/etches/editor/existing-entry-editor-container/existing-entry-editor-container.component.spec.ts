@@ -7,6 +7,7 @@ import { EtchV1 } from '../../../models/etch';
 import { OwnerType } from '../../../models/owner-type';
 import { Encrypter } from '../../../services/encrypter';
 import { EncrypterService } from '../../../services/encrypter.service';
+import { EntriesService } from '../../../services/entries.service';
 import { EtchedApiService } from '../../../services/etched-api.service';
 import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
 import { TestUtils } from '../../../utils/test-utils.spec';
@@ -22,12 +23,15 @@ describe('ExistingEntryEditorContainerComponent', () => {
     let component: ExistingEntryEditorContainerComponent;
     let fixture: ComponentFixture<ExistingEntryEditorContainerComponent>;
     let etchedApiSpy: any;
+    let entriesServiceSpy: any;
     let encrypterSpy: any;
 
     beforeEach(async(() => {
-        etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['getEntry', 'getEtches']);
-        etchedApiSpy.getEntry.and.returnValue(EMPTY);
+        etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['getEtches']);
         etchedApiSpy.getEtches.and.returnValue(EMPTY);
+
+        entriesServiceSpy = jasmine.createSpyObj('EntriesService', ['getEntry']);
+        entriesServiceSpy.getEntry.and.returnValue(EMPTY);
 
         encrypterSpy = jasmine.createSpyObj('Encrypter', ['decrypt']);
         encrypterSpy.keyPairId = 'kpId';
@@ -46,6 +50,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
             imports: [ReactiveFormsModule],
             providers: [
                 {provide: EtchedApiService, useValue: etchedApiSpy},
+                {provide: EntriesService, useValue: entriesServiceSpy},
                 {provide: EncrypterService, useValue: encrypterService},
                 {
                     provide: ActivatedRoute,
@@ -71,8 +76,8 @@ describe('ExistingEntryEditorContainerComponent', () => {
     });
 
     it('gets entry on create', () => {
-        expect(etchedApiSpy.getEntry).toHaveBeenCalledTimes(1);
-        expect(etchedApiSpy.getEntry).toHaveBeenCalledWith('entryId');
+        expect(entriesServiceSpy.getEntry).toHaveBeenCalledTimes(1);
+        expect(entriesServiceSpy.getEntry).toHaveBeenCalledWith('entryId');
     });
 
     it('gets etches on create', () => {

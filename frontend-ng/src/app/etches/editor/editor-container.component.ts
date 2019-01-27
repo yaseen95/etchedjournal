@@ -5,8 +5,8 @@ import { EntryEntity } from '../../models/entry-entity';
 import { AbstractEtch, EtchV1 } from '../../models/etch';
 import { Encrypter } from '../../services/encrypter';
 import { EncrypterService } from '../../services/encrypter.service';
+import { EntriesService } from '../../services/entries.service';
 import { EtchQueueService } from '../../services/etch-queue.service';
-import { EtchedApiService } from '../../services/etched-api.service';
 
 const ENTRY_NOT_CREATED = 'NOT_CREATED';
 const ENTRY_CREATING = 'ENTRY_CREATING';
@@ -33,7 +33,7 @@ export class EditorContainerComponent implements OnInit, OnDestroy {
 
     entrySubject: BehaviorSubject<EntryEntity>;
 
-    constructor(private etchedApi: EtchedApiService,
+    constructor(private entriesService: EntriesService,
                 private etchQueueService: EtchQueueService,
                 private encrypterService: EncrypterService,
                 route: ActivatedRoute) {
@@ -81,7 +81,11 @@ export class EditorContainerComponent implements OnInit, OnDestroy {
         this.encrypter.encrypt(this.title)
             .then(ciphertext => {
                 console.info(`creating entry with title: ${this.title}`);
-                this.etchedApi.createEntry(this.encrypter.keyPairId, this.journalId, ciphertext)
+                this.entriesService.createEntry(
+                    this.encrypter.keyPairId,
+                    this.journalId,
+                    ciphertext
+                )
                     .subscribe(entry => {
                         console.log(`Created entry with id ${entry.id}`);
                         this.entryCreationState = ENTRY_CREATED;

@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Base64Str } from '../models/encrypted-entity';
-import { EntryEntity } from '../models/entry-entity';
 import { EtchEntity } from '../models/etch-entity';
 import { KeyPairEntity } from '../models/key-pair-entity';
 import { CreateKeyPairRequest } from './dtos/create-key-pair-request';
@@ -41,27 +40,6 @@ export class EtchedApiService {
     constructor(private http: HttpClient) {
     }
 
-    public createEntry(
-        keyPairId: string,
-        journalId: string,
-        content: Base64Str
-    ): Observable<EntryEntity> {
-        console.info(`Creating an entry for journal ${journalId}`);
-        const body: EncryptedEntityRequest = {content: content, keyPairId: keyPairId};
-        const params = new HttpParams().set(JOURNAL_ID, journalId);
-        const options = {params: params};
-        return this.http.post<EntryEntity>(ENTRIES_URL, body, options)
-            .pipe(tap(e => console.info(`Created entry ${e.id}`)));
-    }
-
-    public getEntries(journalId: string): Observable<EntryEntity[]> {
-        console.info(`Getting entries for ${journalId}`);
-        const params = new HttpParams().set(JOURNAL_ID, journalId);
-        const options = {params: params};
-        return this.http.get<EntryEntity[]>(ENTRIES_URL, options)
-            .pipe(tap(entries => console.info(`Fetched ${entries.length} entries`)));
-    }
-
     public postEtches(
         keyPairId: string,
         entryId: string,
@@ -75,12 +53,6 @@ export class EtchedApiService {
         const params = new HttpParams().set(ENTRY_ID, entryId);
         return this.post<EncryptedEntityRequest[], EtchEntity[]>(ETCHES_URL, body, params)
             .pipe(tap(() => console.info(`Created etches for ${entryId}`)));
-    }
-
-    public getEntry(entryId: string): Observable<EntryEntity> {
-        console.info(`Getting entry ${entryId}`);
-        return this.http.get<EntryEntity>(`${ENTRIES_URL}/${entryId}`)
-            .pipe(tap(() => console.info(`Fetched entry ${entryId}`)));
     }
 
     public getEtches(entryId: string): Observable<EtchEntity[]> {

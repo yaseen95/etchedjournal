@@ -1,9 +1,11 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EMPTY } from 'rxjs';
 import { EncrypterService } from '../../services/encrypter.service';
-import { EtchedApiService } from '../../services/etched-api.service';
+import { EntriesService } from '../../services/entries.service';
 import { EditorContainerComponent } from './editor-container.component';
 import { EntryEditorComponent } from './entry-editor/entry-editor.component';
 import { EntryTitleComponent } from './entry-title/entry-title.component';
@@ -12,14 +14,15 @@ import { EtchItemComponent } from './etch-item/etch-item.component';
 describe('EditorContainerComponent', () => {
     let component: EditorContainerComponent;
     let fixture: ComponentFixture<EditorContainerComponent>;
-    let etchedApiSpy: any;
+    let entriesServiceSpy: any;
     let encrypterSpy: any;
     let encrypterService: EncrypterService;
 
     beforeEach(async(() => {
-        etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['getUser']);
+        entriesServiceSpy = jasmine.createSpyObj('EntriesService', ['getUser', 'createEntry']);
         // By default getUser should return null
-        etchedApiSpy.getUser.and.returnValue(null);
+        entriesServiceSpy.getUser.and.returnValue(null);
+        entriesServiceSpy.createEntry.and.returnValue(EMPTY);
 
         encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt']);
 
@@ -34,12 +37,13 @@ describe('EditorContainerComponent', () => {
                 EtchItemComponent,
             ],
             providers: [
-                {provide: EtchedApiService, useValue: etchedApiSpy},
+                {provide: EntriesService, useValue: entriesServiceSpy},
                 {provide: EncrypterService, useValue: encrypterService},
             ],
             imports: [
                 ReactiveFormsModule,
                 RouterTestingModule,
+                HttpClientTestingModule,
             ],
         })
             .compileComponents();

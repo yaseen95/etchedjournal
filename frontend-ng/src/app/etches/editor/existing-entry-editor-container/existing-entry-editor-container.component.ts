@@ -5,6 +5,7 @@ import { EtchV1 } from '../../../models/etch';
 import { EtchEntity } from '../../../models/etch-entity';
 import { Encrypter } from '../../../services/encrypter';
 import { EncrypterService } from '../../../services/encrypter.service';
+import { EntriesService } from '../../../services/entries.service';
 import { EtchQueueService } from '../../../services/etch-queue.service';
 import { EtchedApiService } from '../../../services/etched-api.service';
 
@@ -38,6 +39,7 @@ export class ExistingEntryEditorContainerComponent implements OnInit {
 
     constructor(
         private etchedApi: EtchedApiService,
+        private entriesService: EntriesService,
         private route: ActivatedRoute,
         private etchQueueService: EtchQueueService,
         encrypterService: EncrypterService
@@ -54,7 +56,7 @@ export class ExistingEntryEditorContainerComponent implements OnInit {
         this.entryState = EntityState.FETCHING;
         this.etchesState = EntityState.FETCHING;
 
-        this.etchedApi.getEntry(this.entryId)
+        this.entriesService.getEntry(this.entryId)
             .subscribe(e => {
                 this.decryptEntry(e);
             });
