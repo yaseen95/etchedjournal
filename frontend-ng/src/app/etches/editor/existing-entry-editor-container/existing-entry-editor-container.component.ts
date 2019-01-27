@@ -7,7 +7,7 @@ import { Encrypter } from '../../../services/encrypter';
 import { EncrypterService } from '../../../services/encrypter.service';
 import { EntriesService } from '../../../services/entries.service';
 import { EtchQueueService } from '../../../services/etch-queue.service';
-import { EtchedApiService } from '../../../services/etched-api.service';
+import { EtchesService } from '../../../services/etches.service';
 
 export enum EntityState {
     FETCHING = 'FETCHING',
@@ -38,7 +38,7 @@ export class ExistingEntryEditorContainerComponent implements OnInit {
     encrypter: Encrypter;
 
     constructor(
-        private etchedApi: EtchedApiService,
+        private etchesService: EtchesService,
         private entriesService: EntriesService,
         private route: ActivatedRoute,
         private etchQueueService: EtchQueueService,
@@ -62,7 +62,7 @@ export class ExistingEntryEditorContainerComponent implements OnInit {
             });
 
         // TODO: paginate requests
-        this.etchedApi.getEtches(this.entryId)
+        this.etchesService.getEtches(this.entryId)
             .subscribe(e => {
                 this.decryptEtches(e);
             });

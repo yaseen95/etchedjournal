@@ -3,17 +3,17 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { EMPTY, of } from 'rxjs';
 import { EncrypterService } from './encrypter.service';
 import { EtchQueueService } from './etch-queue.service';
-import { EtchedApiService } from './etched-api.service';
+import { EtchesService } from './etches.service';
 
 describe('EtchQueueService', () => {
     let service: EtchQueueService;
-    let etchedApiSpy: any;
+    let etchesService: any;
     let encrypterSpy: any;
     let encrypterService: EncrypterService;
 
     beforeEach(() => {
-        etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['postEtches']);
-        etchedApiSpy.postEtches.and.returnValue(of(EMPTY));
+        etchesService = jasmine.createSpyObj('EtchesService', ['postEtches']);
+        etchesService.postEtches.and.returnValue(of(EMPTY));
 
         encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt']);
         encrypterSpy.keyPairId = 'keyPairId';
@@ -23,7 +23,7 @@ describe('EtchQueueService', () => {
 
         TestBed.configureTestingModule({
             providers: [
-                {provide: EtchedApiService, useValue: etchedApiSpy},
+                {provide: EtchesService, useValue: etchesService},
                 {provide: EncrypterService, useValue: encrypterService},
             ],
         });
@@ -62,8 +62,8 @@ describe('EtchQueueService', () => {
 
         expect(service.queuedEtches.size).toEqual(0);
 
-        expect(etchedApiSpy.postEtches).toHaveBeenCalledTimes(1);
-        expect(etchedApiSpy.postEtches).toHaveBeenCalledWith('keyPairId', 'entryId', ['foobar']);
+        expect(etchesService.postEtches).toHaveBeenCalledTimes(1);
+        expect(etchesService.postEtches).toHaveBeenCalledWith('keyPairId', 'entryId', ['foobar']);
     }));
 
     it('posts multiple etches for single entry', fakeAsync(() => {
@@ -79,8 +79,8 @@ describe('EtchQueueService', () => {
         // Etches are batched together and encrypted once
         expect(encrypterSpy.encrypt).toHaveBeenCalledTimes(1);
 
-        expect(etchedApiSpy.postEtches).toHaveBeenCalledTimes(1);
-        expect(etchedApiSpy.postEtches).toHaveBeenCalledWith('keyPairId', 'entryId', ['foobar']);
+        expect(etchesService.postEtches).toHaveBeenCalledTimes(1);
+        expect(etchesService.postEtches).toHaveBeenCalledWith('keyPairId', 'entryId', ['foobar']);
     }));
 
     it('posts etches for multiple entries', fakeAsync(() => {
@@ -100,8 +100,8 @@ describe('EtchQueueService', () => {
         expect(encrypterSpy.encrypt.calls.allArgs())
             .toEqual([['[{"schemaVersion":"abc"}]'], ['[{"schemaVersion":"def"}]']]);
 
-        expect(etchedApiSpy.postEtches).toHaveBeenCalledTimes(2);
-        expect(etchedApiSpy.postEtches.calls.allArgs())
+        expect(etchesService.postEtches).toHaveBeenCalledTimes(2);
+        expect(etchesService.postEtches.calls.allArgs())
             .toEqual([['keyPairId', 'entry1', ['foo']], ['keyPairId', 'entry2', ['bar']]]);
     }));
 
@@ -112,8 +112,8 @@ describe('EtchQueueService', () => {
     //
     //     tick(5_000);
     //
-    //     expect(etchedApiSpy.postEtches).toHaveBeenCalledTimes(1);
-    //     expect(etchedApiSpy.postEtches).toHaveBeenCalledWith('keyPairId', 'queued', ['foobar']);
+    //     expect(etchesService.postEtches).toHaveBeenCalledTimes(1);
+    //     expect(etchesService.postEtches).toHaveBeenCalledWith('keyPairId', 'queued', ['foobar']);
     // }));
 
     it('postQueuedEtches does nothing when no etches', () => {
@@ -121,6 +121,6 @@ describe('EtchQueueService', () => {
 
         service.postQueuedEtches();
 
-        expect(etchedApiSpy.postEtches).toHaveBeenCalledTimes(0);
+        expect(etchesService.postEtches).toHaveBeenCalledTimes(0);
     });
 });

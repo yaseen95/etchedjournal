@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 import { AbstractEtch } from '../models/etch';
 import { EncrypterService } from './encrypter.service';
-import { EtchedApiService } from './etched-api.service';
+import { EtchesService } from './etches.service';
 
 /**
  * Queues etches and posts them as batches to the server
@@ -18,7 +18,7 @@ export class EtchQueueService {
     /** subscriber to an interval observer used to post queued etches */
     private queueIntervalSubscription: Subscription;
 
-    constructor(private etchedApi: EtchedApiService,
+    constructor(private etchesService: EtchesService,
                 private encrypterService: EncrypterService) {
         if (this.encrypterService.encrypter === null) {
             console.error('Encrypter is null');
@@ -64,7 +64,7 @@ export class EtchQueueService {
         const payload = JSON.stringify(etches);
         enc.encrypt(payload)
             .then(encrypted => {
-                return this.etchedApi.postEtches(enc.keyPairId, entryId, [encrypted]);
+                return this.etchesService.postEtches(enc.keyPairId, entryId, [encrypted]);
             })
             .then(etchesObs => {
                 etchesObs.subscribe(() => {
