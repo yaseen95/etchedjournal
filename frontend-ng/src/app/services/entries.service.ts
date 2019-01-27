@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Base64Str } from '../models/encrypted-entity';
 import { EntryEntity } from '../models/entry-entity';
-import { EncryptedEntityRequest, ENTRIES_URL, JOURNAL_ID } from './etched-api.service';
+import { EncryptedEntityRequest, ENTRIES_URL, JOURNAL_ID } from './etched-api-utils';
 
 @Injectable({
     providedIn: 'root'

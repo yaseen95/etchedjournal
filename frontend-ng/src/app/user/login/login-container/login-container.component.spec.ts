@@ -2,14 +2,12 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
 import {
     AuthService,
     InvalidCredentialsError,
     UserNotFoundError
 } from '../../../services/auth.service';
 import { LoginRequest } from '../../../services/dtos/login-request';
-import { EtchedApiService } from '../../../services/etched-api.service';
 import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
 import { EnterPassphraseComponent } from '../../passphrase/enter-passphrase/enter-passphrase.component';
 import { LoginComponent } from '../login.component';

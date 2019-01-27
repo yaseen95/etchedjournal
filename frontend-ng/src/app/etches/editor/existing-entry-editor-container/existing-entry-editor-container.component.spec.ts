@@ -8,7 +8,6 @@ import { OwnerType } from '../../../models/owner-type';
 import { Encrypter } from '../../../services/encrypter';
 import { EncrypterService } from '../../../services/encrypter.service';
 import { EntriesService } from '../../../services/entries.service';
-import { EtchedApiService } from '../../../services/etched-api.service';
 import { EtchesService } from '../../../services/etches.service';
 import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
 import { TestUtils } from '../../../utils/test-utils.spec';

@@ -6,7 +6,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { OwnerType } from '../../../models/owner-type';
 import { EncrypterService } from '../../../services/encrypter.service';
-import { EtchedApiService } from '../../../services/etched-api.service';
 import { JournalsService } from '../../../services/journals.service';
 import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
 import { TestUtils } from '../../../utils/test-utils.spec';

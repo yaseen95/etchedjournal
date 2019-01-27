@@ -1,10 +1,8 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import { JournalEntity } from '../models/journal-entity';
 import { OwnerType } from '../models/owner-type';
-import { EtchedApiService } from './etched-api.service';
 
 import { JournalsService } from './journals.service';
 

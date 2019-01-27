@@ -1,26 +1,29 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import { KeyPairEntity } from '../models/key-pair-entity';
 import { OwnerType } from '../models/owner-type';
 import { CreateKeyPairRequest } from './dtos/create-key-pair-request';
-import { EtchedApiService } from './etched-api.service';
+import { KeyPairsService } from './key-pairs.service';
 
-describe('EtchedApiService', () => {
+describe('KeyPairsService', () => {
     let injector: TestBed;
-    let service: EtchedApiService;
+    let service: KeyPairsService;
     let httpMock: HttpTestingController;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [EtchedApiService],
-            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            providers: [KeyPairsService],
         });
         injector = getTestBed();
-        service = injector.get(EtchedApiService);
+        service = injector.get(KeyPairsService);
         httpMock = injector.get(HttpTestingController);
+    });
+
+    afterEach(() => {
+        // Verify that there aren't any outstanding requests
+        httpMock.verify();
     });
 
     it('createKeyPair', () => {
@@ -56,10 +59,5 @@ describe('EtchedApiService', () => {
         const mockReq = httpMock.expectOne(`${environment.API_URL}/keypairs`);
         expect(mockReq.request.method).toEqual('POST');
         mockReq.flush(mockKeyPair);
-    });
-
-    afterEach(() => {
-        // Verify that there aren't any outstanding requests
-        httpMock.verify();
     });
 });

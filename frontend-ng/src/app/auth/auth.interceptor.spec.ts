@@ -11,7 +11,7 @@ import {
 import { EMPTY, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
-import { AUTH_REQUIRED_URLS } from '../services/etched-api.service';
+import { AUTH_REQUIRED_URLS } from '../services/etched-api-utils';
 import { AuthInterceptor } from './auth.interceptor';
 
 describe('AuthInterceptor', () => {

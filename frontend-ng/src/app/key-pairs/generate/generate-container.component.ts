@@ -6,7 +6,7 @@ import { Base64Str } from '../../models/encrypted-entity';
 import { AuthService } from '../../services/auth.service';
 import { Encrypter, KeyPair } from '../../services/encrypter';
 import { EncrypterService } from '../../services/encrypter.service';
-import { EtchedApiService } from '../../services/etched-api.service';
+import { KeyPairsService } from '../../services/key-pairs.service';
 
 @Component({
     selector: 'app-generate',
@@ -27,7 +27,7 @@ export class GenerateContainerComponent implements OnInit {
 
     constructor(private encrypterService: EncrypterService,
                 private authService: AuthService,
-                private etchedApi: EtchedApiService,
+                private keyPairsService: KeyPairsService,
                 private router: Router) {
         this.state = this.ENTERING_PASSPHRASE;
     }
@@ -82,7 +82,7 @@ export class GenerateContainerComponent implements OnInit {
      */
     uploadKeyPair(privateKey: Base64Str, publicKey: Base64Str, salt: string, iterations: number) {
         this.state = this.UPLOADING_KEYS;
-        this.etchedApi.createKeyPair({publicKey, privateKey, salt, iterations})
+        this.keyPairsService.createKeyPair({publicKey, privateKey, salt, iterations})
             .subscribe(result => {
                 this.encrypterService.encrypter.keyPairId = result.id;
                 // navigate to journal creation page once they key pair has been created

@@ -4,7 +4,7 @@ import { EtchedRoutes } from '../../../../app-routing-utils';
 import { KeyPairEntity } from '../../../../models/key-pair-entity';
 import { Encrypter, IncorrectPassphraseError } from '../../../../services/encrypter';
 import { EncrypterService } from '../../../../services/encrypter.service';
-import { EtchedApiService } from '../../../../services/etched-api.service';
+import { KeyPairsService } from '../../../../services/key-pairs.service';
 
 @Component({
     selector: 'app-enter-passphrase-container',
@@ -26,7 +26,7 @@ export class EnterPassphraseContainerComponent implements OnInit {
     redirectTo: string;
 
     constructor(private encrypterService: EncrypterService,
-                private etchedApiService: EtchedApiService,
+                private keyPairsService: KeyPairsService,
                 private route: ActivatedRoute,
                 private router: Router
     ) {
@@ -43,7 +43,7 @@ export class EnterPassphraseContainerComponent implements OnInit {
     }
 
     downloadKeys() {
-        return this.etchedApiService.getKeyPairs()
+        return this.keyPairsService.getKeyPairs()
             .subscribe(keys => {
                 if (keys.length === 0) {
                     return this.router.navigate([EtchedRoutes.KEYS_GENERATE_PATH]);

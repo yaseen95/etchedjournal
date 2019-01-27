@@ -8,7 +8,6 @@ import { of } from 'rxjs';
 import { JournalEntity } from '../../../models/journal-entity';
 import { OwnerType } from '../../../models/owner-type';
 import { EncrypterService } from '../../../services/encrypter.service';
-import { EtchedApiService } from '../../../services/etched-api.service';
 import { JournalsService } from '../../../services/journals.service';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { CreateJournalComponent } from './create-journal.component';

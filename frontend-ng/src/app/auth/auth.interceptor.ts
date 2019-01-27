@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
-import { AUTH_REQUIRED_URLS } from '../services/etched-api.service';
+import { AUTH_REQUIRED_URLS } from '../services/etched-api-utils';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {

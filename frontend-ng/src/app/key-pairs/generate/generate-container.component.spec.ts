@@ -7,7 +7,7 @@ import { EtchedRoutes } from '../../app-routing-utils';
 import { AuthService } from '../../services/auth.service';
 import { Encrypter, KeyPair } from '../../services/encrypter';
 import { EncrypterService } from '../../services/encrypter.service';
-import { EtchedApiService } from '../../services/etched-api.service';
+import { KeyPairsService } from '../../services/key-pairs.service';
 import { ConfigurePassphraseComponent } from '../../user/configure-passphrase/configure-passphrase.component';
 import { SpinnerComponent } from '../../utils/spinner/spinner.component';
 import { TestUtils } from '../../utils/test-utils.spec';
@@ -16,7 +16,7 @@ import { GenerateContainerComponent } from './generate-container.component';
 describe('GenerateContainerComponent', () => {
     let component: GenerateContainerComponent;
     let fixture: ComponentFixture<GenerateContainerComponent>;
-    let etchedApiSpy: any;
+    let keyPairsServiceSpy: any;
     let encrypterSpy: any;
     let encrypterGenKeySpy: any;
     let encrypterSymEncryptSpy: any;
@@ -25,7 +25,7 @@ describe('GenerateContainerComponent', () => {
     let routerSpy: any;
 
     beforeEach(async(() => {
-        etchedApiSpy = jasmine.createSpyObj('EtchedApiService', ['createKeyPair']);
+        keyPairsServiceSpy = jasmine.createSpyObj('KeyPairsService', ['createKeyPair']);
 
         encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt']);
         const encrypterService = new EncrypterService();
@@ -60,7 +60,7 @@ describe('GenerateContainerComponent', () => {
             ],
             imports: [ReactiveFormsModule],
             providers: [
-                {provide: EtchedApiService, useValue: etchedApiSpy},
+                {provide: KeyPairsService, useValue: keyPairsServiceSpy},
                 {provide: EncrypterService, useValue: encrypterService},
                 {provide: AuthService, useValue: authSpy},
                 {provide: Router, useValue: routerSpy},
@@ -111,7 +111,7 @@ describe('GenerateContainerComponent', () => {
         encrypterFromSpy.and.returnValue(Promise.resolve(encrypter));
 
         // Mock out the create key pair response
-        etchedApiSpy.createKeyPair.and.returnValue(of({}));
+        keyPairsServiceSpy.createKeyPair.and.returnValue(of({}));
 
         component.onPassphraseConfigured('passphrase');
 
@@ -125,8 +125,8 @@ describe('GenerateContainerComponent', () => {
         expect(encrypterFromSpy).toHaveBeenCalledTimes(1);
 
         // Then upload the public key (as base64 string) and the private key
-        expect(etchedApiSpy.createKeyPair).toHaveBeenCalledTimes(1);
-        expect(etchedApiSpy.createKeyPair).toHaveBeenCalledWith(
+        expect(keyPairsServiceSpy.createKeyPair).toHaveBeenCalledTimes(1);
+        expect(keyPairsServiceSpy.createKeyPair).toHaveBeenCalledWith(
             {
                 // The public key is base64 encoded byte array of [1, 2, 3, 4]
                 publicKey: 'AQIDBA==',

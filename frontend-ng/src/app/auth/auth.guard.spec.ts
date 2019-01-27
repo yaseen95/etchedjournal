@@ -1,9 +1,7 @@
-import { inject, TestBed } from '@angular/core/testing';
-
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { EtchedApiService } from '../services/etched-api.service';
 import { TestUtils } from '../utils/test-utils.spec';
 import { AuthGuard } from './auth.guard';
 
