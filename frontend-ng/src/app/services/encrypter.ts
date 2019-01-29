@@ -2,7 +2,7 @@ import * as bcrypt from 'bcryptjs';
 import * as openpgp from 'openpgp';
 import { DecryptOptions, EncryptOptions, UserId } from 'openpgp';
 import { environment } from '../../environments/environment';
-import { Base64Str } from '../models/encrypted-entity';
+import { Base64Str, EncryptedEntity } from '../models/encrypted-entity';
 
 const DEFAULT_CURVE = 'p521';
 
@@ -263,6 +263,22 @@ export class Encrypter {
             throw new Error('Decrypted message is unsigned');
         }
         return await openpgp.stream.readToEnd(decrypted.data);
+    }
+
+    public async decryptEntities<T extends EncryptedEntity>(encrypted: T[]): Promise<T[]> {
+        const copy: T[] = encrypted.slice(0);
+        const decPromises = encrypted.map(j => this.decrypt(j.content));
+        const decrypted = await Promise.all(decPromises);
+        decrypted.forEach((decResult, index) => {
+            copy[index].content = decResult;
+        });
+        return copy;
+    }
+
+    public async decryptEntity<T extends EncryptedEntity>(encrypted: T): Promise<T> {
+        const copy = Object.assign({}, encrypted);
+        copy.content = await this.decrypt(copy.content);
+        return copy;
     }
 }
 

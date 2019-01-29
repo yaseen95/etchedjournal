@@ -2,6 +2,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
+import { MobxAngularModule } from 'mobx-angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthInterceptor } from './auth/auth.interceptor';
@@ -20,6 +21,7 @@ import { JournalListComponent } from './etches/journals/journal-list/journal-lis
 import { JournalsContainerComponent } from './etches/journals/journals-container/journals-container.component';
 import { GenerateContainerComponent } from './key-pairs/generate/generate-container.component';
 import { NavComponent } from './nav/nav.component';
+import { JournalStore } from './stores/journal.store';
 import { ConfigurePassphraseComponent } from './user/configure-passphrase/configure-passphrase.component';
 import { LoginContainerComponent } from './user/login/login-container/login-container.component';
 import { LoginComponent } from './user/login/login.component';
@@ -76,10 +78,12 @@ import { SpinnerComponent } from './utils/spinner/spinner.component';
         BrowserModule,
         HttpClientModule,
         ReactiveFormsModule,
+        MobxAngularModule,
     ],
     providers: [
         Title,
         {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+        JournalStore,
     ],
     bootstrap: [AppComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

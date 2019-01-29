@@ -1,11 +1,8 @@
-<div class="columns is-centered">
-    <div *ngIf="state === FETCHING" class="column is-12-mobile is-4-desktop">
+<div class="columns is-centered" *mobxAutorun>
+    <div *ngIf="displaySpinner()" class="column is-12-mobile is-4-desktop">
         <app-spinner [text]="'Getting journals'"></app-spinner>
     </div>
-    <div *ngIf="state === DECRYPTING" class="column is-12-mobile is-4-desktop">
-        <app-spinner [text]="'Decrypting journals'"></app-spinner>
-    </div>
-    <div *ngIf="state === DECRYPTED" class="column is-12-mobile is-8-desktop">
-        <app-journal-list [journals]="journals"></app-journal-list>
+    <div *ngIf="!displaySpinner()" class="column is-12-mobile is-8-desktop">
+        <app-journal-list [journals]="store.journals"></app-journal-list>
     </div>
 </div>

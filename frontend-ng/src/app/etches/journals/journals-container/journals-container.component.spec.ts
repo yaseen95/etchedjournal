@@ -1,12 +1,11 @@
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ReactiveFormsModule } from '@angular/forms';
-import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { OwnerType } from '../../../models/owner-type';
-import { EncrypterService } from '../../../services/encrypter.service';
-import { JournalsService } from '../../../services/journals.service';
+import { MobxAngularModule } from 'mobx-angular';
+import { EMPTY } from 'rxjs';
+import { JournalStore } from '../../../stores/journal.store';
+import { FakeJournalStore } from '../../../stores/journal.store.spec';
 import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { CreateJournalComponent } from '../create-journal/create-journal.component';
@@ -17,16 +16,10 @@ import { JournalsContainerComponent } from './journals-container.component';
 describe('JournalsContainerComponent', () => {
     let component: JournalsContainerComponent;
     let fixture: ComponentFixture<JournalsContainerComponent>;
-    let journalsServiceSpy: any;
-    let encrypterSpy: any;
+    let store: JournalStore;
 
     beforeEach(async(() => {
-        journalsServiceSpy = jasmine.createSpyObj('JournalsService', ['getJournals']);
-        encrypterSpy = jasmine.createSpyObj('Encrypter', ['decrypt']);
-        journalsServiceSpy.getJournals.and.returnValue(of([]));
-
-        const encrypterService = new EncrypterService();
-        encrypterService.encrypter = encrypterSpy;
+        store = new FakeJournalStore();
 
         TestBed.configureTestingModule({
             declarations: [
@@ -37,12 +30,12 @@ describe('JournalsContainerComponent', () => {
                 CreateJournalComponent,
             ],
             providers: [
-                {provide: JournalsService, useValue: journalsServiceSpy},
-                {provide: EncrypterService, useValue: encrypterService},
+                {provide: JournalStore, useValue: store},
             ],
             imports: [
                 RouterTestingModule,
                 ReactiveFormsModule,
+                MobxAngularModule,
             ]
         })
             .compileComponents();
@@ -54,67 +47,44 @@ describe('JournalsContainerComponent', () => {
         fixture.detectChanges();
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
+    it('displays spinner when journals have not been loaded once', () => {
+        store.loadedOnce = false;
+        expect(component.displaySpinner()).toBeTruthy();
     });
 
-    it('displays spinner when getting journals', () => {
-        component.state = component.FETCHING;
+    it('does not display spinner when loading journals after first time', () => {
+        // has been loaded once so does not need to display the spinner
+        store.loadedOnce = true;
+        expect(component.displaySpinner()).toBeFalsy();
+    });
+
+    it('does not display spinner when journals are loading if loaded once', () => {
+        store.loading = true;
+        store.loadedOnce = true;
+        expect(component.displaySpinner()).toBeFalsy();
+    });
+
+    it('displays spinner when journals loading', () => {
+        store.loadedOnce = false;
         fixture.detectChanges();
         const spinnerText = TestUtils.queryExpectOne(fixture.debugElement, 'app-spinner p');
         expect(spinnerText.nativeElement.innerText).toEqual('Getting journals');
     });
 
-    it('displays spinner when decrypting journals', () => {
-        component.state = component.DECRYPTING;
-        fixture.detectChanges();
-        const spinnerText = TestUtils.queryExpectOne(fixture.debugElement, 'app-spinner p');
-        expect(spinnerText.nativeElement.innerText).toEqual('Decrypting journals');
-    });
-
     it('displays list of journals', () => {
-        component.state = component.DECRYPTED;
-        component.journals = [];
+        store.loadedOnce = true;
+        store.journals = [];
         fixture.detectChanges();
         TestUtils.queryExpectOne(fixture.debugElement, 'app-journal-list');
     });
 
-    it('decrypts journal content', fakeAsync(() => {
-        journalsServiceSpy.getJournals.and.returnValue(of(
-            [
-                {
-                    id: '1234567890abcdef',
-                    timestamp: 0,
-                    ownerType: OwnerType.USER,
-                    owner: 'tester1',
-                    content: 'journal1 encrypted content',
-                },
-                {
-                    id: '0000000000000000',
-                    timestamp: 1,
-                    ownerType: OwnerType.USER,
-                    owner: 'tester1',
-                    content: 'journal2 encrypted content',
-                },
-            ]
-        ));
+    it('loads journals on init', () => {
+        const loadJournalsSpy = spyOn(store, 'loadJournals') as any;
+        loadJournalsSpy.and.returnValue(EMPTY);
 
-        encrypterSpy.decrypt.and.returnValues(Promise.resolve('dec1'), Promise.resolve('dec2'));
+        component.store = store;
         component.ngOnInit();
-        expect(component.state).toEqual(component.DECRYPTING);
 
-        tick();
-        fixture.detectChanges();
-
-        // Should decrypt the returned journal content
-        expect(component.journals[0].content).toEqual('dec1');
-        expect(component.journals[1].content).toEqual('dec2');
-        expect(component.state).toEqual(component.DECRYPTED);
-
-        // Decrypted content is displayed as the journal title
-        const listItemDes = fixture.debugElement.queryAll(By.css('.journal-title'));
-        expect(listItemDes.length).toEqual(2);
-        expect(listItemDes[0].nativeElement.innerText).toEqual('dec1');
-        expect(listItemDes[1].nativeElement.innerText).toEqual('dec2');
-    }));
+        expect(store.loadJournals).toHaveBeenCalledTimes(1);
+    });
 });

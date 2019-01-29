@@ -9,11 +9,16 @@ import { EntryEditorComponent } from './etches/editor/entry-editor/entry-editor.
 import { EntryTitleComponent } from './etches/editor/entry-title/entry-title.component';
 import { EtchItemComponent } from './etches/editor/etch-item/etch-item.component';
 import { NavComponent } from './nav/nav.component';
+import { JournalStore } from './stores/journal.store';
+import { FakeJournalStore } from './stores/journal.store.spec';
 import { LoginComponent } from './user/login/login.component';
 import { RegisterComponent } from './user/register/register.component';
 import { SpinnerComponent } from './utils/spinner/spinner.component';
 
 describe('AppComponent', () => {
+
+    const store = new FakeJournalStore();
+
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [
@@ -33,6 +38,9 @@ describe('AppComponent', () => {
                 HttpClientModule,
                 ReactiveFormsModule,
             ],
+            providers: [
+                {provide: JournalStore, useValue: store},
+            ]
         }).compileComponents();
     }));
 
@@ -41,11 +49,4 @@ describe('AppComponent', () => {
         const app = fixture.debugElement.componentInstance;
         expect(app).toBeTruthy();
     });
-
-    // it('should render title in a h1 tag', () => {
-    //     const fixture = TestBed.createComponent(AppComponent);
-    //     fixture.detectChanges();
-    //     const compiled = fixture.debugElement.nativeElement;
-    //     expect(compiled.querySelector('h1').textContent).toContain('Welcome to frontend-ng!');
-    // });
 });
