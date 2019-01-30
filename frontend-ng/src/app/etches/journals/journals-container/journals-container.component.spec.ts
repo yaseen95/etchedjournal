@@ -3,7 +3,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MobxAngularModule } from 'mobx-angular';
-import { EMPTY } from 'rxjs';
 import { JournalStore } from '../../../stores/journal.store';
 import { FakeJournalStore } from '../../../stores/journal.store.spec';
 import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
@@ -76,15 +75,5 @@ describe('JournalsContainerComponent', () => {
         store.journals = [];
         fixture.detectChanges();
         TestUtils.queryExpectOne(fixture.debugElement, 'app-journal-list');
-    });
-
-    it('loads journals on init', () => {
-        const loadJournalsSpy = spyOn(store, 'loadJournals') as any;
-        loadJournalsSpy.and.returnValue(EMPTY);
-
-        component.store = store;
-        component.ngOnInit();
-
-        expect(store.loadJournals).toHaveBeenCalledTimes(1);
     });
 });

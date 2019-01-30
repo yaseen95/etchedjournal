@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import * as mobx from 'mobx-angular';
-import { switchMap } from 'rxjs/operators';
 import { JournalEntity } from '../models/journal-entity';
 import { EncrypterService } from '../services/encrypter.service';
 import { JournalsService } from '../services/journals.service';
@@ -14,6 +13,16 @@ export class JournalStore {
 
     constructor(private journalsService: JournalsService,
                 private encrypterService: EncrypterService) {
+        encrypterService.encrypterObs.subscribe(() => this.initStore());
+    }
+
+    /**
+     * Initialize the store
+     *
+     * MUST be called after the encrypter has been set otherwise journals cannot be decrypted
+     */
+    initStore() {
+        this.loadJournals();
     }
 
     @mobx.action loadJournals() {

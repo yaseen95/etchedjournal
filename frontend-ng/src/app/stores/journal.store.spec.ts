@@ -1,4 +1,5 @@
 import { EMPTY, of } from 'rxjs';
+import { Encrypter } from '../services/encrypter';
 import { EncrypterService } from '../services/encrypter.service';
 import { JournalsService } from '../services/journals.service';
 
@@ -40,6 +41,12 @@ describe('JournalStore', () => {
         // Should call load journals after creating journal
         expect(loadJournalsSpy).toHaveBeenCalledTimes(1);
     });
+
+    it('loads journals when encrypter is set', () => {
+        const loadJournalsSpy = spyOn(store, 'loadJournals');
+        encrypterService.encrypterObs.next();
+        expect(loadJournalsSpy).toHaveBeenCalledTimes(1);
+    });
 });
 
 export class FakeJournalStore extends JournalStore {
@@ -62,8 +69,5 @@ export class FakeJournalStore extends JournalStore {
         this.encrypterServiceFake = encService;
         this.journalsServiceSpy = journalsService;
         this.encrypterSpy = encSpy;
-    }
-
-    loadJournals() {
     }
 }
