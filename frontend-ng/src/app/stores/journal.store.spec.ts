@@ -1,5 +1,5 @@
+import { spy } from 'mobx';
 import { EMPTY, of } from 'rxjs';
-import { JournalEntity } from '../models/journal-entity';
 import { EncrypterService } from '../services/encrypter.service';
 import { JournalsService } from '../services/journals.service';
 
@@ -12,11 +12,11 @@ describe('JournalStore', () => {
     let journalServiceSpy: any;
 
     beforeEach(() => {
-        encrypterSpy = jasmine.createSpyObj('Encrypter', ['decrypt']);
+        encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt', 'decrypt']);
         encrypterService = new EncrypterService();
         encrypterService.encrypter = encrypterSpy;
 
-        journalServiceSpy = jasmine.createSpyObj('JournalsService', ['']);
+        journalServiceSpy = jasmine.createSpyObj('JournalsService', ['createJournal', 'getJournals']);
 
         store = new JournalStore(journalServiceSpy, encrypterService);
     });
@@ -26,8 +26,21 @@ describe('JournalStore', () => {
         expect(store.loading).toBe(false);
         expect(store.loadedOnce).toBe(false);
     });
-});
 
+    it('createJournal encrypts and creates journal', async () => {
+        encrypterSpy.encrypt.and.returnValue(Promise.resolve('ciphertext'));
+        const j = {id: '1', content: 'abc'};
+        journalServiceSpy.createJournal.and.returnValue(of(j));
+        const loadJournalsSpy = spyOn(store, 'loadJournals');
+
+        const result = await store.createJournal('name');
+        expect(result.id).toEqual('1');
+        expect(result.content).toEqual('abc');
+
+        // Should call load journals after creating journal
+        expect(loadJournalsSpy).toHaveBeenCalledTimes(1);
+    });
+});
 
 export class FakeJournalStore extends JournalStore {
     public encrypterServiceFake: EncrypterService;

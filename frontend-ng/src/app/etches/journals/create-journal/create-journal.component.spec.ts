@@ -4,30 +4,23 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { NavigationExtras, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
 import { JournalEntity } from '../../../models/journal-entity';
 import { OwnerType } from '../../../models/owner-type';
-import { EncrypterService } from '../../../services/encrypter.service';
-import { JournalsService } from '../../../services/journals.service';
+import { JournalStore } from '../../../stores/journal.store';
+import { FakeJournalStore } from '../../../stores/journal.store.spec';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { CreateJournalComponent } from './create-journal.component';
 
 describe('CreateJournalComponent', () => {
     let component: CreateJournalComponent;
     let fixture: ComponentFixture<CreateJournalComponent>;
-    let journalsServiceSpy: any;
-    let encrypterSpy: any;
-    let encrypterService: EncrypterService;
     let routerSpy: any;
     let createJournalForm: FormGroup;
+    let journalStore: JournalStore;
 
     beforeEach(async(() => {
-        journalsServiceSpy = jasmine.createSpyObj('JournalsService', ['createJournal']);
-        encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt']);
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-
-        encrypterService = new EncrypterService();
-        encrypterService.encrypter = encrypterSpy;
+        journalStore = new FakeJournalStore();
 
         TestBed.configureTestingModule({
             declarations: [CreateJournalComponent],
@@ -36,8 +29,7 @@ describe('CreateJournalComponent', () => {
                 RouterTestingModule,
             ],
             providers: [
-                {provide: JournalsService, useValue: journalsServiceSpy},
-                {provide: EncrypterService, useValue: encrypterService},
+                {provide: JournalStore, useValue: journalStore},
                 {provide: Router, useValue: routerSpy},
             ]
         })
@@ -147,7 +139,7 @@ describe('CreateJournalComponent', () => {
         const nameControl = createJournalForm.controls['journalName'];
         nameControl.setValue('title');
 
-        encrypterSpy.encrypt.and.returnValues(Promise.resolve('encrypted name'));
+        const createJournalSpy = spyOn(journalStore, 'createJournal');
         const journal: JournalEntity = {
             id: '1234567890abcdef',
             owner: 'owner',
@@ -156,7 +148,7 @@ describe('CreateJournalComponent', () => {
             timestamp: 1,
             keyPairId: 'kpId',
         };
-        journalsServiceSpy.createJournal.and.returnValue(of(journal));
+        createJournalSpy.and.returnValue(Promise.resolve(journal));
         component.createJournal();
 
         tick();
