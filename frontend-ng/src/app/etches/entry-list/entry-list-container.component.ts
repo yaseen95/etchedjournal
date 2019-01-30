@@ -34,16 +34,19 @@ export class EntryListContainerComponent implements OnInit {
         this.decrypting = false;
         this.fetchedEntries = false;
         this.entries = [];
-        if (encrypterService.encrypter === null) {
-            throw new Error('Expected encrypter to not be null');
-        }
         this.encrypter = encrypterService.encrypter;
-        this.journalId = route.snapshot.paramMap.get('id');
-        console.info(`Journal id is ${this.journalId}`);
     }
 
     ngOnInit() {
-        // Get the entries once the component is initialized
+        this.route.paramMap.subscribe(params => {
+            this.journalId = params.get('id');
+            console.info(`Journal id is ${this.journalId}`);
+            this.loadEntry()
+        })
+    }
+
+    loadEntry() {
+        this.inFlight = true;
         this.entriesService.getEntries(this.journalId)
             .subscribe(entries => {
                 console.info('Starting decryption of entries');

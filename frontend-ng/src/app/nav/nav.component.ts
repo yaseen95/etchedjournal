@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
+import { JournalStore } from '../stores/journal.store';
 
 @Component({
     selector: 'app-nav',
@@ -8,12 +9,13 @@ import { AuthService } from '../services/auth.service';
 })
 export class NavComponent implements OnInit {
     burgerIsActive: boolean = false;
+    collapseDropdownOnMobile: boolean = true;
 
-    public constructor(private authService: AuthService) {
+    public constructor(private authService: AuthService,
+                       public store: JournalStore) {
     }
 
     ngOnInit(): void {
-
     }
 
     toggleBurgerMenu() {
@@ -22,5 +24,9 @@ export class NavComponent implements OnInit {
 
     get user() {
         return this.authService.getUser();
+    }
+
+    toggleJournalDropdown() {
+        this.collapseDropdownOnMobile = !this.collapseDropdownOnMobile;
     }
 }
