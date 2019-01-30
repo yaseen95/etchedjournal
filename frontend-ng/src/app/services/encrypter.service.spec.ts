@@ -45,7 +45,7 @@ describe('EncrypterService', () => {
             retrieved = true;
         });
         // Do we need to add tick?
-        service.encrypterObs.next({foo: 'bar'} as any);
+        service.encrypter = {foo: 'bar'} as any;
         expect(retrieved).toBe(true);
     });
 });
