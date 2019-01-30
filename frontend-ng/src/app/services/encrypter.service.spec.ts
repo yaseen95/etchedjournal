@@ -36,4 +36,16 @@ describe('EncrypterService', () => {
         service.encrypter = {'foo': 'bar'} as any;
         expect((service.encrypter as any).foo).toEqual('bar');
     });
+
+    it('emits encrypter after it is set', () => {
+        let retrieved = false;
+        const service: EncrypterService = TestBed.get(EncrypterService);
+        service.encrypterObs.subscribe((e) => {
+            expect((e as any).foo).toEqual('bar');
+            retrieved = true;
+        });
+        // Do we need to add tick?
+        service.encrypter = {foo: 'bar'} as any;
+        expect(retrieved).toBe(true);
+    });
 });

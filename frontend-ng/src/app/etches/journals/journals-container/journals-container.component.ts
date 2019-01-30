@@ -12,7 +12,6 @@ export class JournalsContainerComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.store.loadJournals();
     }
 
     displaySpinner(): boolean {
