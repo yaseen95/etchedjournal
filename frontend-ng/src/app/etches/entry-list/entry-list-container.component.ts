@@ -41,8 +41,8 @@ export class EntryListContainerComponent implements OnInit {
         this.route.paramMap.subscribe(params => {
             this.journalId = params.get('id');
             console.info(`Journal id is ${this.journalId}`);
-            this.loadEntry()
-        })
+            this.loadEntry();
+        });
     }
 
     loadEntry() {

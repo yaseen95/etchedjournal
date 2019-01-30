@@ -1,4 +1,3 @@
-import { spy } from 'mobx';
 import { EMPTY, of } from 'rxjs';
 import { EncrypterService } from '../services/encrypter.service';
 import { JournalsService } from '../services/journals.service';
@@ -16,7 +15,8 @@ describe('JournalStore', () => {
         encrypterService = new EncrypterService();
         encrypterService.encrypter = encrypterSpy;
 
-        journalServiceSpy = jasmine.createSpyObj('JournalsService', ['createJournal', 'getJournals']);
+        journalServiceSpy = jasmine.createSpyObj('JournalsService', ['createJournal',
+            'getJournals']);
 
         store = new JournalStore(journalServiceSpy, encrypterService);
     });
@@ -51,7 +51,8 @@ export class FakeJournalStore extends JournalStore {
         const encSpy = jasmine.createSpyObj('Encrypter', ['encrypt', 'decrypt']);
         const encService = new EncrypterService();
         encService.encrypter = encSpy;
-        const journalsService = jasmine.createSpyObj('JournalsService', ['getJournals', 'createJournal']);
+        const journalsService = jasmine.createSpyObj('JournalsService', ['getJournals',
+            'createJournal']);
 
         journalsService.getJournals.and.returnValue(of([]));
         journalsService.createJournal.and.returnValue(EMPTY);
