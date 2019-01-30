@@ -1,4 +1,4 @@
-<nav class="navbar" role="navigation" aria-label="main navigation">
+<nav class="navbar" role="navigation" aria-label="main navigation" *mobxAutorun>
     <div class="container">
         <div class="navbar-brand">
             <a class="navbar-item title is-4" id="navbar-title" routerLink="/">
@@ -23,7 +23,35 @@
              [ngClass]="{'is-active': burgerIsActive}"
         >
             <div class="navbar-start">
-                <a class="navbar-item" routerLink="/journals">Journals</a>
+                <ng-container *ngIf="store.journals.length > 3">
+                    <!-- Display journals in a dropdown if 3 or more journals -->
+                    <!-- toggleJournalDropdown() changes whether the dropdown is
+                    expanded/collapsed on mobile/tablet. By default it is visible in the menu on
+                    hover -->
+                    <div class="navbar-item has-dropdown is-hoverable"
+                         (click)="toggleJournalDropdown()">
+                        <a class="navbar-link">Journals</a>
+                        <!-- On small screens we enable collapsing the journals dropdown because
+                        otherwise the burger menu can get too long on small screens -->
+                        <!-- Have to use `is-hidden-tablet-only` because `is-hidden-tablet` applies
+                        even on desktop -->
+                        <div class="navbar-dropdown"
+                             [ngClass]="{'is-hidden-mobile is-hidden-tablet-only': collapseDropdownOnMobile}"
+                        >
+                            <ng-container *ngFor="let j of store.journals">
+                                <a class="navbar-item journal-nav-item"
+                                   [routerLink]="['journals', j.id]">{{ j.content }}</a>
+                            </ng-container>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="store.journals.length <= 3">
+                    <ng-container *ngFor="let j of store.journals">
+                        <!-- Display journals on navbar if 3 or fewer journals -->
+                        <a class="navbar-item journal-nav-item"
+                           [routerLink]="['journals', j.id]">{{ j.content }}</a>
+                    </ng-container>
+                </ng-container>
             </div>
             <div class="navbar-end">
                 <ng-container *ngIf="user === null">
