@@ -2,5 +2,9 @@ sudo: required
 addons:
   chrome: stable
 
+before_script:
+  # Disabling the default postgres because we bring it up in docker-compose ourselves
+  - sudo /etc/init.d/postgresql stop
+
 script:
   - ./build.sh
