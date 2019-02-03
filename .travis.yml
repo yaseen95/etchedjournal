@@ -6,5 +6,13 @@ before_script:
   # Disabling the default postgres because we bring it up in docker-compose ourselves
   - sudo /etc/init.d/postgresql stop
 
+cache:
+  directories:
+    - frontend-ng/node_modules
+    - $HOME/.m2
+    - $HOME/.gradle
+    - $HOME/.npm
+    - $HOME/.npm-packages
+
 script:
   - ./build.sh
