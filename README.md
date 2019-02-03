@@ -18,6 +18,9 @@ encrypted by a *(strong)* user passphrase. All content is signed with the privat
 ### DB Setup
 ```
 docker-compose up
+
+./gradlew backend:flywayMigrate
+./gradlew backend:generateEtchedJooqSchemaSource
 ```
 
 ### Building

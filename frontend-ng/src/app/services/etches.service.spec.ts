@@ -44,6 +44,8 @@ describe('EtchesService', () => {
             timestamp: 1,
             id: '1',
             keyPairId: 'kpId',
+            entryId: 'entryId',
+            version: 1,
         };
         etches[1] = {
             content: 'etch2',
@@ -52,6 +54,8 @@ describe('EtchesService', () => {
             timestamp: 2,
             id: '2',
             keyPairId: 'kpId',
+            entryId: 'entryId',
+            version: 1,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/etches?entryId=entryId`);
@@ -75,6 +79,8 @@ describe('EtchesService', () => {
             timestamp: 1,
             id: '1',
             keyPairId: 'kpId',
+            journalId: 'jid',
+            version: 1,
         };
         entries[1] = {
             content: 'etch2',
@@ -83,6 +89,8 @@ describe('EtchesService', () => {
             timestamp: 2,
             id: '2',
             keyPairId: 'kpId',
+            journalId: 'jid',
+            version: 1,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/etches?entryId=entry1`);

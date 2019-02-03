@@ -1,7 +1,7 @@
 package com.etchedjournal.etched.controller
 
 import com.etchedjournal.etched.dto.EncryptedEntityRequest
-import com.etchedjournal.etched.models.entity.JournalEntity
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
 import com.etchedjournal.etched.service.JournalService
 import com.etchedjournal.etched.utils.id.IsEtchedId
 import org.springframework.validation.annotation.Validated
@@ -22,17 +22,17 @@ class JournalServiceController(private val journalService: JournalService) {
      * Returns all entries.
      */
     @GetMapping("")
-    fun getJournals(): List<JournalEntity> {
+    fun getJournals(): List<Journal> {
         return journalService.getJournals()
     }
 
     @GetMapping("/{journalId}")
-    fun getJournal(@PathVariable @Valid @IsEtchedId journalId: String): JournalEntity {
+    fun getJournal(@PathVariable @Valid @IsEtchedId journalId: String): Journal {
         return journalService.getJournal(journalId)
     }
 
     @PostMapping("")
-    fun createJournal(@Valid @RequestBody req: EncryptedEntityRequest): JournalEntity {
+    fun createJournal(@Valid @RequestBody req: EncryptedEntityRequest): Journal {
         return journalService.create(req)
     }
 }

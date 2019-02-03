@@ -54,6 +54,7 @@ describe('KeyPairsService', () => {
             timestamp: 1,
             salt: 'salt',
             iterations: 10,
+            version: 1,
         };
 
         const mockReq = httpMock.expectOne(`${environment.API_URL}/keypairs`);

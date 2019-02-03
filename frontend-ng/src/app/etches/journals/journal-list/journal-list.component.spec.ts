@@ -24,6 +24,7 @@ describe('JournalListComponent', () => {
                 owner: 'tester1',
                 content: 'journal1 content',
                 keyPairId: 'kpId',
+                version: 1,
             },
             {
                 id: '0000000000000000',
@@ -32,6 +33,7 @@ describe('JournalListComponent', () => {
                 owner: 'tester1',
                 content: 'journal2 content',
                 keyPairId: 'kpId',
+                version: 1,
             }
         ];
 

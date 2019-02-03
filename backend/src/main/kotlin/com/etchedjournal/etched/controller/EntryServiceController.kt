@@ -1,7 +1,7 @@
 package com.etchedjournal.etched.controller
 
 import com.etchedjournal.etched.dto.EncryptedEntityRequest
-import com.etchedjournal.etched.models.entity.EntryEntity
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Entry
 import com.etchedjournal.etched.service.EntryService
 import com.etchedjournal.etched.utils.id.IsEtchedId
 import org.slf4j.LoggerFactory
@@ -24,7 +24,7 @@ class EntryServiceController(private val entryService: EntryService) {
      * Returns an Entry with the specified ID.
      */
     @GetMapping("/{entryId}")
-    fun getEntry(@PathVariable @Valid @IsEtchedId entryId: String): EntryEntity {
+    fun getEntry(@PathVariable @Valid @IsEtchedId entryId: String): Entry {
         return entryService.getEntry(entryId)
     }
 
@@ -32,7 +32,7 @@ class EntryServiceController(private val entryService: EntryService) {
      * Returns all entries.
      */
     @GetMapping("")
-    fun getEntries(@RequestParam @Valid @IsEtchedId journalId: String): List<EntryEntity> {
+    fun getEntries(@RequestParam @Valid @IsEtchedId journalId: String): List<Entry> {
         return entryService.getEntries(journalId)
     }
 
@@ -43,7 +43,7 @@ class EntryServiceController(private val entryService: EntryService) {
     fun create(
         @RequestBody @Valid req: EncryptedEntityRequest,
         @RequestParam journalId: String
-    ): EntryEntity {
+    ): Entry {
         logger.info("Creating an entry for journal {}", journalId)
         val createdEntry = entryService.create(req, journalId)
         logger.info("Created entry {}", createdEntry)

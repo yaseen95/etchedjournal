@@ -2,13 +2,15 @@ package com.etchedjournal.etched.service.impl
 
 import com.etchedjournal.etched.dto.CreateKeypairRequest
 import com.etchedjournal.etched.models.OwnerType
-import com.etchedjournal.etched.models.entity.KeypairEntity
-import com.etchedjournal.etched.repository.KeypairRepository
+import com.etchedjournal.etched.models.jooq.generated.Tables
+import com.etchedjournal.etched.models.jooq.generated.tables.daos.KeyPairDao
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.KeypairService
 import com.etchedjournal.etched.service.exception.ForbiddenException
 import com.etchedjournal.etched.service.exception.NotFoundException
 import com.etchedjournal.etched.utils.id.IdGenerator
+import org.jooq.DSLContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -16,41 +18,41 @@ import java.time.Instant
 
 @Service
 class KeypairServiceImpl(
-    private val keypairRepository: KeypairRepository,
+    private val keyPairDao: KeyPairDao,
     private val authService: AuthService,
-    private val idGenerator: IdGenerator
+    private val idGenerator: IdGenerator,
+    private val dslContext: DSLContext
 ) : KeypairService {
 
-    override fun createKeypair(req: CreateKeypairRequest): KeypairEntity {
+    override fun createKeypair(req: CreateKeypairRequest): KeyPair {
+        logger.info("Creating key pair")
         val id = idGenerator.generateId()
-        logger.info("creating id {}", id)
-        val keypair = KeypairEntity(
-            id = id,
-            publicKey = req.publicKey,
-            privateKey = req.privateKey,
-            iterations = req.iterations,
-            salt = req.salt,
-            owner = authService.getUserId(),
-            ownerType = OwnerType.USER,
-            timestamp = Instant.now()
-        )
-        logger.info("Creating keypair for {}", keypair.owner)
-        val saved = keypairRepository.save(keypair)
-        logger.info("Saved keypair with id {}", saved.id)
-        return saved
+        val record = dslContext.newRecord(Tables.KEY_PAIR)
+        record.id = id
+        record.timestamp = Instant.now()
+        record.setPublicKey(*req.publicKey)
+        record.setPrivateKey(*req.privateKey)
+        record.owner = authService.getUserId()
+        record.ownerType = OwnerType.USER
+        record.salt = req.salt
+        record.iterations = req.iterations
+        record.insert()
+        val keyPair = record.into(KeyPair::class.java)
+        logger.info("Created key pair {}", keyPair)
+        return record.into(KeyPair::class.java)
     }
 
-    override fun getUserKeypairs(): List<KeypairEntity> {
+    override fun getUserKeypairs(): List<KeyPair> {
         val userId = authService.getUserId()
         logger.info("Getting keypairs for {}", userId)
-        val userKeypairs = keypairRepository.findByOwner(userId)
+        val userKeypairs = keyPairDao.fetchByOwner(userId)
         logger.info("Found {} keypairs for {}", userKeypairs.size, userId)
         return userKeypairs
     }
 
-    override fun getKeypair(id: String): KeypairEntity {
+    override fun getKeypair(id: String): KeyPair {
         logger.info("Attempting to get keypair with id {}", id)
-        val keypair: KeypairEntity? = keypairRepository.findById(id)
+        val keypair: KeyPair? = keyPairDao.findById(id)
 
         if (keypair == null) {
             logger.info("Unable to find keypair with id {}", id)

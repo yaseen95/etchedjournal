@@ -6,7 +6,6 @@ import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
-import com.etchedjournal.etched.repository.KeypairRepository
 import com.etchedjournal.etched.utils.PgpUtilsTest
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
@@ -28,8 +27,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
-import javax.transaction.Transactional
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -41,9 +40,6 @@ class KeypairServiceControllerTest {
 
     @Autowired
     private lateinit var webApplicationContext: WebApplicationContext
-
-    @Autowired
-    private lateinit var keypairRepository: KeypairRepository
 
     @Autowired
     private lateinit var testRepo: TestRepoUtils
@@ -75,7 +71,7 @@ class KeypairServiceControllerTest {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.*", hasSize<Any>(2)))
 
-            .andExpect(jsonPath("$[0].*", hasSize<Any>(8)))
+            .andExpect(jsonPath("$[0].*", hasSize<Any>(9)))
             .andExpect(jsonPath("$[0].id", `is`("k1".padEnd(11, '0'))))
             .andExpect(jsonPath("$[0].timestamp", `is`(0)))
             .andExpect(jsonPath("$[0].publicKey", `is`("AQIDBA==")))
@@ -84,6 +80,7 @@ class KeypairServiceControllerTest {
             .andExpect(jsonPath("$[0].ownerType", `is`("USER")))
             .andExpect(jsonPath("$[0].salt", `is`("salt")))
             .andExpect(jsonPath("$[0].iterations", `is`(1)))
+            .andExpect(jsonPath("$[0].version", `is`(1)))
 
             .andExpect(jsonPath("$[1].id", `is`("k2".padEnd(11, '0'))))
             .andExpect(jsonPath("$[1].timestamp", `is`(0)))
@@ -93,6 +90,7 @@ class KeypairServiceControllerTest {
             .andExpect(jsonPath("$[1].ownerType", `is`("USER")))
             .andExpect(jsonPath("$[1].salt", `is`("salt")))
             .andExpect(jsonPath("$[1].iterations", `is`(1)))
+            .andExpect(jsonPath("$[1].version", `is`(1)))
     }
 
     @Test
@@ -121,7 +119,6 @@ class KeypairServiceControllerTest {
 
         mockMvc.perform(get("/api/v1/keypairs/${keypair.id}"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.*", hasSize<Any>(8)))
             .andExpect(jsonPath("$.id", `is`(keypair.id)))
             .andExpect(jsonPath("$.timestamp", `is`(0)))
             .andExpect(jsonPath("$.publicKey", `is`("AQIDBA==")))
@@ -130,6 +127,8 @@ class KeypairServiceControllerTest {
             .andExpect(jsonPath("$.ownerType", `is`("USER")))
             .andExpect(jsonPath("$.salt", `is`("salt")))
             .andExpect(jsonPath("$.iterations", `is`(1)))
+            .andExpect(jsonPath("$.version", `is`(1)))
+            .andExpect(jsonPath("$.*", hasSize<Any>(9)))
     }
 
     @Test
@@ -195,7 +194,7 @@ class KeypairServiceControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.*", hasSize<Any>(8)))
+            .andExpect(jsonPath("$.*", hasSize<Any>(9)))
             .andExpect(jsonPath("$.id").value(ID_LENGTH_MATCHER))
             .andExpect(jsonPath("$.timestamp").value(TIMESTAMP_RECENT_MATCHER))
             .andExpect(jsonPath("$.publicKey").value(publicKey))
@@ -204,6 +203,7 @@ class KeypairServiceControllerTest {
             .andExpect(jsonPath("$.ownerType").value("USER"))
             .andExpect(jsonPath("$.salt", `is`("salt")))
             .andExpect(jsonPath("$.iterations", `is`(1)))
+            .andExpect(jsonPath("$.version", `is`(1)))
     }
 
     @Test

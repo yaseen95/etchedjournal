@@ -21,4 +21,8 @@ data class EncryptedEntityRequest(
         result = 31 * result + keyPairId.hashCode()
         return result
     }
+
+    override fun toString(): String {
+        return "EncryptedEntityRequest(keyPairId='$keyPairId')"
+    }
 }

@@ -3,7 +3,9 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { EMPTY } from 'rxjs';
+import { EntryEntity } from '../../../models/entry-entity';
 import { EtchV1 } from '../../../models/etch';
+import { EtchEntity } from '../../../models/etch-entity';
 import { OwnerType } from '../../../models/owner-type';
 import { Encrypter } from '../../../services/encrypter';
 import { EncrypterService } from '../../../services/encrypter.service';
@@ -136,7 +138,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
             id: 'entryId',
             content: 'Entry Title',
             keyPairId: 'kpId',
-        };
+        } as EntryEntity;
         component.etches = [{content: 'decrypted etch 1'}] as EtchV1[];
         component.title = 'Entry Title';
 
@@ -159,7 +161,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
             id: 'entryId',
             content: 'ENCRYPTED',
             keyPairId: 'kpId',
-        };
+        } as EntryEntity;
 
         component.decryptEntry(entry);
         expect(component.entryState).toEqual(EntityState.DECRYPTING);
@@ -182,7 +184,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
             id: 'etch1',
             content: 'ENC1',
             keyPairId: 'kpId',
-        };
+        } as EtchEntity;
         const etch2 = {
             timestamp: 1,
             owner: 'owner',
@@ -190,7 +192,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
             id: 'etch1',
             content: 'ENC2',
             keyPairId: 'kpId',
-        };
+        } as EtchEntity;
 
         component.decryptEtches([etch1, etch2]);
         expect(component.etchesState).toEqual(EntityState.DECRYPTING);

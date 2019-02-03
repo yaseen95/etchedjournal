@@ -1,15 +1,15 @@
 package com.etchedjournal.etched.service
 
 import com.etchedjournal.etched.dto.EncryptedEntityRequest
-import com.etchedjournal.etched.models.entity.JournalEntity
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
 
 interface JournalService {
 
-    fun getJournal(id: String): JournalEntity
+    fun getJournal(id: String): Journal
 
-    fun getJournals(): List<JournalEntity>
+    fun getJournals(): List<Journal>
 
-    fun create(req: EncryptedEntityRequest): JournalEntity
+    fun create(req: EncryptedEntityRequest): Journal
 
     fun exists(id: String): Boolean
 }
