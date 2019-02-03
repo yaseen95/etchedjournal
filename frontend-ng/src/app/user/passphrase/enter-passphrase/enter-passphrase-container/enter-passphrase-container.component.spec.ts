@@ -130,6 +130,7 @@ describe('EnterPassphraseContainerComponent', () => {
             owner: 'owner',
             ownerType: OwnerType.USER,
             timestamp: 0,
+            version: 1,
         };
 
         spyOn(component, 'decryptKeyPair').and.callThrough();

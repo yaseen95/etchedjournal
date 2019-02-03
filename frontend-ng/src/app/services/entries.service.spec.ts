@@ -44,6 +44,8 @@ describe('EntriesService', () => {
             // Declaring string `as OwnerType` because the API returns it as a string
             ownerType: 'USER' as OwnerType,
             keyPairId: 'kpId',
+            journalId: 'jid',
+            version: 1,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries?journalId=journalId`);
@@ -62,12 +64,13 @@ describe('EntriesService', () => {
         const entries = new Array<EntryEntity>(2);
         entries[0] = {
             content: 'entry1',
-            // Declaring string `as OwnerType` because the API returns it as a string
             ownerType: OwnerType.USER,
             owner: 'abc',
             timestamp: 1,
             id: '1',
             keyPairId: 'kpId',
+            journalId: 'jid',
+            version: 1,
         };
         entries[1] = {
             content: 'entry2',
@@ -76,6 +79,8 @@ describe('EntriesService', () => {
             timestamp: 2,
             id: '2',
             keyPairId: 'kpId',
+            journalId: 'jid',
+            version: 1,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries?journalId=journalId`);
@@ -99,6 +104,8 @@ describe('EntriesService', () => {
             timestamp: 1,
             id: 'entry1',
             keyPairId: 'kpId',
+            journalId: 'jid',
+            version: 1,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries/entry1`);

@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RouterTestingModule } from '@angular/router/testing';
+import { EntryEntity } from '../../../models/entry-entity';
 import { OwnerType } from '../../../models/owner-type';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { EntryListItemComponent } from './entry-list-item.component';
@@ -30,6 +31,8 @@ describe('EntryListItemComponent', () => {
             ownerType: OwnerType.USER,
             id: 'abcdef',
             keyPairId: 'kpId',
+            journalId: 'jid',
+            version: 1,
         };
 
         fixture.detectChanges();

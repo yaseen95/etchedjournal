@@ -52,6 +52,8 @@ describe('EntryListComponent', () => {
                 ownerType: OwnerType.USER,
                 content: 'title1',
                 keyPairId: 'kpId',
+                journalId: 'jid',
+                version: 1,
             },
             {
                 id: 'id2',
@@ -60,6 +62,8 @@ describe('EntryListComponent', () => {
                 ownerType: OwnerType.USER,
                 content: 'title2',
                 keyPairId: 'kpId',
+                journalId: 'jid',
+                version: 1,
             }
         ];
         fixture.detectChanges();

@@ -13,4 +13,7 @@ export interface BaseEntity {
 
     /** owner type */
     ownerType: OwnerType;
+
+    // TODO: Actually send version as part of
+    version: number;
 }

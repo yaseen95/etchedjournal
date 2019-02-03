@@ -46,6 +46,7 @@ describe('JournalsService', () => {
             // Declaring string `as OwnerType` because the API returns it as a string
             ownerType: 'USER' as OwnerType,
             keyPairId: 'kpId',
+            version: 1,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/journals`);
@@ -70,9 +71,9 @@ describe('JournalsService', () => {
             content: 'base64Content',
             timestamp: 1,
             owner: 'user',
-            // Declaring string `as OwnerType` because the API returns it as a string
-            ownerType: 'USER' as OwnerType,
+            ownerType: OwnerType.USER,
             keyPairId: 'kpId',
+            version: 1,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/journals`);

@@ -147,6 +147,7 @@ describe('CreateJournalComponent', () => {
             content: 'content',
             timestamp: 1,
             keyPairId: 'kpId',
+            version: 1,
         };
         createJournalSpy.and.returnValue(Promise.resolve(journal));
         component.createJournal();
