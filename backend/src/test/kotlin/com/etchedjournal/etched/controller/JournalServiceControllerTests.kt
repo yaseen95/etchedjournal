@@ -6,8 +6,8 @@ import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
-import com.etchedjournal.etched.models.entity.KeypairEntity
-import com.etchedjournal.etched.repository.JournalRepository
+import com.etchedjournal.etched.models.jooq.generated.tables.daos.JournalDao
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
 import org.junit.Assert.assertEquals
@@ -29,8 +29,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
-import javax.transaction.Transactional
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -42,13 +42,13 @@ class JournalServiceControllerTests {
     private lateinit var webApplicationContext: WebApplicationContext
 
     @Autowired
-    private lateinit var journalRepo: JournalRepository
+    private lateinit var journalDao: JournalDao
 
     @Autowired
     private lateinit var testRepoUtils: TestRepoUtils
 
     private lateinit var mockMvc: MockMvc
-    private lateinit var keyPair: KeypairEntity
+    private lateinit var keyPair: KeyPair
 
     @Before
     fun setup() {
@@ -69,7 +69,7 @@ class JournalServiceControllerTests {
     @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET journals - returns empty list when no journals`() {
         // Precondition - no journals should exist
-        assertEquals(0, journalRepo.findByOwner(TESTER_USER_ID).toList().size)
+        assertEquals(0, journalDao.fetchByOwner(TESTER_USER_ID).size)
 
         mockMvc.perform(get(JOURNALS_URL))
             .andExpect(status().isOk)
@@ -94,7 +94,8 @@ class JournalServiceControllerTests {
             .andExpect(jsonPath("$[0].owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$[0].ownerType", `is`("USER")))
             .andExpect(jsonPath("$[0].keyPairId", `is`(keyPair.id)))
-            .andExpect(jsonPath("$[0].*", hasSize<Any>(6)))
+            .andExpect(jsonPath("$[0].version", `is`(1)))
+            .andExpect(jsonPath("$[0].*", hasSize<Any>(7)))
     }
 
     @Test
@@ -108,13 +109,14 @@ class JournalServiceControllerTests {
 
         mockMvc.perform(get("$JOURNALS_URL/${j.id}"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.*", hasSize<Any>(6)))
             .andExpect(jsonPath("$.id", `is`(j.id)))
             .andExpect(jsonPath("$.timestamp", `is`(0)))
             .andExpect(jsonPath("$.content", `is`("AQI=")))
             .andExpect(jsonPath("$.owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$.ownerType", `is`("USER")))
             .andExpect(jsonPath("$.keyPairId", `is`(keyPair.id)))
+            .andExpect(jsonPath("$.version", `is`(1)))
+            .andExpect(jsonPath("$.*", hasSize<Any>(7)))
     }
 
     @Test
@@ -131,7 +133,7 @@ class JournalServiceControllerTests {
     @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST journal - creates a journal`() {
         // Precondition - no journals should exist
-        assertEquals(0, journalRepo.findByOwner(TESTER_USER_ID).toList().size)
+        assertEquals(0, journalDao.fetchByOwner(TESTER_USER_ID).size)
 
         mockMvc.perform(
             post(JOURNALS_URL)

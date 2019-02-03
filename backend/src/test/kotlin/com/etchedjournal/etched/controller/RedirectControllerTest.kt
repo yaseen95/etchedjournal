@@ -15,8 +15,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
-import javax.transaction.Transactional
 
 @RunWith(SpringRunner::class)
 @SpringBootTest

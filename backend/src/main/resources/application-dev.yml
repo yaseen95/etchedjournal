@@ -9,3 +9,8 @@ server:
   port: 443
 logging:
   file: /home/ubuntu/logs/etched-log.log
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/etched
+    password: 'dolphins'

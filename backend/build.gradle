@@ -3,6 +3,7 @@ buildscript {
         kotlinVersion = '1.2.21'
         springBootVersion = '2.1.2.RELEASE'
         springSecurityVersion = '5.1.3.RELEASE'
+        springFrameworkVersion = '5.1.4.RELEASE'
         jacksonVersion = '2.9.4'
         h2Version = '1.4.196'
         hibernateValidatorVersion = '6.0.10.Final'
@@ -15,6 +16,8 @@ buildscript {
         jcipAnnotationsVersion = '1.0'
         flywayVersion = '5.2.4'
         postgresqlVersion = '42.2.5'
+        jooqVersion = '3.11.9'
+        gradleJooqPluginVersion = '3.0.2'
     }
     repositories {
         mavenCentral()
@@ -27,11 +30,19 @@ buildscript {
     }
 }
 
+plugins {
+    // https://github.com/gradle/gradle/issues/1697
+    // Can't use variables here
+    id "nu.studer.jooq" version "3.0.2"
+    id "org.flywaydb.flyway" version "5.2.4"
+}
+
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-spring'
 apply plugin: "kotlin-jpa"
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
+apply plugin: "nu.studer.jooq"
 
 group = 'com.etchedjournal'
 version = '0.0.1-SNAPSHOT'
@@ -47,11 +58,10 @@ repositories {
     mavenCentral()
 }
 
-
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-jooq:$springBootVersion")
 
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
@@ -74,10 +84,6 @@ dependencies {
     compile("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
     compile("com.fasterxml.jackson.datatype:jackson-datatype-joda:${jacksonVersion}")
 
-    // hibernate-core:5.0.12.Final has a bug mapping LocalDateTime to H2 timestamp. Have to use
-    // other library. https://stackoverflow.com/questions/44676732/
-    compile('org.hibernate:hibernate-java8:5.0.12.Final')
-
     // PGP libraries
     compile("org.bouncycastle:bcpg-jdk15on:${bouncyCastleVersion}")
     compile("org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}")
@@ -86,9 +92,14 @@ dependencies {
     compile("com.auth0:java-jwt:${auth0JavaJwtVersion}")
     compile("com.auth0:jwks-rsa:${auth0JwksRsaVersion}")
 
+    compile("org.jooq:jooq:${jooqVersion}")
+    compile("org.jooq:jooq-meta:${jooqVersion}")
+    compile("org.jooq:jooq-codegen:${jooqVersion}")
+
     runtime("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
-    runtime("com.h2database:h2:${h2Version}")
+
     compile("org.postgresql:postgresql:${postgresqlVersion}")
+    jooqRuntime("org.postgresql:postgresql:${postgresqlVersion}")
 
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     testCompile("org.springframework.security:spring-security-test:${springSecurityVersion}")
@@ -105,3 +116,83 @@ processResources {
 
 test.dependsOn(":frontend-ng:test")
 processResources.dependsOn(":frontend-ng:bundle")
+
+jooq {
+    version = "${jooqVersion}"
+    etched(sourceSets.main) {
+        jdbc {
+            driver = 'org.postgresql.Driver'
+            url = 'jdbc:postgresql://localhost:5432/etched'
+            user = 'etched'
+            password = 'dolphins'
+        }
+        generator {
+            name = 'org.jooq.codegen.JavaGenerator'
+            strategy {
+                name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+            }
+            database {
+                name = 'org.jooq.meta.postgres.PostgresDatabase'
+                inputSchema = 'public'
+                // Exclude the flyway schema history
+                excludes = 'flyway_schema_history'
+                recordVersionFields = 'version'
+                forcedTypes {
+                    forcedType {
+                        userType = 'java.time.Instant'
+                        converter = 'com.etchedjournal.etched.models.jooq.converter.InstantConverter'
+                        types = 'TIMESTAMP'
+                    }
+                    forcedType {
+                        userType = 'String'
+                        converter = 'com.etchedjournal.etched.models.jooq.converter.IdConverter'
+                        expression = 'public\\.key_pair\\.id ' +
+
+                                '| public\\.journal\\.id ' +
+                                '| public\\.journal\\.key_pair_id ' +
+
+                                '| public\\.entry\\.id ' +
+                                '| public\\.entry\\.journal_id ' +
+                                '| public\\.entry\\.key_pair_id ' +
+
+                                '| public\\.etch\\.id' +
+                                '| public\\.etch\\.entry_id' +
+                                '| public\\.etch\\.key_pair_id'
+                    }
+                    forcedType {
+                        userType = 'com.etchedjournal.etched.models.OwnerType'
+                        converter = 'com.etchedjournal.etched.models.jooq.converter.OwnerTypeConverter'
+                        expression = 'owner_type'
+                    }
+                }
+            }
+            generate {
+                relations = true
+                deprecated = false
+                records = true
+                immutablePojos = true
+                fluentSetters = true
+                pojosEqualsAndHashCode = true
+                serializablePojos = false
+                daos = true
+                validationAnnotations = true
+                springAnnotations = true
+                // Not using javaTimeTypes because we have a custom converter to Instant
+                // This assumes the database is running in UTC mode, if not everything will
+                // likely break. Safe travels my friend.
+            }
+            target {
+                packageName = 'com.etchedjournal.etched.models.jooq.generated'
+                directory = 'src/main/java'
+            }
+        }
+    }
+}
+
+// Need to run the flyway migration before we do the jooq code gen
+// In non-dev configurations flyway will be run on app boot
+flyway {
+    url = 'jdbc:postgresql://localhost:5432/etched'
+    user = 'etched'
+    password = 'dolphins'
+}

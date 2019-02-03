@@ -1,12 +1,13 @@
 package com.etchedjournal.etched
 
-import com.etchedjournal.etched.repository.EntryRepository
-import com.etchedjournal.etched.repository.EtchRepository
-import com.etchedjournal.etched.repository.JournalRepository
-import com.etchedjournal.etched.repository.KeypairRepository
+import com.etchedjournal.etched.models.jooq.generated.tables.daos.EntryDao
+import com.etchedjournal.etched.models.jooq.generated.tables.daos.EtchDao
+import com.etchedjournal.etched.models.jooq.generated.tables.daos.JournalDao
+import com.etchedjournal.etched.models.jooq.generated.tables.daos.KeyPairDao
 import com.etchedjournal.etched.security.CognitoAuthenticationFilter
 import com.etchedjournal.etched.service.AuthService
 import com.nhaarman.mockitokotlin2.mock
+import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
@@ -30,16 +31,16 @@ class TestConfig {
 
     @Bean
     fun testRepoUtils(
-        journalRepository: JournalRepository,
-        entryRepository: EntryRepository,
-        etchRepository: EtchRepository,
-        keyPairRepository: KeypairRepository
+        journalDao: JournalDao,
+        entryDao: EntryDao,
+        etchDao: EtchDao,
+        keyPairDao: KeyPairDao
     ): TestRepoUtils {
         return TestRepoUtils(
-            journalRepo = journalRepository,
-            entryRepo = entryRepository,
-            etchRepo = etchRepository,
-            keyPairRepo = keyPairRepository
+            journalRepo = journalDao,
+            entryRepo = entryDao,
+            etchRepo = etchDao,
+            keyPairRepo = keyPairDao
         )
     }
 

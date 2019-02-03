@@ -6,8 +6,8 @@ import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
-import com.etchedjournal.etched.models.entity.JournalEntity
-import com.etchedjournal.etched.models.entity.KeypairEntity
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
 import org.junit.Before
@@ -27,8 +27,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
-import javax.transaction.Transactional
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -37,8 +37,8 @@ import javax.transaction.Transactional
 class EntryServiceControllerTests {
 
     private lateinit var mockMvc: MockMvc
-    private lateinit var testJournal: JournalEntity
-    private lateinit var testKeyPair: KeypairEntity
+    private lateinit var testJournal: Journal
+    private lateinit var testKeyPair: KeyPair
 
     @Autowired
     private lateinit var webApplicationContext: WebApplicationContext
@@ -192,7 +192,7 @@ class EntryServiceControllerTests {
                 .content(entryRequest)
         )
             // TODO: Should this return a 404 or a 403?
-            .andExpect(status().isNotFound)
+            .andExpect(status().isForbidden)
     }
 
     @Test

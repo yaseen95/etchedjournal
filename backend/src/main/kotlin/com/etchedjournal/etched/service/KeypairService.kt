@@ -1,7 +1,7 @@
 package com.etchedjournal.etched.service
 
 import com.etchedjournal.etched.dto.CreateKeypairRequest
-import com.etchedjournal.etched.models.entity.KeypairEntity
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 
 interface KeypairService {
 
@@ -10,12 +10,12 @@ interface KeypairService {
      *
      * @return the created keypair
      */
-    fun createKeypair(req: CreateKeypairRequest): KeypairEntity
+    fun createKeypair(req: CreateKeypairRequest): KeyPair
 
     /**
      * Get all keypairs for the given user
      */
-    fun getUserKeypairs(): List<KeypairEntity>
+    fun getUserKeypairs(): List<KeyPair>
 
     /**
      * Get the specified keypair
@@ -23,5 +23,5 @@ interface KeypairService {
      * @param id the id of the keypair
      * @return the keypair with id [id]
      */
-    fun getKeypair(id: String): KeypairEntity
+    fun getKeypair(id: String): KeyPair
 }

@@ -1,7 +1,7 @@
 package com.etchedjournal.etched.controller
 
 import com.etchedjournal.etched.dto.CreateKeypairRequest
-import com.etchedjournal.etched.models.entity.KeypairEntity
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.KeypairService
 import com.etchedjournal.etched.service.exception.BadRequestException
@@ -28,7 +28,7 @@ class KeypairServiceController(
 ) {
 
     @PostMapping("")
-    fun create(@RequestBody @Valid req: CreateKeypairRequest): KeypairEntity {
+    fun create(@RequestBody @Valid req: CreateKeypairRequest): KeyPair {
         logger.info("Creating keypair")
         val pubKey = PgpUtils.readPublicKey(req.publicKey)
         logger.info("KeyPair using {} alg, with bit size {}", pubKey.getAlgorithmStr(),
@@ -53,13 +53,13 @@ class KeypairServiceController(
     }
 
     @GetMapping("")
-    fun getKeypairs(): List<KeypairEntity> {
+    fun getKeypairs(): List<KeyPair> {
         logger.info("Getting keypairs")
         return keypairService.getUserKeypairs()
     }
 
     @GetMapping("/{keypairId}")
-    fun getKeypair(@PathVariable @Valid @IsEtchedId keypairId: String): KeypairEntity {
+    fun getKeypair(@PathVariable @Valid @IsEtchedId keypairId: String): KeyPair {
         logger.info("Getting keypair with id {}", keypairId)
         return keypairService.getKeypair(keypairId)
     }

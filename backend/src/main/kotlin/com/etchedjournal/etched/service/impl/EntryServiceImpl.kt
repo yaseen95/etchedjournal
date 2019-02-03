@@ -2,8 +2,10 @@ package com.etchedjournal.etched.service.impl
 
 import com.etchedjournal.etched.dto.EncryptedEntityRequest
 import com.etchedjournal.etched.models.OwnerType
-import com.etchedjournal.etched.models.entity.EntryEntity
-import com.etchedjournal.etched.repository.EntryRepository
+import com.etchedjournal.etched.models.jooq.generated.Tables
+import com.etchedjournal.etched.models.jooq.generated.tables.daos.EntryDao
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Entry
+import com.etchedjournal.etched.models.jooq.generated.tables.records.EntryRecord
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.EntryService
 import com.etchedjournal.etched.service.JournalService
@@ -11,6 +13,7 @@ import com.etchedjournal.etched.service.KeypairService
 import com.etchedjournal.etched.service.exception.ForbiddenException
 import com.etchedjournal.etched.service.exception.NotFoundException
 import com.etchedjournal.etched.utils.id.IdGenerator
+import org.jooq.DSLContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -18,16 +21,17 @@ import java.time.Instant
 
 @Service
 class EntryServiceImpl(
-    private val entryRepository: EntryRepository,
+    private val entryDao: EntryDao,
     private val authService: AuthService,
     private val journalService: JournalService,
     private val idGenerator: IdGenerator,
-    private val keyPairService: KeypairService
+    private val keyPairService: KeypairService,
+    private val dslContext: DSLContext
 ) : EntryService {
 
-    override fun getEntry(entryId: String): EntryEntity {
+    override fun getEntry(entryId: String): Entry {
         logger.info("Attempting to get Entry(id={})", entryId)
-        val entry: EntryEntity = entryRepository.findById(entryId)
+        val entry: Entry = entryDao.findById(entryId)
             ?: throw NotFoundException("Unable to find entry with id $entryId")
 
         // TODO: Create util to check entity access
@@ -42,33 +46,34 @@ class EntryServiceImpl(
         return entry
     }
 
-    override fun getEntries(journalId: String): List<EntryEntity> {
+    override fun getEntries(journalId: String): List<Entry> {
         logger.info("Getting entries for journal {}", journalId)
         checkJournalExists(journalId)
-        return entryRepository.findByJournal_Id(journalId)
+        return entryDao.fetchByJournalId(journalId)
     }
 
-    override fun create(req: EncryptedEntityRequest, journalId: String): EntryEntity {
+    override fun create(req: EncryptedEntityRequest, journalId: String): Entry {
         logger.info("Creating entry for journal {}", journalId)
         checkJournalExists(journalId)
-        return entryRepository.save(
-            EntryEntity(
-                id = idGenerator.generateId(),
-                content = req.content,
-                owner = authService.getUserId(),
-                ownerType = OwnerType.USER,
-                journal = journalService.getJournal(journalId),
-                timestamp = Instant.now(),
-                keyPairId = keyPairService.getKeypair(req.keyPairId).id
-            )
-        )
+
+        val record: EntryRecord = dslContext.newRecord(Tables.ENTRY)
+        record.id = idGenerator.generateId()
+        record.timestamp = Instant.now()
+        record.setContent(*req.content)
+        record.owner = authService.getUserId()
+        record.ownerType = OwnerType.USER
+        record.journalId = journalId
+        record.keyPairId = keyPairService.getKeypair(req.keyPairId).id
+        record.insert()
+
+        val entry = record.into(Entry::class.java)
+        logger.info("Created {}", entry)
+        return entry
     }
 
     private fun checkJournalExists(journalId: String) {
-        if (!journalService.exists(journalId)) {
-            // TODO: What if it the journal exists but it's owned by another user?
-            throw NotFoundException(message = "Journal does not exist")
-        }
+        // Will throw appropriate exceptions if it does not exist
+        journalService.exists(journalId)
     }
 
     companion object {

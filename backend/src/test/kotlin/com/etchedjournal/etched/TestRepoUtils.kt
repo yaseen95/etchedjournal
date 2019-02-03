@@ -1,21 +1,21 @@
 package com.etchedjournal.etched
 
 import com.etchedjournal.etched.models.OwnerType
-import com.etchedjournal.etched.models.entity.EntryEntity
-import com.etchedjournal.etched.models.entity.EtchEntity
-import com.etchedjournal.etched.models.entity.JournalEntity
-import com.etchedjournal.etched.models.entity.KeypairEntity
-import com.etchedjournal.etched.repository.EntryRepository
-import com.etchedjournal.etched.repository.EtchRepository
-import com.etchedjournal.etched.repository.JournalRepository
-import com.etchedjournal.etched.repository.KeypairRepository
+import com.etchedjournal.etched.models.jooq.generated.tables.daos.EntryDao
+import com.etchedjournal.etched.models.jooq.generated.tables.daos.EtchDao
+import com.etchedjournal.etched.models.jooq.generated.tables.daos.JournalDao
+import com.etchedjournal.etched.models.jooq.generated.tables.daos.KeyPairDao
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Entry
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Etch
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import java.time.Instant
 
 class TestRepoUtils(
-    private val journalRepo: JournalRepository,
-    private val entryRepo: EntryRepository,
-    private val etchRepo: EtchRepository,
-    private val keyPairRepo: KeypairRepository
+    private val journalRepo: JournalDao,
+    private val entryRepo: EntryDao,
+    private val etchRepo: EtchDao,
+    private val keyPairRepo: KeyPairDao
 ) {
 
     fun createJournal(
@@ -25,61 +25,64 @@ class TestRepoUtils(
         timestamp: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER
-    ): JournalEntity {
-        return journalRepo.save(
-            JournalEntity(
-                id = id.padEnd(11, '0'),
-                timestamp = timestamp,
-                content = content,
-                owner = owner,
-                ownerType = ownerType,
-                keyPairId = keyPairId
-            )
+    ): Journal {
+        val j = Journal(
+            id.padEnd(11, '0'),
+            timestamp,
+            content,
+            owner,
+            ownerType,
+            keyPairId,
+            0
         )
+        journalRepo.insert(j)
+        return j
     }
 
     fun createEntry(
         id: String,
-        journal: JournalEntity,
+        journal: Journal,
         content: ByteArray,
         keyPairId: String,
         timestamp: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER
-    ): EntryEntity {
-        return entryRepo.save(
-            EntryEntity(
-                id = id.padEnd(11, '0'),
-                timestamp = timestamp,
-                content = content,
-                owner = owner,
-                ownerType = ownerType,
-                journal = journal,
-                keyPairId = keyPairId
-            )
+    ): Entry {
+        val e = Entry(
+            id.padEnd(11, '0'),
+            timestamp,
+            content,
+            owner,
+            ownerType,
+            journal.id,
+            keyPairId,
+            0
         )
+        entryRepo.insert(e)
+        return e
     }
 
     fun createEtch(
         id: String,
-        entry: EntryEntity,
+        entry: Entry,
         content: ByteArray,
         keyPairId: String,
         timestamp: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER
-    ): EtchEntity {
-        return etchRepo.save(
-            EtchEntity(
-                id = id.padEnd(11, '0'),
-                timestamp = timestamp,
-                content = content,
-                owner = owner,
-                ownerType = ownerType,
-                entry = entry,
-                keyPairId = keyPairId
-            )
+    ): Etch {
+        val e = Etch(
+            id.padEnd(11, '0'),
+            timestamp,
+            content,
+            owner,
+            ownerType,
+            entry.id,
+            keyPairId,
+            0
         )
+        etchRepo.insert(e)
+        return e
     }
 
     fun createKeyPair(
@@ -91,18 +94,19 @@ class TestRepoUtils(
         timestamp: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER
-    ): KeypairEntity {
-        return keyPairRepo.save(
-            KeypairEntity(
-                id = id.padEnd(11, '0'),
-                publicKey = publicKey,
-                privateKey = privateKey,
-                iterations = iterations,
-                salt = salt,
-                timestamp = timestamp,
-                owner = owner,
-                ownerType = ownerType
-            )
+    ): KeyPair {
+        val k = KeyPair(
+            id.padEnd(11, '0'),
+            timestamp,
+            publicKey,
+            privateKey,
+            owner,
+            ownerType,
+            salt,
+            iterations,
+            0
         )
+        keyPairRepo.insert(k)
+        return k
     }
 }

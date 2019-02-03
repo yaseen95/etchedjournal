@@ -6,9 +6,9 @@ import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
-import com.etchedjournal.etched.models.entity.EntryEntity
-import com.etchedjournal.etched.models.entity.JournalEntity
-import com.etchedjournal.etched.models.entity.KeypairEntity
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Entry
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
+import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
 import org.junit.Before
@@ -29,8 +29,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
-import javax.transaction.Transactional
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -39,9 +39,9 @@ import javax.transaction.Transactional
 class EtchServiceControllerTests {
 
     private lateinit var mockMvc: MockMvc
-    private lateinit var entry: EntryEntity
-    private lateinit var journal: JournalEntity
-    private lateinit var keyPair: KeypairEntity
+    private lateinit var entry: Entry
+    private lateinit var journal: Journal
+    private lateinit var keyPair: KeyPair
 
     @Autowired
     private lateinit var webApplicationContext: WebApplicationContext
@@ -190,8 +190,9 @@ class EtchServiceControllerTests {
             .andExpect(jsonPath("\$[0].owner", `is`(TestAuthService.TESTER_USER_ID)))
             .andExpect(jsonPath("\$[0].ownerType", `is`("USER")))
             .andExpect(jsonPath("\$[0].keyPairId", `is`(keyPair.id)))
-            // Should only be the above 5 keys in the json response
-            .andExpect(jsonPath("\$[0].*", hasSize<Any>(6)))
+            .andExpect(jsonPath("\$[0].entryId", `is`(entry.id)))
+            .andExpect(jsonPath("\$[0].version", `is`(1)))
+            .andExpect(jsonPath("\$[0].*", hasSize<Any>(8)))
 
         mockMvc.perform(get("$ETCHES_PATH?entryId=${entry.id}"))
             .andExpect(status().isOk)

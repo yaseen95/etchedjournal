@@ -5,6 +5,7 @@
 
 #logging.level.org.keycloak: DEBUG
 logging.pattern.level: '%5p %X{userId}'
+#logging.level.org.jooq.tools.LoggerListener: DEBUG
 
 spring:
   datasource:
@@ -13,19 +14,6 @@ spring:
     username: etched
     password: ${DB_PASSWORD}
     platform: postgresql
-
-  jpa:
-    hibernate:
-      ddl-auto: validate
-      naming:
-        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
-
-    properties:
-      hibernate:
-        jdbc:
-          lob:
-            # https://github.com/spring-projects/spring-boot/issues/12007
-            non_contextual_creation: true
 
   jackson:
     serialization:
@@ -44,5 +32,4 @@ spring:
 
   flyway:
     locations:
-      - 'classpath:/db/migration/{vendor}'
-
+      - 'classpath:/db/migration'
