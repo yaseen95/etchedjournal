@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 export ETCHED_FLAVOR=dev
 
 docker-compose up -d
@@ -11,3 +13,5 @@ docker-compose up -d
     ./gradlew backend:flywayMigrate && \
     ./gradlew backend:generateEtchedJooqSchemaSource && \
     ./gradlew clean build
+
+./scripts/check-generated-jooq.sh
