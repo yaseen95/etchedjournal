@@ -4,9 +4,8 @@ import { BehaviorSubject } from 'rxjs';
 import { EntryEntity } from '../../models/entry-entity';
 import { AbstractEtch, EtchV1 } from '../../models/etch';
 import { Encrypter } from '../../services/encrypter';
-import { EncrypterService } from '../../services/encrypter.service';
-import { EntriesService } from '../../services/entries.service';
 import { EtchQueueService } from '../../services/etch-queue.service';
+import { EntryStore } from '../../stores/entry.store';
 
 const ENTRY_NOT_CREATED = 'NOT_CREATED';
 const ENTRY_CREATING = 'ENTRY_CREATING';
@@ -29,20 +28,20 @@ export class EditorContainerComponent implements OnInit, OnDestroy {
 
     journalId: string;
 
+    // Have to keep our own queue until the entry is created
     queuedEtches: AbstractEtch[] = [];
 
     entrySubject: BehaviorSubject<EntryEntity>;
 
-    constructor(private entriesService: EntriesService,
+    constructor(private entryStore: EntryStore,
                 private etchQueueService: EtchQueueService,
-                private encrypterService: EncrypterService,
                 route: ActivatedRoute) {
         this.entrySubject = new BehaviorSubject(null);
+        // TODO: Should we subscribe to journalId param changes or is snapshot okay?
         this.journalId = route.snapshot.queryParamMap.get('journalId');
         if (this.journalId === null) {
             console.error('No journal id');
         }
-        this.encrypter = encrypterService.encrypter;
     }
 
     ngOnInit() {
@@ -67,31 +66,19 @@ export class EditorContainerComponent implements OnInit, OnDestroy {
     /**
      * Creates an entry
      */
-    private createEntry() {
-        console.info('attempting to create entry');
+    private async createEntry() {
+        console.info('Attempting to create entry');
         if (this.entryCreationState !== ENTRY_NOT_CREATED) {
             // The entry has already been created, don't need to do anything here
             console.info('entry has already been created or is creating');
             return;
         }
-
-        console.log(`Creating entry`);
         this.entryCreationState = ENTRY_CREATING;
-
-        this.encrypter.encrypt(this.title)
-            .then(ciphertext => {
-                console.info(`creating entry with title: ${this.title}`);
-                this.entriesService.createEntry(
-                    this.encrypter.keyPairId,
-                    this.journalId,
-                    ciphertext
-                )
-                    .subscribe(entry => {
-                        console.log(`Created entry with id ${entry.id}`);
-                        this.entryCreationState = ENTRY_CREATED;
-                        this.entrySubject.next(entry);
-                    });
-            });
+        console.info('Creating entry');
+        const entry = await this.entryStore.createEntry(this.journalId, this.title);
+        console.log(`Created entry with id ${entry.id}`);
+        this.entryCreationState = ENTRY_CREATED;
+        this.entrySubject.next(entry);
     }
 
     onNewEtch(etch: EtchV1) {

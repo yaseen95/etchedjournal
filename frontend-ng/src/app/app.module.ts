@@ -21,6 +21,7 @@ import { JournalListComponent } from './etches/journals/journal-list/journal-lis
 import { JournalsContainerComponent } from './etches/journals/journals-container/journals-container.component';
 import { GenerateContainerComponent } from './key-pairs/generate/generate-container.component';
 import { NavComponent } from './nav/nav.component';
+import { EntryStore } from './stores/entry.store';
 import { JournalStore } from './stores/journal.store';
 import { ConfigurePassphraseComponent } from './user/configure-passphrase/configure-passphrase.component';
 import { LoginContainerComponent } from './user/login/login-container/login-container.component';
@@ -84,6 +85,7 @@ import { SpinnerComponent } from './utils/spinner/spinner.component';
         Title,
         {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
         JournalStore,
+        EntryStore,
     ],
     bootstrap: [AppComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

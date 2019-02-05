@@ -1,9 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { EncrypterService } from '../../services/encrypter.service';
-import { EntriesService } from '../../services/entries.service';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { EntryStore } from '../../stores/entry.store';
+import { FakeEntryStore } from '../../stores/entry.store.spec';
 import { SpinnerComponent } from '../../utils/spinner/spinner.component';
 import { TestUtils } from '../../utils/test-utils.spec';
 import { EntryListContainerComponent } from './entry-list-container.component';
@@ -13,19 +14,15 @@ import { EntryListComponent } from './entry-list/entry-list.component';
 describe('EntryListContainerComponent', () => {
     let component: EntryListContainerComponent;
     let fixture: ComponentFixture<EntryListContainerComponent>;
-    let entriesServiceSpy: any;
-    let encrypter: any;
-    let encrypterService: EncrypterService;
+    let store: EntryStore;
+    let paramMap: Map<string, string>;
+    let paramMapSubject: Subject<ParamMap>;
 
     beforeEach(async(() => {
-        entriesServiceSpy = jasmine.createSpyObj('EntriesService', ['getEntries']);
-        // By default getUser should return null
-        entriesServiceSpy.getEntries.and.returnValue(of([]));
-        encrypter = jasmine.createSpyObj('Encrypter', ['encrypt']);
-        encrypter.keyPairId = 'kpId';
-
-        encrypterService = new EncrypterService();
-        encrypterService.encrypter = encrypter;
+        store = new FakeEntryStore();
+        paramMap = new Map<string, any>();
+        paramMap.set('id', 'journalId');
+        paramMapSubject = new BehaviorSubject(paramMap as any);
 
         TestBed.configureTestingModule({
             declarations: [
@@ -35,8 +32,14 @@ describe('EntryListContainerComponent', () => {
                 SpinnerComponent,
             ],
             providers: [
-                {provide: EntriesService, useValue: entriesServiceSpy},
-                {provide: EncrypterService, useValue: encrypterService},
+                {provide: EntryStore, useValue: store},
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        // Mock out the param map
+                        paramMap: paramMapSubject
+                    }
+                }
             ],
             imports: [
                 RouterTestingModule,
@@ -51,33 +54,32 @@ describe('EntryListContainerComponent', () => {
         fixture.detectChanges();
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-
-    it('displays getting entries spinner', () => {
-        component.inFlight = true;
+    it('displays getting entries spinner when loading', () => {
+        store.loading = true;
         fixture.detectChanges();
 
-        // spinner p will match any p element that is a descendant of spinner
         const spinnerText = TestUtils.queryExpectOne(fixture.debugElement, 'app-spinner p');
         expect(spinnerText.nativeElement.innerText).toEqual('Getting entries');
     });
 
-    it('displays decrypting spinner', () => {
-        component.inFlight = false;
-        component.decrypting = true;
+    it('displays entries after loading', () => {
+        store.loading = false;
         fixture.detectChanges();
-
-        const spinnerText = TestUtils.queryExpectOne(fixture.debugElement, 'app-spinner p');
-        expect(spinnerText.nativeElement.innerText).toEqual('Decrypting entries');
+        TestUtils.queryExpectOne(fixture.debugElement, 'app-entry-list');
     });
 
-    it('displays entries after getting and decrypting', () => {
-        component.inFlight = false;
-        component.decrypting = false;
-        fixture.detectChanges();
+    it('loads journals using id passed as param', () => {
+        const loadEntriesSpy = spyOn(store, 'loadEntries');
+        paramMap.set('id', 'foobar');
+        component.ngOnInit();
+        expect(loadEntriesSpy).toHaveBeenCalledTimes(1);
+        expect(loadEntriesSpy).toHaveBeenCalledWith('foobar');
+    });
 
-        TestUtils.queryExpectOne(fixture.debugElement, 'app-entry-list');
+    it('reloads entries when id param changes', () => {
+        const loadEntriesSpy = spyOn(store, 'loadEntries');
+        paramMap.set('id', 'changed id');
+        paramMapSubject.next(paramMap as any);
+        expect(loadEntriesSpy).toHaveBeenCalledWith('changed id');
     });
 });
