@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { EntryEntity } from '../../models/entry-entity';
 import { AbstractEtch, EtchV1 } from '../../models/etch';
+import { ClockService } from '../../services/clock.service';
 import { Encrypter } from '../../services/encrypter';
 import { EtchQueueService } from '../../services/etch-queue.service';
 import { EntryStore } from '../../stores/entry.store';
@@ -35,7 +36,9 @@ export class EditorContainerComponent implements OnInit, OnDestroy {
 
     constructor(private entryStore: EntryStore,
                 private etchQueueService: EtchQueueService,
+                private clockService: ClockService,
                 route: ActivatedRoute) {
+        this.title = clockService.now().toLocaleDateString();
         this.entrySubject = new BehaviorSubject(null);
         // TODO: Should we subscribe to journalId param changes or is snapshot okay?
         this.journalId = route.snapshot.queryParamMap.get('journalId');

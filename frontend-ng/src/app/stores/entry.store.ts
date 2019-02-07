@@ -34,6 +34,14 @@ export class EntryStore {
         console.info('loaded and decrypted entries');
     }
 
+    @mobx.action async loadEntry(entryId: string): Promise<EntryEntity> {
+        this.loading = true;
+        const e = await this.entryService.getEntry(entryId).toPromise();
+        const decrypted = await this.encrypterService.encrypter.decryptEntity(e);
+        this.loading = false;
+        return decrypted;
+    }
+
     @mobx.action async createEntry(journalId: string, title: string): Promise<EntryEntity> {
         const enc = this.encrypterService.encrypter;
         const ciphertext = await enc.encrypt(title);

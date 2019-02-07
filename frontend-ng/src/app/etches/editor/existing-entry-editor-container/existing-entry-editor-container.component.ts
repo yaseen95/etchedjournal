@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { EntryEntity } from '../../../models/entry-entity';
 import { EtchV1 } from '../../../models/etch';
 import { EtchEntity } from '../../../models/etch-entity';
 import { Encrypter } from '../../../services/encrypter';
 import { EncrypterService } from '../../../services/encrypter.service';
-import { EntriesService } from '../../../services/entries.service';
 import { EtchQueueService } from '../../../services/etch-queue.service';
 import { EtchesService } from '../../../services/etches.service';
+import { EntryStore } from '../../../stores/entry.store';
 
 export enum EntityState {
     FETCHING = 'FETCHING',
@@ -25,13 +24,9 @@ export class ExistingEntryEditorContainerComponent implements OnInit {
 
     entryId: string | null;
 
-    entryState: EntityState;
-
     etchesState: EntityState;
 
     etches: EtchV1[];
-
-    entry?: EntryEntity;
 
     title?: string;
 
@@ -39,46 +34,27 @@ export class ExistingEntryEditorContainerComponent implements OnInit {
 
     constructor(
         private etchesService: EtchesService,
-        private entriesService: EntriesService,
+        public entryStore: EntryStore,
         private route: ActivatedRoute,
         private etchQueueService: EtchQueueService,
         encrypterService: EncrypterService
     ) {
-        if (encrypterService.encrypter === null) {
-            throw new Error('encrypter is null');
-        }
         this.encrypter = encrypterService.encrypter;
         this.entryId = route.snapshot.paramMap.get('id');
         console.info(`Entry id is ${this.entryId}`);
     }
 
     ngOnInit() {
-        this.entryState = EntityState.FETCHING;
         this.etchesState = EntityState.FETCHING;
-
-        this.entriesService.getEntry(this.entryId)
-            .subscribe(e => {
-                this.decryptEntry(e);
+        this.entryStore.loadEntry(this.entryId)
+            .then(entry => {
+                this.title = entry.content;
             });
 
         // TODO: paginate requests
         this.etchesService.getEtches(this.entryId)
             .subscribe(e => {
                 this.decryptEtches(e);
-            });
-    }
-
-    decryptEntry(entry: EntryEntity) {
-        console.info('Decrypting entry');
-        this.entryState = EntityState.DECRYPTING;
-
-        this.encrypter.decrypt(entry.content)
-            .then(plaintext => {
-                const copy = Object.assign({}, entry);
-                copy.content = plaintext;
-                this.entry = copy;
-                this.title = plaintext;
-                this.entryState = EntityState.DECRYPTED;
             });
     }
 
@@ -106,12 +82,16 @@ export class ExistingEntryEditorContainerComponent implements OnInit {
     }
 
     onNewEtch(etch: EtchV1) {
-        this.etchQueueService.put(this.entry.id, etch);
+        this.etchQueueService.put(this.entryId, etch);
     }
 
     onTitleChange(title: string) {
         // TODO: Update the title on the backend once editing is allowed
         console.info(`Next title is ${title}`);
         this.title = title;
+    }
+
+    displaySpinner() {
+        return this.entryStore.loading || this.etchesState !== EntityState.DECRYPTED;
     }
 }

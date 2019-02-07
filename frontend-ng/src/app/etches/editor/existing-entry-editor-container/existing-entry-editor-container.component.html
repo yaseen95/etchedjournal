@@ -1,13 +1,9 @@
-<div class="columns is-centered">
-    <div *ngIf="entryState === 'FETCHING' || etchesState === 'FETCHING'"
+<div class="columns is-centered" *mobxAutorun>
+    <div *ngIf="displaySpinner()"
          class="column is-12-mobile is-4-desktop">
         <app-spinner [text]="'Getting entry'"></app-spinner>
     </div>
-    <div *ngIf="entryState === 'DECRYPTING' || etchesState === 'DECRYPTING'"
-         class="column is-12-mobile is-4-desktop">
-        <app-spinner [text]="'Decrypting'"></app-spinner>
-    </div>
-    <div *ngIf="entryState === 'DECRYPTED' && etchesState === 'DECRYPTED'"
+    <div *ngIf="!displaySpinner()"
          class="column is-12-mobile is-8-tablet is-8-desktop">
         <app-entry-title
             (titleEmitter)="onTitleChange($event)"
