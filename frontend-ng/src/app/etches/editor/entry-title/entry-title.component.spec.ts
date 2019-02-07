@@ -25,23 +25,8 @@ describe('EntryTitleComponent', () => {
         component.titleEmitter.subscribe(title => emittedEvents.push(title));
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-
     it('title is not editable at start', () => {
         expect(component.isEditing).toBeFalsy();
-    });
-
-    it('title is emitted on init when undefined', () => {
-        component.title = undefined;
-        component.ngOnInit();
-        expect(emittedEvents.length).toEqual(1);
-        // expect non empty string as the total
-        // Title emitted is usually Date.toLocaleString() e.g. 19/01/2019
-        expect(emittedEvents[0].trim().length).toBeGreaterThan(1);
-        expect(component.title).toEqual(emittedEvents[0]);
-        expect(component.prevTitle).toEqual(emittedEvents[0]);
     });
 
     it('title provided in input does not emit', () => {

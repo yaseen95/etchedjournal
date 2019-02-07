@@ -67,16 +67,17 @@ export class FakeEntryStore extends EntryStore {
             'decryptEntities']);
         const encService = new EncrypterService();
         encService.encrypter = encSpy;
-        const journalsService = jasmine.createSpyObj('EntriesService', ['getEntries',
-            'createEntry']);
+        const entryService = jasmine.createSpyObj('EntriesService', ['getEntries',
+            'createEntry', 'getEntry']);
 
-        journalsService.getEntries.and.returnValue(of([]));
-        journalsService.createEntry.and.returnValue(EMPTY);
+        entryService.getEntries.and.returnValue(of([]));
+        entryService.createEntry.and.returnValue(EMPTY);
+        entryService.getEntry.and.returnValue(EMPTY);
 
-        super(journalsService, encService);
+        super(entryService, encService);
 
         this.encrypterServiceFake = encService;
-        this.entryServiceSpy = journalsService;
+        this.entryServiceSpy = entryService;
         this.encrypterSpy = encSpy;
     }
 }

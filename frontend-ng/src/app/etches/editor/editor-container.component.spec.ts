@@ -3,6 +3,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ClockService } from '../../services/clock.service';
+import { FakeClock } from '../../services/clock.service.spec';
 import { EntryStore } from '../../stores/entry.store';
 import { FakeEntryStore } from '../../stores/entry.store.spec';
 import { EditorContainerComponent } from './editor-container.component';
@@ -14,9 +16,11 @@ describe('EditorContainerComponent', () => {
     let component: EditorContainerComponent;
     let fixture: ComponentFixture<EditorContainerComponent>;
     let store: EntryStore;
+    let clockService: ClockService;
 
     beforeEach(async(() => {
         store = new FakeEntryStore();
+        clockService = new FakeClock(1);
 
         TestBed.configureTestingModule({
             declarations: [
@@ -27,6 +31,7 @@ describe('EditorContainerComponent', () => {
             ],
             providers: [
                 {provide: EntryStore, useValue: store},
+                {provide: ClockService, useValue: clockService},
             ],
             imports: [
                 ReactiveFormsModule,
@@ -43,8 +48,8 @@ describe('EditorContainerComponent', () => {
         fixture.detectChanges();
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
+    it('generates title on init', () => {
+        expect(component.title).toEqual(new Date(1).toLocaleDateString());
     });
 
     // TODO: Add some tests here
