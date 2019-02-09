@@ -12,7 +12,7 @@
         </app-entry-title>
         <app-editor
             (etchEmitter)="onNewEtch($event)"
-            [etches]="etches">
+            [etches]="etchStore.state.parsedEtches">
         </app-editor>
     </div>
 </div>
