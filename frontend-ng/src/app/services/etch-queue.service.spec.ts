@@ -1,30 +1,18 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-
-import { EMPTY, of } from 'rxjs';
-import { EncrypterService } from './encrypter.service';
+import { EtchStore } from '../stores/etch.store';
+import { FakeEtchStore } from '../stores/etch.store.spec';
 import { EtchQueueService } from './etch-queue.service';
-import { EtchesService } from './etches.service';
 
 describe('EtchQueueService', () => {
     let service: EtchQueueService;
-    let etchesService: any;
-    let encrypterSpy: any;
-    let encrypterService: EncrypterService;
+    let etchStore: FakeEtchStore;
 
     beforeEach(() => {
-        etchesService = jasmine.createSpyObj('EtchesService', ['postEtches']);
-        etchesService.postEtches.and.returnValue(of(EMPTY));
-
-        encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt']);
-        encrypterSpy.keyPairId = 'keyPairId';
-
-        encrypterService = new EncrypterService();
-        encrypterService.encrypter = encrypterSpy;
+        etchStore = new FakeEtchStore();
 
         TestBed.configureTestingModule({
             providers: [
-                {provide: EtchesService, useValue: etchesService},
-                {provide: EncrypterService, useValue: encrypterService},
+                {provide: EtchStore, useValue: etchStore},
             ],
         });
         service = TestBed.get(EtchQueueService);
@@ -53,56 +41,50 @@ describe('EtchQueueService', () => {
     });
 
     it('posts queued etches', fakeAsync(() => {
-        encrypterSpy.encrypt.and.returnValue(Promise.resolve('foobar'));
         service.put('entryId', {schemaVersion: 'abc'});
         expect(service.queuedEtches.size).toEqual(1);
 
+        const createEtchesSpy = spyOn(etchStore, 'createEtches');
         service.postQueuedEtches();
         tick();
 
         expect(service.queuedEtches.size).toEqual(0);
-
-        expect(etchesService.postEtches).toHaveBeenCalledTimes(1);
-        expect(etchesService.postEtches).toHaveBeenCalledWith('keyPairId', 'entryId', ['foobar']);
+        expect(createEtchesSpy).toHaveBeenCalledTimes(1);
+        expect(createEtchesSpy).toHaveBeenCalledWith('entryId', [{schemaVersion: 'abc'}]);
     }));
 
     it('posts multiple etches for single entry', fakeAsync(() => {
-        encrypterSpy.encrypt.and.returnValue(Promise.resolve('foobar'));
         service.put('entryId', {schemaVersion: 'abc'});
         service.put('entryId', {schemaVersion: 'def'});
         expect(service.queuedEtches.size).toEqual(1);
 
+        const createEtchesSpy = spyOn(etchStore, 'createEtches');
         service.postQueuedEtches();
         tick();
 
         expect(service.queuedEtches.size).toEqual(0);
-        // Etches are batched together and encrypted once
-        expect(encrypterSpy.encrypt).toHaveBeenCalledTimes(1);
 
-        expect(etchesService.postEtches).toHaveBeenCalledTimes(1);
-        expect(etchesService.postEtches).toHaveBeenCalledWith('keyPairId', 'entryId', ['foobar']);
+        expect(createEtchesSpy).toHaveBeenCalledTimes(1);
+        expect(createEtchesSpy).toHaveBeenCalledWith(
+            'entryId',
+            [{schemaVersion: 'abc'}, {schemaVersion: 'def'}]
+        );
     }));
 
     it('posts etches for multiple entries', fakeAsync(() => {
-        encrypterSpy.encrypt.and.returnValues(Promise.resolve('foo'), Promise.resolve('bar'));
-
         service.put('entry1', {schemaVersion: 'abc'});
         service.put('entry2', {schemaVersion: 'def'});
         expect(service.queuedEtches.size).toEqual(2);
 
+        const createEtchesSpy = spyOn(etchStore, 'createEtches');
         service.postQueuedEtches();
         tick();
 
         expect(service.queuedEtches.size).toEqual(0);
 
-        // Etches for different etches are encrypted at different times
-        expect(encrypterSpy.encrypt).toHaveBeenCalledTimes(2);
-        expect(encrypterSpy.encrypt.calls.allArgs())
-            .toEqual([['[{"schemaVersion":"abc"}]'], ['[{"schemaVersion":"def"}]']]);
-
-        expect(etchesService.postEtches).toHaveBeenCalledTimes(2);
-        expect(etchesService.postEtches.calls.allArgs())
-            .toEqual([['keyPairId', 'entry1', ['foo']], ['keyPairId', 'entry2', ['bar']]]);
+        expect(createEtchesSpy).toHaveBeenCalledTimes(2);
+        expect(createEtchesSpy.calls.allArgs())
+            .toEqual([['entry1', [{schemaVersion: 'abc'}]], ['entry2', [{schemaVersion: 'def'}]]]);
     }));
 
     // it('posts etches every 5 seconds', fakeAsync(() => {
@@ -118,9 +100,10 @@ describe('EtchQueueService', () => {
 
     it('postQueuedEtches does nothing when no etches', () => {
         expect(service.queuedEtches.size).toEqual(0);
+        const createEtchesSpy = spyOn(etchStore, 'createEtches');
 
         service.postQueuedEtches();
 
-        expect(etchesService.postEtches).toHaveBeenCalledTimes(0);
+        expect(createEtchesSpy).toHaveBeenCalledTimes(0);
     });
 });

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 import { AbstractEtch } from '../models/etch';
+import { EtchStore } from '../stores/etch.store';
 import { EncrypterService } from './encrypter.service';
 import { EtchesService } from './etches.service';
 
@@ -18,15 +19,10 @@ export class EtchQueueService {
     /** subscriber to an interval observer used to post queued etches */
     private queueIntervalSubscription: Subscription;
 
-    constructor(private etchesService: EtchesService,
-                private encrypterService: EncrypterService) {
-        if (this.encrypterService.encrypter === null) {
-            console.error('Encrypter is null');
-        }
+    constructor(private etchStore: EtchStore) {
         this.queuedEtches = new Map<string, any>();
         this.queueIntervalSubscription = interval(5_000)
             .subscribe(() => {
-                console.info('queue thing');
                 this.postQueuedEtches();
             });
     }
@@ -53,24 +49,7 @@ export class EtchQueueService {
         this.queuedEtches = new Map();
 
         for (const [entryId, etches] of Array.from(copy.entries())) {
-            this.postEtches(entryId, etches);
+            this.etchStore.createEtches(entryId, etches);
         }
-    }
-
-    private postEtches(entryId: string, etches: AbstractEtch[]) {
-        console.info('Posting etches');
-        const enc = this.encrypterService.encrypter;
-
-        const payload = JSON.stringify(etches);
-        enc.encrypt(payload)
-            .then(encrypted => {
-                return this.etchesService.postEtches(enc.keyPairId, entryId, [encrypted]);
-            })
-            .then(etchesObs => {
-                etchesObs.subscribe(() => {
-                    console.info(`Successfully posted ${etches.length} etches for entry` +
-                        `${entryId}`);
-                });
-            });
     }
 }
