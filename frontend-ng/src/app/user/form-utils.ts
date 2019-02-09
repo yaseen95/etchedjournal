@@ -39,7 +39,7 @@ export const EMAIL_VALIDATORS = Validators.compose([
     Validators.email
 ]);
 
-export const PASSPHRASE_MIN_LENGTH: number = 16;
+export const PASSPHRASE_MIN_LENGTH: number = 10;
 
 export const PASSPHRASE_VALIDATORS = Validators.compose([
     Validators.required,
