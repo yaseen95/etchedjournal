@@ -90,7 +90,7 @@ describe('ConfigurePassphraseComponent', () => {
         passphraseControl.setValue('abc');  // too short
         expect(passphraseForm.valid).toBeFalsy();
         expect(passphraseControl.hasError('minlength')).toBeTruthy();
-        expect(passphraseControl.errors.minlength.requiredLength).toEqual(16);
+        expect(passphraseControl.errors.minlength.requiredLength).toEqual(10);
 
         // Check that error is displayed after submit
         component.submitClicked = true;
@@ -106,7 +106,7 @@ describe('ConfigurePassphraseComponent', () => {
         const passphraseErrorMsg = errorMsgs[0];
         const passphraseErrorMsgEl = passphraseErrorMsg.nativeElement as HTMLParagraphElement;
         expect(passphraseErrorMsgEl.textContent.trim())
-            .toEqual('Passphrase must be at least 16 characters long');
+            .toEqual('Passphrase must be at least 10 characters long');
 
         const confirmErrorMsg = errorMsgs[1];
         const confirmErrorMsgEl = confirmErrorMsg.nativeElement as HTMLParagraphElement;
@@ -159,7 +159,7 @@ describe('ConfigurePassphraseComponent', () => {
         const notSameErrorMsgEl = errorElems[1].nativeElement as HTMLParagraphElement;
 
         expect(shortErrorMsgEl.textContent.trim())
-            .toEqual('Passphrase must be at least 16 characters long');
+            .toEqual('Passphrase must be at least 10 characters long');
         expect(notSameErrorMsgEl.textContent.trim()).toEqual(`Passphrase doesn't match`);
     });
 
