@@ -90,7 +90,7 @@ describe('ConfigurePassphraseComponent', () => {
         passphraseControl.setValue('abc');  // too short
         expect(passphraseForm.valid).toBeFalsy();
         expect(passphraseControl.hasError('minlength')).toBeTruthy();
-        expect(passphraseControl.errors.minlength.requiredLength).toEqual(16);
+        expect(passphraseControl.errors.minlength.requiredLength).toEqual(10);
 
         // Check that error is displayed after submit
         component.submitClicked = true;
