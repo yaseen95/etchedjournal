@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 /* These h1-h6 sizes match the size of .title.is-{size} */
 h1 {
-    font-size: 3.0rem;
+    font-size: 3rem;
 }
 
 h2 {
@@ -24,7 +24,12 @@ h6 {
     font-size: 1rem;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     /** TODO: Use scss or sass or whatever does the variables **/
     color: #363636;
     font-weight: 600;
@@ -40,7 +45,9 @@ p.error-help {
 }
 
 /* http://stackoverflow.com/a/35578093/873282 */
-[hidden] { display: none !important;}
+[hidden] {
+    display: none !important;
+}
 
 .fa-spin {
     /* Spinner is a tad too slow, lets make it faster */

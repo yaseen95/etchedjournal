@@ -18,26 +18,25 @@ const ENTRY_CREATED = 'ENTRY_CREATED';
     styleUrls: ['./editor-container.component.css'],
 })
 export class EditorContainerComponent implements OnInit, OnDestroy {
-    /** the encryper used to encrypt entries/etches */
-    encrypter: Encrypter;
-
     /** Current title */
-    title: string;
+    public title: string;
 
     /** the current state of the entry */
-    entryCreationState: string;
+    private entryCreationState: string;
 
-    journalId: string;
+    private journalId: string;
 
     // Have to keep our own queue until the entry is created
-    queuedEtches: AbstractEtch[] = [];
+    private queuedEtches: AbstractEtch[] = [];
 
-    entrySubject: BehaviorSubject<EntryEntity>;
+    private entrySubject: BehaviorSubject<EntryEntity>;
 
-    constructor(private entryStore: EntryStore,
-                private etchQueueService: EtchQueueService,
-                private clockService: ClockService,
-                route: ActivatedRoute) {
+    constructor(
+        private entryStore: EntryStore,
+        private etchQueueService: EtchQueueService,
+        private clockService: ClockService,
+        route: ActivatedRoute
+    ) {
         this.title = clockService.now().toLocaleDateString();
         this.entrySubject = new BehaviorSubject(null);
         // TODO: Should we subscribe to journalId param changes or is snapshot okay?
@@ -47,7 +46,7 @@ export class EditorContainerComponent implements OnInit, OnDestroy {
         }
     }
 
-    ngOnInit() {
+    public ngOnInit() {
         this.entryCreationState = ENTRY_NOT_CREATED;
 
         this.entrySubject.subscribe(entry => {
@@ -62,7 +61,7 @@ export class EditorContainerComponent implements OnInit, OnDestroy {
         });
     }
 
-    ngOnDestroy() {
+    public ngOnDestroy() {
         this.entrySubject.unsubscribe();
     }
 
@@ -84,7 +83,7 @@ export class EditorContainerComponent implements OnInit, OnDestroy {
         this.entrySubject.next(entry);
     }
 
-    onNewEtch(etch: EtchV1) {
+    public onNewEtch(etch: EtchV1) {
         this.queuedEtches.push(etch);
 
         const entry = this.entrySubject.getValue();
@@ -100,7 +99,7 @@ export class EditorContainerComponent implements OnInit, OnDestroy {
         this.etchQueueService.put(entry.id, etch);
     }
 
-    onTitleChange(title: string) {
+    public onTitleChange(title: string) {
         // TODO: Update the title on the backend once editing is allowed
         console.info(`Next title is ${title}`);
         this.title = title;

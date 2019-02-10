@@ -7,12 +7,10 @@ import { EtchEntity } from '../models/etch-entity';
 import { EncryptedEntityRequest, ENTRY_ID, ETCHES_URL } from './etched-api-utils';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class EtchesService {
-
-    constructor(private http: HttpClient) {
-    }
+    constructor(private http: HttpClient) {}
 
     public postEtches(
         keyPairId: string,
@@ -20,27 +18,32 @@ export class EtchesService {
         etches: Base64Str[]
     ): Observable<EtchEntity[]> {
         console.info(`Creating etches for entry ${entryId}`);
-        const body: EncryptedEntityRequest[] = etches.map((e) => {
-            return {content: e, keyPairId: keyPairId};
+        const body: EncryptedEntityRequest[] = etches.map(e => {
+            return { content: e, keyPairId };
         });
 
         const params = new HttpParams().set(ENTRY_ID, entryId);
-        return this.post<EncryptedEntityRequest[], EtchEntity[]>(ETCHES_URL, body, params)
-            .pipe(tap(() => console.info(`Created etches for ${entryId}`)));
+        return this.post<EncryptedEntityRequest[], EtchEntity[]>(ETCHES_URL, body, params).pipe(
+            tap(() => console.info(`Created etches for ${entryId}`))
+        );
     }
 
     public getEtches(entryId: string): Observable<EtchEntity[]> {
         const params = new HttpParams().set(ENTRY_ID, entryId);
-        const options = {params: params};
+        const options = { params };
         console.info(`Getting etches for entry ${entryId}`);
-        return this.http.get<EtchEntity[]>(ETCHES_URL, options)
-            .pipe(tap(etches => {
+        return this.http.get<EtchEntity[]>(ETCHES_URL, options).pipe(
+            tap(etches => {
                 console.info(`Fetched ${etches.length} etches for entry ${entryId}`);
-            }));
+            })
+        );
     }
 
-    private post<Request, Response>(url: string, body: Request, params?: HttpParams):
-        Observable<Response> {
-        return this.http.post<Response>(url, body, {params: params});
+    private post<Request, Response>(
+        url: string,
+        body: Request,
+        params?: HttpParams
+    ): Observable<Response> {
+        return this.http.post<Response>(url, body, { params });
     }
 }

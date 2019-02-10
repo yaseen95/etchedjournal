@@ -5,45 +5,47 @@ import { nonWhitespaceValidator } from '../../../user/form-utils';
 @Component({
     selector: 'app-entry-title',
     templateUrl: './entry-title.component.html',
-    styleUrls: ['./entry-title.component.css']
+    styleUrls: ['./entry-title.component.css'],
 })
 export class EntryTitleComponent implements OnInit {
-
     /** title of entry */
     @Input()
-    title: string;
+    public title: string;
 
     /** the previous title, stored so that titles are only emitted when it's changed */
-    prevTitle: string;
+    public prevTitle: string;
 
     @Output()
-    titleEmitter: EventEmitter<string>;
+    public titleEmitter: EventEmitter<string>;
 
     /** the title is currently being edited */
-    isEditing: boolean;
+    public isEditing: boolean;
 
-    titleForm: FormGroup;
+    public titleForm: FormGroup;
 
-    TITLE_MIN_LENGTH = 1;
-    TITLE_MAX_LENGTH = 100;
+    public TITLE_MIN_LENGTH = 1;
+    public TITLE_MAX_LENGTH = 100;
 
     constructor(private fb: FormBuilder) {
         this.titleEmitter = new EventEmitter();
         this.titleForm = this.fb.group({
-            title: ['', Validators.compose([
-                Validators.required,
-                Validators.minLength(this.TITLE_MIN_LENGTH),
-                Validators.maxLength(this.TITLE_MAX_LENGTH),
-                nonWhitespaceValidator,
-            ])],
+            title: [
+                '',
+                Validators.compose([
+                    Validators.required,
+                    Validators.minLength(this.TITLE_MIN_LENGTH),
+                    Validators.maxLength(this.TITLE_MAX_LENGTH),
+                    nonWhitespaceValidator,
+                ]),
+            ],
         });
     }
 
-    ngOnInit() {
+    public ngOnInit() {
         this.prevTitle = this.title;
     }
 
-    toggleEdit(update: boolean = false) {
+    public toggleEdit(update: boolean = false) {
         // TODO: Fix this method
         // What was I even thinking, how was this a good idea?
         const wasEditing = this.isEditing;
@@ -62,11 +64,11 @@ export class EntryTitleComponent implements OnInit {
         } else {
             // If we were not in edit mode, update the form to display the current title and
             // focus on the title input
-            this.titleForm.patchValue({title: this.title});
+            this.titleForm.patchValue({ title: this.title });
         }
     }
 
-    submitForm() {
+    public submitForm() {
         if (this.titleForm.valid) {
             this.toggleEdit(true);
         }

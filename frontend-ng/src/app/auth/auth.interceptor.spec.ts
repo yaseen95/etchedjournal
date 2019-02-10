@@ -1,12 +1,11 @@
-import { async, getTestBed, TestBed } from '@angular/core/testing';
-
 import { HTTP_INTERCEPTORS, HttpClient, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { async, getTestBed, TestBed } from '@angular/core/testing';
 import {
     CognitoUser,
     CognitoUserAttribute,
     CognitoUserSession,
-    ISignUpResult
+    ISignUpResult,
 } from 'amazon-cognito-identity-js';
 import { EMPTY, of } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -34,8 +33,8 @@ describe('AuthInterceptor', () => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [
-                {provide: AuthService, useValue: authSpy},
-                {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+                { provide: AuthService, useValue: authSpy },
+                { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
                 AuthInterceptor,
             ],
         });
@@ -49,44 +48,41 @@ describe('AuthInterceptor', () => {
 
     it('attempts to refresh tokens for paths requiring auth', () => {
         const url = AUTH_REQUIRED_URLS[0];
-        const req = new HttpRequest<any>('GET', url, null, {headers: new HttpHeaders()});
+        const req = new HttpRequest<any>('GET', url, null, { headers: new HttpHeaders() });
         const cloneSpy = spyOn(req, 'clone');
         const handlerSpy = jasmine.createSpyObj('HttpHandler', ['handle']);
         handlerSpy.handle.and.returnValue(of(EMPTY));
 
-        interceptor.intercept(req, handlerSpy)
-            .subscribe(() => {
-                expect(service.refreshIfExpired).toHaveBeenCalledTimes(1);
-                expect(handlerSpy.handle).toHaveBeenCalledTimes(1);
-                expect(cloneSpy).toHaveBeenCalledTimes(1);
-            });
+        interceptor.intercept(req, handlerSpy).subscribe(() => {
+            expect(service.refreshIfExpired).toHaveBeenCalledTimes(1);
+            expect(handlerSpy.handle).toHaveBeenCalledTimes(1);
+            expect(cloneSpy).toHaveBeenCalledTimes(1);
+        });
     });
 
     it('does not attempt to refresh tokens for paths requiring auth', () => {
-        const req = new HttpRequest<any>('GET', '', null, {headers: new HttpHeaders()});
+        const req = new HttpRequest<any>('GET', '', null, { headers: new HttpHeaders() });
         const handlerSpy = jasmine.createSpyObj('HttpHandler', ['handle']);
         handlerSpy.handle.and.returnValue(of(EMPTY));
 
-        interceptor.intercept(req, handlerSpy)
-            .subscribe(() => {
-                expect(service.refreshIfExpired).toHaveBeenCalledTimes(0);
-                expect(handlerSpy.handle).toHaveBeenCalledTimes(1);
-            });
+        interceptor.intercept(req, handlerSpy).subscribe(() => {
+            expect(service.refreshIfExpired).toHaveBeenCalledTimes(0);
+            expect(handlerSpy.handle).toHaveBeenCalledTimes(1);
+        });
     });
 
     it('interceptor adds token', () => {
         const url = AUTH_REQUIRED_URLS[0];
-        const req = new HttpRequest<any>('GET', url, null, {headers: new HttpHeaders()});
+        const req = new HttpRequest<any>('GET', url, null, { headers: new HttpHeaders() });
         const cloneSpy = spyOn(req, 'clone').and.callThrough();
         const handlerSpy = jasmine.createSpyObj('HttpHandler', ['handle']);
         handlerSpy.handle.and.returnValue(of(EMPTY));
 
-        interceptor.intercept(req, handlerSpy)
-            .subscribe(() => {
-                expect(cloneSpy).toHaveBeenCalledTimes(1);
-                const interceptedReq: HttpRequest<any> = handlerSpy.handle.calls.argsFor(0)[0];
-                expect(interceptedReq.headers.get('Authorization')).toEqual('Bearer token');
-            });
+        interceptor.intercept(req, handlerSpy).subscribe(() => {
+            expect(cloneSpy).toHaveBeenCalledTimes(1);
+            const interceptedReq: HttpRequest<any> = handlerSpy.handle.calls.argsFor(0)[0];
+            expect(interceptedReq.headers.get('Authorization')).toEqual('Bearer token');
+        });
     });
 
     it('journals path requires auth', () => {

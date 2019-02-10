@@ -24,16 +24,12 @@ describe('CreateJournalComponent', () => {
 
         TestBed.configureTestingModule({
             declarations: [CreateJournalComponent],
-            imports: [
-                ReactiveFormsModule,
-                RouterTestingModule,
-            ],
+            imports: [ReactiveFormsModule, RouterTestingModule],
             providers: [
-                {provide: JournalStore, useValue: journalStore},
-                {provide: Router, useValue: routerSpy},
-            ]
-        })
-            .compileComponents();
+                { provide: JournalStore, useValue: journalStore },
+                { provide: Router, useValue: routerSpy },
+            ],
+        }).compileComponents();
     }));
 
     beforeEach(() => {
@@ -62,7 +58,7 @@ describe('CreateJournalComponent', () => {
     });
 
     it('form is valid', () => {
-        const nameControl = createJournalForm.controls['journalName'];
+        const nameControl = createJournalForm.controls.journalName;
         nameControl.setValue('journal title');
         expect(nameControl.valid).toBeTruthy();
         expect(createJournalForm.valid).toBeTruthy();
@@ -76,14 +72,14 @@ describe('CreateJournalComponent', () => {
     });
 
     it('form is invalid when name is all blanks', () => {
-        const nameControl = createJournalForm.controls['journalName'];
+        const nameControl = createJournalForm.controls.journalName;
         nameControl.setValue('   \n \n\t ');
         expect(nameControl.errors.isWhitespace).toBeTruthy();
         expect(createJournalForm.valid).toBeFalsy();
     });
 
     it('form is invalid when name is too long', () => {
-        const nameControl = createJournalForm.controls['journalName'];
+        const nameControl = createJournalForm.controls.journalName;
         nameControl.setValue('a'.repeat(31));
         expect(nameControl.errors.maxlength).toBeTruthy();
         expect(createJournalForm.valid).toBeFalsy();
@@ -136,7 +132,7 @@ describe('CreateJournalComponent', () => {
     });
 
     it('navigates to create entry page after creating journal', fakeAsync(() => {
-        const nameControl = createJournalForm.controls['journalName'];
+        const nameControl = createJournalForm.controls.journalName;
         nameControl.setValue('title');
 
         const createJournalSpy = spyOn(journalStore, 'createJournal');
@@ -156,7 +152,7 @@ describe('CreateJournalComponent', () => {
 
         expect(component.creatingJournal).toBeFalsy();
         expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
-        const navExtras: NavigationExtras = {queryParams: {journalId: journal.id}};
+        const navExtras: NavigationExtras = { queryParams: { journalId: journal.id } };
         expect(routerSpy.navigate).toHaveBeenCalledWith(['entries/new'], navExtras);
     }));
 });

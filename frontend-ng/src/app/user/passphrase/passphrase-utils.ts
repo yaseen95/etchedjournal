@@ -1,7 +1,6 @@
 import { AbstractControl } from '@angular/forms';
 
 export class PassphraseUtils {
-
     /**
      * Checks the passphrase control for any errors and returns an error message
      */

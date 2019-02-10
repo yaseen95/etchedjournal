@@ -12,20 +12,20 @@
                     formControlName="title"
                     appAutoFocus
                 />
-                <p *ngIf="titleForm.controls.title.errors?.required"
-                   class="error-help help">
+                <p *ngIf="titleForm.controls.title.errors?.required" class="error-help help">
                     Cannot be empty
                 </p>
-                <p *ngIf="titleForm.controls.title.errors?.maxlength"
-                   class="error-help help">
+                <p *ngIf="titleForm.controls.title.errors?.maxlength" class="error-help help">
                     Title cannot be more than
-                    {{ TITLE_MAX_LENGTH }} characters
-                    long
+                    {{ TITLE_MAX_LENGTH }} characters long
                 </p>
                 <p
-                    *ngIf="titleForm.controls.title.errors?.isWhitespace &&
-                            !titleForm.controls.title.errors?.required"
-                    class="error-help help">
+                    *ngIf="
+                        titleForm.controls.title.errors?.isWhitespace &&
+                        !titleForm.controls.title.errors?.required
+                    "
+                    class="error-help help"
+                >
                     Title cannot be blank
                 </p>
             </div>
@@ -42,11 +42,7 @@
             </div>
             <div class="control">
                 <div class="field is-narrow control">
-                    <button
-                        id="cancel-button"
-                        (click)="toggleEdit()"
-                        class="button"
-                        type="button">
+                    <button id="cancel-button" (click)="toggleEdit()" class="button" type="button">
                         Cancel
                     </button>
                 </div>

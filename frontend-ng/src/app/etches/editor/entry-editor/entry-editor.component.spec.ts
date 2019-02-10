@@ -10,7 +10,7 @@ import { EntryEditorComponent } from './entry-editor.component';
 describe('EntryEditorComponent', () => {
     let component: EntryEditorComponent;
     let fixture: ComponentFixture<EntryEditorComponent>;
-    let emittedEtches: Array<EtchV1> = [];
+    let emittedEtches: EtchV1[] = [];
     let clockSpy: any;
 
     beforeEach(async(() => {
@@ -18,15 +18,9 @@ describe('EntryEditorComponent', () => {
         clockSpy.nowMillis.and.returnValue(0);
 
         TestBed.configureTestingModule({
-            declarations: [
-                EntryEditorComponent,
-                EtchItemComponent,
-            ],
-            providers: [
-                {provide: ClockService, useValue: clockSpy},
-            ]
-        })
-            .compileComponents();
+            declarations: [EntryEditorComponent, EtchItemComponent],
+            providers: [{ provide: ClockService, useValue: clockSpy }],
+        }).compileComponents();
     }));
 
     beforeEach(() => {
@@ -38,10 +32,7 @@ describe('EntryEditorComponent', () => {
     });
 
     it('etches renders when length greater than 0', () => {
-        component.etches = [
-            new EtchV1('abc', 0),
-            new EtchV1('def', 0),
-        ];
+        component.etches = [new EtchV1('abc', 0), new EtchV1('def', 0)];
         fixture.detectChanges();
 
         const listDe = TestUtils.queryExpectOne(fixture.debugElement, '#etches-list');
@@ -68,7 +59,7 @@ describe('EntryEditorComponent', () => {
 
         const onKeydownSpy = spyOn(component, 'onEtchKeydown');
 
-        const event = new KeyboardEvent('keydown', {key: 'a'});
+        const event = new KeyboardEvent('keydown', { key: 'a' });
         (editorDe.nativeElement as HTMLElement).dispatchEvent(event);
 
         expect(onKeydownSpy).toHaveBeenCalledTimes(1);
@@ -78,7 +69,7 @@ describe('EntryEditorComponent', () => {
     it('keydown updates recentEdit timestamp', () => {
         const recentEdit = component.recentEdit;
         clockSpy.nowMillis.and.returnValue(5);
-        component.onEtchKeydown(new KeyboardEvent('keydown', {key: 'a'}));
+        component.onEtchKeydown(new KeyboardEvent('keydown', { key: 'a' }));
         expect(component.recentEdit).toBeGreaterThan(recentEdit);
         expect(component.recentEdit).toEqual(5);
     });
@@ -88,7 +79,7 @@ describe('EntryEditorComponent', () => {
         const editorEl = editorDe.nativeElement as HTMLDivElement;
         editorEl.textContent = 'abc';
 
-        component.onEtchKeydown(new KeyboardEvent('keydown', {key: 'Enter'}));
+        component.onEtchKeydown(new KeyboardEvent('keydown', { key: 'Enter' }));
         fixture.detectChanges();
 
         // 1 etch should have been emitted
@@ -106,7 +97,7 @@ describe('EntryEditorComponent', () => {
     });
 
     it('keydown does not update on shift + enter', () => {
-        component.onEtchKeydown(new KeyboardEvent('keydown', {key: 'Enter', shiftKey: true}));
+        component.onEtchKeydown(new KeyboardEvent('keydown', { key: 'Enter', shiftKey: true }));
 
         // onEtchKeydown calls `etch` when the user presses enter
         // We should check that it DOES NOT get called when the user presses shift + enter
@@ -165,7 +156,6 @@ describe('EntryEditorComponent', () => {
         expect(emittedEtches.length).toEqual(0);
         expect(component.etches.length).toEqual(0);
     });
-
 
     afterEach(() => {
         component.ngOnDestroy();

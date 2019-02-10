@@ -23,17 +23,13 @@ describe('LogoutComponent', () => {
         routerSpy.navigate.and.returnValue(Promise.resolve());
 
         TestBed.configureTestingModule({
-            declarations: [
-                LogoutComponent,
-                SpinnerComponent,
-            ],
+            declarations: [LogoutComponent, SpinnerComponent],
             providers: [
-                {provide: AuthService, useValue: authSpy},
-                {provide: Router, useValue: routerSpy},
-                {provide: LocationService, useValue: locationSpy},
+                { provide: AuthService, useValue: authSpy },
+                { provide: Router, useValue: routerSpy },
+                { provide: LocationService, useValue: locationSpy },
             ],
-        })
-            .compileComponents();
+        }).compileComponents();
     }));
 
     beforeEach(() => {

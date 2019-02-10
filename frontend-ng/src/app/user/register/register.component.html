@@ -1,10 +1,6 @@
 <div>
     <h3 class="title">Register</h3>
-    <form
-        [formGroup]="registerForm"
-        class="control"
-        (submit)="onSubmit()"
-    >
+    <form [formGroup]="registerForm" class="control" (submit)="onSubmit()">
         <div class="field">
             <div class="control">
                 <label class="label">Username</label>
@@ -47,10 +43,7 @@
         </div>
         <div class="field">
             <div class="control">
-                <button
-                    type="submit"
-                    class="button is-primary"
-                    [disabled]="!registerForm.valid">
+                <button type="submit" class="button is-primary" [disabled]="!registerForm.valid">
                     Submit
                 </button>
             </div>

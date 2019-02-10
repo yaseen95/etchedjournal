@@ -32,20 +32,17 @@ describe('EntryListContainerComponent', () => {
                 SpinnerComponent,
             ],
             providers: [
-                {provide: EntryStore, useValue: store},
+                { provide: EntryStore, useValue: store },
                 {
                     provide: ActivatedRoute,
                     useValue: {
                         // Mock out the param map
-                        paramMap: paramMapSubject
-                    }
-                }
+                        paramMap: paramMapSubject,
+                    },
+                },
             ],
-            imports: [
-                RouterTestingModule,
-            ]
-        })
-            .compileComponents();
+            imports: [RouterTestingModule],
+        }).compileComponents();
     }));
 
     beforeEach(() => {

@@ -32,17 +32,12 @@ describe('EditorContainerComponent', () => {
                 EtchItemComponent,
             ],
             providers: [
-                {provide: EntryStore, useValue: store},
-                {provide: ClockService, useValue: clockService},
-                {provide: EtchStore, useValue: new FakeEtchStore()}
+                { provide: EntryStore, useValue: store },
+                { provide: ClockService, useValue: clockService },
+                { provide: EtchStore, useValue: new FakeEtchStore() },
             ],
-            imports: [
-                ReactiveFormsModule,
-                RouterTestingModule,
-                HttpClientTestingModule,
-            ],
-        })
-            .compileComponents();
+            imports: [ReactiveFormsModule, RouterTestingModule, HttpClientTestingModule],
+        }).compileComponents();
     }));
 
     beforeEach(() => {

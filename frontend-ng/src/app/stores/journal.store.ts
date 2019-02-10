@@ -6,13 +6,14 @@ import { JournalsService } from '../services/journals.service';
 
 @Injectable()
 export class JournalStore {
+    @mobx.observable public journals: JournalEntity[] = [];
+    @mobx.observable public loading: boolean = false;
+    @mobx.observable public loadedOnce: boolean = false;
 
-    @mobx.observable journals: JournalEntity[] = [];
-    @mobx.observable loading: boolean = false;
-    @mobx.observable loadedOnce: boolean = false;
-
-    constructor(private journalsService: JournalsService,
-                private encrypterService: EncrypterService) {
+    constructor(
+        private journalsService: JournalsService,
+        private encrypterService: EncrypterService
+    ) {
         encrypterService.encrypterObs.subscribe(() => this.initStore());
     }
 
@@ -21,23 +22,23 @@ export class JournalStore {
      *
      * MUST be called after the encrypter has been set otherwise journals cannot be decrypted
      */
-    initStore() {
+    private initStore() {
         this.loadJournals();
     }
 
-    @mobx.action loadJournals() {
+    @mobx.action
+    public loadJournals() {
         this.loading = true;
         console.info('loading journals');
 
-        this.journalsService.getJournals()
-            .subscribe(journals => {
-                console.info('fetched journals');
-                // noinspection JSIgnoredPromiseFromCall
-                this.decryptJournals(journals);
-            });
+        this.journalsService.getJournals().subscribe(journals => {
+            console.info('fetched journals');
+            // noinspection JSIgnoredPromiseFromCall
+            this.decryptJournals(journals);
+        });
     }
 
-    async decryptJournals(encrypted: JournalEntity[]) {
+    public async decryptJournals(encrypted: JournalEntity[]) {
         const enc = this.encrypterService.encrypter;
         console.info('decrypting journals');
         const decrypted = await enc.decryptEntities(encrypted);
@@ -45,14 +46,16 @@ export class JournalStore {
         this.loadedJournals(decrypted);
     }
 
-    @mobx.action loadedJournals(journals: JournalEntity[]) {
+    @mobx.action
+    public loadedJournals(journals: JournalEntity[]) {
         this.journals = journals;
         this.loading = false;
         this.loadedOnce = true;
         console.info('loaded and decrypted journals');
     }
 
-    @mobx.action async createJournal(name: string): Promise<JournalEntity> {
+    @mobx.action
+    public async createJournal(name: string): Promise<JournalEntity> {
         const enc = this.encrypterService.encrypter;
         const ciphertext = await enc.encrypt(name);
         const j = await this.journalsService.createJournal(enc.keyPairId, ciphertext).toPromise();

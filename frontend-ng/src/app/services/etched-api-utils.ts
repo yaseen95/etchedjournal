@@ -12,13 +12,7 @@ export const ENTRY_ID = 'entryId';
 export const JOURNAL_ID = 'journalId';
 
 /** Routes that require a valid access token */
-export const AUTH_REQUIRED_URLS = [
-    SELF_URL,
-    ENTRIES_URL,
-    ETCHES_URL,
-    JOURNALS_URL,
-    KEYPAIRS_URL,
-];
+export const AUTH_REQUIRED_URLS = [SELF_URL, ENTRIES_URL, ETCHES_URL, JOURNALS_URL, KEYPAIRS_URL];
 
 export interface EncryptedEntityRequest {
     content: Base64Str;

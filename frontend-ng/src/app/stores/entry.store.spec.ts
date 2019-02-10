@@ -14,13 +14,11 @@ describe('EntryStore', () => {
     let entriesServiceSpy: any;
 
     beforeEach(() => {
-        encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt', 'decrypt',
-            'decryptEntities']);
+        encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt', 'decrypt', 'decryptEntities']);
         encrypterService = new EncrypterService();
         encrypterService.encrypter = encrypterSpy;
 
-        entriesServiceSpy = jasmine.createSpyObj('EntriesService', ['createEntry',
-            'getEntries']);
+        entriesServiceSpy = jasmine.createSpyObj('EntriesService', ['createEntry', 'getEntries']);
 
         store = new EntryStore(entriesServiceSpy, encrypterService);
     });
@@ -31,7 +29,7 @@ describe('EntryStore', () => {
     });
 
     it('loadEntries loads and decrypts entries', async () => {
-        const entries: Partial<EntryEntity>[] = [{id: 'entryId', content: 'foo'}];
+        const entries: Array<Partial<EntryEntity>> = [{ id: 'entryId', content: 'foo' }];
         entriesServiceSpy.getEntries.and.returnValue(of(entries));
 
         const decryptSpy = encrypterService.encrypter.decryptEntities as any;
@@ -48,7 +46,7 @@ describe('EntryStore', () => {
 
     it('createEntry encrypts and creates journal', async () => {
         encrypterSpy.encrypt.and.returnValue(Promise.resolve('ciphertext'));
-        const j = {id: '1', content: 'abc'};
+        const j = { id: '1', content: 'abc' };
         entriesServiceSpy.createEntry.and.returnValue(of(j));
 
         const result = await store.createEntry('jid', 'name');
@@ -63,12 +61,14 @@ export class FakeEntryStore extends EntryStore {
     public encrypterSpy: any;
 
     constructor() {
-        const encSpy = jasmine.createSpyObj('Encrypter', ['encrypt',
-            'decryptEntities']);
+        const encSpy = jasmine.createSpyObj('Encrypter', ['encrypt', 'decryptEntities']);
         const encService = new EncrypterService();
         encService.encrypter = encSpy;
-        const entryService = jasmine.createSpyObj('EntriesService', ['getEntries',
-            'createEntry', 'getEntry']);
+        const entryService = jasmine.createSpyObj('EntriesService', [
+            'getEntries',
+            'createEntry',
+            'getEntry',
+        ]);
 
         entryService.getEntries.and.returnValue(of([]));
         entryService.createEntry.and.returnValue(EMPTY);

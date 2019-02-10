@@ -21,9 +21,9 @@ export const ALL_ROUTES: Routes = [
     //
     // UNAUTHENTICATED ROUTES
     //
-    {path: '', redirectTo: EtchedRoutes.JOURNALS_PATH, pathMatch: 'full'},
-    {path: EtchedRoutes.LOGIN_PATH, component: LoginContainerComponent},
-    {path: EtchedRoutes.REGISTER_PATH, component: RegisterContainerComponent},
+    { path: '', redirectTo: EtchedRoutes.JOURNALS_PATH, pathMatch: 'full' },
+    { path: EtchedRoutes.LOGIN_PATH, component: LoginContainerComponent },
+    { path: EtchedRoutes.REGISTER_PATH, component: RegisterContainerComponent },
 
     //
     // AUTHENTICATED ROUTES
@@ -86,9 +86,6 @@ export const ALL_ROUTES: Routes = [
 
 @NgModule({
     exports: [RouterModule],
-    imports: [
-        RouterModule.forRoot(ALL_ROUTES),
-    ]
+    imports: [RouterModule.forRoot(ALL_ROUTES)],
 })
-export class AppRoutingModule {
-}
+export class AppRoutingModule {}

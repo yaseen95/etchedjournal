@@ -5,12 +5,13 @@
                 Etched Journal
             </a>
 
-            <a role="button"
-               class="navbar-burger burger"
-               aria-label="menu"
-               aria-expanded="false"
-               [ngClass]="{'is-active': burgerIsActive}"
-               (click)="toggleBurgerMenu()"
+            <a
+                role="button"
+                class="navbar-burger burger"
+                aria-label="menu"
+                aria-expanded="false"
+                [ngClass]="{ 'is-active': burgerIsActive }"
+                (click)="toggleBurgerMenu()"
             >
                 <!--three spans show three lines on the burger menu-->
                 <span aria-hidden="true"></span>
@@ -19,28 +20,34 @@
             </a>
         </div>
 
-        <div class="navbar-menu"
-             [ngClass]="{'is-active': burgerIsActive}"
-        >
+        <div class="navbar-menu" [ngClass]="{ 'is-active': burgerIsActive }">
             <div class="navbar-start">
                 <ng-container *ngIf="store.journals.length > 3">
                     <!-- Display journals in a dropdown if 3 or more journals -->
                     <!-- toggleJournalDropdown() changes whether the dropdown is
                     expanded/collapsed on mobile/tablet. By default it is visible in the menu on
                     hover -->
-                    <div class="navbar-item has-dropdown is-hoverable"
-                         (click)="toggleJournalDropdown()">
+                    <div
+                        class="navbar-item has-dropdown is-hoverable"
+                        (click)="toggleJournalDropdown()"
+                    >
                         <a class="navbar-link">Journals</a>
                         <!-- On small screens we enable collapsing the journals dropdown because
                         otherwise the burger menu can get too long on small screens -->
                         <!-- Have to use `is-hidden-tablet-only` because `is-hidden-tablet` applies
                         even on desktop -->
-                        <div class="navbar-dropdown"
-                             [ngClass]="{'is-hidden-mobile is-hidden-tablet-only': collapseDropdownOnMobile}"
+                        <div
+                            class="navbar-dropdown"
+                            [ngClass]="{
+                                'is-hidden-mobile is-hidden-tablet-only': collapseDropdownOnMobile
+                            }"
                         >
                             <ng-container *ngFor="let j of store.journals">
-                                <a class="navbar-item journal-nav-item"
-                                   [routerLink]="['journals', j.id]">{{ j.content }}</a>
+                                <a
+                                    class="navbar-item journal-nav-item"
+                                    [routerLink]="['journals', j.id]"
+                                    >{{ j.content }}</a
+                                >
                             </ng-container>
                         </div>
                     </div>
@@ -48,8 +55,9 @@
                 <ng-container *ngIf="store.journals.length <= 3">
                     <ng-container *ngFor="let j of store.journals">
                         <!-- Display journals on navbar if 3 or fewer journals -->
-                        <a class="navbar-item journal-nav-item"
-                           [routerLink]="['journals', j.id]">{{ j.content }}</a>
+                        <a class="navbar-item journal-nav-item" [routerLink]="['journals', j.id]">{{
+                            j.content
+                        }}</a>
                     </ng-container>
                 </ng-container>
             </div>

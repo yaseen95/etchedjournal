@@ -1,8 +1,5 @@
 <h3>Entries</h3>
-<app-entry-list-item
-    *ngFor="let e of entries"
-    [entry]="e">
-</app-entry-list-item>
+<app-entry-list-item *ngFor="let e of entries" [entry]="e"></app-entry-list-item>
 <p *ngIf="entries.length === 0">No entries</p>
 <button class="button is-primary" (click)="this.createEntry()">
     <span class="icon">

@@ -9,15 +9,12 @@ import { EtchStore } from '../../../stores/etch.store';
     changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-existing-entry-editor-container-component',
     templateUrl: './existing-entry-editor-container.component.html',
-    styleUrls: ['./existing-entry-editor-container.component.css']
+    styleUrls: ['./existing-entry-editor-container.component.css'],
 })
 export class ExistingEntryEditorContainerComponent implements OnInit {
-
-    entryId: string;
-
-    etches: EtchV1[];
-
-    title: string;
+    public entryId: string;
+    public etches: EtchV1[];
+    public title: string;
 
     constructor(
         public entryStore: EntryStore,
@@ -29,28 +26,22 @@ export class ExistingEntryEditorContainerComponent implements OnInit {
         console.info(`Entry id is ${this.entryId}`);
     }
 
-    ngOnInit() {
-        this.entryStore.loadEntry(this.entryId)
-            .then(entry => {
-                this.title = entry.content;
-            });
-
-        this.etchStore.loadEtches(this.entryId)
-            .then(() => {
-            });
+    public ngOnInit() {
+        this.entryStore.loadEntry(this.entryId).then(entry => (this.title = entry.content));
+        this.etchStore.loadEtches(this.entryId);
     }
 
-    onNewEtch(etch: EtchV1) {
+    public onNewEtch(etch: EtchV1) {
         this.etchQueueService.put(this.entryId, etch);
     }
 
-    onTitleChange(title: string) {
+    public onTitleChange(title: string) {
         // TODO: Update the title on the backend once editing is allowed
         console.info(`Next title is ${title}`);
         this.title = title;
     }
 
-    displaySpinner() {
+    public displaySpinner() {
         return this.entryStore.loading || this.etchStore.state.loading;
     }
 }

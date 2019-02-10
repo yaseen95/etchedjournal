@@ -3,7 +3,7 @@ import { AuthClass as Auth } from '@aws-amplify/auth';
 import { environment } from '../../environments/environment';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 // HAHAHAHAHAHAHA this must make frontend devs want to throw up
 export class CognitoAuthFactory {

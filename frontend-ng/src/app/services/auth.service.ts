@@ -4,7 +4,7 @@ import {
     CognitoUser,
     CognitoUserAttribute,
     CognitoUserSession,
-    ISignUpResult
+    ISignUpResult,
 } from 'amazon-cognito-identity-js';
 import { environment } from '../../environments/environment';
 import { EtchedUser } from '../models/etched-user';
@@ -18,15 +18,13 @@ import { CognitoAuthFactory } from './cognito-auth-factory';
 export const LOCAL_COGNITO_PREFIX = 'CognitoIdentityServiceProvider';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class AuthService {
-
     private auth: Auth;
     private user: EtchedUser;
 
-    constructor(private clock: ClockService,
-                cognitoAuthFactory: CognitoAuthFactory) {
+    constructor(private clock: ClockService, cognitoAuthFactory: CognitoAuthFactory) {
         this.auth = cognitoAuthFactory.create();
         this.user = AuthService.extractUserDetailsFromStorage(clock);
         if (this.user != null) {
@@ -53,7 +51,10 @@ export class AuthService {
     }
 
     // @VisibleForTesting
-    static extractUserDetailsFromIdToken(idToken: string, clock: ClockService): EtchedUser | null {
+    private static extractUserDetailsFromIdToken(
+        idToken: string,
+        clock: ClockService
+    ): EtchedUser | null {
         const decoded = TokenDecoder.decodeToken<IdToken>(idToken);
         const tokenValid = this.refreshIsValid(decoded, clock);
 
@@ -73,30 +74,32 @@ export class AuthService {
     }
 
     // @VisibleForTesting
-    static refreshIsValid(idToken: Token, clock: ClockService): boolean {
+    public static refreshIsValid(idToken: Token, clock: ClockService): boolean {
         // refresh expires 30 days after tokens
         // To simplify it (Yaseen being lazy), we consider refresh expiry to be 29 days after id
         // token expiry
         const idExp = idToken.exp * 1000;
-        const refreshExp = idExp + (29 * 24 * 60 * 60 * 1000);
+        const twentyNineDaysInMillis = 29 * 24 * 60 * 60 * 1000;
+        const refreshExp = idExp + twentyNineDaysInMillis;
         const now = clock.nowMillis();
         return now <= refreshExp;
     }
 
     // @VisibleForTesting
-    static isInvalidCredentialsError(e: { code: string, message: string }): boolean {
+    public static isInvalidCredentialsError(e: { code: string; message: string }): boolean {
         // Invalid password error is in the format below
         // {
         //   "code": "NotAuthorizedException",
         //   "name": "NotAuthorizedException",
         //   "message": "Incorrect username or password."
         // }
-        return e.code === 'NotAuthorizedException'
-            && e.message === 'Incorrect username or password.';
+        return (
+            e.code === 'NotAuthorizedException' && e.message === 'Incorrect username or password.'
+        );
     }
 
     // @VisibleForTesting
-    static isUserNotFoundError(e: { code: string, message: string }): boolean {
+    public static isUserNotFoundError(e: { code: string; message: string }): boolean {
         // Response from Cognito is in the following format
         // {
         //   "code":"UserNotFoundException",
@@ -107,7 +110,7 @@ export class AuthService {
         return e.code === 'UserNotFoundException' && e.message === 'User does not exist.';
     }
 
-    async register(preferredUsername: string, password: string): Promise<void> {
+    public async register(preferredUsername: string, password: string): Promise<void> {
         // check that a user with the same preferred_username does not exist before registering
         const userExists = await this.userExists(preferredUsername);
         if (userExists) {
@@ -123,10 +126,7 @@ export class AuthService {
         console.info(`Signing up ${preferredUsername} with generated username ${username}`);
 
         // sign up
-        const signUpResult: ISignUpResult = await this.auth.signUp({
-            username: username,
-            password: password,
-        });
+        const signUpResult: ISignUpResult = await this.auth.signUp({ username, password });
 
         // sign in to get first set of credentials
         const signInResult: CognitoUser = await this.auth.signIn(username, password);
@@ -136,10 +136,10 @@ export class AuthService {
         // set the preferred username
         // We wait for this response so that we can check that the username doesn't fail
         const updateResponse = await this.auth.updateUserAttributes(
-            signInResult,
-            {preferred_username: preferredUsername},
+            signInResult, //
+            { preferred_username: preferredUsername }
         );
-        console.info(`Updated preferred username attribute`);
+        console.info('Updated preferred username attribute');
 
         const session = signInResult.getSignInUserSession();
         this.user = {
@@ -149,7 +149,7 @@ export class AuthService {
         };
     }
 
-    async login(username: string, password: string): Promise<void> {
+    public async login(username: string, password: string): Promise<void> {
         let user: CognitoUser;
         try {
             user = await this.auth.signIn(username, password);
@@ -182,7 +182,7 @@ export class AuthService {
         return this.user;
     }
 
-    async logout() {
+    public async logout() {
         console.info('logging out');
         await this.auth.signOut();
         this.user = null;
@@ -196,12 +196,12 @@ export class AuthService {
     }
 
     // @VisibleForTesting
-    async userExists(preferredUsername: string): Promise<boolean> {
+    public async userExists(preferredUsername: string): Promise<boolean> {
         try {
             // Attempt to sign in with an incorrect password
             // We know that 'abc' is not a password because we require a min length of 8
             await this.auth.signIn(preferredUsername, 'abc');
-            console.error(`Didn't throw an error when signing in with invalid credentials`);
+            console.error("Didn't throw an error when signing in with invalid credentials");
             return false;
         } catch (e) {
             if (AuthService.isInvalidCredentialsError(e)) {

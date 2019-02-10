@@ -9,26 +9,25 @@ import { KeyPairsService } from '../../../../services/key-pairs.service';
 @Component({
     selector: 'app-enter-passphrase-container',
     templateUrl: './enter-passphrase-container.component.html',
-    styleUrls: ['./enter-passphrase-container.component.css']
+    styleUrls: ['./enter-passphrase-container.component.css'],
 })
 export class EnterPassphraseContainerComponent implements OnInit {
-
-    DOWNLOADING_KEYS = 'DOWNLOADING_KEYS';
-    ENTERING_PASSPHRASE = 'ENTERING_PASSPHRASE';
-    DECRYPTING_KEYS = 'DECRYPTING_KEYS';
-    DECRYPTED_KEYS = 'DECRYPTED_KEYS';
+    public DOWNLOADING_KEYS = 'DOWNLOADING_KEYS';
+    public ENTERING_PASSPHRASE = 'ENTERING_PASSPHRASE';
+    public DECRYPTING_KEYS = 'DECRYPTING_KEYS';
+    public DECRYPTED_KEYS = 'DECRYPTED_KEYS';
 
     /** Current state of login process */
-    state: string;
+    public state: string;
+    public keyPair?: KeyPairEntity;
+    public passphraseIncorrect: boolean;
+    private redirectTo: string;
 
-    keyPair?: KeyPairEntity;
-    passphraseIncorrect: boolean;
-    redirectTo: string;
-
-    constructor(private encrypterService: EncrypterService,
-                private keyPairsService: KeyPairsService,
-                private route: ActivatedRoute,
-                private router: Router
+    constructor(
+        private encrypterService: EncrypterService,
+        private keyPairsService: KeyPairsService,
+        private route: ActivatedRoute,
+        private router: Router
     ) {
         this.state = this.DOWNLOADING_KEYS;
         let next = route.snapshot.queryParamMap.get('next');
@@ -38,25 +37,24 @@ export class EnterPassphraseContainerComponent implements OnInit {
         this.redirectTo = next;
     }
 
-    ngOnInit() {
+    public ngOnInit() {
         this.downloadKeys();
     }
 
-    downloadKeys() {
-        return this.keyPairsService.getKeyPairs()
-            .subscribe(keys => {
-                if (keys.length === 0) {
-                    return this.router.navigate([EtchedRoutes.KEYS_GENERATE_PATH]);
-                }
-                if (keys.length > 1) {
-                    throw new Error(`Expected only one key but got ${keys.length} keys`);
-                }
-                this.keyPair = keys[0];
-                this.state = this.ENTERING_PASSPHRASE;
-            });
+    public downloadKeys() {
+        return this.keyPairsService.getKeyPairs().subscribe(keys => {
+            if (keys.length === 0) {
+                return this.router.navigate([EtchedRoutes.KEYS_GENERATE_PATH]);
+            }
+            if (keys.length > 1) {
+                throw new Error(`Expected only one key but got ${keys.length} keys`);
+            }
+            this.keyPair = keys[0];
+            this.state = this.ENTERING_PASSPHRASE;
+        });
     }
 
-    onPassphraseConfigured(passphrase: string) {
+    public onPassphraseConfigured(passphrase: string) {
         this.state = this.DECRYPTING_KEYS;
         this.decryptKeyPair(passphrase)
             .then(() => {
@@ -78,7 +76,7 @@ export class EnterPassphraseContainerComponent implements OnInit {
             });
     }
 
-    decryptKeyPair(passphrase: string): Promise<void> {
+    public decryptKeyPair(passphrase: string): Promise<void> {
         console.info('Decrypting private key');
 
         return Encrypter.from2(

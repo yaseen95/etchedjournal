@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { EtchedRoutes } from '../../../app-routing-utils';
 import { EntryEntity } from '../../../models/entry-entity';
@@ -6,24 +6,19 @@ import { EntryEntity } from '../../../models/entry-entity';
 @Component({
     selector: 'app-entry-list',
     templateUrl: './entry-list.component.html',
-    styleUrls: ['./entry-list.component.css']
+    styleUrls: ['./entry-list.component.css'],
 })
-export class EntryListComponent implements OnInit {
+export class EntryListComponent {
+    @Input()
+    public entries: EntryEntity[];
 
     @Input()
-    entries: EntryEntity[];
+    public journalId: string;
 
-    @Input()
-    journalId: string;
+    constructor(private router: Router) {}
 
-    constructor(private router: Router) {
-    }
-
-    ngOnInit() {
-    }
-
-    createEntry() {
-        const navExtras = {queryParams: {journalId: this.journalId}};
+    public createEntry() {
+        const navExtras = { queryParams: { journalId: this.journalId } };
         this.router.navigate([`${EtchedRoutes.ENTRIES_CREATE_PATH}`], navExtras);
     }
 }

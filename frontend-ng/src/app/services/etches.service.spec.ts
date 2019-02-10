@@ -28,7 +28,8 @@ describe('EtchesService', () => {
     });
 
     it('post etches', () => {
-        service.postEtches('kpId', 'entryId', ['etch1', 'etch2'])
+        service
+            .postEtches('kpId', 'entryId', ['etch1', 'etch2'])
             .subscribe((result: EtchEntity[]) => {
                 expect(result.length).toEqual(2);
                 expect(result[0].content).toEqual('etch1');
@@ -64,12 +65,11 @@ describe('EtchesService', () => {
     });
 
     it('get etches', () => {
-        service.getEtches('entry1')
-            .subscribe(etches => {
-                expect(etches.length).toEqual(2);
-                expect(etches[0].content).toEqual('etch1');
-                expect(etches[1].content).toEqual('etch2');
-            });
+        service.getEtches('entry1').subscribe(etches => {
+            expect(etches.length).toEqual(2);
+            expect(etches[0].content).toEqual('etch1');
+            expect(etches[1].content).toEqual('etch2');
+        });
 
         const entries = new Array<EntryEntity>(2);
         entries[0] = {

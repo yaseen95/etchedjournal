@@ -1,11 +1,11 @@
 <div class="columns is-centered">
     <div class="column is-12-mobile is-6-tablet is-5-desktop">
         <h3 class="title">Create Journal</h3>
-        <p id="journal-desc">You can create as many journals as you like. You can organize them
-            by idea e.g. Personal, Work, Finances. Or keep everything in a single journal.</p>
-        <form [formGroup]="createJournalForm"
-              class="control"
-              (ngSubmit)="onSubmit()">
+        <p id="journal-desc">
+            You can create as many journals as you like. You can organize them by idea e.g.
+            Personal, Work, Finances. Or keep everything in a single journal.
+        </p>
+        <form [formGroup]="createJournalForm" class="control" (ngSubmit)="onSubmit()">
             <div class="field">
                 <div class="control">
                     <!-- TODO is this a title or a name? -->
@@ -20,15 +20,21 @@
                         appAutoFocus
                     />
                     <p
-                        *ngIf="submitClicked &&
-                        createJournalForm.controls.journalName.errors?.isWhitespace"
-                        class="error-help help">
+                        *ngIf="
+                            submitClicked &&
+                            createJournalForm.controls.journalName.errors?.isWhitespace
+                        "
+                        class="error-help help"
+                    >
                         Cannot be blank
                     </p>
                     <p
-                        *ngIf="submitClicked &&
-                        createJournalForm.controls.journalName.errors?.maxlength"
-                        class="error-help help">
+                        *ngIf="
+                            submitClicked &&
+                            createJournalForm.controls.journalName.errors?.maxlength
+                        "
+                        class="error-help help"
+                    >
                         Cannot be more than {{ JOURNAL_NAME_MAX_LENGTH }} characters long
                     </p>
                     <p class="help">Don't worry, the name can be changed later.</p>

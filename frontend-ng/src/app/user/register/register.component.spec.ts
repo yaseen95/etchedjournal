@@ -1,6 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DebugElement } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RegisterRequest } from '../../services/dtos/register-request';
 import { SpinnerComponent } from '../../utils/spinner/spinner.component';
@@ -11,18 +10,15 @@ describe('RegisterComponent', () => {
     let component: RegisterComponent;
     let fixture: ComponentFixture<RegisterComponent>;
     let registerForm: FormGroup;
-    let emittedEvents: Array<RegisterRequest>;
+    let emittedEvents: RegisterRequest[];
 
     beforeEach(async(() => {
         emittedEvents = [];
 
         TestBed.configureTestingModule({
             declarations: [RegisterComponent, SpinnerComponent],
-            imports: [
-                ReactiveFormsModule,
-            ]
-        })
-            .compileComponents();
+            imports: [ReactiveFormsModule],
+        }).compileComponents();
     }));
 
     beforeEach(() => {
@@ -41,8 +37,8 @@ describe('RegisterComponent', () => {
     });
 
     it('form valid', () => {
-        const passwordControl = registerForm.controls['password'];
-        const usernameControl = registerForm.controls['username'];
+        const passwordControl = registerForm.controls.password;
+        const usernameControl = registerForm.controls.username;
 
         // Should only be two controls
         expect(Object.keys(registerForm.controls).length).toEqual(2);
@@ -58,8 +54,8 @@ describe('RegisterComponent', () => {
     });
 
     it('submit registers', () => {
-        const passwordControl = registerForm.controls['password'];
-        const usernameControl = registerForm.controls['username'];
+        const passwordControl = registerForm.controls.password;
+        const usernameControl = registerForm.controls.username;
 
         usernameControl.setValue('submitTest');
         passwordControl.setValue('submitPassword');
@@ -68,7 +64,7 @@ describe('RegisterComponent', () => {
 
         expect(emittedEvents.length).toEqual(1);
         const regReq = emittedEvents[0];
-        expect(regReq).toEqual({email: null, password: 'submitPassword', username: 'submitTest'});
+        expect(regReq).toEqual({ email: null, password: 'submitPassword', username: 'submitTest' });
     });
 
     it('valid form enables button', () => {

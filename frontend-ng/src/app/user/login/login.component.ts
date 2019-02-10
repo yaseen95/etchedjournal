@@ -8,43 +8,41 @@ import { PASSWORD_VALIDATORS, USERNAME_VALIDATORS } from '../form-utils';
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
-    styleUrls: ['./login.component.css']
+    styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-
-    loginForm = this.fb.group({
+    public loginForm = this.fb.group({
         username: ['', USERNAME_VALIDATORS],
         password: ['', PASSWORD_VALIDATORS],
     });
 
     /** login request is in flight */
-    inFlight: boolean;
+    public inFlight: boolean;
 
     @Input()
-    invalidCredentials?: boolean;
+    public invalidCredentials?: boolean;
 
     @Input()
-    username?: string;
+    public username?: string;
 
     @Output()
-    loginEmitter: EventEmitter<LoginRequest> = new EventEmitter();
+    public loginEmitter: EventEmitter<LoginRequest> = new EventEmitter();
 
-    constructor(private fb: FormBuilder,
-                private authService: AuthService) {
+    constructor(private fb: FormBuilder, private authService: AuthService) {
         this.inFlight = false;
     }
 
-    ngOnInit() {
+    public ngOnInit() {
         if (this.username !== undefined) {
             this.loginForm.controls.username.setValue(this.username);
             this.loginForm.controls.password.setValue('');
         }
     }
 
-    onSubmit() {
+    public onSubmit() {
         const event: LoginRequest = {
             username: this.loginForm.value.username,
-            password: this.loginForm.value.password
+            password: this.loginForm.value.password,
         };
         this.loginEmitter.emit(event);
     }

@@ -1,18 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
     selector: 'app-spinner',
     templateUrl: './spinner.component.html',
-    styleUrls: ['./spinner.component.css']
+    styleUrls: ['./spinner.component.css'],
 })
-export class SpinnerComponent implements OnInit {
-
+export class SpinnerComponent {
     /** Specify text to display below spinner */
-    @Input() text: string;
-
-    constructor() {
-    }
-
-    ngOnInit() {
-    }
+    @Input() public text: string;
 }

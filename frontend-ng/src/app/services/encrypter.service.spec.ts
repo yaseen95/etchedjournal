@@ -17,35 +17,33 @@ describe('EncrypterService', () => {
 
     it('set encrypter null should throw', () => {
         const service: EncrypterService = TestBed.get(EncrypterService);
-        expect(function () {
+        expect(() => {
             service.encrypter = null;
-        })
-            .toThrow(new Error('Encrypter cannot be null'));
+        }).toThrow(new Error('Encrypter cannot be null'));
     });
 
     it('set encrypter undefined should throw', () => {
         const service: EncrypterService = TestBed.get(EncrypterService);
-        expect(function () {
+        expect(() => {
             service.encrypter = undefined;
-        })
-            .toThrow(new Error('Encrypter cannot be null'));
+        }).toThrow(new Error('Encrypter cannot be null'));
     });
 
     it('set and get returns set encrypter', () => {
         const service: EncrypterService = TestBed.get(EncrypterService);
-        service.encrypter = {'foo': 'bar'} as any;
+        service.encrypter = { foo: 'bar' } as any;
         expect((service.encrypter as any).foo).toEqual('bar');
     });
 
     it('emits encrypter after it is set', () => {
         let retrieved = false;
         const service: EncrypterService = TestBed.get(EncrypterService);
-        service.encrypterObs.subscribe((e) => {
+        service.encrypterObs.subscribe(e => {
             expect((e as any).foo).toEqual('bar');
             retrieved = true;
         });
         // Do we need to add tick?
-        service.encrypter = {foo: 'bar'} as any;
+        service.encrypter = { foo: 'bar' } as any;
         expect(retrieved).toBe(true);
     });
 });

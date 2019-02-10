@@ -1,6 +1,5 @@
 import * as bcrypt from 'bcryptjs';
 import * as openpgp from 'openpgp';
-import { DecryptOptions, EncryptOptions, UserId } from 'openpgp';
 import { environment } from '../../environments/environment';
 import { Base64Str, EncryptedEntity } from '../models/encrypted-entity';
 
@@ -9,13 +8,12 @@ const DEFAULT_CURVE = 'p521';
 const DEFAULT_STRETCHING_ROUNDS: number = 10;
 
 if (!environment.test) {
-    openpgp.initWorker({path: 'assets/openpgp.worker.min.js'});
+    openpgp.initWorker({ path: 'assets/openpgp.worker.min.js' });
 }
 
 // TODO: Can we return Observables instead of Promises?
 // Would make it more consistent with the API
 export class Encrypter {
-
     private constructor(
         public privateKey: openpgp.key.Key,
         // TODO: Do we expect more than one public key?
@@ -24,8 +22,7 @@ export class Encrypter {
         public privateKeyEncrypted: openpgp.key.Key,
         /** id of key pair */
         public keyPairId: string | null = null
-    ) {
-    }
+    ) {}
 
     /**
      * Generate a PGP key
@@ -60,7 +57,7 @@ export class Encrypter {
         const hash = await bcrypt.hash(passphrase, salt);
         // slice by 7 to remove the '$2a$10$'
         salt = salt.slice(7);
-        return {salt, iterations: rounds, hash};
+        return { salt, iterations: rounds, hash };
     }
 
     private static async stretchPassphrase(
@@ -75,7 +72,7 @@ export class Encrypter {
         //  hash
         // the parts are separated by '$'
         const bcryptSalt = `$2a$${iterations}$${salt}`;
-        return await bcrypt.hash(passphrase, bcryptSalt);
+        return bcrypt.hash(passphrase, bcryptSalt);
     }
 
     /**
@@ -97,12 +94,13 @@ export class Encrypter {
 
     // TODO: Update this name
     // What is from2?
-    public static async from2(privKey: Base64Str,
-                              pubKey: Base64Str,
-                              passphrase: string,
-                              keyPairId: string,
-                              salt: string,
-                              iterations: number
+    public static async from2(
+        privKey: Base64Str,
+        pubKey: Base64Str,
+        passphrase: string,
+        keyPairId: string,
+        salt: string,
+        iterations: number
     ): Promise<Encrypter> {
         const privBytes = openpgp.util.b64_to_Uint8Array(privKey);
         const pubBytes = openpgp.util.b64_to_Uint8Array(pubKey);
@@ -156,9 +154,9 @@ export class Encrypter {
      * @param password  password to use to encrypt the plaintext
      */
     public static async symmetricEncrypt(plaintext: string, password: string): Promise<Base64Str> {
-        const options: EncryptOptions = {
+        const options: openpgp.EncryptOptions = {
             message: openpgp.message.fromText(plaintext),
-            passwords: password
+            passwords: password,
         };
 
         return this.encryptAsBytes(options);
@@ -173,9 +171,9 @@ export class Encrypter {
         const bytes = openpgp.util.b64_to_Uint8Array(ciphertext);
         const msg = await openpgp.message.read(bytes);
 
-        const options: DecryptOptions = {
+        const options: openpgp.DecryptOptions = {
             message: msg,
-            passwords: password
+            passwords: password,
         };
 
         return this.decryptAsString(options);
@@ -185,16 +183,17 @@ export class Encrypter {
      * Creates a `UserId` from the id of a user
      * @param userId the of the user (uuid)
      */
-    static createUserId(userId: string): UserId {
-        return {name: userId, email: `${userId}@users.etchedjournal.com`};
+    // @VisibleForTesting
+    public static createUserId(userId: string): openpgp.UserId {
+        return { name: userId, email: `${userId}@users.etchedjournal.com` };
     }
 
-    private static async encryptAsBytes(options: EncryptOptions): Promise<Base64Str> {
+    private static async encryptAsBytes(options: openpgp.EncryptOptions): Promise<Base64Str> {
         const ciphertext = await openpgp.encrypt(options);
 
         // ciphertext is a Message that contains the ciphertext as a string
         // we read it back in and copy it to a new Message we can access it as binary data
-        const armoredMsg = await openpgp.message.readArmored(ciphertext.data) as any;
+        const armoredMsg = (await openpgp.message.readArmored(ciphertext.data)) as any;
 
         // Get the packets and convert it to a base 64 encoded string
         const pgpPackets: ReadableStream = armoredMsg.packets.write();
@@ -202,18 +201,20 @@ export class Encrypter {
         return openpgp.util.Uint8Array_to_b64(bytes);
     }
 
-    private static async decryptAsString(options: DecryptOptions): Promise<string> {
+    private static async decryptAsString(options: openpgp.DecryptOptions): Promise<string> {
         let decrypted;
         try {
             decrypted = await openpgp.decrypt(options);
         } catch (e) {
-            if (options.passwords &&
-                e.message === 'Error decrypting message: Session key decryption failed.') {
+            if (
+                options.passwords &&
+                e.message === 'Error decrypting message: Session key decryption failed.'
+            ) {
                 throw new Error('Password is incorrect');
             }
             throw e;
         }
-        return await openpgp.stream.readToEnd(decrypted.data);
+        return openpgp.stream.readToEnd(decrypted.data);
     }
 
     /**
@@ -226,7 +227,7 @@ export class Encrypter {
      * @return the encrypted message as a Base64 encoded string
      */
     public async encrypt(message: string): Promise<Base64Str> {
-        const options: EncryptOptions = {
+        const options: openpgp.EncryptOptions = {
             // Message to encrypt
             message: await openpgp.message.fromText(message),
             // Specify private key so it can be used to sign the payload
@@ -251,7 +252,7 @@ export class Encrypter {
         const bytes = openpgp.util.b64_to_Uint8Array(encoded);
         const msg = await openpgp.message.read(bytes);
 
-        const decryptOptions: DecryptOptions = {
+        const decryptOptions: openpgp.DecryptOptions = {
             message: msg,
             privateKeys: this.privateKey,
             // We specify the keys here so that we can verify that the we encrypted this message
@@ -262,7 +263,7 @@ export class Encrypter {
         if (decrypted.signatures.length === 0) {
             throw new Error('Decrypted message is unsigned');
         }
-        return await openpgp.stream.readToEnd(decrypted.data);
+        return openpgp.stream.readToEnd(decrypted.data);
     }
 
     public async decryptEntities<T extends EncryptedEntity>(encrypted: T[]): Promise<T[]> {
@@ -276,7 +277,7 @@ export class Encrypter {
     }
 
     public async decryptEntity<T extends EncryptedEntity>(encrypted: T): Promise<T> {
-        const copy = Object.assign({}, encrypted);
+        const copy = { ...encrypted };
         copy.content = await this.decrypt(copy.content);
         return copy;
     }

@@ -16,12 +16,12 @@ describe('NavComponent', () => {
     let authSpy: any;
     let journalStore: JournalStore;
 
-    const TEST_JOURNALS = [
-        {content: '1', id: 'abc'} as JournalEntity,
-        {content: '2', id: 'def'} as JournalEntity,
-        {content: '3', id: 'ghi'} as JournalEntity,
-        {content: '4', id: 'jkl'} as JournalEntity,
-    ];
+    const TEST_JOURNALS: JournalEntity[] = [
+        { content: '1', id: 'abc' },
+        { content: '2', id: 'def' },
+        { content: '3', id: 'ghi' },
+        { content: '4', id: 'jkl' },
+    ] as JournalEntity[];
 
     beforeEach(async(() => {
         authSpy = jasmine.createSpyObj('AuthService', ['getUser', 'logout']);
@@ -30,15 +30,11 @@ describe('NavComponent', () => {
         TestBed.configureTestingModule({
             declarations: [NavComponent],
             providers: [
-                {provide: AuthService, useValue: authSpy},
-                {provide: JournalStore, useValue: journalStore},
+                { provide: AuthService, useValue: authSpy },
+                { provide: JournalStore, useValue: journalStore },
             ],
-            imports: [
-                RouterTestingModule,
-                MobxAngularModule,
-            ]
-        })
-            .compileComponents();
+            imports: [RouterTestingModule, MobxAngularModule],
+        }).compileComponents();
     }));
 
     beforeEach(() => {

@@ -11,9 +11,8 @@ describe('EtchItemComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [EtchItemComponent]
-        })
-            .compileComponents();
+            declarations: [EtchItemComponent],
+        }).compileComponents();
     }));
 
     beforeEach(() => {

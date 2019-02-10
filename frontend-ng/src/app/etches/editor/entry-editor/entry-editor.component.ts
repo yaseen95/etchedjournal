@@ -7,7 +7,7 @@ import {
     OnInit,
     Output,
     Renderer2,
-    ViewChild
+    ViewChild,
 } from '@angular/core';
 import { interval, Observable, Subscription } from 'rxjs';
 import { EtchV1 } from '../../../models/etch';
@@ -21,36 +21,34 @@ const DEFAULT_ETCHING_INTERVAL = 250;
 @Component({
     selector: 'app-editor',
     templateUrl: './entry-editor.component.html',
-    styleUrls: ['./entry-editor.component.css']
+    styleUrls: ['./entry-editor.component.css'],
 })
-export class EntryEditorComponent implements OnInit, OnDestroy {
-
+export class EntryEditorComponent implements OnDestroy {
     /** list of etches */
     @Input()
-    etches: EtchV1[];
+    public etches: EtchV1[];
 
     /** timestamp of last edit (millis since epoch) */
-    recentEdit: number;
+    public recentEdit: number;
 
     /** the timer/interval used to etch entries due to inactivity */
-    etchingInterval: Observable<number>;
+    private etchingInterval: Observable<number>;
 
-    intervalSubscription: Subscription;
+    private intervalSubscription: Subscription;
 
     @Output()
-    etchEmitter: EventEmitter<EtchV1>;
+    public etchEmitter: EventEmitter<EtchV1>;
 
     @ViewChild('editor')
-    editorElem: ElementRef;
+    public editorElem: ElementRef;
 
     /**
      * the time (in millis) after which the etch should be created if the user has not been
      * actively typing
      */
-    etchTimeout: number;
+    private etchTimeout: number;
 
-    constructor(private renderer: Renderer2,
-                private clock: ClockService) {
+    constructor(private renderer: Renderer2, private clock: ClockService) {
         if (this.etches === undefined) {
             this.etches = [];
         }
@@ -61,14 +59,10 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
 
         // Check if the etch timeout has been exceeded
         this.etchingInterval = interval(DEFAULT_ETCHING_INTERVAL);
-        this.intervalSubscription = this.etchingInterval
-            .subscribe(() => this.etchIfInactive());
+        this.intervalSubscription = this.etchingInterval.subscribe(() => this.etchIfInactive());
     }
 
-    ngOnInit() {
-    }
-
-    ngOnDestroy(): void {
+    public ngOnDestroy() {
         this.intervalSubscription.unsubscribe();
     }
 
@@ -77,7 +71,7 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
      *
      * This checks if "enter" was pressed and will finalize the etch if it was.
      */
-    onEtchKeydown(event: KeyboardEvent) {
+    public onEtchKeydown(event: KeyboardEvent) {
         // Update the recent edit date of the etch
         this.recentEdit = this.clock.nowMillis();
 
@@ -90,7 +84,7 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
         }
     }
 
-    onEditorFocusOut() {
+    public onEditorFocusOut() {
         // https://stackoverflow.com/a/20737134
         // Focusing out of a contenteditable div in Firefox inserts a <br/> element
         // If the content is empty, we clear it fully so the placeholder is displayed again
@@ -103,10 +97,11 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
      * Creates an etch of the current etch contents if the user has not updated the text content
      * within the etchTimeout
      */
-    etchIfInactive() {
+    // @VisibleForTesting
+    public etchIfInactive() {
         // If user hasn't made any changes in `etchTimeout` seconds, we create the etch
         // automatically
-        if ((this.clock.nowMillis() - this.recentEdit) >= this.etchTimeout) {
+        if (this.clock.nowMillis() - this.recentEdit >= this.etchTimeout) {
             this.etch();
         }
     }
@@ -116,7 +111,8 @@ export class EntryEditorComponent implements OnInit, OnDestroy {
      *
      * This actually finalizes the current etch and it can't be edited beyond this point
      */
-    etch() {
+    // @VisibleForTesting
+    public etch() {
         const text = this.editorElem.nativeElement.textContent.trim();
         if (text === '') {
             return;
