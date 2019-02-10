@@ -11,6 +11,7 @@ docker-compose up -d
 ./gradlew frontend-ng:install
 ./gradlew frontend-ng:lint
 ./gradlew frontend-ng:prettier
+./gradlew backend:lintKotlin
 ./gradlew backend:flywayMigrate
 ./gradlew backend:generateEtchedJooqSchemaSource
 ./gradlew clean build

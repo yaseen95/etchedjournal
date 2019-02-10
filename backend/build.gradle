@@ -35,6 +35,8 @@ plugins {
     // Can't use variables here
     id "nu.studer.jooq" version "3.0.2"
     id "org.flywaydb.flyway" version "5.2.4"
+    // TODO: Upgrade version of plugin when kotlin is upgraded
+    id "org.jmailen.kotlinter" version "1.8.0"
 }
 
 apply plugin: 'kotlin'
@@ -43,6 +45,7 @@ apply plugin: "kotlin-jpa"
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: "nu.studer.jooq"
+apply plugin: "org.jmailen.kotlinter"
 
 group = 'com.etchedjournal'
 version = '0.0.1-SNAPSHOT'
@@ -195,4 +198,10 @@ flyway {
     url = 'jdbc:postgresql://localhost:5432/etched'
     user = 'etched'
     password = 'dolphins'
+}
+
+kotlinter {
+    ignoreFailures = false
+    indentSize = 4
+    continuationIndentSize = 4
 }
