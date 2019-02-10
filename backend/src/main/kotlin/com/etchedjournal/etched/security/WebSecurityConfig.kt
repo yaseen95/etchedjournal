@@ -73,9 +73,11 @@ class WebSecurityConfig(
 
     @Throws(Exception::class)
     override fun configure(web: WebSecurity) {
+        // ktlint-disable
         web
             .ignoring()
                 .antMatchers("/api/v1/status")
                 .antMatchers("/h2-console/**")
+        // ktlint-enable
     }
 }

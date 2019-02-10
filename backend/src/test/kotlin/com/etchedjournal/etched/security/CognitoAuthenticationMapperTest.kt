@@ -52,7 +52,7 @@ class CognitoAuthenticationMapperTest {
 
     // Claim class used for tests that throws
     // extended by other type specific claim classes
-    open class TestClaim: Claim {
+    open class TestClaim : Claim {
         override fun asString(): String = throw NotImplementedError()
         override fun isNull(): Boolean = throw NotImplementedError()
         override fun asDate(): Date = throw NotImplementedError()
@@ -66,7 +66,7 @@ class CognitoAuthenticationMapperTest {
         override fun asInt(): Int = throw NotImplementedError()
     }
 
-    class StringClaim(private val s: String): TestClaim() {
+    class StringClaim(private val s: String) : TestClaim() {
         override fun asString(): String = s
         override fun isNull(): Boolean = false
     }

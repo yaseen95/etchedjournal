@@ -30,7 +30,7 @@ class ExceptionHandledFilter(private val mapper: ObjectMapper) : OncePerRequestF
         } catch (e: ClientException) {
             log.info("Client exception: {} - {} - {}", e.javaClass.simpleName, e.message, e.logMessage)
             sendError(status = e.status.value(), message = e.message, response = response)
-        } catch(e: JWTDecodeException) {
+        } catch (e: JWTDecodeException) {
             log.info("jwt decode exception: {}", e.message)
             sendError(status = HttpStatus.BAD_REQUEST.value(), message = e.message!!, response = response)
         } catch (e: EtchedException) {
