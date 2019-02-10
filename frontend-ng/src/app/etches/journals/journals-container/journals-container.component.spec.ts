@@ -28,16 +28,9 @@ describe('JournalsContainerComponent', () => {
                 JournalListItemComponent,
                 CreateJournalComponent,
             ],
-            providers: [
-                {provide: JournalStore, useValue: store},
-            ],
-            imports: [
-                RouterTestingModule,
-                ReactiveFormsModule,
-                MobxAngularModule,
-            ]
-        })
-            .compileComponents();
+            providers: [{ provide: JournalStore, useValue: store }],
+            imports: [RouterTestingModule, ReactiveFormsModule, MobxAngularModule],
+        }).compileComponents();
     }));
 
     beforeEach(() => {

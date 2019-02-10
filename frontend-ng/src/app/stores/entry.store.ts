@@ -6,21 +6,19 @@ import { EntriesService } from '../services/entries.service';
 
 @Injectable()
 export class EntryStore {
+    @mobx.observable public entries: EntryEntity[] = [];
+    @mobx.observable public loading: boolean = false;
 
-    @mobx.observable entries: EntryEntity[] = [];
-    @mobx.observable loading: boolean = false;
+    constructor(private entryService: EntriesService, private encrypterService: EncrypterService) {}
 
-    constructor(private entryService: EntriesService,
-                private encrypterService: EncrypterService) {
-    }
-
-    @mobx.action async loadEntries(journalId: string) {
+    @mobx.action
+    public async loadEntries(journalId: string) {
         this.loading = true;
         const entries = await this.entryService.getEntries(journalId).toPromise();
         await this.decryptEntries(entries);
     }
 
-    async decryptEntries(encrypted: EntryEntity[]) {
+    public async decryptEntries(encrypted: EntryEntity[]) {
         const enc = this.encrypterService.encrypter;
         console.info('decrypting entries');
         const decrypted = await enc.decryptEntities(encrypted);
@@ -28,13 +26,15 @@ export class EntryStore {
         this.loadedEntries(decrypted);
     }
 
-    @mobx.action loadedEntries(entries: EntryEntity[]) {
+    @mobx.action
+    public loadedEntries(entries: EntryEntity[]) {
         this.entries = entries;
         this.loading = false;
         console.info('loaded and decrypted entries');
     }
 
-    @mobx.action async loadEntry(entryId: string): Promise<EntryEntity> {
+    @mobx.action
+    public async loadEntry(entryId: string): Promise<EntryEntity> {
         this.loading = true;
         const e = await this.entryService.getEntry(entryId).toPromise();
         const decrypted = await this.encrypterService.encrypter.decryptEntity(e);
@@ -42,10 +42,10 @@ export class EntryStore {
         return decrypted;
     }
 
-    @mobx.action async createEntry(journalId: string, title: string): Promise<EntryEntity> {
+    @mobx.action
+    public async createEntry(journalId: string, title: string): Promise<EntryEntity> {
         const enc = this.encrypterService.encrypter;
         const ciphertext = await enc.encrypt(title);
-        return await this.entryService.createEntry(enc.keyPairId, journalId,
-            ciphertext).toPromise();
+        return this.entryService.createEntry(enc.keyPairId, journalId, ciphertext).toPromise();
     }
 }

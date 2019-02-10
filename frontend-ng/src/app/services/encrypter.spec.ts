@@ -7,7 +7,6 @@ import { environment } from '../../environments/environment';
 import { Encrypter, KeyPair } from './encrypter';
 
 describe('Encrypter', () => {
-
     let encrypter: Encrypter;
 
     beforeEach(async(() => {
@@ -22,14 +21,15 @@ describe('Encrypter', () => {
             'foobar',
             TEST_KEY_PAIR.salt,
             TEST_KEY_PAIR.iterations
-        )
-            .then(enc => encrypter = enc);
+        ).then(enc => (encrypter = enc));
 
         // TODO: Figure out why openpgp.encrypt is not defined
         // Some tests fail because it's not defined.
         // Adding this delay fixes things.
         const intervalObs = interval(1000).pipe(take(1));
-        intervalObs.subscribe(() => {});
+        intervalObs.subscribe(() => {
+            /* */
+        });
     }));
 
     it('generate key pair stretches passphrase', async () => {
@@ -51,10 +51,10 @@ describe('Encrypter', () => {
         expect(decrypted).toEqual('test data');
     });
 
-    it('decrypt existing message', (async () => {
+    it('decrypt existing message', async () => {
         const decrypted = await encrypter.decrypt(TEST_DATA_ENCRYPTED_AND_SIGNED);
         expect(decrypted).toEqual('test data');
-    }));
+    });
 
     it('decrypt unsigned message fails', async () => {
         let decrypted;
@@ -74,16 +74,20 @@ describe('Encrypter', () => {
     });
 
     it('symmetric decrypt existing message', async () => {
-        const decrypted = await Encrypter.symmetricDecrypt(TEST_DATA_SYMMETRICALLY_ENCRYPTED,
-            'password');
+        const decrypted = await Encrypter.symmetricDecrypt(
+            TEST_DATA_SYMMETRICALLY_ENCRYPTED,
+            'password'
+        );
         expect(decrypted).toEqual('test data');
     });
 
     it('symmetric decrypt with incorrect password fails', async () => {
         let decrypted;
         try {
-            decrypted = await Encrypter.symmetricDecrypt(TEST_DATA_SYMMETRICALLY_ENCRYPTED,
-                'PASSWORD');
+            decrypted = await Encrypter.symmetricDecrypt(
+                TEST_DATA_SYMMETRICALLY_ENCRYPTED,
+                'PASSWORD'
+            );
             fail();
         } catch (e) {
             expect(e.message).toEqual('Password is incorrect');
@@ -113,8 +117,7 @@ describe('Encrypter', () => {
 });
 
 /** the message 'test data' encrypted via pgp (public private mode) */
-const TEST_DATA_ENCRYPTED_AND_SIGNED =
-    `wcACA5WJrqJD4RmSEgQjBADydEGQNvb6eNv+gsmVrkpfEyd1SqkPyjmxHQxL
+const TEST_DATA_ENCRYPTED_AND_SIGNED = `wcACA5WJrqJD4RmSEgQjBADydEGQNvb6eNv+gsmVrkpfEyd1SqkPyjmxHQxL
 Kw34H4PwiKRlhX7wMri6CfaN00xFXt9Jyz3q1c0ar81Kj7UoSAFsz22QqyuU
 QJUBe2ag2ryrmRo2CGrBZtJdG+0lpTDMHRBHMYT7RvtyXkyfgUvmQ7mC4ot9
 0gkovA9/ge6GadnDADAlvUjAX4egOt7zrCGEbB1DCGcwn5s6/I0BrpALq5sl
@@ -128,8 +131,7 @@ SfWgVkf//7O591QEKLXEXA/h1Xmd4PdFNFfxSaKbFnQZiaeflC5M6XYbRi7o
 LqI=`;
 
 /** the message 'test data' encrypted but not signed with the private key */
-const TEST_DATA_ENCRYPTED_UNSIGNED =
-    `wcACA5WJrqJD4RmSEgQjBAGucWqeX7esvgrM7ha5j3Q/ceYtgFKZ0XEPxqnt
+const TEST_DATA_ENCRYPTED_UNSIGNED = `wcACA5WJrqJD4RmSEgQjBAGucWqeX7esvgrM7ha5j3Q/ceYtgFKZ0XEPxqnt
 p/2CNdFAN6N4+IM7TCRFT+HIinQBAKFLCtb7tPVKuZD/rK2wQwB967y/cZZc
 wbLsHchEf9vraKHexzx+xm+VCdhbMx1+RhczxHepZEYBWdvy4be2bk+w9wsz
 UFCx76rxgPuyldXhpzAEAdJlCH4jPMef0jl/teHKJE67zYoEMP5xkks35mpN
@@ -137,13 +139,11 @@ q0XmzoS7rtc4bpIygwLHVkDSSgG7/sYdttxUXZlesTPWxF7+vRAieU/jsVtI
 dCxCH9G5fV7SkWjv3zakYNeFOP7GSJFgSyvvXzlI127ci0RG+mKrAU3Mao8k
 N0+4`;
 
-const TEST_DATA_SYMMETRICALLY_ENCRYPTED =
-    `wy4ECQMIXo+rdaah8y1gZ4y3YheRV06CBUsLrUpcpNXXq8PIvrYrnCQxiuyh
+const TEST_DATA_SYMMETRICALLY_ENCRYPTED = `wy4ECQMIXo+rdaah8y1gZ4y3YheRV06CBUsLrUpcpNXXq8PIvrYrnCQxiuyh
 Ld7b0kEBzPByJMMVhKXKNusjugSzlBKHVOAShh+IOfcUSkOcXyx54N3UquA0
 vFPuY717NmO5f8gHzsCufXe+bIBySp3FwA==`;
 
-const TEST_PUBLIC_KEY =
-    `xpMEXCYGARMFK4EEACMEIwQBlgWBpChNouPXaljJdlyEcUH4qpSrj5T3Grbi
+const TEST_PUBLIC_KEY = `xpMEXCYGARMFK4EEACMEIwQBlgWBpChNouPXaljJdlyEcUH4qpSrj5T3Grbi
 gcjxgxZsVblYslN0LgITFy+PlrWGib1tg0mD+dG1k/q3FxnSGM0BatjGq5by
 eH5JXRBGJaoUF6sshTj9bZoTu+W7pXgbbhXjSLMV4As5tcQYFgJ+CP9C52AD
 1dZBTvKEnsAsK63X27fNJ3Rlc3RlciA8dGVzdGVyQHVzZXJzLmV0Y2hlZGpv
@@ -160,8 +160,7 @@ BQJcJgYBCRAfGO+i4+TjKwIbDAAAAMcCCQH1EgozIdeT/PZ0syMvJtBXZMhJ
 9AII58WkFVRInD74Z0+yf95vx5PL96N7EV06irP5YHHpt2uva1y9in7OIH0Z
 oMGgIVka2C0HZCOF69ZLNVCEJxXhM8c=`;
 
-const TEST_PRIVATE_KEY =
-    `xcBHBFwmBgETBSuBBAAjBCMEAZYFgaQoTaLj12pYyXZchHFB+KqUq4+U9xq2
+const TEST_PRIVATE_KEY = `xcBHBFwmBgETBSuBBAAjBCMEAZYFgaQoTaLj12pYyXZchHFB+KqUq4+U9xq2
 4oHI8YMWbFW5WLJTdC4CExcvj5a1hom9bYNJg/nRtZP6txcZ0hjNAWrYxquW
 8nh+SV0QRiWqFBerLIU4/W2aE7vlu6V4G24V40izFeALObXEGBYCfgj/Qudg
 A9XWQU7yhJ7ALCut19u3/gkDCBL0uusuo9EyYDDUj+VWw+Thuyv1MfctKdGf

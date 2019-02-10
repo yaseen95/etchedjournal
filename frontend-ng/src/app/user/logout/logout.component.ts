@@ -12,26 +12,26 @@ import { LocationService } from '../../services/location.service';
 @Component({
     selector: 'app-logout',
     templateUrl: './logout.component.html',
-    styleUrls: ['./logout.component.css']
+    styleUrls: ['./logout.component.css'],
 })
 export class LogoutComponent implements OnInit {
+    constructor(
+        private router: Router,
+        private authService: AuthService,
+        private locationService: LocationService
+    ) {}
 
-    constructor(private router: Router,
-                private authService: AuthService,
-                private locationService: LocationService) {
-    }
-
-    ngOnInit() {
+    public ngOnInit() {
         const authObs = from(this.authService.logout());
 
         // Use random jitter to make it look like something's happening
         const jitter = Math.floor(Math.random() * 1000);
         const intervalObs = interval(500 + jitter).pipe(take(1));
 
-        combineLatest(authObs, intervalObs)
-            .subscribe(() => {
-                this.router.navigate([EtchedRoutes.JOURNALS_PATH])
-                    .then(() => this.locationService.reload());
-            });
+        combineLatest(authObs, intervalObs).subscribe(() => {
+            this.router
+                .navigate([EtchedRoutes.JOURNALS_PATH])
+                .then(() => this.locationService.reload());
+        });
     }
 }

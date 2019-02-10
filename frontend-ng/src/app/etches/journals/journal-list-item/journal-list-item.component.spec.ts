@@ -24,8 +24,7 @@ describe('JournalListItemComponent', () => {
         TestBed.configureTestingModule({
             declarations: [JournalListItemComponent],
             imports: [RouterTestingModule],
-        })
-            .compileComponents();
+        }).compileComponents();
     }));
 
     beforeEach(() => {

@@ -3,11 +3,10 @@ import { Subject } from 'rxjs';
 import { Encrypter } from './encrypter';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class EncrypterService {
-
-    private _encrypter: Encrypter = null;
+    private enc: Encrypter = null;
 
     /**
      * Broadcasts when encrypter has been set
@@ -21,14 +20,14 @@ export class EncrypterService {
     }
 
     get encrypter(): Encrypter | null {
-        return this._encrypter;
+        return this.enc;
     }
 
     set encrypter(e: Encrypter) {
         if (e === null || e === undefined) {
             throw new Error('Encrypter cannot be null');
         }
-        this._encrypter = e;
+        this.enc = e;
         this.encrypterObs.next(e);
     }
 }

@@ -1,18 +1,15 @@
 <div class="columns is-centered" *mobxAutorun>
-    <div *ngIf="displaySpinner()"
-         class="column is-12-mobile is-4-desktop">
+    <div *ngIf="displaySpinner()" class="column is-12-mobile is-4-desktop">
         <app-spinner [text]="'Getting entry'"></app-spinner>
     </div>
-    <div *ngIf="!displaySpinner()"
-         class="column is-12-mobile is-8-tablet is-8-desktop">
+    <div *ngIf="!displaySpinner()" class="column is-12-mobile is-8-tablet is-8-desktop">
         <app-entry-title
             (titleEmitter)="onTitleChange($event)"
             [title]="title"
-            class="columns has-text-left">
+            class="columns has-text-left"
+        >
         </app-entry-title>
-        <app-editor
-            (etchEmitter)="onNewEtch($event)"
-            [etches]="etchStore.state.parsedEtches">
+        <app-editor (etchEmitter)="onNewEtch($event)" [etches]="etchStore.state.parsedEtches">
         </app-editor>
     </div>
 </div>

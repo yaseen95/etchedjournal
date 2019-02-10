@@ -16,8 +16,10 @@ describe('JournalStore', () => {
         encrypterService = new EncrypterService();
         encrypterService.encrypter = encrypterSpy;
 
-        journalServiceSpy = jasmine.createSpyObj('JournalsService', ['createJournal',
-            'getJournals']);
+        journalServiceSpy = jasmine.createSpyObj('JournalsService', [
+            'createJournal',
+            'getJournals',
+        ]);
 
         store = new JournalStore(journalServiceSpy, encrypterService);
     });
@@ -30,7 +32,7 @@ describe('JournalStore', () => {
 
     it('createJournal encrypts and creates journal', async () => {
         encrypterSpy.encrypt.and.returnValue(Promise.resolve('ciphertext'));
-        const j = {id: '1', content: 'abc'};
+        const j = { id: '1', content: 'abc' };
         journalServiceSpy.createJournal.and.returnValue(of(j));
         const loadJournalsSpy = spyOn(store, 'loadJournals');
 
@@ -58,8 +60,10 @@ export class FakeJournalStore extends JournalStore {
         const encSpy = jasmine.createSpyObj('Encrypter', ['encrypt', 'decrypt']);
         const encService = new EncrypterService();
         encService.encrypter = encSpy;
-        const journalsService = jasmine.createSpyObj('JournalsService', ['getJournals',
-            'createJournal']);
+        const journalsService = jasmine.createSpyObj('JournalsService', [
+            'getJournals',
+            'createJournal',
+        ]);
 
         journalsService.getJournals.and.returnValue(of([]));
         journalsService.createJournal.and.returnValue(EMPTY);

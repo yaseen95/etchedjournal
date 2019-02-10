@@ -5,7 +5,7 @@ import {
     CognitoUser,
     CognitoUserAttribute,
     CognitoUserSession,
-    ISignUpResult
+    ISignUpResult,
 } from 'amazon-cognito-identity-js';
 import { environment } from '../../environments/environment';
 import { EtchedUser } from '../models/etched-user';
@@ -16,7 +16,7 @@ import {
     AuthService,
     cognitoPrefix,
     LOCAL_COGNITO_PREFIX,
-    UsernameTakenError
+    UsernameTakenError,
 } from './auth.service';
 import { FakeClock } from './clock.service.spec';
 import { CognitoAuthFactory } from './cognito-auth-factory';
@@ -34,18 +34,20 @@ describe('AuthService', () => {
 
         tokenDecoderSpy = spyOn(TokenDecoder, 'decodeToken');
 
-        mockAuth = jasmine.createSpyObj('Auth',
-            ['signIn', 'signUp', 'updateUserAttributes', 'currentSession', 'signOut']);
+        mockAuth = jasmine.createSpyObj('Auth', [
+            'signIn',
+            'signUp',
+            'updateUserAttributes',
+            'currentSession',
+            'signOut',
+        ]);
 
         authFactory = jasmine.createSpyObj('CognitoAuthFactory', ['create']);
         authFactory.create.and.returnValue(mockAuth);
 
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [
-                AuthService,
-                {provide: CognitoAuthFactory, useValue: authFactory},
-            ],
+            providers: [AuthService, { provide: CognitoAuthFactory, useValue: authFactory }],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
         });
         const injector = getTestBed();
@@ -90,7 +92,7 @@ describe('AuthService', () => {
         const clock = new FakeClock(0);
         expect(AuthService.refreshIsValid(token, clock)).toBeTruthy();
 
-        clock.time += (29 * 24 * 60 * 60 * 1_000);
+        clock.time += 29 * 24 * 60 * 60 * 1_000;
         expect(AuthService.refreshIsValid(token, clock)).toBeTruthy();
 
         // > 29 days now
@@ -104,9 +106,9 @@ describe('AuthService', () => {
         const randomStrSpy = spyOn(RandomUtils, 'randomStr');
         randomStrSpy.and.returnValue('random');
 
-        const token = {payload: {sub: 'userSubject'}};
-        const session = {getIdToken: () => token};
-        const signInResult = {getSignInUserSession: () => session};
+        const token = { payload: { sub: 'userSubject' } };
+        const session = { getIdToken: () => token };
+        const signInResult = { getSignInUserSession: () => session };
         mockAuth.signIn.and.returnValue(Promise.resolve(signInResult));
 
         await service.register('samsepiol', 'password');
@@ -117,20 +119,23 @@ describe('AuthService', () => {
         expect(user.email).toBeNull();
 
         expect(mockAuth.signUp).toHaveBeenCalledTimes(1);
-        expect(mockAuth.signUp).toHaveBeenCalledWith({username: 'random', password: 'password'});
+        expect(mockAuth.signUp).toHaveBeenCalledWith({ username: 'random', password: 'password' });
 
         expect(mockAuth.signIn).toHaveBeenCalledTimes(2);
-        expect(mockAuth.signIn.calls.allArgs())
-            .toEqual([['samsepiol', 'abc'], ['random', 'password']]);
+        expect(mockAuth.signIn.calls.allArgs()).toEqual([
+            ['samsepiol', 'abc'],
+            ['random', 'password'],
+        ]);
 
-        expect(mockAuth.updateUserAttributes)
-            .toHaveBeenCalledWith(signInResult, {preferred_username: 'samsepiol'});
+        expect(mockAuth.updateUserAttributes).toHaveBeenCalledWith(signInResult, {
+            preferred_username: 'samsepiol',
+        });
     });
 
     it('login signs in and sets user', async () => {
-        const token = {payload: {sub: '12345', preferred_username: 'cisco'}};
-        const session = {getIdToken: () => token};
-        const signInResult = {getSignInUserSession: () => session};
+        const token = { payload: { sub: '12345', preferred_username: 'cisco' } };
+        const session = { getIdToken: () => token };
+        const signInResult = { getSignInUserSession: () => session };
         mockAuth.signIn.and.returnValue(Promise.resolve(signInResult));
 
         await service.login('cisco', 'password');
@@ -146,9 +151,9 @@ describe('AuthService', () => {
 
     it('logout signs out and resets user', async () => {
         // perform a login to set the user first
-        const token = {payload: {sub: '123', preferred_username: 'samsepiol'}};
-        const session = {getIdToken: () => token};
-        const signInResult = {getSignInUserSession: () => session};
+        const token = { payload: { sub: '123', preferred_username: 'samsepiol' } };
+        const session = { getIdToken: () => token };
+        const signInResult = { getSignInUserSession: () => session };
         mockAuth.signIn.and.returnValue(Promise.resolve(signInResult));
         await service.login('cisco', 'password');
         expect(service.getUser()).not.toBeNull();
@@ -188,21 +193,21 @@ describe('AuthService', () => {
     });
 
     it('userExists true', async () => {
-        const err = {code: 'NotAuthorizedException', message: 'Incorrect username or password.'};
+        const err = { code: 'NotAuthorizedException', message: 'Incorrect username or password.' };
         mockAuth.signIn.and.returnValue(Promise.reject(err));
         const result = await service.userExists('samsepiol');
         expect(result).toBeTruthy();
     });
 
     it('userExists false', async () => {
-        const err = {code: 'UserNotFoundException', message: 'User does not exist.'};
+        const err = { code: 'UserNotFoundException', message: 'User does not exist.' };
         mockAuth.signIn.and.returnValue(Promise.reject(err));
         const result = await service.userExists('samsepiol');
         expect(result).toBeFalsy();
     });
 
     it('userExists attempts to sign in with invalid password', async () => {
-        const err = {code: 'UserNotFoundException', message: 'User does not exist.'};
+        const err = { code: 'UserNotFoundException', message: 'User does not exist.' };
         mockAuth.signIn.and.returnValue(Promise.reject(err));
 
         await service.userExists('samsepiol');
@@ -214,24 +219,27 @@ describe('AuthService', () => {
     });
 
     it('isInvalidCredentialsError true', () => {
-        const error = {code: 'NotAuthorizedException', message: 'Incorrect username or password.'};
+        const error = {
+            code: 'NotAuthorizedException',
+            message: 'Incorrect username or password.',
+        };
         expect(AuthService.isInvalidCredentialsError(error)).toBeTruthy();
     });
 
     it('isInvalidCredentialsError false', () => {
         // should not throw if code and message don't match
-        const error = {code: 'NotAuthorizedException', message: 'baz'};
+        const error = { code: 'NotAuthorizedException', message: 'baz' };
         expect(AuthService.isInvalidCredentialsError(error)).toBeFalsy();
     });
 
     it('isInvalidCredentialsError true', () => {
-        const error = {code: 'UserNotFoundException', message: 'User does not exist.'};
+        const error = { code: 'UserNotFoundException', message: 'User does not exist.' };
         expect(AuthService.isUserNotFoundError(error)).toBeTruthy();
     });
 
     it('isInvalidCredentialsError false', () => {
         // should not throw if code and message don't match
-        const error = {code: 'UserNotFoundException', message: 'baz'};
+        const error = { code: 'UserNotFoundException', message: 'baz' };
         expect(AuthService.isUserNotFoundError(error)).toBeFalsy();
     });
 });

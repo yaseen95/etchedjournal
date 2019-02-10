@@ -1,4 +1,3 @@
-
 import * as jwt_decode from 'jwt-decode';
 
 export class TokenDecoder {
@@ -7,11 +6,9 @@ export class TokenDecoder {
     }
 }
 
-export interface AccessToken extends Token {
-}
+export interface AccessToken extends Token {}
 
-export interface RefreshToken extends Token {
-}
+export interface RefreshToken extends Token {}
 
 export interface IdToken extends Token {
     preferred_username: string;

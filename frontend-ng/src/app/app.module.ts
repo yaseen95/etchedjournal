@@ -84,13 +84,12 @@ import { SpinnerComponent } from './utils/spinner/spinner.component';
     ],
     providers: [
         Title,
-        {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
         JournalStore,
         EntryStore,
         EtchStore,
     ],
     bootstrap: [AppComponent],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class AppModule {
-}
+export class AppModule {}

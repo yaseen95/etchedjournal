@@ -10,14 +10,13 @@ describe('ConfigurePassphraseComponent', () => {
     let component: ConfigurePassphraseComponent;
     let fixture: ComponentFixture<ConfigurePassphraseComponent>;
     let passphraseForm: FormGroup;
-    let emittedPassphrases: Array<string>;
+    let emittedPassphrases: string[];
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ConfigurePassphraseComponent, SpinnerComponent],
             imports: [ReactiveFormsModule],
-        })
-            .compileComponents();
+        }).compileComponents();
     }));
 
     beforeEach(() => {
@@ -44,8 +43,8 @@ describe('ConfigurePassphraseComponent', () => {
         // Should only be two controls
         expect(Object.keys(passphraseForm.controls).length).toEqual(2);
 
-        const passphraseControl = passphraseForm.controls['passphrase'];
-        const passphraseConfirmControl = passphraseForm.controls['passphraseConfirm'];
+        const passphraseControl = passphraseForm.controls.passphrase;
+        const passphraseConfirmControl = passphraseForm.controls.passphraseConfirm;
 
         passphraseControl.setValue('1234567890123456');
         passphraseConfirmControl.setValue('1234567890123456');
@@ -54,8 +53,8 @@ describe('ConfigurePassphraseComponent', () => {
     });
 
     it('form click emits passphrase', () => {
-        const passphraseControl = passphraseForm.controls['passphrase'];
-        const passphraseConfirmControl = passphraseForm.controls['passphraseConfirm'];
+        const passphraseControl = passphraseForm.controls.passphrase;
+        const passphraseConfirmControl = passphraseForm.controls.passphraseConfirm;
         passphraseControl.setValue('passphrasepassphrase');
         passphraseConfirmControl.setValue('passphrasepassphrase');
 
@@ -69,7 +68,7 @@ describe('ConfigurePassphraseComponent', () => {
 
     it('passphrase is required', () => {
         // Check form values are invalid
-        const passphraseControl = passphraseForm.controls['passphrase'];
+        const passphraseControl = passphraseForm.controls.passphrase;
         passphraseControl.setValue('');
         expect(passphraseForm.valid).toBeFalsy();
         expect(passphraseControl.hasError('required')).toBeTruthy();
@@ -86,8 +85,8 @@ describe('ConfigurePassphraseComponent', () => {
     });
 
     it('passphrase is too short', () => {
-        const passphraseControl = passphraseForm.controls['passphrase'];
-        passphraseControl.setValue('abc');  // too short
+        const passphraseControl = passphraseForm.controls.passphrase;
+        passphraseControl.setValue('abc'); // too short
         expect(passphraseForm.valid).toBeFalsy();
         expect(passphraseControl.hasError('minlength')).toBeTruthy();
         expect(passphraseControl.errors.minlength.requiredLength).toEqual(10);
@@ -105,17 +104,18 @@ describe('ConfigurePassphraseComponent', () => {
 
         const passphraseErrorMsg = errorMsgs[0];
         const passphraseErrorMsgEl = passphraseErrorMsg.nativeElement as HTMLParagraphElement;
-        expect(passphraseErrorMsgEl.textContent.trim())
-            .toEqual('Passphrase must be at least 10 characters long');
+        expect(passphraseErrorMsgEl.textContent.trim()).toEqual(
+            'Passphrase must be at least 10 characters long'
+        );
 
         const confirmErrorMsg = errorMsgs[1];
         const confirmErrorMsgEl = confirmErrorMsg.nativeElement as HTMLParagraphElement;
-        expect(confirmErrorMsgEl.textContent.trim()).toEqual(`Passphrase doesn't match`);
+        expect(confirmErrorMsgEl.textContent.trim()).toEqual("Passphrase doesn't match");
     });
 
     it('passphrase and confirm dont match', () => {
-        const passphraseControl = passphraseForm.controls['passphrase'];
-        const confirmControl = passphraseForm.controls['passphraseConfirm'];
+        const passphraseControl = passphraseForm.controls.passphrase;
+        const confirmControl = passphraseForm.controls.passphraseConfirm;
 
         passphraseControl.setValue('abcdefghijklmnop');
         confirmControl.setValue('1234567890123456');
@@ -133,11 +133,11 @@ describe('ConfigurePassphraseComponent', () => {
 
         const errorMsgDe = TestUtils.queryExpectOne(debugElement, 'p.error-help');
         const confirmErrorMsgEl = errorMsgDe.nativeElement as HTMLParagraphElement;
-        expect(confirmErrorMsgEl.textContent.trim()).toEqual(`Passphrase doesn't match`);
+        expect(confirmErrorMsgEl.textContent.trim()).toEqual("Passphrase doesn't match");
     });
 
     it('errors are not visible until submit is clicked', () => {
-        const passphraseControl = passphraseForm.controls['passphrase'];
+        const passphraseControl = passphraseForm.controls.passphrase;
         passphraseControl.setValue('abc');
         expect(passphraseForm.valid).toBeFalsy();
 
@@ -158,9 +158,10 @@ describe('ConfigurePassphraseComponent', () => {
         const shortErrorMsgEl = errorElems[0].nativeElement as HTMLParagraphElement;
         const notSameErrorMsgEl = errorElems[1].nativeElement as HTMLParagraphElement;
 
-        expect(shortErrorMsgEl.textContent.trim())
-            .toEqual('Passphrase must be at least 10 characters long');
-        expect(notSameErrorMsgEl.textContent.trim()).toEqual(`Passphrase doesn't match`);
+        expect(shortErrorMsgEl.textContent.trim()).toEqual(
+            'Passphrase must be at least 10 characters long'
+        );
+        expect(notSameErrorMsgEl.textContent.trim()).toEqual("Passphrase doesn't match");
     });
 
     afterEach(() => {

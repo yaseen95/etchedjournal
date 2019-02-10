@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import * as openpgp from 'openpgp';
 import { EtchedRoutes } from '../../app-routing-utils';
@@ -11,31 +11,28 @@ import { KeyPairsService } from '../../services/key-pairs.service';
 @Component({
     selector: 'app-generate',
     templateUrl: './generate-container.component.html',
-    styleUrls: ['./generate-container.component.css']
+    styleUrls: ['./generate-container.component.css'],
 })
-export class GenerateContainerComponent implements OnInit {
+export class GenerateContainerComponent {
+    public ENTERING_PASSPHRASE = 1;
+    public CREATING_KEYS = 2;
+    public UPLOADING_KEYS = 3;
+    public UPLOADED_KEYS = 4;
 
-    ENTERING_PASSPHRASE = 1;
-    CREATING_KEYS = 2;
-    UPLOADING_KEYS = 3;
-    UPLOADED_KEYS = 4;
-
-    state: number;
-
+    public state: number;
     @Output()
-    keyPairEmitter: EventEmitter<KeyPair>;
+    public keyPairEmitter: EventEmitter<KeyPair>;
 
-    constructor(private encrypterService: EncrypterService,
-                private authService: AuthService,
-                private keyPairsService: KeyPairsService,
-                private router: Router) {
+    constructor(
+        private encrypterService: EncrypterService,
+        private authService: AuthService,
+        private keyPairsService: KeyPairsService,
+        private router: Router
+    ) {
         this.state = this.ENTERING_PASSPHRASE;
     }
 
-    ngOnInit() {
-    }
-
-    onPassphraseConfigured(passphrase: string) {
+    public onPassphraseConfigured(passphrase: string) {
         this.state = this.CREATING_KEYS;
         let keyPair: KeyPair;
 
@@ -60,7 +57,7 @@ export class GenerateContainerComponent implements OnInit {
     /**
      * Generate a PGP key protected with the given passphrase
      */
-    generateKey(passphrase: string): Promise<KeyPair> {
+    private generateKey(passphrase: string): Promise<KeyPair> {
         this.state = this.CREATING_KEYS;
         return Encrypter.generateKey(passphrase, this.authService.getUser().id);
     }
@@ -68,21 +65,26 @@ export class GenerateContainerComponent implements OnInit {
     /**
      * Create an encrypter to protect the
      */
-    createEncrypter(keyPair: KeyPair, passphrase: string): Promise<Encrypter> {
-        return Encrypter.from(keyPair, passphrase)
-            .then(enc => {
-                // Assign the encrypter to the encrypter service so other modules can use it
-                this.encrypterService.encrypter = enc;
-                return enc;
-            });
+    private createEncrypter(keyPair: KeyPair, passphrase: string): Promise<Encrypter> {
+        return Encrypter.from(keyPair, passphrase).then(enc => {
+            // Assign the encrypter to the encrypter service so other modules can use it
+            this.encrypterService.encrypter = enc;
+            return enc;
+        });
     }
 
     /**
      * Uploads the key pair to the backend
      */
-    uploadKeyPair(privateKey: Base64Str, publicKey: Base64Str, salt: string, iterations: number) {
+    private uploadKeyPair(
+        privateKey: Base64Str,
+        publicKey: Base64Str,
+        salt: string,
+        iterations: number
+    ) {
         this.state = this.UPLOADING_KEYS;
-        this.keyPairsService.createKeyPair({publicKey, privateKey, salt, iterations})
+        this.keyPairsService
+            .createKeyPair({ publicKey, privateKey, salt, iterations })
             .subscribe(result => {
                 this.encrypterService.encrypter.keyPairId = result.id;
                 // navigate to journal creation page once they key pair has been created

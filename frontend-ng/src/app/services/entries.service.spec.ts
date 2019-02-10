@@ -27,14 +27,13 @@ describe('EntriesService', () => {
     });
 
     it('create entry', () => {
-        service.createEntry('kpId', 'journalId', 'content')
-            .subscribe(result => {
-                expect(result.id).toEqual('entryId');
-                expect(result.content).toEqual('base64Content');
-                expect(result.timestamp).toEqual(1);
-                expect(result.owner).toEqual('user');
-                expect(result.ownerType).toEqual(OwnerType.USER);
-            });
+        service.createEntry('kpId', 'journalId', 'content').subscribe(result => {
+            expect(result.id).toEqual('entryId');
+            expect(result.content).toEqual('base64Content');
+            expect(result.timestamp).toEqual(1);
+            expect(result.owner).toEqual('user');
+            expect(result.ownerType).toEqual(OwnerType.USER);
+        });
 
         const entry: EntryEntity = {
             id: 'entryId',
@@ -54,12 +53,11 @@ describe('EntriesService', () => {
     });
 
     it('get entries', () => {
-        service.getEntries('journalId')
-            .subscribe((result: EntryEntity[]) => {
-                expect(result.length).toEqual(2);
-                expect(result[0].content).toEqual('entry1');
-                expect(result[1].content).toEqual('entry2');
-            });
+        service.getEntries('journalId').subscribe((result: EntryEntity[]) => {
+            expect(result.length).toEqual(2);
+            expect(result[0].content).toEqual('entry1');
+            expect(result[1].content).toEqual('entry2');
+        });
 
         const entries = new Array<EntryEntity>(2);
         entries[0] = {
@@ -89,13 +87,12 @@ describe('EntriesService', () => {
     });
 
     it('get entry', () => {
-        service.getEntry('entry1')
-            .subscribe(result => {
-                expect(result.id).toEqual('entry1');
-                expect(result.timestamp).toEqual(1);
-                expect(result.owner).toEqual('owner');
-                expect(result.keyPairId).toEqual('kpId');
-            });
+        service.getEntry('entry1').subscribe(result => {
+            expect(result.id).toEqual('entry1');
+            expect(result.timestamp).toEqual(1);
+            expect(result.owner).toEqual('owner');
+            expect(result.keyPairId).toEqual('kpId');
+        });
 
         const entry: EntryEntity = {
             content: 'content',

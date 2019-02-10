@@ -54,23 +54,19 @@ describe('ExistingEntryEditorContainerComponent', () => {
                 EntryEditorComponent,
                 EtchItemComponent,
             ],
-            imports: [
-                ReactiveFormsModule,
-                MobxAngularModule,
-            ],
+            imports: [ReactiveFormsModule, MobxAngularModule],
             providers: [
-                {provide: EtchStore, useValue: etchStore},
-                {provide: EntryStore, useValue: entryStore},
+                { provide: EtchStore, useValue: etchStore },
+                { provide: EntryStore, useValue: entryStore },
                 {
                     provide: ActivatedRoute,
                     useValue: {
                         // https://stackoverflow.com/a/52895293
-                        snapshot: {paramMap: convertToParamMap({'id': 'entryId'})}
-                    }
-                }
-            ]
-        })
-            .compileComponents();
+                        snapshot: { paramMap: convertToParamMap({ id: 'entryId' }) },
+                    },
+                },
+            ],
+        }).compileComponents();
     }));
 
     beforeEach(() => {
@@ -120,7 +116,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
     it('displays editor when decrypted', () => {
         component.entryStore.loading = false;
         component.etchStore.state.loading = false;
-        component.etchStore.state.parsedEtches = [{content: 'decrypted etch 1'}] as EtchV1[];
+        component.etchStore.state.parsedEtches = [{ content: 'decrypted etch 1' }] as EtchV1[];
         component.title = 'Entry Title';
 
         expect(component.displaySpinner()).toBeFalsy();
@@ -136,7 +132,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
 
     it('loads entry on init', fakeAsync(() => {
         const mockEntryStore = jasmine.createSpyObj('EntryStore', ['loadEntry']);
-        const e = {content: 'foobarbaz'};
+        const e = { content: 'foobarbaz' };
         mockEntryStore.loadEntry.and.returnValue(Promise.resolve(e));
         component.entryStore = mockEntryStore;
 

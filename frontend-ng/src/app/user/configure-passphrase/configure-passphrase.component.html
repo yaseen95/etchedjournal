@@ -1,8 +1,6 @@
 <div>
     <h3 class="title">Configure Passphrase</h3>
-    <form [formGroup]="passphraseForm"
-          class="control"
-          (ngSubmit)="onSubmit()">
+    <form [formGroup]="passphraseForm" class="control" (ngSubmit)="onSubmit()">
         <div class="field">
             <div class="control">
                 <label class="label">Passphrase</label>
@@ -17,16 +15,15 @@
                     appAutoFocus
                 />
                 <!--Have to set tabIndex otherwise tab navigation goes from this to wiki link-->
-                <p *ngIf="getPassphraseError() !== null"
-                   class="help error-help">
+                <p *ngIf="getPassphraseError() !== null" class="help error-help">
                     {{ getPassphraseError() }}
                 </p>
                 <p class="help">
                     Etched uses a
-                    <a href="https://en.wikipedia.org/wiki/Passphrase">passphrase</a> to
-                    protect your data. A sequence of random words (e.g. correct horse battery
-                    staple) is a good idea. The longer the password the better. It must be a
-                    minimum of {{ PASSPHRASE_MIN_LENGTH }} characters.
+                    <a href="https://en.wikipedia.org/wiki/Passphrase">passphrase</a>
+                    to protect your data. A sequence of random words (e.g. correct horse battery
+                    staple) is a good idea. The longer the password the better. It must be a minimum
+                    of {{ PASSPHRASE_MIN_LENGTH }} characters.
                 </p>
             </div>
         </div>
@@ -42,19 +39,14 @@
                     [formGroup]="passphraseForm"
                     formControlName="passphraseConfirm"
                 />
-                <p
-                    *ngIf="submitClicked && passphraseForm.errors?.notSame"
-                    class="help error-help">
+                <p *ngIf="submitClicked && passphraseForm.errors?.notSame" class="help error-help">
                     Passphrase doesn't match
                 </p>
             </div>
         </div>
         <div class="field">
             <div class="control">
-                <button
-                    class="button is-primary"
-                    type="submit"
-                    tabindex="3">
+                <button class="button is-primary" type="submit" tabindex="3">
                     Submit
                 </button>
             </div>

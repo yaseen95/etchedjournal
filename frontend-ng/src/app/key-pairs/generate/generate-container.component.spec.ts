@@ -60,13 +60,12 @@ describe('GenerateContainerComponent', () => {
             ],
             imports: [ReactiveFormsModule],
             providers: [
-                {provide: KeyPairsService, useValue: keyPairsServiceSpy},
-                {provide: EncrypterService, useValue: encrypterService},
-                {provide: AuthService, useValue: authSpy},
-                {provide: Router, useValue: routerSpy},
-            ]
-        })
-            .compileComponents();
+                { provide: KeyPairsService, useValue: keyPairsServiceSpy },
+                { provide: EncrypterService, useValue: encrypterService },
+                { provide: AuthService, useValue: authSpy },
+                { provide: Router, useValue: routerSpy },
+            ],
+        }).compileComponents();
     }));
 
     beforeEach(() => {
@@ -100,13 +99,13 @@ describe('GenerateContainerComponent', () => {
         authSpy.getUser.and.returnValue(TestUtils.TEST_USER);
 
         // Mock out the public/private keys
-        const mockPubKeyPacket = {write: () => new Uint8Array([1, 2, 3, 4])};
-        const mockPrivKeyPacket = {write: () => new Uint8Array([5, 6, 7, 8])};
+        const mockPubKeyPacket = { write: () => new Uint8Array([1, 2, 3, 4]) };
+        const mockPrivKeyPacket = { write: () => new Uint8Array([5, 6, 7, 8]) };
 
         const encrypter = {
-            publicKeys: [{toPacketlist: () => mockPubKeyPacket}],
-            privateKey: {toPacketlist: () => mockPrivKeyPacket},
-            privateKeyEncrypted: {toPacketlist: () => mockPrivKeyPacket},
+            publicKeys: [{ toPacketlist: () => mockPubKeyPacket }],
+            privateKey: { toPacketlist: () => mockPrivKeyPacket },
+            privateKeyEncrypted: { toPacketlist: () => mockPrivKeyPacket },
         };
         encrypterFromSpy.and.returnValue(Promise.resolve(encrypter));
 
@@ -126,15 +125,13 @@ describe('GenerateContainerComponent', () => {
 
         // Then upload the public key (as base64 string) and the private key
         expect(keyPairsServiceSpy.createKeyPair).toHaveBeenCalledTimes(1);
-        expect(keyPairsServiceSpy.createKeyPair).toHaveBeenCalledWith(
-            {
-                // The public key is base64 encoded byte array of [1, 2, 3, 4]
-                publicKey: 'AQIDBA==',
-                privateKey: 'BQYHCA==',
-                salt: 'salty',
-                iterations: 10,
-            }
-        );
+        expect(keyPairsServiceSpy.createKeyPair).toHaveBeenCalledWith({
+            // The public key is base64 encoded byte array of [1, 2, 3, 4]
+            publicKey: 'AQIDBA==',
+            privateKey: 'BQYHCA==',
+            salt: 'salty',
+            iterations: 10,
+        });
 
         // Then redirects ot the journals creation page
         expect(routerSpy.navigate).toHaveBeenCalledTimes(1);

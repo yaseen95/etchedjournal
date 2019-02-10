@@ -43,7 +43,7 @@ export namespace TestUtils {
     export const TEST_USER: EtchedUser = {
         username: 'samsepiol',
         email: null,
-        id: '123-456'
+        id: '123-456',
     };
 
     /** base64 encoded byte array of [1, 2, 3, 4] */

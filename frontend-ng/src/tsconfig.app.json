@@ -5,8 +5,5 @@
         // Have to specify node types for cognito js to compile
         "types": ["node"]
     },
-    "exclude": [
-        "test.ts",
-        "**/*.spec.ts"
-    ]
+    "exclude": ["test.ts", "**/*.spec.ts"]
 }

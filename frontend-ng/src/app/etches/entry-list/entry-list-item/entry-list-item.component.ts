@@ -4,19 +4,14 @@ import { EntryEntity } from '../../../models/entry-entity';
 @Component({
     selector: 'app-entry-list-item',
     templateUrl: './entry-list-item.component.html',
-    styleUrls: ['./entry-list-item.component.css']
+    styleUrls: ['./entry-list-item.component.css'],
 })
 export class EntryListItemComponent implements OnInit {
-
     @Input()
-    entry: EntryEntity;
+    public entry: EntryEntity;
+    public timestampStr: string;
 
-    timestampStr: string;
-
-    constructor() {
-    }
-
-    ngOnInit() {
+    public ngOnInit() {
         this.timestampStr = new Date(this.entry.timestamp).toString();
     }
 }

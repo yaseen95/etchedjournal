@@ -8,25 +8,24 @@ import { PassphraseUtils } from '../passphrase-utils';
 @Component({
     selector: 'app-enter-passphrase',
     templateUrl: './enter-passphrase.component.html',
-    styleUrls: ['./enter-passphrase.component.css']
+    styleUrls: ['./enter-passphrase.component.css'],
 })
 export class EnterPassphraseComponent implements OnInit {
-
-    passphraseForm: FormGroup;
-    submitClicked: boolean;
+    public passphraseForm: FormGroup;
+    public submitClicked: boolean;
 
     /** Specifies if the passphrase was not correct for this key */
     @Input()
-    passphraseIncorrect: boolean;
+    public passphraseIncorrect: boolean;
 
     @Output()
-    passphraseEmitter: EventEmitter<string> = new EventEmitter<string>();
+    public passphraseEmitter: EventEmitter<string> = new EventEmitter<string>();
 
     constructor(private fb: FormBuilder) {
         this.submitClicked = false;
     }
 
-    ngOnInit() {
+    public ngOnInit() {
         this.passphraseForm = this.fb.group({
             passphrase: ['', PASSPHRASE_VALIDATORS],
         });
@@ -36,19 +35,14 @@ export class EnterPassphraseComponent implements OnInit {
         }
     }
 
-    onSubmit() {
+    public onSubmit() {
         this.submitClicked = true;
         if (this.passphraseForm.valid) {
-            // Configure the passphrase if the form is valid
-            this.enterPassphrase();
+            this.passphraseEmitter.emit(this.passphraseForm.controls.passphrase.value);
         }
     }
 
-    enterPassphrase() {
-        this.passphraseEmitter.emit(this.passphraseForm.controls.passphrase.value);
-    }
-
-    getPassphraseError() {
+    public getPassphraseError() {
         if (this.passphraseIncorrect) {
             return 'Passphrase is incorrect';
         }

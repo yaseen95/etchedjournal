@@ -22,7 +22,7 @@ describe('EnterPassphraseContainerComponent', () => {
     let routerSpy: any;
     const testKeyPair = {
         publicKey: MOCK_PUB_KEY_BASE_64_STR,
-        privateKey: MOCK_PRIV_KEY_BASE_64_STR
+        privateKey: MOCK_PRIV_KEY_BASE_64_STR,
     };
 
     beforeEach(async(() => {
@@ -41,21 +41,18 @@ describe('EnterPassphraseContainerComponent', () => {
                 SpinnerComponent,
                 EnterPassphraseComponent,
             ],
-            imports: [
-                ReactiveFormsModule,
-            ],
+            imports: [ReactiveFormsModule],
             providers: [
-                {provide: KeyPairsService, useValue: keyPairsServiceSpy},
-                {provide: Router, useValue: routerSpy},
+                { provide: KeyPairsService, useValue: keyPairsServiceSpy },
+                { provide: Router, useValue: routerSpy },
                 {
                     provide: ActivatedRoute,
                     useValue: {
-                        snapshot: {queryParamMap: convertToParamMap({'next': 'nextRoute'})}
-                    }
-                }
-            ]
-        })
-            .compileComponents();
+                        snapshot: { queryParamMap: convertToParamMap({ next: 'nextRoute' }) },
+                    },
+                },
+            ],
+        }).compileComponents();
     }));
 
     beforeEach(() => {
@@ -91,8 +88,8 @@ describe('EnterPassphraseContainerComponent', () => {
     it('multiple key pairs returned throws an error', fakeAsync(() => {
         const keyPairs = [
             // Return two key pairs
-            {publicKey: MOCK_PUB_KEY_BASE_64_STR, privateKey: MOCK_PRIV_KEY_BASE_64_STR},
-            {publicKey: MOCK_PUB_KEY_BASE_64_STR, privateKey: MOCK_PRIV_KEY_BASE_64_STR},
+            { publicKey: MOCK_PUB_KEY_BASE_64_STR, privateKey: MOCK_PRIV_KEY_BASE_64_STR },
+            { publicKey: MOCK_PUB_KEY_BASE_64_STR, privateKey: MOCK_PRIV_KEY_BASE_64_STR },
         ];
         keyPairsServiceSpy.getKeyPairs.and.returnValue(of(keyPairs));
 
@@ -142,8 +139,14 @@ describe('EnterPassphraseContainerComponent', () => {
         expect(component.decryptKeyPair).toHaveBeenCalledWith('super secure passphrase');
 
         expect(from2Spy).toHaveBeenCalledTimes(1);
-        expect(from2Spy).toHaveBeenCalledWith('encrypted private key', 'public key', 'super' +
-            ' secure passphrase', 'kpId', 'salt', 1);
+        expect(from2Spy).toHaveBeenCalledWith(
+            'encrypted private key',
+            'public key',
+            'super secure passphrase',
+            'kpId',
+            'salt',
+            1
+        );
 
         expect(component.state).toEqual(component.DECRYPTED_KEYS);
         expect(component.passphraseIncorrect).toBeFalsy();

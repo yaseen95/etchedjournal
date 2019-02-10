@@ -11,9 +11,7 @@ describe('EtchQueueService', () => {
         etchStore = new FakeEtchStore();
 
         TestBed.configureTestingModule({
-            providers: [
-                {provide: EtchStore, useValue: etchStore},
-            ],
+            providers: [{ provide: EtchStore, useValue: etchStore }],
         });
         service = TestBed.get(EtchQueueService);
     });
@@ -23,25 +21,25 @@ describe('EtchQueueService', () => {
     });
 
     it('put() adds item to queue', () => {
-        service.put('entryId', {schemaVersion: 'abc'});
+        service.put('entryId', { schemaVersion: 'abc' });
         expect(service.queuedEtches.size).toEqual(1);
-        expect(service.queuedEtches.get('entryId')).toEqual([{schemaVersion: 'abc'}]);
+        expect(service.queuedEtches.get('entryId')).toEqual([{ schemaVersion: 'abc' }]);
     });
 
     it('put() multiple items for same entry', () => {
-        service.put('entryId', {schemaVersion: 'abc'});
-        service.put('entryId', {schemaVersion: 'def'});
+        service.put('entryId', { schemaVersion: 'abc' });
+        service.put('entryId', { schemaVersion: 'def' });
 
         // The size is per entry
         expect(service.queuedEtches.size).toEqual(1);
         expect(service.queuedEtches.get('entryId').length).toEqual(2);
 
         const etches = service.queuedEtches.get('entryId');
-        expect(etches).toEqual([{schemaVersion: 'abc'}, {schemaVersion: 'def'}]);
+        expect(etches).toEqual([{ schemaVersion: 'abc' }, { schemaVersion: 'def' }]);
     });
 
     it('posts queued etches', fakeAsync(() => {
-        service.put('entryId', {schemaVersion: 'abc'});
+        service.put('entryId', { schemaVersion: 'abc' });
         expect(service.queuedEtches.size).toEqual(1);
 
         const createEtchesSpy = spyOn(etchStore, 'createEtches');
@@ -50,12 +48,12 @@ describe('EtchQueueService', () => {
 
         expect(service.queuedEtches.size).toEqual(0);
         expect(createEtchesSpy).toHaveBeenCalledTimes(1);
-        expect(createEtchesSpy).toHaveBeenCalledWith('entryId', [{schemaVersion: 'abc'}]);
+        expect(createEtchesSpy).toHaveBeenCalledWith('entryId', [{ schemaVersion: 'abc' }]);
     }));
 
     it('posts multiple etches for single entry', fakeAsync(() => {
-        service.put('entryId', {schemaVersion: 'abc'});
-        service.put('entryId', {schemaVersion: 'def'});
+        service.put('entryId', { schemaVersion: 'abc' });
+        service.put('entryId', { schemaVersion: 'def' });
         expect(service.queuedEtches.size).toEqual(1);
 
         const createEtchesSpy = spyOn(etchStore, 'createEtches');
@@ -65,15 +63,15 @@ describe('EtchQueueService', () => {
         expect(service.queuedEtches.size).toEqual(0);
 
         expect(createEtchesSpy).toHaveBeenCalledTimes(1);
-        expect(createEtchesSpy).toHaveBeenCalledWith(
-            'entryId',
-            [{schemaVersion: 'abc'}, {schemaVersion: 'def'}]
-        );
+        expect(createEtchesSpy).toHaveBeenCalledWith('entryId', [
+            { schemaVersion: 'abc' },
+            { schemaVersion: 'def' },
+        ]);
     }));
 
     it('posts etches for multiple entries', fakeAsync(() => {
-        service.put('entry1', {schemaVersion: 'abc'});
-        service.put('entry2', {schemaVersion: 'def'});
+        service.put('entry1', { schemaVersion: 'abc' });
+        service.put('entry2', { schemaVersion: 'def' });
         expect(service.queuedEtches.size).toEqual(2);
 
         const createEtchesSpy = spyOn(etchStore, 'createEtches');
@@ -83,8 +81,10 @@ describe('EtchQueueService', () => {
         expect(service.queuedEtches.size).toEqual(0);
 
         expect(createEtchesSpy).toHaveBeenCalledTimes(2);
-        expect(createEtchesSpy.calls.allArgs())
-            .toEqual([['entry1', [{schemaVersion: 'abc'}]], ['entry2', [{schemaVersion: 'def'}]]]);
+        expect(createEtchesSpy.calls.allArgs()).toEqual([
+            ['entry1', [{ schemaVersion: 'abc' }]],
+            ['entry2', [{ schemaVersion: 'def' }]],
+        ]);
     }));
 
     // it('posts etches every 5 seconds', fakeAsync(() => {

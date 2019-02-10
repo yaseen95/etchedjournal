@@ -21,18 +21,13 @@ describe('RegisterContainerComponent', () => {
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
         TestBed.configureTestingModule({
-            declarations: [
-                RegisterContainerComponent,
-                SpinnerComponent,
-                RegisterComponent,
-            ],
+            declarations: [RegisterContainerComponent, SpinnerComponent, RegisterComponent],
             imports: [ReactiveFormsModule],
             providers: [
-                {provide: AuthService, useValue: authSpy},
-                {provide: Router, useValue: routerSpy},
-            ]
-        })
-            .compileComponents();
+                { provide: AuthService, useValue: authSpy },
+                { provide: Router, useValue: routerSpy },
+            ],
+        }).compileComponents();
     }));
 
     beforeEach(() => {
@@ -63,7 +58,7 @@ describe('RegisterContainerComponent', () => {
         authSpy.register.and.returnValue(Promise.resolve({}));
 
         // TODO: Handle registration failing e.g. username taken, etc.
-        const regReq: RegisterRequest = {username: 'username', password: 'password', email: null};
+        const regReq: RegisterRequest = { username: 'username', password: 'password', email: null };
         component.onRegister(regReq);
 
         expect(authSpy.register).toHaveBeenCalledTimes(1);
@@ -73,7 +68,7 @@ describe('RegisterContainerComponent', () => {
     it('onRegister redirects to keys/generate', fakeAsync(() => {
         authSpy.register.and.returnValue(Promise.resolve({}));
 
-        const regReq: RegisterRequest = {username: 'username', password: 'password', email: null};
+        const regReq: RegisterRequest = { username: 'username', password: 'password', email: null };
         component.onRegister(regReq);
 
         tick();
@@ -85,7 +80,7 @@ describe('RegisterContainerComponent', () => {
     it('register handles username already taken', fakeAsync(() => {
         authSpy.register.and.returnValue(Promise.reject(new UsernameTakenError()));
 
-        const req: RegisterRequest = {username: 'samsepiol', password: 'password', email: ''};
+        const req: RegisterRequest = { username: 'samsepiol', password: 'password', email: '' };
         component.onRegister(req);
 
         tick();

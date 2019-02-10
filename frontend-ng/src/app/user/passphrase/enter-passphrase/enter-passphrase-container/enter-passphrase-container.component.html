@@ -6,7 +6,8 @@
         <ng-container *ngIf="state === ENTERING_PASSPHRASE">
             <app-enter-passphrase
                 (passphraseEmitter)="onPassphraseConfigured($event)"
-                [passphraseIncorrect]="passphraseIncorrect">
+                [passphraseIncorrect]="passphraseIncorrect"
+            >
             </app-enter-passphrase>
         </ng-container>
         <ng-container *ngIf="state === DECRYPTING_KEYS">

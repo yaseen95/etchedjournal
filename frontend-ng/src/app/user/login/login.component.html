@@ -1,33 +1,34 @@
 <div *ngIf="user === null">
     <h3 class="title">Login</h3>
-    <form [formGroup]="loginForm"
-          class="control"
-          (ngSubmit)="onSubmit()">
+    <form [formGroup]="loginForm" class="control" (ngSubmit)="onSubmit()">
         <div class="field">
             <div class="control">
                 <label class="label">Username</label>
                 <!-- Enable autoFocus only if credentials aren't invalid-->
-                <input *ngIf="!invalidCredentials"
-                       class="input"
-                       type="text"
-                       placeholder="Username"
-                       name="username"
-                       formControlName="username"
-                       appAutoFocus
+                <input
+                    *ngIf="!invalidCredentials"
+                    class="input"
+                    type="text"
+                    placeholder="Username"
+                    name="username"
+                    formControlName="username"
+                    appAutoFocus
                 />
-                <input *ngIf="invalidCredentials"
-                       class="input"
-                       type="text"
-                       placeholder="Username"
-                       name="username"
-                       formControlName="username"
+                <input
+                    *ngIf="invalidCredentials"
+                    class="input"
+                    type="text"
+                    placeholder="Username"
+                    name="username"
+                    formControlName="username"
                 />
             </div>
         </div>
         <div class="field">
             <div class="control">
                 <label class="label">Password</label>
-                <input *ngIf="!invalidCredentials"
+                <input
+                    *ngIf="!invalidCredentials"
                     class="input"
                     type="password"
                     placeholder="Password"
@@ -35,13 +36,14 @@
                     formControlName="password"
                 />
                 <!-- autofocus on password if credentials were invalid -->
-                <input *ngIf="invalidCredentials"
-                       class="input"
-                       type="password"
-                       placeholder="Password"
-                       name="password"
-                       formControlName="password"
-                       appAutoFocus
+                <input
+                    *ngIf="invalidCredentials"
+                    class="input"
+                    type="password"
+                    placeholder="Password"
+                    name="password"
+                    formControlName="password"
+                    appAutoFocus
                 />
                 <p *ngIf="invalidCredentials" class="help error-help">
                     Invalid username or password
@@ -50,10 +52,7 @@
         </div>
         <div class="field">
             <div class="control">
-                <button
-                    class="button is-primary"
-                    type="submit"
-                    [disabled]="!loginForm.valid">
+                <button class="button is-primary" type="submit" [disabled]="!loginForm.valid">
                     Login
                 </button>
             </div>

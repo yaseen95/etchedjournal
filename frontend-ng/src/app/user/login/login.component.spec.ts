@@ -1,6 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { EtchedUser } from '../../models/etched-user';
@@ -15,7 +14,7 @@ describe('LoginComponent', () => {
     let fixture: ComponentFixture<LoginComponent>;
     let loginForm: FormGroup;
     let authSpy: any;
-    let emittedEvents: Array<LoginRequest> = [];
+    let emittedEvents: LoginRequest[] = [];
 
     beforeEach(() => {
         authSpy = jasmine.createSpyObj('AuthService', ['getUser']);
@@ -25,11 +24,8 @@ describe('LoginComponent', () => {
         TestBed.configureTestingModule({
             declarations: [LoginComponent, SpinnerComponent],
             imports: [ReactiveFormsModule],
-            providers: [
-                {provide: AuthService, useValue: authSpy},
-            ]
-        })
-            .compileComponents();
+            providers: [{ provide: AuthService, useValue: authSpy }],
+        }).compileComponents();
 
         fixture = TestBed.createComponent(LoginComponent);
         component = fixture.componentInstance;
@@ -43,8 +39,8 @@ describe('LoginComponent', () => {
     it('form valid', () => {
         expect(loginForm.valid).toBeFalsy();
 
-        const passwordControl = loginForm.controls['password'];
-        const usernameControl = loginForm.controls['username'];
+        const passwordControl = loginForm.controls.password;
+        const usernameControl = loginForm.controls.username;
 
         // Should only be two controls
         expect(Object.keys(loginForm.controls).length).toEqual(2);
@@ -60,8 +56,8 @@ describe('LoginComponent', () => {
     });
 
     it('form invalid for invalid usernames', () => {
-        const passwordControl = loginForm.controls['password'];
-        const usernameControl = loginForm.controls['username'];
+        const passwordControl = loginForm.controls.password;
+        const usernameControl = loginForm.controls.username;
         // Should only be two controls
         expect(Object.keys(loginForm.controls).length).toEqual(2);
 
@@ -75,7 +71,7 @@ describe('LoginComponent', () => {
 
         const invalidUsernames = [
             '', // empty
-            'abcd',  // 4 chars
+            'abcd', // 4 chars
             'abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijz', // 51 chars
         ];
 
@@ -87,8 +83,8 @@ describe('LoginComponent', () => {
     });
 
     it('form invalid for invalid passwords', () => {
-        const passwordControl = loginForm.controls['password'];
-        const usernameControl = loginForm.controls['username'];
+        const passwordControl = loginForm.controls.password;
+        const usernameControl = loginForm.controls.username;
         // Should only be two controls
         expect(Object.keys(loginForm.controls).length).toEqual(2);
 
@@ -102,7 +98,7 @@ describe('LoginComponent', () => {
 
         const invalidPasswords = [
             '', // empty
-            'abcdefg',  // 7 chars
+            'abcdefg', // 7 chars
             'a'.repeat(257), // 257 chars
         ];
 
@@ -114,8 +110,8 @@ describe('LoginComponent', () => {
     });
 
     it('submit emits a login event', () => {
-        const passwordControl = loginForm.controls['password'];
-        const usernameControl = loginForm.controls['username'];
+        const passwordControl = loginForm.controls.password;
+        const usernameControl = loginForm.controls.username;
 
         usernameControl.setValue('submitTest');
         passwordControl.setValue('submitPassword');
@@ -123,7 +119,7 @@ describe('LoginComponent', () => {
         component.onSubmit();
 
         expect(emittedEvents.length).toEqual(1);
-        expect(emittedEvents[0]).toEqual({username: 'submitTest', password: 'submitPassword'});
+        expect(emittedEvents[0]).toEqual({ username: 'submitTest', password: 'submitPassword' });
     });
 
     it('valid form enables button', () => {
@@ -209,5 +205,5 @@ describe('LoginComponent', () => {
 const TEST_USER: EtchedUser = {
     id: 'id',
     username: 'samsepiol',
-    email: null
+    email: null,
 };

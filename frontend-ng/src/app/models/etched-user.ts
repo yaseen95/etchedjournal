@@ -1,4 +1,3 @@
-
 export interface EtchedUser {
     username: string;
     id: string;

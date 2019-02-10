@@ -37,11 +37,11 @@ export class FakeClock extends ClockService {
         this.time = time;
     }
 
-    nowMillis(): number {
+    public nowMillis(): number {
         return this.time;
     }
 
-    now(): Date {
+    public now(): Date {
         return new Date(this.time);
     }
 }

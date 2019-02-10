@@ -1,22 +1,17 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { JournalEntity } from '../../../models/journal-entity';
 
 @Component({
     selector: 'app-journal-list-item',
     templateUrl: './journal-list-item.component.html',
-    styleUrls: ['./journal-list-item.component.css']
+    styleUrls: ['./journal-list-item.component.css'],
 })
-export class JournalListItemComponent implements OnInit {
-
+export class JournalListItemComponent {
     @Input()
-    journal: JournalEntity;
+    public journal: JournalEntity;
+    public date: string;
 
-    date: string;
-
-    constructor() {
-    }
-
-    ngOnInit() {
+    public ngOnInit() {
         this.date = new Date(this.journal.timestamp).toLocaleDateString();
     }
 }

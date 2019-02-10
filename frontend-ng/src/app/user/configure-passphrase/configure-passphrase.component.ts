@@ -1,59 +1,54 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
-import { Encrypter } from '../../services/encrypter';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import {
     PASSPHRASE_MIN_LENGTH,
     PASSPHRASE_VALIDATORS,
-    passphraseMatchValidator
+    passphraseMatchValidator,
 } from '../form-utils';
 import { PassphraseUtils } from '../passphrase/passphrase-utils';
 
 @Component({
     selector: 'app-configure-passphrase',
     templateUrl: './configure-passphrase.component.html',
-    styleUrls: ['./configure-passphrase.component.css']
+    styleUrls: ['./configure-passphrase.component.css'],
 })
 export class ConfigurePassphraseComponent implements OnInit {
-
-    passphraseForm: FormGroup;
-    submitClicked: boolean;
-
-    PASSPHRASE_MIN_LENGTH: number = PASSPHRASE_MIN_LENGTH;
-
+    public passphraseForm: FormGroup;
+    public submitClicked: boolean;
     @Input()
-    userId: string;
-
+    public userId: string;
     @Output()
-    passphraseEmitter: EventEmitter<string> = new EventEmitter<string>();
+    public passphraseEmitter: EventEmitter<string> = new EventEmitter<string>();
+
+    public PASSPHRASE_MIN_LENGTH: number = PASSPHRASE_MIN_LENGTH;
 
     constructor(private fb: FormBuilder) {
         this.submitClicked = false;
     }
 
-    ngOnInit() {
-        this.passphraseForm = this.fb.group({
-            passphrase: ['', PASSPHRASE_VALIDATORS],
-            passphraseConfirm: ['', PASSPHRASE_VALIDATORS],
-        }, {
-            // FormBuilder uses "validator" but FormGroup uses "validators", spent like half an
-            // hour debugging that...
-            validator: [passphraseMatchValidator]
-        });
+    public ngOnInit() {
+        this.passphraseForm = this.fb.group(
+            {
+                passphrase: ['', PASSPHRASE_VALIDATORS],
+                passphraseConfirm: ['', PASSPHRASE_VALIDATORS],
+            },
+            {
+                // FormBuilder uses "validator" but FormGroup uses "validators", spent like half an
+                // hour debugging that...
+                validator: [passphraseMatchValidator],
+            }
+        );
     }
 
-    onSubmit() {
+    public onSubmit() {
         this.submitClicked = true;
         if (this.passphraseForm.valid) {
             // Configure the passphrase if the from is valid
-            this.configurePassphrase();
+            this.passphraseEmitter.emit(this.passphraseForm.controls.passphrase.value);
         }
     }
 
-    configurePassphrase() {
-        this.passphraseEmitter.emit(this.passphraseForm.controls.passphrase.value);
-    }
-
-    getPassphraseError() {
+    public getPassphraseError() {
         const passphrase = this.passphraseForm.controls.passphrase;
         if (!this.submitClicked) {
             return null;

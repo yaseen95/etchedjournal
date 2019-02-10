@@ -15,8 +15,7 @@ describe('EnterPassphraseComponent', () => {
         TestBed.configureTestingModule({
             declarations: [EnterPassphraseComponent],
             imports: [ReactiveFormsModule],
-        })
-            .compileComponents();
+        }).compileComponents();
     }));
 
     beforeEach(() => {
@@ -33,7 +32,7 @@ describe('EnterPassphraseComponent', () => {
     it('form valid', () => {
         expect(passphraseForm.valid).toBeFalsy();
 
-        const passphraseControl = passphraseForm.controls['passphrase'];
+        const passphraseControl = passphraseForm.controls.passphrase;
         passphraseControl.setValue('1234567890123456');
 
         // Should only be two controls
@@ -70,7 +69,7 @@ describe('EnterPassphraseComponent', () => {
     });
 
     it('submit emits a passphrase', () => {
-        const passphraseControl = passphraseForm.controls['passphrase'];
+        const passphraseControl = passphraseForm.controls.passphrase;
         passphraseControl.setValue('passphrasepassphrase');
 
         component.onSubmit();

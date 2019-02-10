@@ -1,18 +1,14 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class ClockService {
-
-    constructor() {
-    }
-
-    nowMillis(): number {
+    public nowMillis(): number {
         return this.now().getTime();
     }
 
-    now(): Date {
+    public now(): Date {
         return new Date();
     }
 }

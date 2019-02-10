@@ -13,11 +13,8 @@ describe('EntryListItemComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [EntryListItemComponent],
-            imports: [
-                RouterTestingModule,
-            ]
-        })
-            .compileComponents();
+            imports: [RouterTestingModule],
+        }).compileComponents();
     }));
 
     beforeEach(() => {

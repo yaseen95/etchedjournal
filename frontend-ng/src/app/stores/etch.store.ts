@@ -5,7 +5,6 @@ import { EtchEntity } from '../models/etch-entity';
 import { EncrypterService } from '../services/encrypter.service';
 import { EtchesService } from '../services/etches.service';
 
-
 export interface State {
     etches: EtchEntity[];
     parsedEtches: EtchV1[];
@@ -14,18 +13,16 @@ export interface State {
 
 @Injectable()
 export class EtchStore {
-
-    @mobx.observable state: State = {
+    @mobx.observable public state: State = {
         etches: [],
         parsedEtches: [],
         loading: false,
     };
 
-    constructor(private etchService: EtchesService,
-                private encrypterService: EncrypterService) {
-    }
+    constructor(private etchService: EtchesService, private encrypterService: EncrypterService) {}
 
-    @mobx.action async loadEtches(entryId: string) {
+    @mobx.action
+    public async loadEtches(entryId: string) {
         this.state.loading = true;
         // this.state.etches = [];
         // this.state.parsedEtches = [];
@@ -33,7 +30,7 @@ export class EtchStore {
         this.decryptEtches(etches);
     }
 
-    async decryptEtches(encrypted: EtchEntity[]) {
+    public async decryptEtches(encrypted: EtchEntity[]) {
         const enc = this.encrypterService.encrypter;
         console.info('decrypting etches');
         const decrypted = await enc.decryptEntities(encrypted);
@@ -41,10 +38,11 @@ export class EtchStore {
         this.loadedEtches(decrypted);
     }
 
-    @mobx.action loadedEtches(etches: EtchEntity[]) {
+    @mobx.action
+    public loadedEtches(etches: EtchEntity[]) {
         // this.state.loading = true;
         const parsed = [];
-        const rawEtches = etches.map((e) => e.content);
+        const rawEtches = etches.map(e => e.content);
         for (const rawBatch of rawEtches) {
             const batch: EtchV1[] = JSON.parse(rawBatch);
             parsed.push(...batch);
@@ -55,13 +53,11 @@ export class EtchStore {
         this.state.loading = false;
     }
 
-    @mobx.action async createEtches(
-        entryId: string,
-        etches: AbstractEtch[]
-    ): Promise<EtchEntity[]> {
+    @mobx.action
+    public async createEtches(entryId: string, etches: AbstractEtch[]): Promise<EtchEntity[]> {
         const enc = this.encrypterService.encrypter;
         const dump = JSON.stringify(etches);
         const ciphertext = await enc.encrypt(dump);
-        return await this.etchService.postEtches(enc.keyPairId, entryId, [ciphertext]).toPromise();
+        return this.etchService.postEtches(enc.keyPairId, entryId, [ciphertext]).toPromise();
     }
 }

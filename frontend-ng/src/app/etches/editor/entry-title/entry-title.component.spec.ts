@@ -7,14 +7,13 @@ import { EntryTitleComponent } from './entry-title.component';
 describe('EntryTitleComponent', () => {
     let component: EntryTitleComponent;
     let fixture: ComponentFixture<EntryTitleComponent>;
-    let emittedEvents: Array<string> = [];
+    let emittedEvents: string[] = [];
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [EntryTitleComponent],
             imports: [ReactiveFormsModule],
-        })
-            .compileComponents();
+        }).compileComponents();
     }));
 
     beforeEach(() => {
@@ -173,8 +172,9 @@ describe('EntryTitleComponent', () => {
 
         // error message is visible
         const errorDe = TestUtils.queryExpectOne(fixture.debugElement, 'p.error-help');
-        expect(errorDe.nativeElement.textContent.trim())
-            .toEqual('Title cannot be more than 100 characters long');
+        expect(errorDe.nativeElement.textContent.trim()).toEqual(
+            'Title cannot be more than 100 characters long'
+        );
 
         // button should be disabled because the input is invalid
         const saveBtnDe = TestUtils.queryExpectOne(fixture.debugElement, '#save-button');

@@ -15,7 +15,6 @@ describe('JournalListComponent', () => {
     let journals: JournalEntity[];
 
     beforeEach(async(() => {
-
         journals = [
             {
                 id: '1234567890abcdef',
@@ -34,21 +33,14 @@ describe('JournalListComponent', () => {
                 content: 'journal2 content',
                 keyPairId: 'kpId',
                 version: 1,
-            }
+            },
         ];
 
         TestBed.configureTestingModule({
-            declarations: [
-                JournalListComponent,
-                JournalListItemComponent,
-            ],
-            imports: [
-                RouterTestingModule,
-                ReactiveFormsModule,
-            ],
+            declarations: [JournalListComponent, JournalListItemComponent],
+            imports: [RouterTestingModule, ReactiveFormsModule],
             schemas: [NO_ERRORS_SCHEMA],
-        })
-            .compileComponents();
+        }).compileComponents();
     }));
 
     beforeEach(() => {

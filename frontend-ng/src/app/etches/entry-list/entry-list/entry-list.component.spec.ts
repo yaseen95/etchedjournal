@@ -13,15 +13,9 @@ describe('EntryListComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [
-                EntryListComponent,
-                EntryListItemComponent,
-            ],
-            imports: [
-                RouterTestingModule,
-            ]
-        })
-            .compileComponents();
+            declarations: [EntryListComponent, EntryListItemComponent],
+            imports: [RouterTestingModule],
+        }).compileComponents();
     }));
 
     beforeEach(() => {
@@ -64,7 +58,7 @@ describe('EntryListComponent', () => {
                 keyPairId: 'kpId',
                 journalId: 'jid',
                 version: 1,
-            }
+            },
         ];
         fixture.detectChanges();
 

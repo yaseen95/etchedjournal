@@ -2,29 +2,25 @@ import { Injectable } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 import { AbstractEtch } from '../models/etch';
 import { EtchStore } from '../stores/etch.store';
-import { EncrypterService } from './encrypter.service';
-import { EtchesService } from './etches.service';
 
 /**
  * Queues etches and posts them as batches to the server
  */
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class EtchQueueService {
-
     /** contains queued etches, maps entry id to a list of etches */
-    queuedEtches: Map<string, AbstractEtch[]>;
+    public queuedEtches: Map<string, AbstractEtch[]>;
 
     /** subscriber to an interval observer used to post queued etches */
     private queueIntervalSubscription: Subscription;
 
     constructor(private etchStore: EtchStore) {
         this.queuedEtches = new Map<string, any>();
-        this.queueIntervalSubscription = interval(5_000)
-            .subscribe(() => {
-                this.postQueuedEtches();
-            });
+        this.queueIntervalSubscription = interval(5_000).subscribe(() => {
+            this.postQueuedEtches();
+        });
     }
 
     /**
@@ -40,7 +36,7 @@ export class EtchQueueService {
     }
 
     // @VisibleForTesting
-    postQueuedEtches() {
+    public postQueuedEtches() {
         if (this.queuedEtches.size === 0) {
             return;
         }

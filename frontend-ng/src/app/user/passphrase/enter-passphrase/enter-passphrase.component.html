@@ -1,8 +1,6 @@
 <div>
     <h3 class="title">Enter Passphrase</h3>
-    <form [formGroup]="passphraseForm"
-          class="control"
-          (ngSubmit)="onSubmit()">
+    <form [formGroup]="passphraseForm" class="control" (ngSubmit)="onSubmit()">
         <div class="field">
             <div class="control">
                 <label class="label">Passphrase</label>
@@ -16,18 +14,14 @@
                     formControlName="passphrase"
                     appAutoFocus
                 />
-                <p *ngIf="getPassphraseError() !== null"
-                   class="help error-help">
+                <p *ngIf="getPassphraseError() !== null" class="help error-help">
                     {{ getPassphraseError() }}
                 </p>
             </div>
         </div>
         <div class="field">
             <div class="control">
-                <button
-                    class="button is-primary"
-                    type="submit"
-                    tabindex="2">
+                <button class="button is-primary" type="submit" tabindex="2">
                     Submit
                 </button>
             </div>

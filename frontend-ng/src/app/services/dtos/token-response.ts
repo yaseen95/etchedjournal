@@ -2,7 +2,6 @@
  * Maps API response when requesting a token
  */
 export interface TokenResponse {
-
     /** access token used as a bearer token to authenticate with the backend */
     accessToken: string;
 

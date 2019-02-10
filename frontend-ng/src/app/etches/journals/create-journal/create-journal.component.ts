@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EtchedRoutes } from '../../../app-routing-utils';
@@ -9,19 +9,20 @@ import { JOURNAL_NAME_VALIDATORS, JournalFormUtils } from '../../../user/form-ut
 @Component({
     selector: 'app-create-journal',
     templateUrl: './create-journal.component.html',
-    styleUrls: ['./create-journal.component.css']
+    styleUrls: ['./create-journal.component.css'],
 })
-export class CreateJournalComponent implements OnInit {
+export class CreateJournalComponent {
+    public createJournalForm: FormGroup;
+    public submitClicked: boolean;
+    public creatingJournal: boolean;
 
-    createJournalForm: FormGroup;
-    submitClicked: boolean;
-    creatingJournal: boolean;
+    public JOURNAL_NAME_MAX_LENGTH = JournalFormUtils.JOURNAL_NAME_MAX_LENGTH;
 
-    JOURNAL_NAME_MAX_LENGTH = JournalFormUtils.JOURNAL_NAME_MAX_LENGTH;
-
-    constructor(private fb: FormBuilder,
-                private router: Router,
-                private journalStore: JournalStore) {
+    constructor(
+        private fb: FormBuilder,
+        private router: Router,
+        private journalStore: JournalStore
+    ) {
         this.submitClicked = false;
         this.creatingJournal = false;
         this.createJournalForm = this.fb.group({
@@ -29,25 +30,21 @@ export class CreateJournalComponent implements OnInit {
         });
     }
 
-    ngOnInit() {
-    }
-
-    onSubmit() {
+    public onSubmit() {
         this.submitClicked = true;
         if (this.createJournalForm.valid) {
             this.createJournal();
         }
     }
 
-    createJournal() {
+    public createJournal() {
         this.creatingJournal = true;
         const journalName = this.createJournalForm.controls.journalName.value.trim();
         console.info('Encrypting journal title');
-        this.journalStore.createJournal(journalName)
-            .then((j: JournalEntity) => {
-                this.creatingJournal = false;
-                const navExtras = {queryParams: {journalId: j.id}};
-                this.router.navigate([`${EtchedRoutes.ENTRIES_CREATE_PATH}`], navExtras);
-            });
+        this.journalStore.createJournal(journalName).then((j: JournalEntity) => {
+            this.creatingJournal = false;
+            const navExtras = { queryParams: { journalId: j.id } };
+            this.router.navigate([`${EtchedRoutes.ENTRIES_CREATE_PATH}`], navExtras);
+        });
     }
 }

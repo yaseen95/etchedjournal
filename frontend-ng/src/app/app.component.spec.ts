@@ -16,7 +16,6 @@ import { RegisterComponent } from './user/register/register.component';
 import { SpinnerComponent } from './utils/spinner/spinner.component';
 
 describe('AppComponent', () => {
-
     const store = new FakeJournalStore();
 
     beforeEach(async(() => {
@@ -32,15 +31,8 @@ describe('AppComponent', () => {
                 NavComponent,
                 EtchItemComponent,
             ],
-            imports: [
-                RouterTestingModule,
-                BrowserModule,
-                HttpClientModule,
-                ReactiveFormsModule,
-            ],
-            providers: [
-                {provide: JournalStore, useValue: store},
-            ]
+            imports: [RouterTestingModule, BrowserModule, HttpClientModule, ReactiveFormsModule],
+            providers: [{ provide: JournalStore, useValue: store }],
         }).compileComponents();
     }));
 

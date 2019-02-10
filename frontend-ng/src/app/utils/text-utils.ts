@@ -7,10 +7,10 @@
  * @param s string to slice
  * @param sliceSize size of each chunk
  */
-export function sliceStr(s: string, sliceSize: number): Array<string> {
+export function sliceStr(s: string, sliceSize: number): string[] {
     const chunks = [];
 
-    for (let i = 0; i < s.length;) {
+    for (let i = 0; i < s.length; ) {
         chunks.push(s.substr(i, i + sliceSize));
         i += sliceSize;
     }
@@ -21,8 +21,7 @@ export function sliceStr(s: string, sliceSize: number): Array<string> {
 export const RANDOM_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 export class RandomUtils {
-
-    static randomStr(length: number): string {
+    public static randomStr(length: number): string {
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
         const s = new Array<string>(length);
         for (let i = 0; i < length; i++) {
@@ -32,4 +31,3 @@ export class RandomUtils {
         return s.join('');
     }
 }
-

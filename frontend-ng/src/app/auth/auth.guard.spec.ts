@@ -16,24 +16,23 @@ describe('AuthGuard', () => {
         TestBed.configureTestingModule({
             providers: [
                 AuthGuard,
-                {provide: AuthService, useValue: authSpy},
-                {provide: Router, useValue: routerSpy},
+                { provide: AuthService, useValue: authSpy },
+                { provide: Router, useValue: routerSpy },
             ],
-            imports: [
-                HttpClientTestingModule,
-            ],
+            imports: [HttpClientTestingModule],
         });
     });
 
-    it('should not allow route activation when user not logged in',
-        inject([AuthGuard], (guard: AuthGuard) => {
+    it('should not allow route activation when user not logged in', inject(
+        [AuthGuard],
+        (guard: AuthGuard) => {
             authSpy.getUser.and.returnValue(null);
             expect(guard.canActivate(null, null)).toBeFalsy();
-        }));
+        }
+    ));
 
-    it('should allow route activation when logged in',
-        inject([AuthGuard], (guard: AuthGuard) => {
-            authSpy.getUser.and.returnValue(TestUtils.TEST_USER);
-            expect(guard.canActivate(null, null)).toBeTruthy();
-        }));
+    it('should allow route activation when logged in', inject([AuthGuard], (guard: AuthGuard) => {
+        authSpy.getUser.and.returnValue(TestUtils.TEST_USER);
+        expect(guard.canActivate(null, null)).toBeTruthy();
+    }));
 });

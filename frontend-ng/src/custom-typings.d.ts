@@ -7,19 +7,18 @@
 
 import { enums, Keyid, KeyOptions } from 'openpgp';
 
-declare module "openpgp" {
-
+declare module 'openpgp' {
     export namespace key {
         interface KeyResult {
-            keys: Array<Key>,
-            err: Array<Error>
+            keys: Array<Key>;
+            err: Array<Error>;
         }
 
         /**
          * Class that represents an OpenPGP key. Must contain a primary key. Can contain additional subkeys, signatures, user ids, user attributes.
          */
         interface Key {
-            armor(): string,
+            armor(): string;
             decrypt(passphrase: string): boolean;
             getExpirationTime(): Date;
             getKeyIds(): Array<Keyid>;
@@ -61,7 +60,7 @@ declare module "openpgp" {
          * @returns {Promise<{keys: Array<module:key.Key>}
          *            err: (Array<Error>|null)}>} result object with key and error arrays
          */
-        function read(data: Uint8Array): Promise<{keys: Array<key.Key>}>
+        function read(data: Uint8Array): Promise<{ keys: Array<key.Key> }>;
     }
 
     export namespace packet {
@@ -100,7 +99,7 @@ declare module "openpgp" {
              * @readonly
              * @type {Integer}
              */
-            readonly length : number;
+            readonly length: number;
 
             /**
              * Concatenates packetlist or array of packets
@@ -110,7 +109,7 @@ declare module "openpgp" {
              *
              * @return this list concatenated with the supplied packets
              */
-            concat(packetlist: List): List
+            concat(packetlist: List): List;
 
             /**
              * Reads a stream of binary data and interpets it as a list of packets.
@@ -134,7 +133,6 @@ declare module "openpgp" {
     }
 
     export namespace util {
-
         /**
          * Convert a Base-64 encoded string an array of 8-bit integer
          *
@@ -160,7 +158,6 @@ declare module "openpgp" {
     }
 
     export namespace stream {
-
         /**
          * Read a stream to the end and return its contents, concatenated by the concat function
          * (defaults to concat).
@@ -170,6 +167,9 @@ declare module "openpgp" {
          * @returns {Promise<Uint8Array|String|Any>} the return value of concat()
          * @async
          */
-        function readToEnd(input: ReadableStream | Uint8Array | string, concat?: Function): Promise<Uint8Array | string | any>;
+        function readToEnd(
+            input: ReadableStream | Uint8Array | string,
+            concat?: Function
+        ): Promise<Uint8Array | string | any>;
     }
 }

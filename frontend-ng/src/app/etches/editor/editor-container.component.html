@@ -1,10 +1,11 @@
 <div class="columns is-centered">
     <div class="column is-12-mobile is-8-tablet is-8-desktop">
-        <app-entry-title (titleEmitter)="onTitleChange($event)"
-                         [title]="title"
-                         class="columns has-text-left">
+        <app-entry-title
+            (titleEmitter)="onTitleChange($event)"
+            [title]="title"
+            class="columns has-text-left"
+        >
         </app-entry-title>
-        <app-editor (etchEmitter)="onNewEtch($event)">
-        </app-editor>
+        <app-editor (etchEmitter)="onNewEtch($event)"></app-editor>
     </div>
 </div>

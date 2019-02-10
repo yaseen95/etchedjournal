@@ -1,7 +1,6 @@
 <p class="title is-3">Journals</p>
 <div *ngIf="journals.length > 0">
-    <app-journal-list-item *ngFor="let j of journals" [journal]="j">
-    </app-journal-list-item>
+    <app-journal-list-item *ngFor="let j of journals" [journal]="j"> </app-journal-list-item>
 </div>
 <div *ngIf="journals.length == 0">
     <p>No journals</p>

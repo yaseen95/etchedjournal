@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import {
     AuthService,
     InvalidCredentialsError,
-    UserNotFoundError
+    UserNotFoundError,
 } from '../../../services/auth.service';
 import { LoginRequest } from '../../../services/dtos/login-request';
 import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
@@ -31,15 +31,12 @@ describe('LoginContainerComponent', () => {
                 LoginComponent,
                 EnterPassphraseComponent,
             ],
-            imports: [
-                ReactiveFormsModule,
-            ],
+            imports: [ReactiveFormsModule],
             providers: [
-                {provide: AuthService, useValue: authSpy},
-                {provide: Router, useValue: routerSpy},
-            ]
-        })
-            .compileComponents();
+                { provide: AuthService, useValue: authSpy },
+                { provide: Router, useValue: routerSpy },
+            ],
+        }).compileComponents();
     }));
 
     beforeEach(() => {
@@ -55,7 +52,7 @@ describe('LoginContainerComponent', () => {
     it('logging in redirects to enter passphrase', fakeAsync(() => {
         authSpy.login.and.returnValue(Promise.resolve({}));
 
-        const req: LoginRequest = {username: 'samsepiol', password: 'cisco'};
+        const req: LoginRequest = { username: 'samsepiol', password: 'cisco' };
         component.onLogin(req);
 
         tick();
@@ -74,7 +71,7 @@ describe('LoginContainerComponent', () => {
 
         authSpy.login.and.returnValue(Promise.reject(new InvalidCredentialsError()));
 
-        const req: LoginRequest = {username: 'samsepiol', password: 'cisco'};
+        const req: LoginRequest = { username: 'samsepiol', password: 'cisco' };
         component.onLogin(req);
 
         tick();
@@ -90,7 +87,7 @@ describe('LoginContainerComponent', () => {
 
         authSpy.login.and.returnValue(Promise.reject(new UserNotFoundError()));
 
-        const req: LoginRequest = {username: 'samsepiol', password: 'cisco'};
+        const req: LoginRequest = { username: 'samsepiol', password: 'cisco' };
         component.onLogin(req);
 
         tick();
