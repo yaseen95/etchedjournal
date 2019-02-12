@@ -1,18 +1,18 @@
 package com.etchedjournal.etched
 
 import com.etchedjournal.etched.models.OwnerType
-import com.etchedjournal.etched.models.jooq.generated.tables.daos.EntryDao
 import com.etchedjournal.etched.models.jooq.generated.tables.daos.EtchDao
 import com.etchedjournal.etched.models.jooq.generated.tables.daos.KeyPairDao
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Entry
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Etch
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
+import com.etchedjournal.etched.repository.EntryRepository
 import com.etchedjournal.etched.repository.JournalRepository
 import java.time.Instant
 
 class TestRepoUtils(
-    private val entryRepo: EntryDao,
+    private val entryRepo: EntryRepository,
     private val etchRepo: EtchDao,
     private val keyPairRepo: KeyPairDao,
     private val journalRepo: JournalRepository
@@ -57,8 +57,7 @@ class TestRepoUtils(
             keyPairId,
             0
         )
-        entryRepo.insert(e)
-        return e
+        return entryRepo.create(e)
     }
 
     fun createEtch(
