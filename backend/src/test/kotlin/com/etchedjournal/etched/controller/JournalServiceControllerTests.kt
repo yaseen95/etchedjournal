@@ -6,8 +6,8 @@ import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
-import com.etchedjournal.etched.models.jooq.generated.tables.daos.JournalDao
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
+import com.etchedjournal.etched.repository.JournalRepository
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
 import org.junit.Assert.assertEquals
@@ -42,7 +42,7 @@ class JournalServiceControllerTests {
     private lateinit var webApplicationContext: WebApplicationContext
 
     @Autowired
-    private lateinit var journalDao: JournalDao
+    private lateinit var journalRepo: JournalRepository
 
     @Autowired
     private lateinit var testRepoUtils: TestRepoUtils
@@ -69,7 +69,7 @@ class JournalServiceControllerTests {
     @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET journals - returns empty list when no journals`() {
         // Precondition - no journals should exist
-        assertEquals(0, journalDao.fetchByOwner(TESTER_USER_ID).size)
+        assertEquals(0, journalRepo.fetchByOwner(TESTER_USER_ID).size)
 
         mockMvc.perform(get(JOURNALS_URL))
             .andExpect(status().isOk)
@@ -133,7 +133,7 @@ class JournalServiceControllerTests {
     @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST journal - creates a journal`() {
         // Precondition - no journals should exist
-        assertEquals(0, journalDao.fetchByOwner(TESTER_USER_ID).size)
+        assertEquals(0, journalRepo.fetchByOwner(TESTER_USER_ID).size)
 
         mockMvc.perform(
             post(JOURNALS_URL)

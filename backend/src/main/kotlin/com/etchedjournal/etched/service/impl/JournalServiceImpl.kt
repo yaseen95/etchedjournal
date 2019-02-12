@@ -2,35 +2,31 @@ package com.etchedjournal.etched.service.impl
 
 import com.etchedjournal.etched.dto.EncryptedEntityRequest
 import com.etchedjournal.etched.models.OwnerType
-import com.etchedjournal.etched.models.jooq.generated.Tables
-import com.etchedjournal.etched.models.jooq.generated.tables.daos.JournalDao
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
-import com.etchedjournal.etched.models.jooq.generated.tables.records.JournalRecord
+import com.etchedjournal.etched.repository.JournalRepository
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.JournalService
 import com.etchedjournal.etched.service.KeypairService
 import com.etchedjournal.etched.service.exception.ForbiddenException
 import com.etchedjournal.etched.service.exception.NotFoundException
 import com.etchedjournal.etched.utils.id.IdGenerator
-import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.Instant
 
 @Service
 class JournalServiceImpl(
-    private val journalDao: JournalDao,
+    private val journalRepo: JournalRepository,
     private val authService: AuthService,
     private val idGenerator: IdGenerator,
-    private val keyPairService: KeypairService,
-    private val dslContext: DSLContext
+    private val keyPairService: KeypairService
 ) : JournalService {
 
     override fun getJournal(id: String): Journal {
         logger.info("Attempting to get journal {}", id)
-        val journal = journalDao.findById(id)
+        val journal = journalRepo.findById(id)
         if (journal == null) {
-            logger.info("Journal {} not found")
+            logger.info("Journal {} not found", id)
             throw NotFoundException()
         }
         if (journal.owner != authService.getUserId()) {
@@ -44,7 +40,7 @@ class JournalServiceImpl(
 
     override fun getJournals(): List<Journal> {
         logger.info("Getting journals for {}", authService.getUserId())
-        return journalDao.fetchByOwner(authService.getUserId())
+        return journalRepo.fetchByOwner(authService.getUserId())
     }
 
     override fun create(req: EncryptedEntityRequest): Journal {
@@ -52,16 +48,18 @@ class JournalServiceImpl(
 
         // Get key pair to check permissions
         val keyPair = keyPairService.getKeypair(req.keyPairId)
-        val record: JournalRecord = dslContext.newRecord(Tables.JOURNAL)
-        record.id = idGenerator.generateId()
-        record.timestamp = Instant.now()
-        record.setContent(*req.content)
-        record.owner = authService.getUserId()
-        record.ownerType = OwnerType.USER
-        record.keyPairId = keyPair.id
-        record.insert()
 
-        val journal = record.into(Journal::class.java)
+        var journal = Journal(
+            idGenerator.generateId(),
+            Instant.now(),
+            req.content,
+            authService.getUserId(),
+            OwnerType.USER,
+            keyPair.id,
+            0
+        )
+
+        journal = journalRepo.create(journal)
         logger.info("Successfully created journal {}", journal)
         return journal
     }
