@@ -30,5 +30,4 @@ class EntryRepository(private val dslContext: DSLContext) {
             .fetch()
             .into(Entry::class.java)
     }
-
 }
