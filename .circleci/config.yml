@@ -6,8 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
-      - image: circleci/openjdk:8-jdk
+      - image: docker:18.09
 
     working_directory: ~/repo
 
