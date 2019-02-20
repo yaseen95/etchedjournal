@@ -24,6 +24,10 @@ jobs:
             - npm-dependencies-
 
       - run:
+          name: Install curl
+          command: sudo apt-get install -y curl
+
+      - run:
           name: Install Docker Compose
           # https://circleci.com/docs/2.0/docker-compose/
           command: |
