@@ -25,7 +25,7 @@ jobs:
 
       - run:
           name: Install curl
-          command: sudo apt-get install -y curl
+          command: apk update && apk add curl
 
       - run:
           name: Install Docker Compose
