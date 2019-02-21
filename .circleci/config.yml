@@ -23,9 +23,9 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - npm-dependencies-
 
-      - run:
-          name: Install curl
-          command: apk update && apk add curl
+#      - run:
+#          name: Install curl
+#          command: apk update && apk add curl
 
       - run:
           name: Install Docker Compose
