@@ -31,6 +31,10 @@ jobs:
             apt-get install -y curl
 
       - run:
+          name: Install openjdk8
+          command: apt-get install -y openjdk-8-jdk
+
+      - run:
           name: Install Docker Compose
           # https://circleci.com/docs/2.0/docker-compose/
           command: |
