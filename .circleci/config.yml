@@ -35,7 +35,7 @@ jobs:
 #            chmod +x ~/docker-compose
 #            sudo mv ~/docker-compose /usr/local/bin/docker-compose
 
-      - run: ./build.sh
+      - run: sh ./build.sh
 
       - save_cache:
           paths:
