@@ -12,7 +12,6 @@ jobs:
 
     steps:
       - checkout
-      - setup_remote_docker
 
       # Download and cache dependencies
       - restore_cache:
@@ -24,18 +23,30 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - npm-dependencies-
 
-#      - run:
-#          name: Install curl
-#          command: apk update && apk add curl
+      - run:
+          name: Install Docker
+          command: |
+            # https://discuss.circleci.com/t/how-to-run-docker-build-in-a-circleci-job-that-uses-docker/21075/5
+            apt-get update --fix-missing
+            apt-get install -y apt-transport-https ca-certificates software-properties-common
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+            apt-key fingerprint 0EBFCD88
+            add-apt-repository \
+              "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+              $(lsb_release -cs) \
+              stable"
+            apt-get update
+            apt-get install -y docker-ce
+            sudo service docker start
 
-#      - run:
-#          name: Install Docker Compose
-#          # https://circleci.com/docs/2.0/docker-compose/
-#          command: |
-#            set -eu
-#            curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-#            chmod +x ~/docker-compose
-#            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - run:
+          name: Install Docker Compose
+          # https://circleci.com/docs/2.0/docker-compose/
+          command: |
+            set -eu
+            curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
 
       - run: sh ./build.sh
 
