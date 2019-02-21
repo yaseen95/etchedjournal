@@ -4,7 +4,7 @@ set -e
 
 export ETCHED_FLAVOR=dev
 
-ETCHED_FLAVOR=dev docker-compose up -d
+DB_PASSWORD=dolphins docker-compose up -d
 
 # TODO: Check if generated jooq code is different to committed jooq code
 ./gradlew nodeSetup
