@@ -4,8 +4,7 @@ set -e
 
 export ETCHED_FLAVOR=dev
 
-ls -la /usr/bin
-~/docker-compose up -d
+docker-compose up -d
 
 # TODO: Check if generated jooq code is different to committed jooq code
 ./gradlew nodeSetup
