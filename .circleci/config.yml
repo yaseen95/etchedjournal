@@ -27,7 +27,6 @@ jobs:
           name: Install Docker
           command: |
             # https://discuss.circleci.com/t/how-to-run-docker-build-in-a-circleci-job-that-uses-docker/21075/5
-            sudo apt-get remove docker docker-engine docker.io containerd runc
             sudo apt-get update
             sudo apt-get install -y \
                 apt-transport-https \
