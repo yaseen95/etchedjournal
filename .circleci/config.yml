@@ -23,6 +23,8 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - npm-dependencies-
 
+      - setup_remote_docker
+
       - run:
           name: Install dependencies
           command: |
@@ -37,15 +39,14 @@ jobs:
             curl -sL https://deb.nodesource.com/setup_10.x | bash
             apt-get install -y nodejs
 
-#            # Install docker
-#            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-#            add-apt-repository -y \
-#               "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-#               $(lsb_release -cs) \
-#               stable"
-#            apt-get update
-#            apt-get install -y docker-ce docker-ce-cli containerd.io
-#            service docker start
+            # Install docker
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+            add-apt-repository -y \
+               "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+               $(lsb_release -cs) \
+               stable"
+            apt-get update
+            apt-get install -y docker-ce docker-ce-cli containerd.io
 
       - run:
           name: Install Docker Compose
@@ -55,8 +56,6 @@ jobs:
             curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
             chmod +x ~/docker-compose
             mv ~/docker-compose /usr/local/bin/docker-compose
-
-      - setup_remote_docker
 
       - run: ./build.sh
 
