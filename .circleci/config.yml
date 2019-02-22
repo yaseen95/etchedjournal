@@ -34,6 +34,7 @@ jobs:
               git \
               openjdk-8-jdk \
               build-essential \
+              software-properties-common \
 
             # Install node
             curl -sL https://deb.nodesource.com/setup_10.x | bash
