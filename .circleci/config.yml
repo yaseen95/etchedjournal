@@ -12,7 +12,6 @@ jobs:
 
     steps:
       - checkout
-      - setup_remote_docker
 
       # Download and cache dependencies
       - restore_cache:
@@ -37,6 +36,16 @@ jobs:
             # Install node
             curl -sL https://deb.nodesource.com/setup_10.x | bash
             apt-get install -y nodejs
+
+            # Install docker
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+            add-apt-repository -y \
+               "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+               $(lsb_release -cs) \
+               stable"
+            apt-get update
+            apt-get install -y docker-ce docker-ce-cli containerd.io
+            service docker start
 
       - run:
           name: Install Docker Compose
