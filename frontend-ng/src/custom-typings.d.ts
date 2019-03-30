@@ -155,6 +155,22 @@ declare module 'openpgp' {
          * @returns {String}         Base-64 encoded string
          */
         function Uint8Array_to_b64(bytes: Uint8Array, url?: boolean): string;
+
+        /**
+         * Convert an array of 8-bit integers to a string
+         *
+         * @param {Uint8Array} bytes An array of 8-bit integers to convert
+         * @returns {String} String representation of the array
+         */
+        function Uint8Array_to_str(bytes: Uint8Array): string;
+
+        /**
+         * Convert a string to an array of 8-bit integers
+         *
+         * @param {String} str String to convert
+         * @returns {Uint8Array} An array of 8-bit integers
+         */
+        function str_to_Uint8Array(str: string): Uint8Array;
     }
 
     export namespace stream {

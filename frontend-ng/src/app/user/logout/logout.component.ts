@@ -5,6 +5,7 @@ import { take } from 'rxjs/operators';
 import { EtchedRoutes } from '../../app-routing-utils';
 import { AuthService } from '../../services/auth.service';
 import { LocationService } from '../../services/location.service';
+import { SecureStorageService } from '../../services/secure-storage.service';
 
 /**
  * Very basic component that displays a logout spinner (with a fake delay)
@@ -18,10 +19,12 @@ export class LogoutComponent implements OnInit {
     constructor(
         private router: Router,
         private authService: AuthService,
-        private locationService: LocationService
+        private locationService: LocationService,
+        private secureStorageService: SecureStorageService
     ) {}
 
     public ngOnInit() {
+        this.secureStorageService.clear();
         const authObs = from(this.authService.logout());
 
         // Use random jitter to make it look like something's happening

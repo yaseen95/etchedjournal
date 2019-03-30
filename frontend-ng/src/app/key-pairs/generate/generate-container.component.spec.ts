@@ -1,4 +1,4 @@
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -7,6 +7,7 @@ import { EtchedRoutes } from '../../app-routing-utils';
 import { AuthService } from '../../services/auth.service';
 import { Encrypter, KeyPair } from '../../services/encrypter';
 import { EncrypterService } from '../../services/encrypter.service';
+import { FakeEncrypterService } from '../../services/fakes.service.spec';
 import { KeyPairsService } from '../../services/key-pairs.service';
 import { ConfigurePassphraseComponent } from '../../user/configure-passphrase/configure-passphrase.component';
 import { SpinnerComponent } from '../../utils/spinner/spinner.component';
@@ -24,11 +25,11 @@ describe('GenerateContainerComponent', () => {
     let authSpy: any;
     let routerSpy: any;
 
-    beforeEach(async(() => {
+    beforeEach(async () => {
         keyPairsServiceSpy = jasmine.createSpyObj('KeyPairsService', ['createKeyPair']);
 
         encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt']);
-        const encrypterService = new EncrypterService();
+        const encrypterService = new FakeEncrypterService();
         encrypterService.encrypter = encrypterSpy;
 
         authSpy = jasmine.createSpyObj('AuthService', ['getUser', 'register']);
@@ -66,7 +67,7 @@ describe('GenerateContainerComponent', () => {
                 { provide: Router, useValue: routerSpy },
             ],
         }).compileComponents();
-    }));
+    });
 
     beforeEach(() => {
         fixture = TestBed.createComponent(GenerateContainerComponent);

@@ -8,18 +8,23 @@ import { EncrypterService } from '../../services/encrypter.service';
     providedIn: 'root',
 })
 export class PassphraseGuard implements CanActivate {
-    constructor(private encrypterService: EncrypterService, private router: Router) {}
+    constructor(private encrypterService: EncrypterService, private router: Router) {
+    }
 
     public canActivate(
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ): Observable<boolean> | Promise<boolean> | boolean {
         // User has to enter the passphrase if the encrypter is not defined
-        if (this.encrypterService.encrypter === null) {
-            const navExtras = { queryParams: { next: state.url } };
-            this.router.navigate([EtchedRoutes.ENTER_PASSPHRASE_PATH], navExtras);
-            return false;
-        }
-        return true;
+
+        return this.encrypterService.loadEncrypter()
+            .then((e) => {
+                if (e === null) {
+                    const navExtras = { queryParams: { next: state.url } };
+                    this.router.navigate([EtchedRoutes.ENTER_PASSPHRASE_PATH], navExtras);
+                    return false;
+                }
+                return true;
+            });
     }
 }

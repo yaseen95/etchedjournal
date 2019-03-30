@@ -3,8 +3,8 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { FakeEntryStore } from '../../services/fakes.service.spec';
 import { EntryStore } from '../../stores/entry.store';
-import { FakeEntryStore } from '../../stores/entry.store.spec';
 import { SpinnerComponent } from '../../utils/spinner/spinner.component';
 import { TestUtils } from '../../utils/test-utils.spec';
 import { EntryListContainerComponent } from './entry-list-container.component';

@@ -14,7 +14,7 @@ if (!environment.test) {
 // TODO: Can we return Observables instead of Promises?
 // Would make it more consistent with the API
 export class Encrypter {
-    private constructor(
+    public constructor(
         public privateKey: openpgp.key.Key,
         // TODO: Do we expect more than one public key?
         public publicKeys: openpgp.key.Key[],
