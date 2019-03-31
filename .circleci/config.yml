@@ -1,17 +1,13 @@
-# Java Gradle CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-java/ for more details
-#
 version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:10.15.3-browsers
+      - image: circleci/openjdk:8-jdk-node-browsers
       - image: postgres:10.6
         environment:
           POSTGRES_PASSWORD: dolphins
           POSTGRES_USER: etched
-          POSTGRES_DB: etched
+          POSTGRES_DB: etchedg
 
     working_directory: ~/repo
 
@@ -27,8 +23,6 @@ jobs:
             - npm-dependencies-{{ checksum "frontend-ng/package-lock.json" }}
             # fallback to using the latest cache if no exact match is found
             - npm-dependencies-
-
-#      - setup_remote_docker
 
       - run: ./build.sh
 
