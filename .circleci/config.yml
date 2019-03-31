@@ -34,11 +34,7 @@ jobs:
               git \
               openjdk-8-jdk \
               build-essential \
-              software-properties-common \
-
-            # Install node
-            sudo curl -sL https://deb.nodesource.com/setup_10.x | sudo bash
-            sudo apt-get install -y nodejs
+              software-properties-common
 
             # Install docker
             sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
