@@ -6,6 +6,8 @@ import { of } from 'rxjs';
 import { EtchedRoutes } from '../../../../app-routing-utils';
 import { OwnerType } from '../../../../models/owner-type';
 import { Encrypter, IncorrectPassphraseError } from '../../../../services/encrypter';
+import { EncrypterService } from '../../../../services/encrypter.service';
+import { FakeEncrypterService } from '../../../../services/fakes.service.spec';
 import { KeyPairsService } from '../../../../services/key-pairs.service';
 import { SpinnerComponent } from '../../../../utils/spinner/spinner.component';
 import { TestUtils } from '../../../../utils/test-utils.spec';
@@ -20,6 +22,8 @@ describe('EnterPassphraseContainerComponent', () => {
     let keyPairsServiceSpy: any;
     let from2Spy: any;
     let routerSpy: any;
+    let encService: FakeEncrypterService;
+
     const testKeyPair = {
         publicKey: MOCK_PUB_KEY_BASE_64_STR,
         privateKey: MOCK_PRIV_KEY_BASE_64_STR,
@@ -33,6 +37,8 @@ describe('EnterPassphraseContainerComponent', () => {
 
         from2Spy = spyOn(Encrypter, 'from2');
         from2Spy.and.returnValue(Promise.resolve({}));
+
+        encService = new FakeEncrypterService();
 
         // noinspection JSIgnoredPromiseFromCall
         TestBed.configureTestingModule({
@@ -51,6 +57,7 @@ describe('EnterPassphraseContainerComponent', () => {
                         snapshot: { queryParamMap: convertToParamMap({ next: 'nextRoute' }) },
                     },
                 },
+                { provide: EncrypterService, useValue: encService },
             ],
         }).compileComponents();
     }));

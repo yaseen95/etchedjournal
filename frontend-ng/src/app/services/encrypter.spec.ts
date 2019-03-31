@@ -1,35 +1,27 @@
 import { async, TestBed } from '@angular/core/testing';
 
 import * as openpgp from 'openpgp';
-import { interval } from 'rxjs';
-import { take } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Encrypter, KeyPair } from './encrypter';
 
 describe('Encrypter', () => {
     let encrypter: Encrypter;
 
-    beforeEach(async(() => {
-        // Used to disable openpgp workers
-        environment.test = true;
-
-        TestBed.configureTestingModule({});
-        Encrypter.from2(
+    beforeAll(async () => {
+        encrypter = await Encrypter.from2(
             TEST_PRIVATE_KEY,
             TEST_PUBLIC_KEY,
             'passphrase',
             'foobar',
             TEST_KEY_PAIR.salt,
             TEST_KEY_PAIR.iterations
-        ).then(enc => (encrypter = enc));
+        );
+    });
 
-        // TODO: Figure out why openpgp.encrypt is not defined
-        // Some tests fail because it's not defined.
-        // Adding this delay fixes things.
-        const intervalObs = interval(1000).pipe(take(1));
-        intervalObs.subscribe(() => {
-            /* */
-        });
+    beforeEach(async(() => {
+        // Used to disable openpgp workers
+        environment.test = true;
+        TestBed.configureTestingModule({});
     }));
 
     it('generate key pair stretches passphrase', async () => {
@@ -143,7 +135,7 @@ const TEST_DATA_SYMMETRICALLY_ENCRYPTED = `wy4ECQMIXo+rdaah8y1gZ4y3YheRV06CBUsLr
 Ld7b0kEBzPByJMMVhKXKNusjugSzlBKHVOAShh+IOfcUSkOcXyx54N3UquA0
 vFPuY717NmO5f8gHzsCufXe+bIBySp3FwA==`;
 
-const TEST_PUBLIC_KEY = `xpMEXCYGARMFK4EEACMEIwQBlgWBpChNouPXaljJdlyEcUH4qpSrj5T3Grbi
+export const TEST_PUBLIC_KEY = `xpMEXCYGARMFK4EEACMEIwQBlgWBpChNouPXaljJdlyEcUH4qpSrj5T3Grbi
 gcjxgxZsVblYslN0LgITFy+PlrWGib1tg0mD+dG1k/q3FxnSGM0BatjGq5by
 eH5JXRBGJaoUF6sshTj9bZoTu+W7pXgbbhXjSLMV4As5tcQYFgJ+CP9C52AD
 1dZBTvKEnsAsK63X27fNJ3Rlc3RlciA8dGVzdGVyQHVzZXJzLmV0Y2hlZGpv
@@ -160,7 +152,7 @@ BQJcJgYBCRAfGO+i4+TjKwIbDAAAAMcCCQH1EgozIdeT/PZ0syMvJtBXZMhJ
 9AII58WkFVRInD74Z0+yf95vx5PL96N7EV06irP5YHHpt2uva1y9in7OIH0Z
 oMGgIVka2C0HZCOF69ZLNVCEJxXhM8c=`;
 
-const TEST_PRIVATE_KEY = `xcBHBFwmBgETBSuBBAAjBCMEAZYFgaQoTaLj12pYyXZchHFB+KqUq4+U9xq2
+export const TEST_PRIVATE_KEY = `xcBHBFwmBgETBSuBBAAjBCMEAZYFgaQoTaLj12pYyXZchHFB+KqUq4+U9xq2
 4oHI8YMWbFW5WLJTdC4CExcvj5a1hom9bYNJg/nRtZP6txcZ0hjNAWrYxquW
 8nh+SV0QRiWqFBerLIU4/W2aE7vlu6V4G24V40izFeALObXEGBYCfgj/Qudg
 A9XWQU7yhJ7ALCut19u3/gkDCBL0uusuo9EyYDDUj+VWw+Thuyv1MfctKdGf
@@ -182,7 +174,28 @@ dLMjLybQV2TISe7SifzPQMIjcJibd4iZM9eX26Df7pJDerHvdAMgdmQx2HiR
 N6yYdeEo00lKkPQCCOfFpBVUSJw++GdPsn/eb8eTy/ejexFdOoqz+WBx6bdr
 r2tcvYp+ziB9GaDBoCFZGtgtB2QjhevWSzVQhCcV4TPH`;
 
-const TEST_KEY_PAIR: KeyPair = {
+export const TEST_PRIVATE_KEY_DECRYPTED = `xcAZBFwmBgETBSuBBAAjBCMEAZYFgaQoTaLj12pYyXZchHFB+KqUq4+U9xq2
+4oHI8YMWbFW5WLJTdC4CExcvj5a1hom9bYNJg/nRtZP6txcZ0hjNAWrYxquW
+8nh+SV0QRiWqFBerLIU4/W2aE7vlu6V4G24V40izFeALObXEGBYCfgj/Qudg
+A9XWQU7yhJ7ALCut19u3AAIBAYplWwt5QSgMrUpaqHm0Qokli2kUdnFZxNbL
+U/EPVgZdnN170fKyPqcqAhYU5JWwEOhuc/Pan664YaYC7a4uQ9oefc0ndGVz
+dGVyIDx0ZXN0ZXJAdXNlcnMuZXRjaGVkam91cm5hbC5jb20+wsAFBBATCgAp
+BQJcJgYBBgsJBwgDAgkQHxjvouPk4ysEFQgKAgMWAgECGQECGwMCHgEACgkQ
+HxjvouPk4yuYWwIJAU2fK4tfWmv6BQvFRDHAaLXN0c0aSuTCpjb5OpKMXKgq
+61x9ijgt8WR6gGgkxKVsC3tyXOMmdwvWtt30pE9yLdSKAgkBmKL2WQsfhYS6
+ROFPahA0SvALuAxwsg4y5w97YkRIITo9bm5tASvdqoKg0WNgNvUCCDI3nNMA
+Wdo/lFQxKBX0EYPHwB4EXCYGARIFK4EEACMEIwQAE+QFiQVB26HsuMx/rD+O
++fDDxpZNJB1IuCaNcFWJnQvqEVESLwGR25jPtf65bXvzeHAfCveZRO/zu1C+
+GIj5uDcBmkist50mw921tC8w0hPjc+zRV5PzlFfoaYCOHVkeBWpDOwJab5S/
+RyYbUiQwRFzSy40WhEMh5gCxEPwyrn5k0qMDAQoJAAIJAU296p3Q0rZBWBSZ
+lXiX5rBJvdIHlb85hLqu9GBK2MtZSWPJH+Uz7BnS9N3tR7IBeTitD7VVmvfQ
+7XA8xQwQ38aHJCDCrgQYEwoAEwUCXCYGAQkQHxjvouPk4ysCGwwACgkQHxjv
+ouPk4ysAxwIJAfUSCjMh15P89nSzIy8m0FdkyEnu0on8z0DCI3CYm3eImTPX
+l9ug3+6SQ3qx73QDIHZkMdh4kTesmHXhKNNJSpD0AgjnxaQVVEicPvhnT7J/
+3m/Hk8v3o3sRXTqKs/lgcem3a69rXL2Kfs4gfRmgwaAhWRrYLQdkI4Xr1ks1
+UIQnFeEzxw==`;
+
+export const TEST_KEY_PAIR: KeyPair = {
     privateKeyArmored: TEST_PRIVATE_KEY,
     publicKeyArmored: TEST_PUBLIC_KEY,
     salt: 'iqlJKKyRFryR6PZ6umx/ie',

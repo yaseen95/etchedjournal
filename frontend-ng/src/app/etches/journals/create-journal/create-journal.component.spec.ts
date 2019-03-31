@@ -6,8 +6,8 @@ import { NavigationExtras, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { JournalEntity } from '../../../models/journal-entity';
 import { OwnerType } from '../../../models/owner-type';
+import { FakeJournalStore } from '../../../services/fakes.service.spec';
 import { JournalStore } from '../../../stores/journal.store';
-import { FakeJournalStore } from '../../../stores/journal.store.spec';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { CreateJournalComponent } from './create-journal.component';
 

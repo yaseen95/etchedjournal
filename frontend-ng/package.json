@@ -10,7 +10,8 @@
         "test": "ng test",
         "lint": "ng lint",
         "e2e": "ng e2e",
-        "prettier": "prettier --config .prettierrc.js --check '**/*.ts' --check '**/*.json'"
+        "prettier": "prettier --config .prettierrc.js --check 'src/**/*.ts' --check 'src/**/*.json'",
+        "prettier-fix": "prettier --config .prettierrc.js --check 'src/**/*.ts' --check 'src/**/*.json' --write"
     },
     "private": true,
     "dependencies": {

@@ -15,11 +15,14 @@ export class PassphraseGuard implements CanActivate {
         state: RouterStateSnapshot
     ): Observable<boolean> | Promise<boolean> | boolean {
         // User has to enter the passphrase if the encrypter is not defined
-        if (this.encrypterService.encrypter === null) {
-            const navExtras = { queryParams: { next: state.url } };
-            this.router.navigate([EtchedRoutes.ENTER_PASSPHRASE_PATH], navExtras);
-            return false;
-        }
-        return true;
+
+        return this.encrypterService.loadEncrypter().then(e => {
+            if (e === null) {
+                const navExtras = { queryParams: { next: state.url } };
+                this.router.navigate([EtchedRoutes.ENTER_PASSPHRASE_PATH], navExtras);
+                return false;
+            }
+            return true;
+        });
     }
 }

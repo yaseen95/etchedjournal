@@ -1,7 +1,7 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { EtchStore } from '../stores/etch.store';
-import { FakeEtchStore } from '../stores/etch.store.spec';
 import { EtchQueueService } from './etch-queue.service';
+import { FakeEtchStore } from './fakes.service.spec';
 
 describe('EtchQueueService', () => {
     let service: EtchQueueService;

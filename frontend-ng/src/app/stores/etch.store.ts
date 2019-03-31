@@ -27,7 +27,7 @@ export class EtchStore {
         // this.state.etches = [];
         // this.state.parsedEtches = [];
         const etches = await this.etchService.getEtches(entryId).toPromise();
-        this.decryptEtches(etches);
+        await this.decryptEtches(etches);
     }
 
     public async decryptEtches(encrypted: EtchEntity[]) {

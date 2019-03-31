@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { EtchedRoutes } from '../../app-routing-utils';
 import { AuthService } from '../../services/auth.service';
 import { LocationService } from '../../services/location.service';
+import { SecureStorageService } from '../../services/secure-storage.service';
 import { SpinnerComponent } from '../../utils/spinner/spinner.component';
 import { LogoutComponent } from './logout.component';
 
@@ -13,11 +14,13 @@ describe('LogoutComponent', () => {
     let routerSpy: any;
     let authSpy: any;
     let locationSpy: any;
+    let secureStorageSpy: any;
 
     beforeEach(async(() => {
         authSpy = jasmine.createSpyObj('AuthService', ['getUser', 'logout']);
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         locationSpy = jasmine.createSpyObj('LocationService', ['reload']);
+        secureStorageSpy = jasmine.createSpyObj('SecureStorageService', ['clear']);
 
         authSpy.logout.and.returnValue(Promise.resolve());
         routerSpy.navigate.and.returnValue(Promise.resolve());
@@ -28,6 +31,7 @@ describe('LogoutComponent', () => {
                 { provide: AuthService, useValue: authSpy },
                 { provide: Router, useValue: routerSpy },
                 { provide: LocationService, useValue: locationSpy },
+                { provide: SecureStorageService, useValue: secureStorageSpy },
             ],
         }).compileComponents();
     }));
@@ -44,6 +48,10 @@ describe('LogoutComponent', () => {
         // Called twice because logout happens on the initial render and this ngOnInit call
         expect(authSpy.logout).toHaveBeenCalledTimes(2);
     }));
+
+    it('clears secure storage on logout', () => {
+        expect(secureStorageSpy.clear).toHaveBeenCalledTimes(1);
+    });
 
     it('redirects to home page', fakeAsync(() => {
         component.ngOnInit();

@@ -1,20 +1,18 @@
-import { EMPTY, of } from 'rxjs';
-import { Encrypter } from '../services/encrypter';
+import { of } from 'rxjs';
 import { EncrypterService } from '../services/encrypter.service';
+import { FakeEncrypter, FakeEncrypterService } from '../services/fakes.service.spec';
 import { JournalsService } from '../services/journals.service';
 
 import { JournalStore } from './journal.store';
 
 describe('JournalStore', () => {
     let store: JournalStore;
-    let encrypterSpy: any;
     let encrypterService: EncrypterService;
     let journalServiceSpy: any;
 
     beforeEach(() => {
-        encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt', 'decrypt']);
-        encrypterService = new EncrypterService();
-        encrypterService.encrypter = encrypterSpy;
+        encrypterService = new FakeEncrypterService();
+        encrypterService.encrypter = new FakeEncrypter();
 
         journalServiceSpy = jasmine.createSpyObj('JournalsService', [
             'createJournal',
@@ -31,7 +29,6 @@ describe('JournalStore', () => {
     });
 
     it('createJournal encrypts and creates journal', async () => {
-        encrypterSpy.encrypt.and.returnValue(Promise.resolve('ciphertext'));
         const j = { id: '1', content: 'abc' };
         journalServiceSpy.createJournal.and.returnValue(of(j));
         const loadJournalsSpy = spyOn(store, 'loadJournals');
@@ -46,32 +43,7 @@ describe('JournalStore', () => {
 
     it('loads journals when encrypter is set', () => {
         const loadJournalsSpy = spyOn(store, 'loadJournals');
-        encrypterService.encrypterObs.next();
+        encrypterService.encrypterObs.next(null);
         expect(loadJournalsSpy).toHaveBeenCalledTimes(1);
     });
 });
-
-export class FakeJournalStore extends JournalStore {
-    public encrypterServiceFake: EncrypterService;
-    public journalsServiceSpy: JournalsService;
-    public encrypterSpy: any;
-
-    constructor() {
-        const encSpy = jasmine.createSpyObj('Encrypter', ['encrypt', 'decrypt']);
-        const encService = new EncrypterService();
-        encService.encrypter = encSpy;
-        const journalsService = jasmine.createSpyObj('JournalsService', [
-            'getJournals',
-            'createJournal',
-        ]);
-
-        journalsService.getJournals.and.returnValue(of([]));
-        journalsService.createJournal.and.returnValue(EMPTY);
-
-        super(journalsService, encService);
-
-        this.encrypterServiceFake = encService;
-        this.journalsServiceSpy = journalsService;
-        this.encrypterSpy = encSpy;
-    }
-}
