@@ -35,9 +35,7 @@ describe('AppComponent', () => {
                 EtchItemComponent,
             ],
             imports: [RouterTestingModule, BrowserModule, HttpClientModule, ReactiveFormsModule],
-            providers: [
-                { provide: JournalStore, useValue: journalStore },
-            ],
+            providers: [{ provide: JournalStore, useValue: journalStore }],
         }).compileComponents();
         fixture = TestBed.createComponent(AppComponent);
 

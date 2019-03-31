@@ -3,7 +3,6 @@ import * as openpgp from 'openpgp';
 import { Base64Str } from '../models/encrypted-entity';
 
 export class CryptoUtils {
-
     /**
      * Copied from ProtonMail WebClient source
      * Licensed under MIT

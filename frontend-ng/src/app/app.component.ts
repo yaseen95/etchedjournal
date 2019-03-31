@@ -7,9 +7,7 @@ import { SecureStorageService } from './services/secure-storage.service';
     styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-
-    constructor(private secureStorage: SecureStorageService) {
-    }
+    constructor(private secureStorage: SecureStorageService) {}
 
     @HostListener('window:beforeunload')
     private onAppUnload() {
