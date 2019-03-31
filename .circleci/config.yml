@@ -30,17 +30,17 @@ jobs:
 
       - setup_remote_docker
 
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y \
-              curl \
-              git \
-              openjdk-8-jdk \
-              build-essential \
-              software-properties-common \
-              apt-transport-https
+#      - run:
+#          name: Install dependencies
+#          command: |
+#            sudo apt-get update
+#            sudo apt-get install -y \
+#              curl \
+#              git \
+#              openjdk-8-jdk \
+#              build-essential \
+#              software-properties-common \
+#              apt-transport-https
 
       - run: ./build.sh
 
