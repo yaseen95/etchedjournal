@@ -6,7 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: ubuntu:18.04
+      - image: circleci/node
 
     working_directory: ~/repo
 
@@ -49,14 +49,14 @@ jobs:
             apt-get update
             apt-get install -y docker-ce docker-ce-cli containerd.io
 
-      - run:
-          name: Install Docker Compose
-          # https://circleci.com/docs/2.0/docker-compose/
-          command: |
-            set -eu
-            curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            mv ~/docker-compose /usr/local/bin/docker-compose
+#      - run:
+#          name: Install Docker Compose
+#          # https://circleci.com/docs/2.0/docker-compose/
+#          command: |
+#            set -eu
+#            curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+#            chmod +x ~/docker-compose
+#            mv ~/docker-compose /usr/local/bin/docker-compose
 
       - run: ./build.sh
 
