@@ -5,7 +5,7 @@ set -eou pipefail
 export ETCHED_FLAVOR=dev
 
 # Disable docker-compose in CIRCLECI
-if [[ "${CIRCLECI-}" ]]; then
+if [[ -z "${CIRCLECI-}" ]]; then
   DB_PASSWORD=dolphins docker-compose up -d
 fi
 
