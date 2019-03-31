@@ -1,9 +1,9 @@
 package com.etchedjournal.etched
 
-import com.etchedjournal.etched.models.jooq.generated.tables.daos.EntryDao
-import com.etchedjournal.etched.models.jooq.generated.tables.daos.EtchDao
-import com.etchedjournal.etched.models.jooq.generated.tables.daos.KeyPairDao
+import com.etchedjournal.etched.repository.EntryRepository
+import com.etchedjournal.etched.repository.EtchRepository
 import com.etchedjournal.etched.repository.JournalRepository
+import com.etchedjournal.etched.repository.KeyPairRepository
 import com.etchedjournal.etched.security.CognitoAuthenticationFilter
 import com.etchedjournal.etched.service.AuthService
 import com.nhaarman.mockitokotlin2.mock
@@ -30,15 +30,15 @@ class TestConfig {
 
     @Bean
     fun testRepoUtils(
-        entryDao: EntryDao,
-        etchDao: EtchDao,
-        keyPairDao: KeyPairDao,
+        entryRepository: EntryRepository,
+        etchRepo: EtchRepository,
+        keyPairRepo: KeyPairRepository,
         journalRepo: JournalRepository
     ): TestRepoUtils {
         return TestRepoUtils(
-            entryRepo = entryDao,
-            etchRepo = etchDao,
-            keyPairRepo = keyPairDao,
+            entryRepo = entryRepository,
+            etchRepo = etchRepo,
+            keyPairRepo = keyPairRepo,
             journalRepo = journalRepo
         )
     }

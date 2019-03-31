@@ -177,7 +177,7 @@ jooq {
                 fluentSetters = true
                 pojosEqualsAndHashCode = true
                 serializablePojos = false
-                daos = true
+                daos = false
                 validationAnnotations = true
                 springAnnotations = true
                 // Not using javaTimeTypes because we have a custom converter to Instant
