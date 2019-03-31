@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-set -e
+set -eou pipefail
 
 export ETCHED_FLAVOR=dev
 
 # Disable docker-compose in CI
-if [[ -z "${CI}" ]]; then
+if [[ -z "${CI-}" && -z "${CIRCLECI-}" ]]; then
   DB_PASSWORD=dolphins docker-compose up -d
 fi
 
