@@ -4,7 +4,10 @@ set -e
 
 export ETCHED_FLAVOR=dev
 
-DB_PASSWORD=dolphins docker-compose up -d
+# Disable docker-compose in CI
+if [[ -z "${CI}" ]]; then
+  DB_PASSWORD=dolphins docker-compose up -d
+fi
 
 # TODO: Check if generated jooq code is different to committed jooq code
 ./gradlew nodeSetup
