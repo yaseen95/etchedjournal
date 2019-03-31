@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
-set -e
+set -eou pipefail
 
 export ETCHED_FLAVOR=dev
 
-docker-compose up -d
+# Disable docker-compose in CIRCLECI
+if [[ -z "${CIRCLECI-}" ]]; then
+  DB_PASSWORD=dolphins docker-compose up -d
+fi
 
 # TODO: Check if generated jooq code is different to committed jooq code
 ./gradlew nodeSetup
