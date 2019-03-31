@@ -28,19 +28,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - npm-dependencies-
 
-      - setup_remote_docker
-
-#      - run:
-#          name: Install dependencies
-#          command: |
-#            sudo apt-get update
-#            sudo apt-get install -y \
-#              curl \
-#              git \
-#              openjdk-8-jdk \
-#              build-essential \
-#              software-properties-common \
-#              apt-transport-https
+#      - setup_remote_docker
 
       - run: ./build.sh
 
