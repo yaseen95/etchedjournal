@@ -7,7 +7,7 @@ jobs:
         environment:
           POSTGRES_PASSWORD: dolphins
           POSTGRES_USER: etched
-          POSTGRES_DB: etchedg
+          POSTGRES_DB: etched
 
     working_directory: ~/repo
 
