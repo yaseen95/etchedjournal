@@ -32,6 +32,7 @@ class TestUtils(private val mapper: ObjectMapper) {
 }
 
 val INVALID_ETCHED_IDS = listOf(
+    /* ktlint-disable no-multi-spaces */
     "abc", // too short
     "           ",  // all whitespace
     "abcdefghij",   // too short
@@ -40,4 +41,5 @@ val INVALID_ETCHED_IDS = listOf(
     "abcdefghij ",  // trailing whitespace
     "abcdefghij=",  // we remove the padding, it should not be included
     "abcdefghij("   // symbols
+    /* ktlint-enable no-multi-spaces */
 )

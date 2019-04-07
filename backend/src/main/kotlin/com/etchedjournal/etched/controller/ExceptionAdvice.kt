@@ -140,7 +140,7 @@ class ExceptionAdvice {
             return "Field '${fieldError.field}' ${fieldError.defaultMessage}"
         }
 
-        //TODO: Do we need @JvmStatic annotations
+        // TODO: Do we need @JvmStatic annotations
         fun badRequest(message: String): ResponseEntity<ExceptionResponse> {
             return ResponseEntity(ExceptionResponse(message), HttpStatus.BAD_REQUEST)
         }

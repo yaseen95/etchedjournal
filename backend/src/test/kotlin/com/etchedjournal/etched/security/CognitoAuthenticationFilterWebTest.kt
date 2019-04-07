@@ -184,10 +184,12 @@ class CognitoAuthenticationFilterWebTest {
             PUBLIC_KEY = factory.generatePublic(x509Spec) as RSAPublicKey
 
             AUTH_JWK = Jwk(
+                /* ktlint-disable no-multi-spaces */
                 "jwkId",    // kid
                 "RSA",      // kty
                 "RS256",    // alg
                 "sig",      // use
+                /* ktlint-enable no-multi-spaces */
                 listOf<String>(),
                 null,
                 listOf<String>(),
