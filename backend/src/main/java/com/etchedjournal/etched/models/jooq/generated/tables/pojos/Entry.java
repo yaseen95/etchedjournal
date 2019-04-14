@@ -6,11 +6,12 @@ package com.etchedjournal.etched.models.jooq.generated.tables.pojos;
 
 import com.etchedjournal.etched.models.OwnerType;
 
+import java.time.Instant;
+import java.util.Arrays;
+
 import javax.annotation.Generated;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.Instant;
-import java.util.Arrays;
 
 
 /**
