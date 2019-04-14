@@ -12,24 +12,14 @@ import com.etchedjournal.etched.models.jooq.generated.Indexes;
 import com.etchedjournal.etched.models.jooq.generated.Keys;
 import com.etchedjournal.etched.models.jooq.generated.Public;
 import com.etchedjournal.etched.models.jooq.generated.tables.records.EntryRecord;
+import org.jooq.*;
+import org.jooq.impl.DSL;
+import org.jooq.impl.TableImpl;
 
+import javax.annotation.Generated;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.annotation.Generated;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Index;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Schema;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.UniqueKey;
-import org.jooq.impl.DSL;
-import org.jooq.impl.TableImpl;
 
 
 /**
@@ -45,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Entry extends TableImpl<EntryRecord> {
 
-    private static final long serialVersionUID = -56156062;
+    private static final long serialVersionUID = 334655823;
 
     /**
      * The reference instance of <code>public.entry</code>
@@ -99,6 +89,11 @@ public class Entry extends TableImpl<EntryRecord> {
      * The column <code>public.entry.version</code>.
      */
     public final TableField<EntryRecord, Integer> VERSION = createField("version", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>public.entry.schema</code>.
+     */
+    public final TableField<EntryRecord, String> SCHEMA = createField("schema", org.jooq.impl.SQLDataType.VARCHAR(10).nullable(false), this, "");
 
     /**
      * Create a <code>public.entry</code> table reference

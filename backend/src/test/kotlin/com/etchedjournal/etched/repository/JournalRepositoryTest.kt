@@ -57,7 +57,8 @@ class JournalRepositoryTest {
             TestAuthService.TESTER_USER_ID,
             OwnerType.USER,
             keyPair.id,
-            0
+            0,
+            "1.0.0"
         )
         journal = repo.create(journal)
         assertEquals(1, journal.version)
@@ -73,7 +74,8 @@ class JournalRepositoryTest {
             TestAuthService.TESTER_USER_ID,
             OwnerType.USER,
             keyPair.id,
-            0
+            0,
+            "1.0.0"
         )
         journal1 = repo.create(journal1)
         assertEquals(1, journal1.version)
@@ -86,7 +88,8 @@ class JournalRepositoryTest {
             OwnerType.USER,
             keyPair.id,
             // set version to 0
-            0
+            0,
+            "1.0.0"
         )
         // Try to create again with the version 0
         repo.create(journal2)
@@ -102,7 +105,8 @@ class JournalRepositoryTest {
             TestAuthService.TESTER_USER_ID,
             OwnerType.USER,
             keyPair.id,
-            0
+            0,
+            "1.0.0"
         )
         val created = repo.create(journal)
 

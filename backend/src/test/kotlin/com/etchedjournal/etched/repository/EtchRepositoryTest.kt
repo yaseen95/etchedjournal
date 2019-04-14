@@ -71,7 +71,8 @@ class EtchRepositoryTest {
             OwnerType.USER,
             entry.id,
             keyPair.id,
-            0
+            0,
+            "1.0.0"
         )
         val created = repo.createEtches(listOf(e))[0]
         assertEquals(1, created.version)
@@ -88,7 +89,8 @@ class EtchRepositoryTest {
             OwnerType.USER,
             entry.id,
             keyPair.id,
-            0
+            0,
+            "1.0.0"
         )
         e1 = repo.createEtches(listOf(e1))[0]
         assertEquals(1, e1.version)
@@ -102,7 +104,8 @@ class EtchRepositoryTest {
             entry.id,
             keyPair.id,
             // set version to 0
-            0
+            0,
+            "1.0.0"
         )
         // Try to create again with the version 0
         repo.createEtches(listOf(e2))
@@ -119,7 +122,8 @@ class EtchRepositoryTest {
             OwnerType.USER,
             entry.id,
             keyPair.id,
-            0
+            0,
+            "1.0.0"
         )
         val created = repo.createEtches(listOf(e))[0]
 

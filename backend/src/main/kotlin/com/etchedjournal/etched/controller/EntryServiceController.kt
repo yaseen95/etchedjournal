@@ -41,8 +41,8 @@ class EntryServiceController(private val entryService: EntryService) {
      */
     @PostMapping("")
     fun create(
-        @RequestBody @Valid req: EncryptedEntityRequest,
-        @RequestParam journalId: String
+        @Valid @RequestBody req: EncryptedEntityRequest,
+        @RequestParam @Valid @IsEtchedId journalId: String
     ): Entry {
         logger.info("Creating an entry for journal {}", journalId)
         val createdEntry = entryService.create(req, journalId)

@@ -6,12 +6,11 @@ package com.etchedjournal.etched.models.jooq.generated.tables.pojos;
 
 import com.etchedjournal.etched.models.OwnerType;
 
-import java.time.Instant;
-import java.util.Arrays;
-
 import javax.annotation.Generated;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.Instant;
+import java.util.Arrays;
 
 
 /**
@@ -34,6 +33,7 @@ public class Journal {
     private final OwnerType ownerType;
     private final String    keyPairId;
     private final Integer   version;
+    private final String    schema;
 
     public Journal(Journal value) {
         this.id = value.id;
@@ -43,6 +43,7 @@ public class Journal {
         this.ownerType = value.ownerType;
         this.keyPairId = value.keyPairId;
         this.version = value.version;
+        this.schema = value.schema;
     }
 
     public Journal(
@@ -52,7 +53,8 @@ public class Journal {
         String    owner,
         OwnerType ownerType,
         String    keyPairId,
-        Integer   version
+        Integer   version,
+        String    schema
     ) {
         this.id = id;
         this.timestamp = timestamp;
@@ -61,6 +63,7 @@ public class Journal {
         this.ownerType = ownerType;
         this.keyPairId = keyPairId;
         this.version = version;
+        this.schema = schema;
     }
 
     @NotNull
@@ -97,6 +100,12 @@ public class Journal {
     @NotNull
     public Integer getVersion() {
         return this.version;
+    }
+
+    @NotNull
+    @Size(max = 10)
+    public String getSchema() {
+        return this.schema;
     }
 
     @Override
@@ -150,6 +159,12 @@ public class Journal {
         }
         else if (!version.equals(other.version))
             return false;
+        if (schema == null) {
+            if (other.schema != null)
+                return false;
+        }
+        else if (!schema.equals(other.schema))
+            return false;
         return true;
     }
 
@@ -164,6 +179,7 @@ public class Journal {
         result = prime * result + ((this.ownerType == null) ? 0 : this.ownerType.hashCode());
         result = prime * result + ((this.keyPairId == null) ? 0 : this.keyPairId.hashCode());
         result = prime * result + ((this.version == null) ? 0 : this.version.hashCode());
+        result = prime * result + ((this.schema == null) ? 0 : this.schema.hashCode());
         return result;
     }
 
@@ -178,6 +194,7 @@ public class Journal {
         sb.append(", ").append(ownerType);
         sb.append(", ").append(keyPairId);
         sb.append(", ").append(version);
+        sb.append(", ").append(schema);
 
         sb.append(")");
         return sb.toString();

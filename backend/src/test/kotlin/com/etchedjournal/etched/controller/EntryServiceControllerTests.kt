@@ -153,7 +153,8 @@ class EntryServiceControllerTests {
             """
             {
                 "content": "abcd",
-                "keyPairId": "${testKeyPair.id}"
+                "keyPairId": "${testKeyPair.id}",
+                "schema": "1.0.0"
             }
             """
         mockMvc.perform(
@@ -183,7 +184,8 @@ class EntryServiceControllerTests {
             """
             {
                 "content": "abcd",
-                "keyPairId": "${testKeyPair.id}"
+                "keyPairId": "${testKeyPair.id}",
+                "schema": "1.0.0"
             }
             """
         mockMvc.perform(
@@ -211,7 +213,8 @@ class EntryServiceControllerTests {
             """
             {
                 "content": "abcd",
-                "keyPairId": "${otherUserKeyPair.id}"
+                "keyPairId": "${otherUserKeyPair.id}",
+                "schema": "1.0.0"
             }
             """
         mockMvc.perform(

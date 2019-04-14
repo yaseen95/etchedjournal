@@ -24,7 +24,8 @@ class TestRepoUtils(
         keyPairId: String,
         timestamp: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
-        ownerType: OwnerType = OwnerType.USER
+        ownerType: OwnerType = OwnerType.USER,
+        schema: String = "1.0.0"
     ): Journal {
         val j = Journal(
             id.padEnd(11, '0'),
@@ -33,7 +34,8 @@ class TestRepoUtils(
             owner,
             ownerType,
             keyPairId,
-            0
+            0,
+            schema
         )
         return journalRepo.create(j)
     }
@@ -45,7 +47,8 @@ class TestRepoUtils(
         keyPairId: String,
         timestamp: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
-        ownerType: OwnerType = OwnerType.USER
+        ownerType: OwnerType = OwnerType.USER,
+        schema: String = "1.0.0"
     ): Entry {
         val e = Entry(
             id.padEnd(11, '0'),
@@ -55,7 +58,8 @@ class TestRepoUtils(
             ownerType,
             journal.id,
             keyPairId,
-            0
+            0,
+            schema
         )
         return entryRepo.create(e)
     }
@@ -67,7 +71,8 @@ class TestRepoUtils(
         keyPairId: String,
         timestamp: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
-        ownerType: OwnerType = OwnerType.USER
+        ownerType: OwnerType = OwnerType.USER,
+        schema: String = "1.0.0"
     ): Etch {
         val e = Etch(
             id.padEnd(11, '0'),
@@ -77,7 +82,8 @@ class TestRepoUtils(
             ownerType,
             entry.id,
             keyPairId,
-            0
+            0,
+            schema
         )
         return etchRepo.createEtches(listOf(e))[0]
     }

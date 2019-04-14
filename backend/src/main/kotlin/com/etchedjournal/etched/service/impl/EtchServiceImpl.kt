@@ -70,7 +70,8 @@ class EtchServiceImpl(
                 OwnerType.USER,
                 entryId,
                 keyPairId,
-                0
+                0,
+                it.schema
             )
         }
     }

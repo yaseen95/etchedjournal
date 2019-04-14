@@ -23,7 +23,8 @@ CREATE TABLE journal (
   owner       VARCHAR(60)   NOT NULL,
   owner_type  CHAR(1)       NOT NULL,
   key_pair_id BIGINT        NOT NULL,
-  version    INT            NOT NULL,
+  version     INT           NOT NULL,
+  schema      VARCHAR(10)   NOT NULL,
   FOREIGN KEY (key_pair_id) REFERENCES key_pair (id)
 );
 
@@ -35,7 +36,8 @@ CREATE TABLE entry (
   owner_type  CHAR(1)       NOT NULL,
   journal_id  BIGINT        NOT NULL,
   key_pair_id BIGINT        NOT NULL,
-  version    INT            NOT NULL,
+  version     INT           NOT NULL,
+  schema      VARCHAR(10)   NOT NULL,
   FOREIGN KEY (journal_id) REFERENCES journal (id),
   FOREIGN KEY (key_pair_id) REFERENCES key_pair (id)
 );
@@ -48,7 +50,8 @@ CREATE TABLE etch (
   owner_type  CHAR(1)       NOT NULL,
   entry_id    BIGINT        NOT NULL,
   key_pair_id BIGINT        NOT NULL,
-  version    INT            NOT NULL,
+  version     INT           NOT NULL,
+  schema      VARCHAR(10)   NOT NULL,
   FOREIGN KEY (entry_id) REFERENCES entry (id),
   FOREIGN KEY (key_pair_id) REFERENCES key_pair (id)
 );

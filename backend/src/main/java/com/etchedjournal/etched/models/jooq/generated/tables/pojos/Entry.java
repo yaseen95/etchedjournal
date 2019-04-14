@@ -6,12 +6,11 @@ package com.etchedjournal.etched.models.jooq.generated.tables.pojos;
 
 import com.etchedjournal.etched.models.OwnerType;
 
-import java.time.Instant;
-import java.util.Arrays;
-
 import javax.annotation.Generated;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.Instant;
+import java.util.Arrays;
 
 
 /**
@@ -35,6 +34,7 @@ public class Entry {
     private final String    journalId;
     private final String    keyPairId;
     private final Integer   version;
+    private final String    schema;
 
     public Entry(Entry value) {
         this.id = value.id;
@@ -45,6 +45,7 @@ public class Entry {
         this.journalId = value.journalId;
         this.keyPairId = value.keyPairId;
         this.version = value.version;
+        this.schema = value.schema;
     }
 
     public Entry(
@@ -55,7 +56,8 @@ public class Entry {
         OwnerType ownerType,
         String    journalId,
         String    keyPairId,
-        Integer   version
+        Integer   version,
+        String    schema
     ) {
         this.id = id;
         this.timestamp = timestamp;
@@ -65,6 +67,7 @@ public class Entry {
         this.journalId = journalId;
         this.keyPairId = keyPairId;
         this.version = version;
+        this.schema = schema;
     }
 
     @NotNull
@@ -106,6 +109,12 @@ public class Entry {
     @NotNull
     public Integer getVersion() {
         return this.version;
+    }
+
+    @NotNull
+    @Size(max = 10)
+    public String getSchema() {
+        return this.schema;
     }
 
     @Override
@@ -165,6 +174,12 @@ public class Entry {
         }
         else if (!version.equals(other.version))
             return false;
+        if (schema == null) {
+            if (other.schema != null)
+                return false;
+        }
+        else if (!schema.equals(other.schema))
+            return false;
         return true;
     }
 
@@ -180,6 +195,7 @@ public class Entry {
         result = prime * result + ((this.journalId == null) ? 0 : this.journalId.hashCode());
         result = prime * result + ((this.keyPairId == null) ? 0 : this.keyPairId.hashCode());
         result = prime * result + ((this.version == null) ? 0 : this.version.hashCode());
+        result = prime * result + ((this.schema == null) ? 0 : this.schema.hashCode());
         return result;
     }
 
@@ -195,6 +211,7 @@ public class Entry {
         sb.append(", ").append(journalId);
         sb.append(", ").append(keyPairId);
         sb.append(", ").append(version);
+        sb.append(", ").append(schema);
 
         sb.append(")");
         return sb.toString();

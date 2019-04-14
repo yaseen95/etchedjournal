@@ -56,7 +56,8 @@ class JournalServiceImpl(
             authService.getUserId(),
             OwnerType.USER,
             keyPair.id,
-            0
+            0,
+            req.schema
         )
 
         journal = journalRepo.create(journal)
