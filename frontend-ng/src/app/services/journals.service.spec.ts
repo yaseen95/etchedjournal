@@ -45,6 +45,7 @@ describe('JournalsService', () => {
             ownerType: 'USER' as OwnerType,
             keyPairId: 'kpId',
             version: 1,
+            schema: '1.0.0',
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/journals`);
@@ -71,6 +72,7 @@ describe('JournalsService', () => {
             ownerType: OwnerType.USER,
             keyPairId: 'kpId',
             version: 1,
+            schema: '1.0.0',
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/journals`);

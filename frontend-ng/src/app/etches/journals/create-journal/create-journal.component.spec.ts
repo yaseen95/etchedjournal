@@ -144,6 +144,7 @@ describe('CreateJournalComponent', () => {
             timestamp: 1,
             keyPairId: 'kpId',
             version: 1,
+            schema: '1.0.0',
         };
         createJournalSpy.and.returnValue(Promise.resolve(journal));
         component.createJournal();

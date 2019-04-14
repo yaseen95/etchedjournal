@@ -48,6 +48,7 @@ describe('EntryListComponent', () => {
                 keyPairId: 'kpId',
                 journalId: 'jid',
                 version: 1,
+                schema: '1.0.0',
             },
             {
                 id: 'id2',
@@ -58,6 +59,7 @@ describe('EntryListComponent', () => {
                 keyPairId: 'kpId',
                 journalId: 'jid',
                 version: 1,
+                schema: '1.0.0',
             },
         ];
         fixture.detectChanges();

@@ -45,6 +45,7 @@ describe('EntriesService', () => {
             keyPairId: 'kpId',
             journalId: 'jid',
             version: 1,
+            schema: '1.0.0',
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries?journalId=journalId`);
@@ -69,6 +70,7 @@ describe('EntriesService', () => {
             keyPairId: 'kpId',
             journalId: 'jid',
             version: 1,
+            schema: '1.0.0',
         };
         entries[1] = {
             content: 'entry2',
@@ -79,6 +81,7 @@ describe('EntriesService', () => {
             keyPairId: 'kpId',
             journalId: 'jid',
             version: 1,
+            schema: '1.0.0',
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries?journalId=journalId`);
@@ -103,6 +106,7 @@ describe('EntriesService', () => {
             keyPairId: 'kpId',
             journalId: 'jid',
             version: 1,
+            schema: '1.0.0',
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries/entry1`);
