@@ -30,6 +30,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
         keyPairId: 'kpId',
         journalId: 'jid',
         version: 1,
+        schema: '1.0.0',
     };
 
     beforeEach(async(() => {

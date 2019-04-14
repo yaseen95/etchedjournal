@@ -62,7 +62,8 @@ class EntryRepositoryTest {
             OwnerType.USER,
             journal.id,
             keyPair.id,
-            0
+            0,
+            "1.0.0"
         )
         entry = repo.create(entry)
         assertEquals(1, entry.version)
@@ -79,7 +80,8 @@ class EntryRepositoryTest {
             OwnerType.USER,
             journal.id,
             keyPair.id,
-            0
+            0,
+            "1.0.0"
         )
         entry1 = repo.create(entry1)
         assertEquals(1, entry1.version)
@@ -93,7 +95,8 @@ class EntryRepositoryTest {
             journal.id,
             keyPair.id,
             // set version to 0
-            0
+            0,
+            "1.0.0"
         )
         // Try to create again with the version 0
         repo.create(entry2)
@@ -110,7 +113,8 @@ class EntryRepositoryTest {
             OwnerType.USER,
             journal.id,
             keyPair.id,
-            0
+            0,
+            "1.0.0"
         )
         val created = repo.create(entry)
 

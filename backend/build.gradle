@@ -17,7 +17,7 @@ buildscript {
         flywayVersion = '5.2.4'
         postgresqlVersion = '42.2.5'
         jooqVersion = '3.11.9'
-        gradleJooqPluginVersion = '3.0.2'
+        gradleJooqPluginVersion = '3.0.3'
     }
     repositories {
         mavenCentral()
@@ -33,7 +33,7 @@ buildscript {
 plugins {
     // https://github.com/gradle/gradle/issues/1697
     // Can't use variables here
-    id "nu.studer.jooq" version "3.0.2"
+    id "nu.studer.jooq" version "3.0.3"
     id "org.flywaydb.flyway" version "5.2.4"
     id "org.jmailen.kotlinter" version "1.23.0"
 }

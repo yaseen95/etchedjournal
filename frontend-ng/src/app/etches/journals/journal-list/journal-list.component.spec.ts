@@ -24,6 +24,7 @@ describe('JournalListComponent', () => {
                 content: 'journal1 content',
                 keyPairId: 'kpId',
                 version: 1,
+                schema: '1.0.0',
             },
             {
                 id: '0000000000000000',
@@ -33,6 +34,7 @@ describe('JournalListComponent', () => {
                 content: 'journal2 content',
                 keyPairId: 'kpId',
                 version: 1,
+                schema: '1.0.0',
             },
         ];
 

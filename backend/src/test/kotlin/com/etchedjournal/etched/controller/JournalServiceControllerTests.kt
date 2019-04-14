@@ -95,7 +95,8 @@ class JournalServiceControllerTests {
             .andExpect(jsonPath("$[0].ownerType", `is`("USER")))
             .andExpect(jsonPath("$[0].keyPairId", `is`(keyPair.id)))
             .andExpect(jsonPath("$[0].version", `is`(1)))
-            .andExpect(jsonPath("$[0].*", hasSize<Any>(7)))
+            .andExpect(jsonPath("$[0].schema", `is`("1.0.0")))
+            .andExpect(jsonPath("$[0].*", hasSize<Any>(8)))
     }
 
     @Test
@@ -116,7 +117,8 @@ class JournalServiceControllerTests {
             .andExpect(jsonPath("$.ownerType", `is`("USER")))
             .andExpect(jsonPath("$.keyPairId", `is`(keyPair.id)))
             .andExpect(jsonPath("$.version", `is`(1)))
-            .andExpect(jsonPath("$.*", hasSize<Any>(7)))
+            .andExpect(jsonPath("$.schema", `is`("1.0.0")))
+            .andExpect(jsonPath("$.*", hasSize<Any>(8)))
     }
 
     @Test
@@ -138,7 +140,15 @@ class JournalServiceControllerTests {
         mockMvc.perform(
             post(JOURNALS_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{ "content": "abcd", "keyPairId": "${keyPair.id}" }""")
+                .content(
+                    """
+                    {
+                        "content": "abcd",
+                        "keyPairId": "${keyPair.id}",
+                        "schema": "1.0.0"
+                    }
+                    """.trimIndent()
+                )
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("\$.id").value(ID_LENGTH_MATCHER))

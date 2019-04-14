@@ -172,7 +172,8 @@ class EtchServiceControllerTests {
             [
                 {
                     "content": "YWJj",
-                    "keyPairId": "${keyPair.id}"
+                    "keyPairId": "${keyPair.id}",
+                    "schema": "1.0.0"
                 }
             ]
             """
@@ -192,7 +193,8 @@ class EtchServiceControllerTests {
             .andExpect(jsonPath("\$[0].keyPairId", `is`(keyPair.id)))
             .andExpect(jsonPath("\$[0].entryId", `is`(entry.id)))
             .andExpect(jsonPath("\$[0].version", `is`(1)))
-            .andExpect(jsonPath("\$[0].*", hasSize<Any>(8)))
+            .andExpect(jsonPath("\$[0].schema", `is`("1.0.0")))
+            .andExpect(jsonPath("\$[0].*", hasSize<Any>(9)))
 
         mockMvc.perform(get("$ETCHES_PATH?entryId=${entry.id}"))
             .andExpect(status().isOk)
@@ -207,11 +209,13 @@ class EtchServiceControllerTests {
             [
                 {
                     "content": "YWJj",
-                    "keyPairId": "${keyPair.id}"
+                    "keyPairId": "${keyPair.id}",
+                    "schema": "1.0.0"
                 },
                 {
                     "content": "AQI=",
-                    "keyPairId": "${keyPair.id}"
+                    "keyPairId": "${keyPair.id}",
+                    "schema": "1.0.0"
                 }
             ]
             """
@@ -256,7 +260,8 @@ class EtchServiceControllerTests {
             [
                 {
                     "content": "abcd",
-                    "keyPairId": "${keyPair.id}"
+                    "keyPairId": "${keyPair.id}",
+                    "schema": "1.0.0"
                 }
             ]
             """
@@ -286,7 +291,8 @@ class EtchServiceControllerTests {
                 {
 
                     "content": "abcd",
-                    "keyPairId": "${otherUserKeyPair.id}"
+                    "keyPairId": "${otherUserKeyPair.id}",
+                    "schema": "1.0.0"
                 }
             ]
             """
@@ -350,11 +356,13 @@ class EtchServiceControllerTests {
             [
                 {
                     "content": "YWJj",
-                    "keyPairId": "${keyPair.id}"
+                    "keyPairId": "${keyPair.id}",
+                    "schema": "1.0.0"
                 },
                 {
                     "content": "AQI=",
-                    "keyPairId": "${keyPair2.id}"
+                    "keyPairId": "${keyPair2.id}",
+                    "schema": "1.0.0"
                 }
             ]
             """

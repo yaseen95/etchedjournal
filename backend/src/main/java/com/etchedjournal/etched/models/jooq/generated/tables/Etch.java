@@ -45,7 +45,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Etch extends TableImpl<EtchRecord> {
 
-    private static final long serialVersionUID = 785036934;
+    private static final long serialVersionUID = 1219371801;
 
     /**
      * The reference instance of <code>public.etch</code>
@@ -99,6 +99,11 @@ public class Etch extends TableImpl<EtchRecord> {
      * The column <code>public.etch.version</code>.
      */
     public final TableField<EtchRecord, Integer> VERSION = createField("version", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>public.etch.schema</code>.
+     */
+    public final TableField<EtchRecord, String> SCHEMA = createField("schema", org.jooq.impl.SQLDataType.VARCHAR(10).nullable(false), this, "");
 
     /**
      * Create a <code>public.etch</code> table reference

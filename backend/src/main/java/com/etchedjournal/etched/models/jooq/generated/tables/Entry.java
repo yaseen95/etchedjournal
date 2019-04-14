@@ -45,7 +45,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Entry extends TableImpl<EntryRecord> {
 
-    private static final long serialVersionUID = -56156062;
+    private static final long serialVersionUID = 334655823;
 
     /**
      * The reference instance of <code>public.entry</code>
@@ -99,6 +99,11 @@ public class Entry extends TableImpl<EntryRecord> {
      * The column <code>public.entry.version</code>.
      */
     public final TableField<EntryRecord, Integer> VERSION = createField("version", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>public.entry.schema</code>.
+     */
+    public final TableField<EntryRecord, String> SCHEMA = createField("schema", org.jooq.impl.SQLDataType.VARCHAR(10).nullable(false), this, "");
 
     /**
      * Create a <code>public.entry</code> table reference

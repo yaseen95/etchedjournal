@@ -60,7 +60,8 @@ class EntryServiceImpl(
             OwnerType.USER,
             journalId,
             keyPairService.getKeypair(req.keyPairId).id,
-            0
+            0,
+            req.schema
         )
         entry = entryRepo.create(entry)
         logger.info("Created {}", entry)

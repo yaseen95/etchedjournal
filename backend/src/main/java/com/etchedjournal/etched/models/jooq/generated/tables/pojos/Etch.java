@@ -35,6 +35,7 @@ public class Etch {
     private final String    entryId;
     private final String    keyPairId;
     private final Integer   version;
+    private final String    schema;
 
     public Etch(Etch value) {
         this.id = value.id;
@@ -45,6 +46,7 @@ public class Etch {
         this.entryId = value.entryId;
         this.keyPairId = value.keyPairId;
         this.version = value.version;
+        this.schema = value.schema;
     }
 
     public Etch(
@@ -55,7 +57,8 @@ public class Etch {
         OwnerType ownerType,
         String    entryId,
         String    keyPairId,
-        Integer   version
+        Integer   version,
+        String    schema
     ) {
         this.id = id;
         this.timestamp = timestamp;
@@ -65,6 +68,7 @@ public class Etch {
         this.entryId = entryId;
         this.keyPairId = keyPairId;
         this.version = version;
+        this.schema = schema;
     }
 
     @NotNull
@@ -106,6 +110,12 @@ public class Etch {
     @NotNull
     public Integer getVersion() {
         return this.version;
+    }
+
+    @NotNull
+    @Size(max = 10)
+    public String getSchema() {
+        return this.schema;
     }
 
     @Override
@@ -165,6 +175,12 @@ public class Etch {
         }
         else if (!version.equals(other.version))
             return false;
+        if (schema == null) {
+            if (other.schema != null)
+                return false;
+        }
+        else if (!schema.equals(other.schema))
+            return false;
         return true;
     }
 
@@ -180,6 +196,7 @@ public class Etch {
         result = prime * result + ((this.entryId == null) ? 0 : this.entryId.hashCode());
         result = prime * result + ((this.keyPairId == null) ? 0 : this.keyPairId.hashCode());
         result = prime * result + ((this.version == null) ? 0 : this.version.hashCode());
+        result = prime * result + ((this.schema == null) ? 0 : this.schema.hashCode());
         return result;
     }
 
@@ -195,6 +212,7 @@ public class Etch {
         sb.append(", ").append(entryId);
         sb.append(", ").append(keyPairId);
         sb.append(", ").append(version);
+        sb.append(", ").append(schema);
 
         sb.append(")");
         return sb.toString();
