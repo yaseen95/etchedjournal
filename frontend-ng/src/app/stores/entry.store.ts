@@ -10,8 +10,7 @@ export class EntryStore {
     @mobx.observable public entries: EntryEntity[] = [];
     @mobx.observable public loading: boolean = false;
 
-    constructor(private entryService: EntriesService, private encrypterService: EncrypterService) {
-    }
+    constructor(private entryService: EntriesService, private encrypterService: EncrypterService) {}
 
     @mobx.action
     public async loadEntries(journalId: string) {
@@ -53,7 +52,7 @@ export class EntryStore {
             keyPairId: enc.keyPairId,
             schema: '1.0.0',
         };
-        const req: CreateEntryRequest = { journalId: journalId, entry: encEntity };
+        const req: CreateEntryRequest = { journalId, entry: encEntity };
         return this.entryService.createEntry(req).toPromise();
     }
 }

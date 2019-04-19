@@ -62,7 +62,7 @@ export class JournalStore {
         const req: EncryptedEntityRequest = {
             keyPairId: enc.keyPairId,
             content: ciphertext,
-            schema: '1.0.0'
+            schema: '1.0.0',
         };
         const j = await this.journalsService.createJournal(req).toPromise();
         // Fetch the journals again to update the navbar

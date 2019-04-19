@@ -27,7 +27,7 @@ describe('JournalsService', () => {
     });
 
     it('create journal', () => {
-        const createJournalReq = {keyPairId: 'kpId', content: 'content', schema: '1.0.0'};
+        const createJournalReq = { keyPairId: 'kpId', content: 'content', schema: '1.0.0' };
         service.createJournal(createJournalReq).subscribe((result: JournalEntity) => {
             expect(result.id).toEqual('entryId');
             expect(result.content).toEqual('base64Content');

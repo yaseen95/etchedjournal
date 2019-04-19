@@ -30,17 +30,15 @@ describe('EtchesService', () => {
 
     it('post etches', () => {
         const creatingEtches: EncryptedEntityRequest[] = [
-            {content: 'etch1', keyPairId: 'kpId', schema: '1.0.0'},
-            {content: 'etch2', keyPairId: 'kpId', schema: '1.0.0'},
+            { content: 'etch1', keyPairId: 'kpId', schema: '1.0.0' },
+            { content: 'etch2', keyPairId: 'kpId', schema: '1.0.0' },
         ];
-        const createEtchesReq: CreateEtchesRequest = {entryId: 'entryId', etches: creatingEtches};
-        service
-            .postEtches(createEtchesReq)
-            .subscribe((result: EtchEntity[]) => {
-                expect(result.length).toEqual(2);
-                expect(result[0].content).toEqual('etch1');
-                expect(result[1].content).toEqual('etch2');
-            });
+        const createEtchesReq: CreateEtchesRequest = { entryId: 'entryId', etches: creatingEtches };
+        service.postEtches(createEtchesReq).subscribe((result: EtchEntity[]) => {
+            expect(result.length).toEqual(2);
+            expect(result[0].content).toEqual('etch1');
+            expect(result[1].content).toEqual('etch2');
+        });
 
         const etches = new Array<EtchEntity>(2);
         etches[0] = {
