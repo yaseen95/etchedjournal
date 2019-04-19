@@ -3,7 +3,8 @@ import * as mobx from 'mobx-angular';
 import { AbstractEtch, EtchV1 } from '../models/etch';
 import { EtchEntity } from '../models/etch-entity';
 import { EncrypterService } from '../services/encrypter.service';
-import { EtchesService } from '../services/etches.service';
+import { EncryptedEntityRequest } from '../services/etched-api-utils';
+import { CreateEtchesRequest, EtchesService } from '../services/etches.service';
 
 export interface State {
     etches: EtchEntity[];
@@ -58,6 +59,13 @@ export class EtchStore {
         const enc = this.encrypterService.encrypter;
         const dump = JSON.stringify(etches);
         const ciphertext = await enc.encrypt(dump);
-        return this.etchService.postEtches(enc.keyPairId, entryId, [ciphertext]).toPromise();
+
+        const encEntity: EncryptedEntityRequest = {
+            content: ciphertext,
+            keyPairId: enc.keyPairId,
+            schema: '1.0.0',
+        };
+        const req: CreateEtchesRequest = { entryId, etches: [encEntity] };
+        return this.etchService.postEtches(req).toPromise();
     }
 }

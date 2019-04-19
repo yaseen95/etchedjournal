@@ -6,20 +6,21 @@ import { Base64Str } from '../models/encrypted-entity';
 import { EntryEntity } from '../models/entry-entity';
 import { EncryptedEntityRequest, ENTRIES_URL, JOURNAL_ID } from './etched-api-utils';
 
+export interface CreateEntryRequest {
+    readonly journalId: string;
+    readonly entry: EncryptedEntityRequest;
+}
+
 @Injectable({
     providedIn: 'root',
 })
 export class EntriesService {
     constructor(private http: HttpClient) {}
 
-    public createEntry(
-        keyPairId: string,
-        journalId: string,
-        content: Base64Str
-    ): Observable<EntryEntity> {
-        console.info(`Creating an entry for journal ${journalId}`);
-        const body: EncryptedEntityRequest = { content, keyPairId };
-        const params = new HttpParams().set(JOURNAL_ID, journalId);
+    public createEntry(req: CreateEntryRequest): Observable<EntryEntity> {
+        console.info(`Creating an entry for journal ${req.journalId}`);
+        const body: EncryptedEntityRequest = req.entry;
+        const params = new HttpParams().set(JOURNAL_ID, req.journalId);
         const options = { params };
         return this.http
             .post<EntryEntity>(ENTRIES_URL, body, options)

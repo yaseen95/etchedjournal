@@ -2,9 +2,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Base64Str } from '../models/encrypted-entity';
 import { EtchEntity } from '../models/etch-entity';
 import { EncryptedEntityRequest, ENTRY_ID, ETCHES_URL } from './etched-api-utils';
+
+export interface CreateEtchesRequest {
+    readonly entryId: string;
+    readonly etches: EncryptedEntityRequest[];
+}
 
 @Injectable({
     providedIn: 'root',
@@ -12,19 +16,11 @@ import { EncryptedEntityRequest, ENTRY_ID, ETCHES_URL } from './etched-api-utils
 export class EtchesService {
     constructor(private http: HttpClient) {}
 
-    public postEtches(
-        keyPairId: string,
-        entryId: string,
-        etches: Base64Str[]
-    ): Observable<EtchEntity[]> {
-        console.info(`Creating etches for entry ${entryId}`);
-        const body: EncryptedEntityRequest[] = etches.map(e => {
-            return { content: e, keyPairId };
-        });
-
-        const params = new HttpParams().set(ENTRY_ID, entryId);
+    public postEtches(req: CreateEtchesRequest): Observable<EtchEntity[]> {
+        const params = new HttpParams().set(ENTRY_ID, req.entryId);
+        const body = req.etches;
         return this.post<EncryptedEntityRequest[], EtchEntity[]>(ETCHES_URL, body, params).pipe(
-            tap(() => console.info(`Created etches for ${entryId}`))
+            tap(() => console.info(`Created etches for ${req.entryId}`))
         );
     }
 

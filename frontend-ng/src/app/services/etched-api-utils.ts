@@ -15,6 +15,7 @@ export const JOURNAL_ID = 'journalId';
 export const AUTH_REQUIRED_URLS = [SELF_URL, ENTRIES_URL, ETCHES_URL, JOURNALS_URL, KEYPAIRS_URL];
 
 export interface EncryptedEntityRequest {
-    content: Base64Str;
-    keyPairId: string;
+    readonly content: Base64Str;
+    readonly keyPairId: string;
+    readonly schema: string;
 }
