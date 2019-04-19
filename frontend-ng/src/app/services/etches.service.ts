@@ -14,8 +14,7 @@ export interface CreateEtchesRequest {
     providedIn: 'root',
 })
 export class EtchesService {
-    constructor(private http: HttpClient) {
-    }
+    constructor(private http: HttpClient) {}
 
     public postEtches(req: CreateEtchesRequest): Observable<EtchEntity[]> {
         const params = new HttpParams().set(ENTRY_ID, req.entryId);

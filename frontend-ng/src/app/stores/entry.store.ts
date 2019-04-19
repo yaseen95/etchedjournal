@@ -22,8 +22,7 @@ export class EntryStore {
     @mobx.observable public loading: boolean = false;
     public entriesById: Map<string, AbstractEntry> = new Map();
 
-    constructor(private entryService: EntriesService, private encrypterService: EncrypterService) {
-    }
+    constructor(private entryService: EntriesService, private encrypterService: EncrypterService) {}
 
     @mobx.action
     public async loadEntries(journalId: string) {

@@ -15,8 +15,7 @@ export interface CreateEntryRequest {
     providedIn: 'root',
 })
 export class EntriesService {
-    constructor(private http: HttpClient) {
-    }
+    constructor(private http: HttpClient) {}
 
     public createEntry(req: CreateEntryRequest): Observable<EntryEntity> {
         console.info(`Creating an entry for journal ${req.journalId}`);

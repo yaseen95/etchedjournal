@@ -10,8 +10,7 @@ import { KeyPairEntity } from './models/key-pair-entity';
     providedIn: 'root',
 })
 export class KeyPairsService {
-    constructor(private http: HttpClient) {
-    }
+    constructor(private http: HttpClient) {}
 
     public createKeyPair(req: CreateKeyPairRequest): Observable<KeyPairEntity> {
         console.info('Creating keypair');

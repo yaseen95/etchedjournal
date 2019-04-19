@@ -20,8 +20,7 @@ export class EtchStore {
         loading: false,
     };
 
-    constructor(private etchService: EtchesService, private encrypterService: EncrypterService) {
-    }
+    constructor(private etchService: EtchesService, private encrypterService: EncrypterService) {}
 
     @mobx.action
     public async loadEtches(entryId: string) {
