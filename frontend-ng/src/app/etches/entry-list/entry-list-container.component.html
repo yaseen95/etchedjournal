@@ -3,6 +3,7 @@
         <app-spinner [text]="'Getting entries'"></app-spinner>
     </div>
     <div *ngIf="!entryStore.loading" class="column is-12-mobile is-8-desktop">
-        <app-entry-list [entries]="entryStore.entries" [journalId]="journalId"></app-entry-list>
+        <app-entry-list [journalId]="journalId">
+        </app-entry-list>
     </div>
 </div>

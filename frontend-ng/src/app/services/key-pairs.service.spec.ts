@@ -1,10 +1,10 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
-import { KeyPairEntity } from '../models/key-pair-entity';
-import { OwnerType } from '../models/owner-type';
 import { CreateKeyPairRequest } from './dtos/create-key-pair-request';
 import { KeyPairsService } from './key-pairs.service';
+import { KeyPairEntity } from './models/key-pair-entity';
+import { OwnerType } from './models/owner-type';
 
 describe('KeyPairsService', () => {
     let injector: TestBed;

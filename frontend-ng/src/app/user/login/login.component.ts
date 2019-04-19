@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { EtchedUser } from '../../models/etched-user';
 import { AuthService } from '../../services/auth.service';
 import { LoginRequest } from '../../services/dtos/login-request';
+import { EtchedUser } from '../../services/models/etched-user';
 import { PASSWORD_VALIDATORS, USERNAME_VALIDATORS } from '../form-utils';
 
 @Component({

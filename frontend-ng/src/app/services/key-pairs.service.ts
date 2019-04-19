@@ -2,15 +2,16 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { KeyPairEntity } from '../models/key-pair-entity';
 import { CreateKeyPairRequest } from './dtos/create-key-pair-request';
 import { KEYPAIRS_URL } from './etched-api-utils';
+import { KeyPairEntity } from './models/key-pair-entity';
 
 @Injectable({
     providedIn: 'root',
 })
 export class KeyPairsService {
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) {
+    }
 
     public createKeyPair(req: CreateKeyPairRequest): Observable<KeyPairEntity> {
         console.info('Creating keypair');

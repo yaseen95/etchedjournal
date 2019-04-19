@@ -1,8 +1,8 @@
 import { of } from 'rxjs';
-import { EtchV1 } from '../models/etch';
-import { EtchEntity } from '../models/etch-entity';
+import { EtchV1 } from '../models/etch/etch';
 import { EtchesService } from '../services/etches.service';
 import { FakeEncrypter, FakeEncrypterService } from '../services/fakes.service.spec';
+import { EtchEntity } from '../services/models/etch-entity';
 import { EtchStore } from './etch.store';
 
 describe('EtchStore', () => {

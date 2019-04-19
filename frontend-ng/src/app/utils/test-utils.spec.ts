@@ -1,6 +1,6 @@
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { EtchedUser } from '../models/etched-user';
+import { EtchedUser } from '../services/models/etched-user';
 
 export namespace TestUtils {
     /**

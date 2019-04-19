@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { JournalEntity } from '../models/journal-entity';
 import { EncryptedEntityRequest, JOURNALS_URL } from './etched-api-utils';
+import { JournalEntity } from './models/journal-entity';
 
 @Injectable({
     providedIn: 'root',

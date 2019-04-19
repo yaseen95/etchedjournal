@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
-import { AbstractEtch } from '../models/etch';
+import { AbstractEtch } from '../models/etch/etch';
 import { EtchStore } from '../stores/etch.store';
 
 /**

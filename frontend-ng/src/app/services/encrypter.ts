@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcryptjs';
 import * as openpgp from 'openpgp';
 import { environment } from '../../environments/environment';
-import { Base64Str, EncryptedEntity } from '../models/encrypted-entity';
+import { Base64Str, EncryptedEntity } from './models/encrypted-entity';
 
 const DEFAULT_CURVE = 'p521';
 

@@ -1,5 +1,4 @@
 import { EMPTY, of } from 'rxjs';
-import { Base64Str } from '../models/encrypted-entity';
 import { EntryStore } from '../stores/entry.store';
 import { EtchStore } from '../stores/etch.store';
 import { JournalStore } from '../stores/journal.store';
@@ -9,6 +8,7 @@ import { EncrypterService } from './encrypter.service';
 import { EntriesService } from './entries.service';
 import { EtchesService } from './etches.service';
 import { JournalsService } from './journals.service';
+import { Base64Str } from './models/encrypted-entity';
 import { SecureStorageService } from './secure-storage.service';
 
 export class FakeEncrypter extends Encrypter {

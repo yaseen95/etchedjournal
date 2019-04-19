@@ -2,9 +2,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Base64Str } from '../models/encrypted-entity';
-import { EntryEntity } from '../models/entry-entity';
 import { EncryptedEntityRequest, ENTRIES_URL, JOURNAL_ID } from './etched-api-utils';
+import { Base64Str } from './models/encrypted-entity';
+import { EntryEntity } from './models/entry-entity';
 
 export interface CreateEntryRequest {
     readonly journalId: string;
@@ -15,7 +15,8 @@ export interface CreateEntryRequest {
     providedIn: 'root',
 })
 export class EntriesService {
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) {
+    }
 
     public createEntry(req: CreateEntryRequest): Observable<EntryEntity> {
         console.info(`Creating an entry for journal ${req.journalId}`);

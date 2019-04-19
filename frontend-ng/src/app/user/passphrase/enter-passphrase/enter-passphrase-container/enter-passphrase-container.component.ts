@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EtchedRoutes } from '../../../../app-routing-utils';
-import { KeyPairEntity } from '../../../../models/key-pair-entity';
 import { Encrypter, IncorrectPassphraseError } from '../../../../services/encrypter';
 import { EncrypterService } from '../../../../services/encrypter.service';
 import { KeyPairsService } from '../../../../services/key-pairs.service';
+import { KeyPairEntity } from '../../../../services/models/key-pair-entity';
 
 @Component({
     selector: 'app-enter-passphrase-container',

@@ -1,12 +1,12 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
-import { EntryEntity } from '../models/entry-entity';
-import { EtchEntity } from '../models/etch-entity';
-import { OwnerType } from '../models/owner-type';
 import { EncryptedEntityRequest } from './etched-api-utils';
 
 import { CreateEtchesRequest, EtchesService } from './etches.service';
+import { EntryEntity } from './models/entry-entity';
+import { EtchEntity } from './models/etch-entity';
+import { OwnerType } from './models/owner-type';
 
 describe('EtchesService', () => {
     let injector: TestBed;

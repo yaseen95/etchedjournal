@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { JournalEntity } from '../../../models/journal-entity';
+import { JournalEntity } from '../../../services/models/journal-entity';
 
 @Component({
     selector: 'app-journal-list',

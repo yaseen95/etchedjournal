@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EtchedRoutes } from '../../../app-routing-utils';
-import { JournalEntity } from '../../../models/journal-entity';
+import { JournalEntity } from '../../../services/models/journal-entity';
 import { JournalStore } from '../../../stores/journal.store';
 import { JOURNAL_NAME_VALIDATORS, JournalFormUtils } from '../../../user/form-utils';
 
