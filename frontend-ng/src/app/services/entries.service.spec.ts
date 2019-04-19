@@ -4,7 +4,8 @@ import { environment } from '../../environments/environment';
 import { EntryEntity } from '../models/entry-entity';
 import { OwnerType } from '../models/owner-type';
 
-import { EntriesService } from './entries.service';
+import { CreateEntryRequest, EntriesService } from './entries.service';
+import { EncryptedEntityRequest } from './etched-api-utils';
 
 describe('EntriesService', () => {
     let injector: TestBed;
@@ -27,7 +28,13 @@ describe('EntriesService', () => {
     });
 
     it('create entry', () => {
-        service.createEntry('kpId', 'journalId', 'content').subscribe(result => {
+        const encEntityReq: EncryptedEntityRequest = {
+            content: 'content',
+            keyPairId: 'kpId',
+            schema: '1.0.0',
+        };
+        const createEntryReq: CreateEntryRequest = { journalId: 'journalId', entry: encEntityReq };
+        service.createEntry(createEntryReq).subscribe(result => {
             expect(result.id).toEqual('entryId');
             expect(result.content).toEqual('base64Content');
             expect(result.timestamp).toEqual(1);
