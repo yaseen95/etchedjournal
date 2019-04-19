@@ -2,14 +2,16 @@ import { Injectable } from '@angular/core';
 import * as mobx from 'mobx-angular';
 import { EntryEntity } from '../models/entry-entity';
 import { EncrypterService } from '../services/encrypter.service';
-import { EntriesService } from '../services/entries.service';
+import { CreateEntryRequest, EntriesService } from '../services/entries.service';
+import { EncryptedEntityRequest } from '../services/etched-api-utils';
 
 @Injectable()
 export class EntryStore {
     @mobx.observable public entries: EntryEntity[] = [];
     @mobx.observable public loading: boolean = false;
 
-    constructor(private entryService: EntriesService, private encrypterService: EncrypterService) {}
+    constructor(private entryService: EntriesService, private encrypterService: EncrypterService) {
+    }
 
     @mobx.action
     public async loadEntries(journalId: string) {
@@ -46,6 +48,12 @@ export class EntryStore {
     public async createEntry(journalId: string, title: string): Promise<EntryEntity> {
         const enc = this.encrypterService.encrypter;
         const ciphertext = await enc.encrypt(title);
-        return this.entryService.createEntry(enc.keyPairId, journalId, ciphertext).toPromise();
+        const encEntity: EncryptedEntityRequest = {
+            content: ciphertext,
+            keyPairId: enc.keyPairId,
+            schema: '1.0.0',
+        };
+        const req: CreateEntryRequest = { journalId: journalId, entry: encEntity };
+        return this.entryService.createEntry(req).toPromise();
     }
 }

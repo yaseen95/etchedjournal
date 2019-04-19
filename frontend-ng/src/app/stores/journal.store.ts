@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as mobx from 'mobx-angular';
 import { JournalEntity } from '../models/journal-entity';
 import { EncrypterService } from '../services/encrypter.service';
+import { EncryptedEntityRequest } from '../services/etched-api-utils';
 import { JournalsService } from '../services/journals.service';
 
 @Injectable()
@@ -58,7 +59,12 @@ export class JournalStore {
     public async createJournal(name: string): Promise<JournalEntity> {
         const enc = this.encrypterService.encrypter;
         const ciphertext = await enc.encrypt(name);
-        const j = await this.journalsService.createJournal(enc.keyPairId, ciphertext).toPromise();
+        const req: EncryptedEntityRequest = {
+            keyPairId: enc.keyPairId,
+            content: ciphertext,
+            schema: '1.0.0'
+        };
+        const j = await this.journalsService.createJournal(req).toPromise();
         // Fetch the journals again to update the navbar
         this.loadJournals();
         return j;

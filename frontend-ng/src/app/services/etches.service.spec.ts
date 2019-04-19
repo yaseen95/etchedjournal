@@ -4,8 +4,9 @@ import { environment } from '../../environments/environment';
 import { EntryEntity } from '../models/entry-entity';
 import { EtchEntity } from '../models/etch-entity';
 import { OwnerType } from '../models/owner-type';
+import { EncryptedEntityRequest } from './etched-api-utils';
 
-import { EtchesService } from './etches.service';
+import { CreateEtchesRequest, EtchesService } from './etches.service';
 
 describe('EtchesService', () => {
     let injector: TestBed;
@@ -28,8 +29,13 @@ describe('EtchesService', () => {
     });
 
     it('post etches', () => {
+        const creatingEtches: EncryptedEntityRequest[] = [
+            {content: 'etch1', keyPairId: 'kpId', schema: '1.0.0'},
+            {content: 'etch2', keyPairId: 'kpId', schema: '1.0.0'},
+        ];
+        const createEtchesReq: CreateEtchesRequest = {entryId: 'entryId', etches: creatingEtches};
         service
-            .postEtches('kpId', 'entryId', ['etch1', 'etch2'])
+            .postEtches(createEtchesReq)
             .subscribe((result: EtchEntity[]) => {
                 expect(result.length).toEqual(2);
                 expect(result[0].content).toEqual('etch1');
