@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { EtchV1 } from '../../../models/etch';
+import { EtchV1 } from '../../../models/etch/etch';
 
 @Component({
     selector: 'app-etch-item',

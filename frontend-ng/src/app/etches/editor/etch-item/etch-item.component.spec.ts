@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { EtchV1 } from '../../../models/etch';
+import { EtchV1 } from '../../../models/etch/etch';
 import { TestUtils } from '../../../utils/test-utils.spec';
 
 import { EtchItemComponent } from './etch-item.component';

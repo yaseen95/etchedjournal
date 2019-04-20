@@ -15,7 +15,6 @@ export class EntryListContainerComponent implements OnInit {
     public ngOnInit() {
         this.route.paramMap.subscribe(params => {
             this.journalId = params.get('id');
-            console.info(`Journal id is ${this.journalId}`);
             this.entryStore.loadEntries(this.journalId);
         });
     }

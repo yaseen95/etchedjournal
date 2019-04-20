@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { EntryEntity } from '../../../models/entry-entity';
+import { EntryV1 } from '../../../models/entry/entry-v1';
+import { EntryEntity } from '../../../services/models/entry-entity';
 
 @Component({
     selector: 'app-entry-list-item',
@@ -8,7 +9,11 @@ import { EntryEntity } from '../../../models/entry-entity';
 })
 export class EntryListItemComponent implements OnInit {
     @Input()
-    public entry: EntryEntity;
+    public entry: EntryV1;
+
+    @Input()
+    public entity: EntryEntity;
+
     public timestampStr: string;
 
     public ngOnInit() {

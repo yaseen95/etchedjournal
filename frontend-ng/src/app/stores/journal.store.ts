@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import * as mobx from 'mobx-angular';
-import { JournalEntity } from '../models/journal-entity';
 import { EncrypterService } from '../services/encrypter.service';
 import { EncryptedEntityRequest } from '../services/etched-api-utils';
 import { JournalsService } from '../services/journals.service';
+import { JournalEntity } from '../services/models/journal-entity';
 
 @Injectable()
 export class JournalStore {

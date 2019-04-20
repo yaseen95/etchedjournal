@@ -1,9 +1,14 @@
-<h3>Entries</h3>
-<app-entry-list-item *ngFor="let e of entries" [entry]="e"></app-entry-list-item>
-<p *ngIf="entries.length === 0">No entries</p>
-<button class="button is-primary" (click)="this.createEntry()">
+<ng-container *mobxAutorun>
+    <h3>Entries</h3>
+    <app-entry-list-item *ngFor="let e of entryStore.entities"
+                         [entry]="entryStore.entriesById.get(e.id)"
+                         [entity]="e">
+    </app-entry-list-item>
+    <p *ngIf="entryStore.entities.length === 0">No entries</p>
+    <button class="button is-primary" (click)="this.createEntry()">
     <span class="icon">
         <i class="fas fa-plus"></i>
     </span>
-    <span>Create Entry</span>
-</button>
+        <span>Create Entry</span>
+    </button>
+</ng-container>

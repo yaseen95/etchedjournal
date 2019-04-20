@@ -1,4 +1,4 @@
-import { Base64Str } from '../../models/encrypted-entity';
+import { Base64Str } from '../models/encrypted-entity';
 
 export interface CreateKeyPairRequest {
     publicKey: Base64Str;

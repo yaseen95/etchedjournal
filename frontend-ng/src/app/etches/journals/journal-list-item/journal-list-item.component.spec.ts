@@ -2,8 +2,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { JournalEntity } from '../../../models/journal-entity';
-import { OwnerType } from '../../../models/owner-type';
+import { JournalEntity } from '../../../services/models/journal-entity';
+import { OwnerType } from '../../../services/models/owner-type';
 import { JournalListItemComponent } from './journal-list-item.component';
 
 describe('JournalListItemComponent', () => {

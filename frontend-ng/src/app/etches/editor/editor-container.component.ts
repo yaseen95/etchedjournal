@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
-import { EntryEntity } from '../../models/entry-entity';
-import { AbstractEtch, EtchV1 } from '../../models/etch';
+import { EntryV1 } from '../../models/entry/entry-v1';
+import { AbstractEtch, EtchV1 } from '../../models/etch/etch';
 import { ClockService } from '../../services/clock.service';
-import { Encrypter } from '../../services/encrypter';
 import { EtchQueueService } from '../../services/etch-queue.service';
+import { EntryEntity } from '../../services/models/entry-entity';
 import { EntryStore } from '../../stores/entry.store';
 
 const ENTRY_NOT_CREATED = 'NOT_CREATED';
@@ -77,7 +77,11 @@ export class EditorContainerComponent implements OnInit, OnDestroy {
         }
         this.entryCreationState = ENTRY_CREATING;
         console.info('Creating entry');
-        const entry = await this.entryStore.createEntry(this.journalId, this.title);
+        const entryV1: EntryV1 = new EntryV1({
+            content: this.title,
+            timestamp: this.clockService.nowMillis(),
+        });
+        const entry = await this.entryStore.createEntry(this.journalId, entryV1);
         console.log(`Created entry with id ${entry.id}`);
         this.entryCreationState = ENTRY_CREATED;
         this.entrySubject.next(entry);

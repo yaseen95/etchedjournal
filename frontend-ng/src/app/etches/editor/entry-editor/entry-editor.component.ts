@@ -10,7 +10,7 @@ import {
     ViewChild,
 } from '@angular/core';
 import { interval, Observable, Subscription } from 'rxjs';
-import { EtchV1 } from '../../../models/etch';
+import { EtchV1 } from '../../../models/etch/etch';
 import { ClockService } from '../../../services/clock.service';
 
 const DEFAULT_ETCH_TIMEOUT = 5 * 1000;

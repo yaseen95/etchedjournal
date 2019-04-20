@@ -2,8 +2,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { EtchEntity } from '../models/etch-entity';
 import { EncryptedEntityRequest, ENTRY_ID, ETCHES_URL } from './etched-api-utils';
+import { EtchEntity } from './models/etch-entity';
 
 export interface CreateEtchesRequest {
     readonly entryId: string;

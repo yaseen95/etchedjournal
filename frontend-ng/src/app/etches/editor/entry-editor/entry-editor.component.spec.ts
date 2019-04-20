@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { By } from '@angular/platform-browser';
-import { EtchV1 } from '../../../models/etch';
+import { EtchV1 } from '../../../models/etch/etch';
 import { ClockService } from '../../../services/clock.service';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { EtchItemComponent } from '../etch-item/etch-item.component';

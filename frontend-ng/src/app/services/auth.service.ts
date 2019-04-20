@@ -1,17 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AuthClass as Auth } from '@aws-amplify/auth';
-import {
-    CognitoUser,
-    CognitoUserAttribute,
-    CognitoUserSession,
-    ISignUpResult,
-} from 'amazon-cognito-identity-js';
+import { CognitoUser, CognitoUserSession, ISignUpResult } from 'amazon-cognito-identity-js';
 import { environment } from '../../environments/environment';
-import { EtchedUser } from '../models/etched-user';
 import { RandomUtils } from '../utils/text-utils';
 import { IdToken, Token, TokenDecoder } from '../utils/token-decoder';
 import { ClockService } from './clock.service';
 import { CognitoAuthFactory } from './cognito-auth-factory';
+import { EtchedUser } from './models/etched-user';
 
 // The cognito js library stores data in local storage. The keys for the items in local storage
 // are prefixed with the string below.

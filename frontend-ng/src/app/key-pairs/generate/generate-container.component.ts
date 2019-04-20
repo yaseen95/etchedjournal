@@ -2,11 +2,11 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import * as openpgp from 'openpgp';
 import { EtchedRoutes } from '../../app-routing-utils';
-import { Base64Str } from '../../models/encrypted-entity';
 import { AuthService } from '../../services/auth.service';
 import { Encrypter, KeyPair } from '../../services/encrypter';
 import { EncrypterService } from '../../services/encrypter.service';
 import { KeyPairsService } from '../../services/key-pairs.service';
+import { Base64Str } from '../../services/models/encrypted-entity';
 
 @Component({
     selector: 'app-generate',

@@ -1,8 +1,8 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
-import { EntryEntity } from '../models/entry-entity';
-import { OwnerType } from '../models/owner-type';
+import { EntryEntity } from './models/entry-entity';
+import { OwnerType } from './models/owner-type';
 
 import { CreateEntryRequest, EntriesService } from './entries.service';
 import { EncryptedEntityRequest } from './etched-api-utils';

@@ -1,8 +1,8 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
-import { JournalEntity } from '../models/journal-entity';
-import { OwnerType } from '../models/owner-type';
+import { JournalEntity } from './models/journal-entity';
+import { OwnerType } from './models/owner-type';
 
 import { JournalsService } from './journals.service';
 

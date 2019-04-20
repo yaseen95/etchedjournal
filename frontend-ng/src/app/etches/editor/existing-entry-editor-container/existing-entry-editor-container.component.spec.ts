@@ -3,9 +3,11 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { MobxAngularModule } from 'mobx-angular';
-import { EntryEntity } from '../../../models/entry-entity';
-import { EtchV1 } from '../../../models/etch';
-import { OwnerType } from '../../../models/owner-type';
+import { EntryV1 } from '../../../models/entry/entry-v1';
+import { EtchV1 } from '../../../models/etch/etch';
+import { FakeEntryStore } from '../../../services/fakes.service.spec';
+import { EntryEntity } from '../../../services/models/entry-entity';
+import { OwnerType } from '../../../services/models/owner-type';
 import { EntryStore } from '../../../stores/entry.store';
 import { EtchStore } from '../../../stores/etch.store';
 import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
@@ -18,26 +20,30 @@ import { ExistingEntryEditorContainerComponent } from './existing-entry-editor-c
 describe('ExistingEntryEditorContainerComponent', () => {
     let component: ExistingEntryEditorContainerComponent;
     let fixture: ComponentFixture<ExistingEntryEditorContainerComponent>;
-    let entryStore: any;
+    let entryStore: FakeEntryStore;
     let etchStore: any;
+    let loadEntrySpy: any;
 
-    const entry: EntryEntity = {
+    const entryEntity: EntryEntity = {
         timestamp: 1,
         owner: 'owner',
         ownerType: OwnerType.USER,
         id: 'entryId',
-        content: 'Entry Title',
+        content: 'ciphertext',
         keyPairId: 'kpId',
         journalId: 'jid',
         version: 1,
         schema: '1.0.0',
     };
 
+    const entry: EntryV1 = new EntryV1({ content: 'Entry Title', timestamp: 1000 });
+
     beforeEach(async(() => {
-        entryStore = jasmine.createSpyObj('EntryStore', ['loadEntry']);
-        entryStore.entries = [];
-        entryStore.loading = false;
-        entryStore.loadEntry.and.returnValue(Promise.resolve(entry));
+        entryStore = new FakeEntryStore();
+        entryStore.entriesById.set(entryEntity.id, entry);
+
+        loadEntrySpy = spyOn(entryStore, 'loadEntry');
+        loadEntrySpy.and.returnValue(Promise.resolve(entryEntity));
 
         etchStore = jasmine.createSpyObj('EtchStore', ['loadEtches']);
         etchStore.state = {
@@ -77,8 +83,8 @@ describe('ExistingEntryEditorContainerComponent', () => {
     });
 
     it('gets entry on create', () => {
-        expect(entryStore.loadEntry).toHaveBeenCalledTimes(1);
-        expect(entryStore.loadEntry).toHaveBeenCalledWith('entryId');
+        expect(loadEntrySpy).toHaveBeenCalledTimes(1);
+        expect(loadEntrySpy).toHaveBeenCalledWith('entryId');
     });
 
     it('gets etches on create', () => {
@@ -132,15 +138,8 @@ describe('ExistingEntryEditorContainerComponent', () => {
     });
 
     it('loads entry on init', fakeAsync(() => {
-        const mockEntryStore = jasmine.createSpyObj('EntryStore', ['loadEntry']);
-        const e = { content: 'foobarbaz' };
-        mockEntryStore.loadEntry.and.returnValue(Promise.resolve(e));
-        component.entryStore = mockEntryStore;
-
-        component.ngOnInit();
+        // ngOnInit is called when the component is first created
         tick();
-
-        expect(mockEntryStore.loadEntry).toHaveBeenCalledTimes(1);
-        expect(component.title).toEqual('foobarbaz');
+        expect(loadEntrySpy).toHaveBeenCalledTimes(1);
     }));
 });

@@ -1,25 +1,13 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { getTestBed, TestBed } from '@angular/core/testing';
-import {
-    CognitoUser,
-    CognitoUserAttribute,
-    CognitoUserSession,
-    ISignUpResult,
-} from 'amazon-cognito-identity-js';
-import { environment } from '../../environments/environment';
-import { EtchedUser } from '../models/etched-user';
 import { TestUtils } from '../utils/test-utils.spec';
 import { RandomUtils } from '../utils/text-utils';
 import { IdToken, TokenDecoder } from '../utils/token-decoder';
-import {
-    AuthService,
-    cognitoPrefix,
-    LOCAL_COGNITO_PREFIX,
-    UsernameTakenError,
-} from './auth.service';
+import { AuthService, cognitoPrefix, UsernameTakenError } from './auth.service';
 import { FakeClock } from './clock.service.spec';
 import { CognitoAuthFactory } from './cognito-auth-factory';
+import { EtchedUser } from './models/etched-user';
 import TEST_USER = TestUtils.TEST_USER;
 
 describe('AuthService', () => {

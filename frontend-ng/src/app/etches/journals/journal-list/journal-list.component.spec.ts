@@ -4,8 +4,8 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { JournalEntity } from '../../../models/journal-entity';
-import { OwnerType } from '../../../models/owner-type';
+import { JournalEntity } from '../../../services/models/journal-entity';
+import { OwnerType } from '../../../services/models/owner-type';
 import { JournalListItemComponent } from '../journal-list-item/journal-list-item.component';
 import { JournalListComponent } from './journal-list.component';
 

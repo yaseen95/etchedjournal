@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import * as mobx from 'mobx-angular';
-import { AbstractEtch, EtchV1 } from '../models/etch';
-import { EtchEntity } from '../models/etch-entity';
+import { AbstractEtch, EtchV1 } from '../models/etch/etch';
 import { EncrypterService } from '../services/encrypter.service';
 import { EncryptedEntityRequest } from '../services/etched-api-utils';
 import { CreateEtchesRequest, EtchesService } from '../services/etches.service';
+import { EtchEntity } from '../services/models/etch-entity';
 
 export interface State {
     etches: EtchEntity[];
