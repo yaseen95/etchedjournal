@@ -5,9 +5,11 @@ package com.etchedjournal.etched.models.jooq.generated.tables;
 
 
 import com.etchedjournal.etched.models.OwnerType;
+import com.etchedjournal.etched.models.Schema;
 import com.etchedjournal.etched.models.jooq.converter.IdConverter;
 import com.etchedjournal.etched.models.jooq.converter.InstantConverter;
 import com.etchedjournal.etched.models.jooq.converter.OwnerTypeConverter;
+import com.etchedjournal.etched.models.jooq.converter.SchemaConverter;
 import com.etchedjournal.etched.models.jooq.generated.Indexes;
 import com.etchedjournal.etched.models.jooq.generated.Keys;
 import com.etchedjournal.etched.models.jooq.generated.Public;
@@ -24,7 +26,6 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
@@ -45,7 +46,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Etch extends TableImpl<EtchRecord> {
 
-    private static final long serialVersionUID = 1219371801;
+    private static final long serialVersionUID = 46139746;
 
     /**
      * The reference instance of <code>public.etch</code>
@@ -103,7 +104,7 @@ public class Etch extends TableImpl<EtchRecord> {
     /**
      * The column <code>public.etch.schema</code>.
      */
-    public final TableField<EtchRecord, String> SCHEMA = createField("schema", org.jooq.impl.SQLDataType.VARCHAR(10).nullable(false), this, "");
+    public final TableField<EtchRecord, Schema> SCHEMA = createField("schema", org.jooq.impl.SQLDataType.SMALLINT.nullable(false), this, "", new SchemaConverter());
 
     /**
      * Create a <code>public.etch</code> table reference
@@ -142,7 +143,7 @@ public class Etch extends TableImpl<EtchRecord> {
      * {@inheritDoc}
      */
     @Override
-    public Schema getSchema() {
+    public org.jooq.Schema getSchema() {
         return Public.PUBLIC;
     }
 

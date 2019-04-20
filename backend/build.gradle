@@ -166,6 +166,11 @@ jooq {
                         converter = 'com.etchedjournal.etched.models.jooq.converter.OwnerTypeConverter'
                         expression = 'owner_type'
                     }
+                    forcedType {
+                        userType = 'com.etchedjournal.etched.models.Schema'
+                        converter = 'com.etchedjournal.etched.models.jooq.converter.SchemaConverter'
+                        expression = 'schema'
+                    }
                 }
             }
             generate {

@@ -173,7 +173,7 @@ class EtchServiceControllerTests {
                 {
                     "content": "YWJj",
                     "keyPairId": "${keyPair.id}",
-                    "schema": "1.0.0"
+                    "schema": "V1_0"
                 }
             ]
             """
@@ -193,7 +193,7 @@ class EtchServiceControllerTests {
             .andExpect(jsonPath("\$[0].keyPairId", `is`(keyPair.id)))
             .andExpect(jsonPath("\$[0].entryId", `is`(entry.id)))
             .andExpect(jsonPath("\$[0].version", `is`(1)))
-            .andExpect(jsonPath("\$[0].schema", `is`("1.0.0")))
+            .andExpect(jsonPath("\$[0].schema", `is`("V1_0")))
             .andExpect(jsonPath("\$[0].*", hasSize<Any>(9)))
 
         mockMvc.perform(get("$ETCHES_PATH?entryId=${entry.id}"))
@@ -210,12 +210,12 @@ class EtchServiceControllerTests {
                 {
                     "content": "YWJj",
                     "keyPairId": "${keyPair.id}",
-                    "schema": "1.0.0"
+                    "schema": "V1_0"
                 },
                 {
                     "content": "AQI=",
                     "keyPairId": "${keyPair.id}",
-                    "schema": "1.0.0"
+                    "schema": "V1_0"
                 }
             ]
             """
@@ -261,7 +261,7 @@ class EtchServiceControllerTests {
                 {
                     "content": "abcd",
                     "keyPairId": "${keyPair.id}",
-                    "schema": "1.0.0"
+                    "schema": "V1_0"
                 }
             ]
             """
@@ -292,7 +292,7 @@ class EtchServiceControllerTests {
 
                     "content": "abcd",
                     "keyPairId": "${otherUserKeyPair.id}",
-                    "schema": "1.0.0"
+                    "schema": "V1_0"
                 }
             ]
             """
@@ -319,10 +319,12 @@ class EtchServiceControllerTests {
     fun `POST etch with empty payload`() {
         mockMvc.perform(
             post(ETCHES_PATH)
+                .param("entryId", entry.id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("[{}]")
         )
             .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("\$.message", `is`("Cannot supply null for key 'content'")))
     }
 
     @Test
@@ -330,10 +332,12 @@ class EtchServiceControllerTests {
     fun `POST etch with keyPairId missing`() {
         mockMvc.perform(
             post(ETCHES_PATH)
+                .param("entryId", entry.id)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""[ { "content": "AQI=" } ] """)
+                .content("""[ { "content": "AQI=", "schema": "V1_0" } ] """)
         )
             .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("\$.message", `is`("Cannot supply null for key 'keyPairId'")))
     }
 
     @Test
@@ -341,10 +345,25 @@ class EtchServiceControllerTests {
     fun `POST etch with content missing`() {
         mockMvc.perform(
             post(ETCHES_PATH)
+                .param("entryId", entry.id)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""[ { "keyPairId": "${keyPair.id}" } ] """)
+                .content("""[ { "keyPairId": "${keyPair.id}", "schema": "V1_0" } ] """)
         )
             .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("\$.message", `is`("Cannot supply null for key 'content'")))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["USER"])
+    fun `POST etch with schema missing`() {
+        mockMvc.perform(
+            post(ETCHES_PATH)
+                .param("entryId", entry.id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""[ { "keyPairId": "${keyPair.id}", "content": "AQI=" } ] """)
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("\$.message", `is`("Cannot supply null for key 'schema'")))
     }
 
     @Test
@@ -357,12 +376,12 @@ class EtchServiceControllerTests {
                 {
                     "content": "YWJj",
                     "keyPairId": "${keyPair.id}",
-                    "schema": "1.0.0"
+                    "schema": "V1_0"
                 },
                 {
                     "content": "AQI=",
                     "keyPairId": "${keyPair2.id}",
-                    "schema": "1.0.0"
+                    "schema": "V1_0"
                 }
             ]
             """

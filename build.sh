@@ -3,10 +3,11 @@
 set -eou pipefail
 
 export ETCHED_FLAVOR=dev
+export DB_PASSWORD="dolphins"
 
 # Disable docker-compose in CIRCLECI
 if [[ -z "${CIRCLECI-}" ]]; then
-  DB_PASSWORD=dolphins docker-compose up -d
+  docker-compose up -d
 fi
 
 # TODO: Check if generated jooq code is different to committed jooq code
