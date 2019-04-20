@@ -2,7 +2,7 @@ import { of } from 'rxjs';
 import { EntryV1 } from '../models/entry/entry-v1';
 import { SimpleWriter, Writer } from '../models/writer';
 import { EncrypterService } from '../services/encrypter.service';
-import { EntriesService } from '../services/entries.service';
+import { CreateEntryRequest, EntriesService } from '../services/entries.service';
 import { FakeEncrypter, FakeEncrypterService } from '../services/fakes.service.spec';
 import { EntryEntity } from '../services/models/entry-entity';
 import { EntryStore } from './entry.store';
@@ -10,7 +10,7 @@ import { EntryStore } from './entry.store';
 describe('EntryStore', () => {
     let store: EntryStore;
     let fakeEncrypter: FakeEncrypter;
-    let encrypterService: EncrypterService;
+    let encrypterService: FakeEncrypterService;
     let entriesServiceSpy: any;
 
     beforeEach(() => {
@@ -96,12 +96,16 @@ describe('EntryStore', () => {
         expect(result.id).toEqual('1');
         expect(result.content).toEqual('abc');
 
+        const expectedCreateEntryReq: CreateEntryRequest = {
+            journalId: 'jid',
+            entry: {
+                content: 'ciphertext',
+                keyPairId: 'fakeKeyPairId',
+                schema: '1.0.0',
+            }
+        };
         expect(entriesServiceSpy.createEntry).toHaveBeenCalledTimes(1);
-        expect(entriesServiceSpy.createEntry).toHaveBeenCalledWith(
-            encrypterService.encrypter.keyPairId,
-            'jid',
-            'ciphertext'
-        );
+        expect(entriesServiceSpy.createEntry).toHaveBeenCalledWith(expectedCreateEntryReq);
 
         expect(writerSpy.write).toHaveBeenCalledTimes(1);
         expect(writerSpy.write).toHaveBeenCalledWith(createEntry('title'));

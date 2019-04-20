@@ -16,7 +16,7 @@ export class FakeEncrypter extends Encrypter {
     private decryptResponse: string = 'plaintext';
 
     public constructor() {
-        super(null, null, null, null);
+        super(null, null, null, 'fakeKeyPairId');
     }
 
     public async encrypt(message: string): Promise<Base64Str> {
