@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { JournalEntity } from '../../../services/models/journal-entity';
 import { OwnerType } from '../../../services/models/owner-type';
+import { Schema } from '../../../services/models/schema';
 import { JournalListItemComponent } from './journal-list-item.component';
 
 describe('JournalListItemComponent', () => {
@@ -20,7 +21,7 @@ describe('JournalListItemComponent', () => {
             timestamp: 0,
             keyPairId: 'kpId',
             version: 1,
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
         TestBed.configureTestingModule({
             declarations: [JournalListItemComponent],

@@ -5,6 +5,7 @@ import { EncrypterService } from '../services/encrypter.service';
 import { CreateEntryRequest, EntriesService } from '../services/entries.service';
 import { FakeEncrypter, FakeEncrypterService } from '../services/fakes.service.spec';
 import { EntryEntity } from '../services/models/entry-entity';
+import { Schema } from '../services/models/schema';
 import { EntryStore } from './entry.store';
 
 describe('EntryStore', () => {
@@ -38,7 +39,7 @@ describe('EntryStore', () => {
             {
                 id: 'entryId',
                 content: 'foo',
-                schema: '1.0.0',
+                schema: Schema.V1_0,
             },
         ];
         entriesServiceSpy.getEntries.and.returnValue(of(entities));
@@ -63,7 +64,7 @@ describe('EntryStore', () => {
 
     it('loadEntry loads and decrypts entry', async () => {
         const encrypted: Partial<EntryEntity> = {
-            schema: '1.0.0',
+            schema: Schema.V1_0,
             content: 'ciphertext',
             id: 'entryId',
         };
@@ -101,7 +102,7 @@ describe('EntryStore', () => {
             entry: {
                 content: 'ciphertext',
                 keyPairId: 'fakeKeyPairId',
-                schema: '1.0.0',
+                schema: Schema.V1_0,
             },
         };
         expect(entriesServiceSpy.createEntry).toHaveBeenCalledTimes(1);

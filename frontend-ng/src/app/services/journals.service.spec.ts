@@ -1,10 +1,11 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
-import { JournalEntity } from './models/journal-entity';
-import { OwnerType } from './models/owner-type';
 
 import { JournalsService } from './journals.service';
+import { JournalEntity } from './models/journal-entity';
+import { OwnerType } from './models/owner-type';
+import { Schema } from './models/schema';
 
 describe('JournalsService', () => {
     let injector: TestBed;
@@ -27,7 +28,7 @@ describe('JournalsService', () => {
     });
 
     it('create journal', () => {
-        const createJournalReq = { keyPairId: 'kpId', content: 'content', schema: '1.0.0' };
+        const createJournalReq = { keyPairId: 'kpId', content: 'content', schema: Schema.V1_0 };
         service.createJournal(createJournalReq).subscribe((result: JournalEntity) => {
             expect(result.id).toEqual('entryId');
             expect(result.content).toEqual('base64Content');
@@ -46,7 +47,7 @@ describe('JournalsService', () => {
             ownerType: 'USER' as OwnerType,
             keyPairId: 'kpId',
             version: 1,
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/journals`);
@@ -63,6 +64,7 @@ describe('JournalsService', () => {
             expect(journals[0].owner).toEqual('user');
             expect(journals[0].ownerType).toEqual(OwnerType.USER);
             expect(journals[0].keyPairId).toEqual('kpId');
+            expect(journals[0].schema).toEqual(Schema.V1_0);
         });
 
         const journal: JournalEntity = {
@@ -73,7 +75,7 @@ describe('JournalsService', () => {
             ownerType: OwnerType.USER,
             keyPairId: 'kpId',
             version: 1,
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/journals`);

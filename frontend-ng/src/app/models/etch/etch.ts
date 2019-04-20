@@ -1,9 +1,11 @@
+import { Schema } from '../../services/models/schema';
+
 export abstract class AbstractEtch {
     public abstract schemaVersion: string;
 }
 
 export class EtchV1 extends AbstractEtch {
-    public schemaVersion: string = '1.0.0';
+    public schemaVersion: Schema = Schema.V1_0;
 
     /** actual, decrypted content of etch */
     public content: string;

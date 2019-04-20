@@ -1,11 +1,11 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { JournalEntity } from '../../../services/models/journal-entity';
 import { OwnerType } from '../../../services/models/owner-type';
+import { Schema } from '../../../services/models/schema';
 import { JournalListItemComponent } from '../journal-list-item/journal-list-item.component';
 import { JournalListComponent } from './journal-list.component';
 
@@ -24,7 +24,7 @@ describe('JournalListComponent', () => {
                 content: 'journal1 content',
                 keyPairId: 'kpId',
                 version: 1,
-                schema: '1.0.0',
+                schema: Schema.V1_0,
             },
             {
                 id: '0000000000000000',
@@ -34,7 +34,7 @@ describe('JournalListComponent', () => {
                 content: 'journal2 content',
                 keyPairId: 'kpId',
                 version: 1,
-                schema: '1.0.0',
+                schema: Schema.V1_0,
             },
         ];
 

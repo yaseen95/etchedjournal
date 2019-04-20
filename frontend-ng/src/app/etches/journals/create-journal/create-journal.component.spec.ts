@@ -7,6 +7,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { FakeJournalStore } from '../../../services/fakes.service.spec';
 import { JournalEntity } from '../../../services/models/journal-entity';
 import { OwnerType } from '../../../services/models/owner-type';
+import { Schema } from '../../../services/models/schema';
 import { JournalStore } from '../../../stores/journal.store';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { CreateJournalComponent } from './create-journal.component';
@@ -144,7 +145,7 @@ describe('CreateJournalComponent', () => {
             timestamp: 1,
             keyPairId: 'kpId',
             version: 1,
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
         createJournalSpy.and.returnValue(Promise.resolve(journal));
         component.createJournal();

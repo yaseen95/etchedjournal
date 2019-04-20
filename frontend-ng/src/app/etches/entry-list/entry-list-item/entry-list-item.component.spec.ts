@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EntryV1 } from '../../../models/entry/entry-v1';
 import { OwnerType } from '../../../services/models/owner-type';
+import { Schema } from '../../../services/models/schema';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { EntryListItemComponent } from './entry-list-item.component';
 
@@ -30,7 +31,7 @@ describe('EntryListItemComponent', () => {
             keyPairId: 'kpId',
             journalId: 'jid',
             version: 1,
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
 
         component.entry = new EntryV1({ content: 'Title of the entry', timestamp: 1000 });

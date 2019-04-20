@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EntryV1 } from '../../../models/entry/entry-v1';
 import { EtchV1 } from '../../../models/etch/etch';
-import { Version } from '../../../models/version';
 import { EtchQueueService } from '../../../services/etch-queue.service';
+import { Schema } from '../../../services/models/schema';
 import { EntryStore } from '../../../stores/entry.store';
 import { EtchStore } from '../../../stores/etch.store';
 
@@ -30,14 +30,13 @@ export class ExistingEntryEditorContainerComponent implements OnInit {
 
     public ngOnInit() {
         this.entryStore.loadEntry(this.entryId).then(() => {
-            const entryV1 = this.entryStore.entriesById.get(this.entryId);
-            const version = Version.from(entryV1.version);
-            switch (version.major) {
-                case 1:
-                    this.title = (entryV1 as EntryV1).content;
+            const entry = this.entryStore.entriesById.get(this.entryId);
+            switch (entry.version) {
+                case Schema.V1_0:
+                    this.title = (entry as EntryV1).content;
                     break;
                 default:
-                    throw new Error(`Unsupported version ${version.toString()}`);
+                    throw new Error(`Unsupported version ${entry.version}`);
             }
         });
         this.etchStore.loadEtches(this.entryId);

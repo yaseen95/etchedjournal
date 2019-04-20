@@ -1,4 +1,5 @@
 import { BaseEntity } from './base-entity';
+import { Schema } from './schema';
 
 export type Base64Str = string;
 
@@ -9,5 +10,5 @@ export interface EncryptedEntity extends BaseEntity {
     /** id of key pair used to encrypt this entity */
     keyPairId: string;
 
-    schema: string;
+    schema: Schema;
 }

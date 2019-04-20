@@ -8,6 +8,7 @@ import { MobxAngularModule } from 'mobx-angular';
 import { EntryV1 } from '../../../models/entry/entry-v1';
 import { FakeEntryStore } from '../../../services/fakes.service.spec';
 import { OwnerType } from '../../../services/models/owner-type';
+import { Schema } from '../../../services/models/schema';
 import { EntryStore } from '../../../stores/entry.store';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { EntryListItemComponent } from '../entry-list-item/entry-list-item.component';
@@ -58,7 +59,7 @@ describe('EntryListComponent', () => {
                 keyPairId: 'kpId',
                 journalId: 'jid',
                 version: 1,
-                schema: '1.0.0',
+                schema: Schema.V1_0,
             },
             {
                 id: 'id2',
@@ -69,7 +70,7 @@ describe('EntryListComponent', () => {
                 keyPairId: 'kpId',
                 journalId: 'jid',
                 version: 1,
-                schema: '1.0.0',
+                schema: Schema.V1_0,
             },
         ];
 

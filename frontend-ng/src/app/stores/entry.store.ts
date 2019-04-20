@@ -3,7 +3,6 @@ import * as mobx from 'mobx-angular';
 import { AbstractEntry } from '../models/entry/abstract-entry';
 import { EntryV1 } from '../models/entry/entry-v1';
 import { SimpleReader } from '../models/reader';
-import { Version } from '../models/version';
 import { SimpleWriter } from '../models/writer';
 import { EncrypterService } from '../services/encrypter.service';
 import { CreateEntryRequest, EntriesService } from '../services/entries.service';
@@ -47,8 +46,7 @@ export class EntryStore {
     private async decryptAndReadEntry(entity: EntryEntity): Promise<EntryAndEntity> {
         const encrypter = this.encrypterService.encrypter;
         const decrypted = await encrypter.decryptEntity(entity);
-        const version = Version.from(entity.schema);
-        const reader = SimpleReader.getReader<EntryV1>(version);
+        const reader = SimpleReader.getReader<EntryV1>(entity.schema);
         const entry = reader.read(JSON.parse(decrypted.content));
         return { entity: decrypted, entry };
     }
@@ -68,7 +66,7 @@ export class EntryStore {
     public async createEntry(journalId: string, entry: AbstractEntry): Promise<EntryEntity> {
         const enc = this.encrypterService.encrypter;
 
-        const writer = SimpleWriter.getWriter<EntryV1>(Version.from(entry.version));
+        const writer = SimpleWriter.getWriter<EntryV1>(entry.version);
         // Can safely cast as long as the writer above is `EntryV1Writer`. Will break if we add
         // a new writer.
         const blobified = writer.write(entry as EntryV1);
@@ -77,7 +75,7 @@ export class EntryStore {
         const encEntity: EncryptedEntityRequest = {
             content: ciphertext,
             keyPairId: enc.keyPairId,
-            schema: '1.0.0',
+            schema: entry.version,
         };
         const req: CreateEntryRequest = { journalId, entry: encEntity };
         // TODO should we add it to `entries` first?
