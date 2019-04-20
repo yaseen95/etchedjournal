@@ -102,7 +102,7 @@ describe('EntryStore', () => {
                 content: 'ciphertext',
                 keyPairId: 'fakeKeyPairId',
                 schema: '1.0.0',
-            }
+            },
         };
         expect(entriesServiceSpy.createEntry).toHaveBeenCalledTimes(1);
         expect(entriesServiceSpy.createEntry).toHaveBeenCalledWith(expectedCreateEntryReq);
