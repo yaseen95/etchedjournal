@@ -5,6 +5,7 @@ import { EncrypterService } from '../services/encrypter.service';
 import { EncryptedEntityRequest } from '../services/etched-api-utils';
 import { CreateEtchesRequest, EtchesService } from '../services/etches.service';
 import { EtchEntity } from '../services/models/etch-entity';
+import { Schema } from '../services/models/schema';
 
 export interface State {
     etches: EtchEntity[];
@@ -63,7 +64,7 @@ export class EtchStore {
         const encEntity: EncryptedEntityRequest = {
             content: ciphertext,
             keyPairId: enc.keyPairId,
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
         const req: CreateEtchesRequest = { entryId, etches: [encEntity] };
         return this.etchService.postEtches(req).toPromise();

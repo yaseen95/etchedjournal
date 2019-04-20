@@ -95,7 +95,7 @@ class JournalServiceControllerTests {
             .andExpect(jsonPath("$[0].ownerType", `is`("USER")))
             .andExpect(jsonPath("$[0].keyPairId", `is`(keyPair.id)))
             .andExpect(jsonPath("$[0].version", `is`(1)))
-            .andExpect(jsonPath("$[0].schema", `is`("1.0.0")))
+            .andExpect(jsonPath("$[0].schema", `is`("V1_0")))
             .andExpect(jsonPath("$[0].*", hasSize<Any>(8)))
     }
 
@@ -117,7 +117,7 @@ class JournalServiceControllerTests {
             .andExpect(jsonPath("$.ownerType", `is`("USER")))
             .andExpect(jsonPath("$.keyPairId", `is`(keyPair.id)))
             .andExpect(jsonPath("$.version", `is`(1)))
-            .andExpect(jsonPath("$.schema", `is`("1.0.0")))
+            .andExpect(jsonPath("$.schema", `is`("V1_0")))
             .andExpect(jsonPath("$.*", hasSize<Any>(8)))
     }
 
@@ -145,7 +145,7 @@ class JournalServiceControllerTests {
                     {
                         "content": "abcd",
                         "keyPairId": "${keyPair.id}",
-                        "schema": "1.0.0"
+                        "schema": "V1_0"
                     }
                     """.trimIndent()
                 )
@@ -156,6 +156,7 @@ class JournalServiceControllerTests {
             .andExpect(jsonPath("\$.content", `is`("abcd")))
             .andExpect(jsonPath("\$.owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("\$.ownerType", `is`("USER")))
+            .andExpect(jsonPath("\$.schema", `is`("V1_0")))
     }
 
     companion object {

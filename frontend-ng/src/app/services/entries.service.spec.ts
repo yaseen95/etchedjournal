@@ -1,11 +1,12 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
-import { EntryEntity } from './models/entry-entity';
-import { OwnerType } from './models/owner-type';
 
 import { CreateEntryRequest, EntriesService } from './entries.service';
 import { EncryptedEntityRequest } from './etched-api-utils';
+import { EntryEntity } from './models/entry-entity';
+import { OwnerType } from './models/owner-type';
+import { Schema } from './models/schema';
 
 describe('EntriesService', () => {
     let injector: TestBed;
@@ -31,7 +32,7 @@ describe('EntriesService', () => {
         const encEntityReq: EncryptedEntityRequest = {
             content: 'content',
             keyPairId: 'kpId',
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
         const createEntryReq: CreateEntryRequest = { journalId: 'journalId', entry: encEntityReq };
         service.createEntry(createEntryReq).subscribe(result => {
@@ -52,7 +53,7 @@ describe('EntriesService', () => {
             keyPairId: 'kpId',
             journalId: 'jid',
             version: 1,
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries?journalId=journalId`);
@@ -77,7 +78,7 @@ describe('EntriesService', () => {
             keyPairId: 'kpId',
             journalId: 'jid',
             version: 1,
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
         entries[1] = {
             content: 'entry2',
@@ -88,7 +89,7 @@ describe('EntriesService', () => {
             keyPairId: 'kpId',
             journalId: 'jid',
             version: 1,
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries?journalId=journalId`);
@@ -113,7 +114,7 @@ describe('EntriesService', () => {
             keyPairId: 'kpId',
             journalId: 'jid',
             version: 1,
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries/entry1`);

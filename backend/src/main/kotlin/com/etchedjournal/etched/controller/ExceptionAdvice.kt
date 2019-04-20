@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseBody
@@ -110,6 +111,14 @@ class ExceptionAdvice {
         e: MethodArgumentTypeMismatchException
     ): ResponseEntity<ExceptionResponse> {
         return badRequest("Invalid parameter type")
+    }
+
+    @ResponseBody
+    @ExceptionHandler(MissingServletRequestParameterException::class)
+    fun handleMissingServletRequestParameterException(
+        e: MissingServletRequestParameterException
+    ): ResponseEntity<ExceptionResponse> {
+        return badRequest("Missing required parameter '${e.parameterName}'")
     }
 
     // TODO: Handle HttpMessageNotReadableException

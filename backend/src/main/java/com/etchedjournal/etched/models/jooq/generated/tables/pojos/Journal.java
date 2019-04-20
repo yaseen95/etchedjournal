@@ -5,6 +5,7 @@ package com.etchedjournal.etched.models.jooq.generated.tables.pojos;
 
 
 import com.etchedjournal.etched.models.OwnerType;
+import com.etchedjournal.etched.models.Schema;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -34,7 +35,7 @@ public class Journal {
     private final OwnerType ownerType;
     private final String    keyPairId;
     private final Integer   version;
-    private final String    schema;
+    private final Schema    schema;
 
     public Journal(Journal value) {
         this.id = value.id;
@@ -55,7 +56,7 @@ public class Journal {
         OwnerType ownerType,
         String    keyPairId,
         Integer   version,
-        String    schema
+        Schema    schema
     ) {
         this.id = id;
         this.timestamp = timestamp;
@@ -104,8 +105,7 @@ public class Journal {
     }
 
     @NotNull
-    @Size(max = 10)
-    public String getSchema() {
+    public Schema getSchema() {
         return this.schema;
     }
 

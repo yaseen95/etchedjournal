@@ -7,6 +7,7 @@ import { CreateEtchesRequest, EtchesService } from './etches.service';
 import { EntryEntity } from './models/entry-entity';
 import { EtchEntity } from './models/etch-entity';
 import { OwnerType } from './models/owner-type';
+import { Schema } from './models/schema';
 
 describe('EtchesService', () => {
     let injector: TestBed;
@@ -30,8 +31,8 @@ describe('EtchesService', () => {
 
     it('post etches', () => {
         const creatingEtches: EncryptedEntityRequest[] = [
-            { content: 'etch1', keyPairId: 'kpId', schema: '1.0.0' },
-            { content: 'etch2', keyPairId: 'kpId', schema: '1.0.0' },
+            { content: 'etch1', keyPairId: 'kpId', schema: Schema.V1_0 },
+            { content: 'etch2', keyPairId: 'kpId', schema: Schema.V1_0 },
         ];
         const createEtchesReq: CreateEtchesRequest = { entryId: 'entryId', etches: creatingEtches };
         service.postEtches(createEtchesReq).subscribe((result: EtchEntity[]) => {
@@ -51,7 +52,7 @@ describe('EtchesService', () => {
             keyPairId: 'kpId',
             entryId: 'entryId',
             version: 1,
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
         etches[1] = {
             content: 'etch2',
@@ -62,7 +63,7 @@ describe('EtchesService', () => {
             keyPairId: 'kpId',
             entryId: 'entryId',
             version: 1,
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/etches?entryId=entryId`);
@@ -87,7 +88,7 @@ describe('EtchesService', () => {
             keyPairId: 'kpId',
             journalId: 'jid',
             version: 1,
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
         entries[1] = {
             content: 'etch2',
@@ -98,7 +99,7 @@ describe('EtchesService', () => {
             keyPairId: 'kpId',
             journalId: 'jid',
             version: 1,
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
 
         const req = httpMock.expectOne(`${environment.API_URL}/etches?entryId=entry1`);

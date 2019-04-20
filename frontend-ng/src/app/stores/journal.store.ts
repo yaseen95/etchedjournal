@@ -4,6 +4,7 @@ import { EncrypterService } from '../services/encrypter.service';
 import { EncryptedEntityRequest } from '../services/etched-api-utils';
 import { JournalsService } from '../services/journals.service';
 import { JournalEntity } from '../services/models/journal-entity';
+import { Schema } from '../services/models/schema';
 
 @Injectable()
 export class JournalStore {
@@ -62,7 +63,7 @@ export class JournalStore {
         const req: EncryptedEntityRequest = {
             keyPairId: enc.keyPairId,
             content: ciphertext,
-            schema: '1.0.0',
+            schema: Schema.V1_0,
         };
         const j = await this.journalsService.createJournal(req).toPromise();
         // Fetch the journals again to update the navbar

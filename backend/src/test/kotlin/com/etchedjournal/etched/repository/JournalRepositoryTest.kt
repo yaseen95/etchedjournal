@@ -4,6 +4,7 @@ import com.etchedjournal.etched.TestAuthService
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.models.OwnerType
+import com.etchedjournal.etched.models.Schema
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import com.etchedjournal.etched.utils.id.IdSerializer
@@ -58,7 +59,7 @@ class JournalRepositoryTest {
             OwnerType.USER,
             keyPair.id,
             0,
-            "1.0.0"
+            Schema.V1_0
         )
         journal = repo.create(journal)
         assertEquals(1, journal.version)
@@ -75,7 +76,7 @@ class JournalRepositoryTest {
             OwnerType.USER,
             keyPair.id,
             0,
-            "1.0.0"
+            Schema.V1_0
         )
         journal1 = repo.create(journal1)
         assertEquals(1, journal1.version)
@@ -89,7 +90,7 @@ class JournalRepositoryTest {
             keyPair.id,
             // set version to 0
             0,
-            "1.0.0"
+            Schema.V1_0
         )
         // Try to create again with the version 0
         repo.create(journal2)
@@ -106,7 +107,7 @@ class JournalRepositoryTest {
             OwnerType.USER,
             keyPair.id,
             0,
-            "1.0.0"
+            Schema.V1_0
         )
         val created = repo.create(journal)
 

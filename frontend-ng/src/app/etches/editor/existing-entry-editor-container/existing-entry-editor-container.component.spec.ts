@@ -8,6 +8,7 @@ import { EtchV1 } from '../../../models/etch/etch';
 import { FakeEntryStore } from '../../../services/fakes.service.spec';
 import { EntryEntity } from '../../../services/models/entry-entity';
 import { OwnerType } from '../../../services/models/owner-type';
+import { Schema } from '../../../services/models/schema';
 import { EntryStore } from '../../../stores/entry.store';
 import { EtchStore } from '../../../stores/etch.store';
 import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
@@ -33,7 +34,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
         keyPairId: 'kpId',
         journalId: 'jid',
         version: 1,
-        schema: '1.0.0',
+        schema: Schema.V1_0,
     };
 
     const entry: EntryV1 = new EntryV1({ content: 'Entry Title', timestamp: 1000 });

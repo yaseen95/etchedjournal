@@ -1,12 +1,12 @@
 package com.etchedjournal.etched.dto
 
+import com.etchedjournal.etched.models.Schema
 import com.etchedjournal.etched.utils.id.IsEtchedId
-import com.etchedjournal.etched.utils.id.Semver
 
 data class EncryptedEntityRequest(
     val content: ByteArray,
     @field:IsEtchedId val keyPairId: String,
-    @field:Semver val schema: String
+    val schema: Schema
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

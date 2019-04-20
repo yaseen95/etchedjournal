@@ -1,5 +1,6 @@
 import { environment } from '../../environments/environment';
 import { Base64Str } from './models/encrypted-entity';
+import { Schema } from './models/schema';
 
 export const SELF_URL = `${environment.API_URL}/auth/self`;
 export const ENTRIES_URL = `${environment.API_URL}/entries`;
@@ -17,5 +18,5 @@ export const AUTH_REQUIRED_URLS = [SELF_URL, ENTRIES_URL, ETCHES_URL, JOURNALS_U
 export interface EncryptedEntityRequest {
     readonly content: Base64Str;
     readonly keyPairId: string;
-    readonly schema: string;
+    readonly schema: Schema;
 }

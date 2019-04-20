@@ -5,6 +5,7 @@ package com.etchedjournal.etched.models.jooq.generated.tables.pojos;
 
 
 import com.etchedjournal.etched.models.OwnerType;
+import com.etchedjournal.etched.models.Schema;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -35,7 +36,7 @@ public class Etch {
     private final String    entryId;
     private final String    keyPairId;
     private final Integer   version;
-    private final String    schema;
+    private final Schema    schema;
 
     public Etch(Etch value) {
         this.id = value.id;
@@ -58,7 +59,7 @@ public class Etch {
         String    entryId,
         String    keyPairId,
         Integer   version,
-        String    schema
+        Schema    schema
     ) {
         this.id = id;
         this.timestamp = timestamp;
@@ -113,8 +114,7 @@ public class Etch {
     }
 
     @NotNull
-    @Size(max = 10)
-    public String getSchema() {
+    public Schema getSchema() {
         return this.schema;
     }
 

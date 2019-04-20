@@ -154,11 +154,12 @@ class EntryServiceControllerTests {
             {
                 "content": "abcd",
                 "keyPairId": "${testKeyPair.id}",
-                "schema": "1.0.0"
+                "schema": "V1_0"
             }
             """
         mockMvc.perform(
-            post("$ENTRIES_PATH?journalId=${testJournal.id}")
+            post(ENTRIES_PATH)
+                .param("journalId", testJournal.id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(entryRequest)
         )
@@ -185,11 +186,12 @@ class EntryServiceControllerTests {
             {
                 "content": "abcd",
                 "keyPairId": "${testKeyPair.id}",
-                "schema": "1.0.0"
+                "schema": "V1_0"
             }
             """
         mockMvc.perform(
-            post("$ENTRIES_PATH?journalId=${otherUserJournal.id}")
+            post(ENTRIES_PATH)
+                .param("journalId", otherUserJournal.id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(entryRequest)
         )
@@ -214,11 +216,12 @@ class EntryServiceControllerTests {
             {
                 "content": "abcd",
                 "keyPairId": "${otherUserKeyPair.id}",
-                "schema": "1.0.0"
+                "schema": "V1_0"
             }
             """
         mockMvc.perform(
-            post("$ENTRIES_PATH?journalId=${testJournal.id}")
+            post(ENTRIES_PATH)
+                .param("journalId", testJournal.id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(entryRequest)
         )
@@ -235,6 +238,7 @@ class EntryServiceControllerTests {
             """
         mockMvc.perform(
             post(ENTRIES_PATH)
+                .param("journalId", testJournal.id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(entryRequest)
         )
@@ -247,6 +251,7 @@ class EntryServiceControllerTests {
         val entryRequest = """{}"""
         mockMvc.perform(
             post(ENTRIES_PATH)
+                .param("journalId", testJournal.id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(entryRequest)
         )
@@ -259,11 +264,25 @@ class EntryServiceControllerTests {
     fun `POST entry with keyPairId missing`() {
         mockMvc.perform(
             post(ENTRIES_PATH)
+                .param("journalId", testJournal.id)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{ "content": "AQI=" }""")
+                .content("""{ "content": "AQI=", "schema": "V1_0" }""")
         )
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("\$.message", `is`("Cannot supply null for key 'keyPairId'")))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["USER"])
+    fun `POST entry with schema missing`() {
+        mockMvc.perform(
+            post(ENTRIES_PATH)
+                .param("journalId", testJournal.id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""{ "content": "AQI=", "keyPairId": "${testKeyPair.id}" }""")
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("\$.message", `is`("Cannot supply null for key 'schema'")))
     }
 
     @Test
@@ -273,14 +292,43 @@ class EntryServiceControllerTests {
         // We don't fail on unknown properties, so this test doesn't really do much
         // If we want to fail on unknown properties we should enable
         // DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
-        val entryRequest = """{"tomato": "soup", "name": "Sam Sepiol"}"""
+        val entryRequest = """
+            {
+                "keyPairId": "${testKeyPair.id}",
+                "content": "AQI=",
+                "schema": "V1_0",
+                "tomato": "soup"
+            }
+            """.trimIndent()
         mockMvc.perform(
             post(ENTRIES_PATH)
+                .param("journalId", testJournal.id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(entryRequest)
+        )
+            .andExpect(status().isOk)
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["USER"])
+    fun `POST entry with invalid schema`() {
+        val entryRequest =
+            """
+            {
+                "content": "abcd",
+                "keyPairId": "${testKeyPair.id}",
+                "schema": "V1_1"
+            }
+            """
+        mockMvc.perform(
+            post(ENTRIES_PATH)
+                .param("journalId", testJournal.id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(entryRequest)
         )
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("\$.message", `is`("Cannot supply null for key 'content'")))
+            .andExpect(jsonPath("\$.message",
+                `is`("'V1_1' is not a valid value for key 'schema'")))
     }
 
     companion object {
