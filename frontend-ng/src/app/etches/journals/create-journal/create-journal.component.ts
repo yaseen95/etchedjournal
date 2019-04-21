@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EtchedRoutes } from '../../../app-routing-utils';
-import { JournalEntity } from '../../../services/models/journal-entity';
+import { JournalV1 } from '../../../models/journal/journal-v1';
+import { ClockService } from '../../../services/clock.service';
 import { JournalStore } from '../../../stores/journal.store';
 import { JOURNAL_NAME_VALIDATORS, JournalFormUtils } from '../../../user/form-utils';
 
@@ -21,7 +22,8 @@ export class CreateJournalComponent {
     constructor(
         private fb: FormBuilder,
         private router: Router,
-        private journalStore: JournalStore
+        private journalStore: JournalStore,
+        private clock: ClockService
     ) {
         this.submitClicked = false;
         this.creatingJournal = false;
@@ -33,18 +35,17 @@ export class CreateJournalComponent {
     public onSubmit() {
         this.submitClicked = true;
         if (this.createJournalForm.valid) {
-            this.createJournal();
+            const name: string = this.createJournalForm.controls.journalName.value.trim();
+            this.createJournal(name);
         }
     }
 
-    public createJournal() {
+    public async createJournal(name: string) {
         this.creatingJournal = true;
-        const journalName = this.createJournalForm.controls.journalName.value.trim();
-        console.info('Encrypting journal title');
-        this.journalStore.createJournal(journalName).then((j: JournalEntity) => {
-            this.creatingJournal = false;
-            const navExtras = { queryParams: { journalId: j.id } };
-            this.router.navigate([`${EtchedRoutes.ENTRIES_CREATE_PATH}`], navExtras);
-        });
+        const journal = new JournalV1({ name: name, created: this.clock.nowMillis() });
+        const created = await this.journalStore.createJournal(journal);
+        this.creatingJournal = false;
+        const navExtras = { queryParams: { journalId: created.id } };
+        this.router.navigate([`${EtchedRoutes.ENTRIES_CREATE_PATH}`], navExtras);
     }
 }

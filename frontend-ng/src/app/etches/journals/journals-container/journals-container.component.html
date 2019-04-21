@@ -3,6 +3,7 @@
         <app-spinner [text]="'Getting journals'"></app-spinner>
     </div>
     <div *ngIf="!displaySpinner()" class="column is-12-mobile is-8-desktop">
-        <app-journal-list [journals]="store.journals"></app-journal-list>
+        <app-journal-list [entities]="store.entities" [journalsById]="store.journalsById">
+        </app-journal-list>
     </div>
 </div>

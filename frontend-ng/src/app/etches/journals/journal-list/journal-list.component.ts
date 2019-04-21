@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { AbstractJournal } from '../../../models/journal/abstract-journal';
 import { JournalEntity } from '../../../services/models/journal-entity';
 
 @Component({
@@ -8,5 +9,8 @@ import { JournalEntity } from '../../../services/models/journal-entity';
 })
 export class JournalListComponent {
     @Input()
-    public journals: JournalEntity[];
+    public entities: JournalEntity[];
+
+    @Input()
+    public journalsById: Map<string, AbstractJournal>;
 }
