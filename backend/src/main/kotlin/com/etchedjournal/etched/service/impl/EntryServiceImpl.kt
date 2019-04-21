@@ -56,6 +56,7 @@ class EntryServiceImpl(
         var entry = Entry(
             idGenerator.generateId(),
             Instant.now(),
+            null,
             req.content,
             authService.getUserId(),
             OwnerType.USER,

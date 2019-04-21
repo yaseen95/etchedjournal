@@ -46,7 +46,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Etch extends TableImpl<EtchRecord> {
 
-    private static final long serialVersionUID = 46139746;
+    private static final long serialVersionUID = -1424961200;
 
     /**
      * The reference instance of <code>public.etch</code>
@@ -67,9 +67,9 @@ public class Etch extends TableImpl<EtchRecord> {
     public final TableField<EtchRecord, String> ID = createField("id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "", new IdConverter());
 
     /**
-     * The column <code>public.etch.timestamp</code>.
+     * The column <code>public.etch.created</code>.
      */
-    public final TableField<EtchRecord, Instant> TIMESTAMP = createField("timestamp", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "", new InstantConverter());
+    public final TableField<EtchRecord, Instant> CREATED = createField("created", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "", new InstantConverter());
 
     /**
      * The column <code>public.etch.content</code>.

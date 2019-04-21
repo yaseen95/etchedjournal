@@ -53,6 +53,7 @@ class JournalServiceImpl(
         var journal = Journal(
             idGenerator.generateId(),
             Instant.now(),
+            null,
             req.content,
             authService.getUserId(),
             OwnerType.USER,

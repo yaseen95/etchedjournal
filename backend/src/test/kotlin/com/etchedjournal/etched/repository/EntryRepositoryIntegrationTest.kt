@@ -61,6 +61,7 @@ class EntryRepositoryIntegrationTest {
         var entry = Entry(
             id,
             Instant.EPOCH,
+            null,
             byteArrayOf(1, 2),
             TestAuthService.TESTER_USER_ID,
             OwnerType.USER,
@@ -79,6 +80,7 @@ class EntryRepositoryIntegrationTest {
         var entry1 = Entry(
             id,
             Instant.EPOCH,
+            null,
             byteArrayOf(1, 2),
             TestAuthService.TESTER_USER_ID,
             OwnerType.USER,
@@ -93,6 +95,7 @@ class EntryRepositoryIntegrationTest {
         val entry2 = Entry(
             id,
             Instant.EPOCH,
+            null,
             byteArrayOf(1, 2),
             TestAuthService.TESTER_USER_ID,
             OwnerType.USER,
@@ -112,6 +115,7 @@ class EntryRepositoryIntegrationTest {
         val entry = Entry(
             id,
             Instant.EPOCH,
+            null,
             byteArrayOf(1, 2),
             TestAuthService.TESTER_USER_ID,
             OwnerType.USER,
