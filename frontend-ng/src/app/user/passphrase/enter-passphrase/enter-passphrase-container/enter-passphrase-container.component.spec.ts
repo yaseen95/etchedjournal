@@ -133,7 +133,7 @@ describe('EnterPassphraseContainerComponent', () => {
             iterations: 1,
             owner: 'owner',
             ownerType: OwnerType.USER,
-            timestamp: 0,
+            created: 0,
             version: 1,
         };
 

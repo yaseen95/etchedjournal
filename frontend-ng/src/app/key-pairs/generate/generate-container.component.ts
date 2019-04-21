@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { Encrypter, KeyPair } from '../../services/encrypter';
 import { EncrypterService } from '../../services/encrypter.service';
 import { KeyPairsService } from '../../services/key-pairs.service';
-import { Base64Str } from '../../services/models/encrypted-entity';
+import { Base64Str } from '../../services/models/types';
 
 @Component({
     selector: 'app-generate',

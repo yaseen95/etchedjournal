@@ -1,6 +1,6 @@
 import * as openpgp from 'openpgp';
 
-import { Base64Str } from '../services/models/encrypted-entity';
+import { Base64Str } from '../services/models/types';
 
 export class CryptoUtils {
     /**

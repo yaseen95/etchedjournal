@@ -6,25 +6,11 @@ import { JournalV1 } from '../models/journal/journal-v1';
 import { AuthService } from '../services/auth.service';
 import { FakeJournalStore } from '../services/fakes.service.spec';
 import { JournalEntity } from '../services/models/journal-entity';
-import { OwnerType } from '../services/models/owner-type';
-import { Schema } from '../services/models/schema';
 import { JournalStore } from '../stores/journal.store';
 import { TestUtils } from '../utils/test-utils.spec';
 import { NavComponent } from './nav.component';
+import createJournalEntity = TestUtils.createJournalEntity;
 import TEST_USER = TestUtils.TEST_USER;
-
-function createJournalEntity(j: { id: string; content: string }): JournalEntity {
-    return {
-        id: j.id,
-        content: j.content,
-        schema: Schema.V1_0,
-        version: 1,
-        timestamp: 1_000,
-        keyPairId: 'kpId',
-        owner: 'owner',
-        ownerType: OwnerType.USER,
-    };
-}
 
 describe('NavComponent', () => {
     let component: NavComponent;

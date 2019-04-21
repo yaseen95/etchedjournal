@@ -39,7 +39,7 @@ describe('KeyPairsService', () => {
             expect(keyPair.ownerType).toEqual('USER');
             expect(keyPair.privateKey).toEqual('privKey');
             expect(keyPair.publicKey).toEqual('pubKey');
-            expect(keyPair.timestamp).toEqual(1);
+            expect(keyPair.created).toEqual(1);
             expect(keyPair.salt).toEqual('salt');
             expect(keyPair.iterations).toEqual(10);
         });
@@ -50,7 +50,7 @@ describe('KeyPairsService', () => {
             ownerType: OwnerType.USER,
             privateKey: 'privKey',
             publicKey: 'pubKey',
-            timestamp: 1,
+            created: 1,
             salt: 'salt',
             iterations: 10,
             version: 1,
