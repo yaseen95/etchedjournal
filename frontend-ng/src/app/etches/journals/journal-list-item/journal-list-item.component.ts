@@ -1,4 +1,6 @@
 import { Component, Input } from '@angular/core';
+import { AbstractJournal } from '../../../models/journal/abstract-journal';
+import { JournalV1 } from '../../../models/journal/journal-v1';
 import { JournalEntity } from '../../../services/models/journal-entity';
 
 @Component({
@@ -8,10 +10,12 @@ import { JournalEntity } from '../../../services/models/journal-entity';
 })
 export class JournalListItemComponent {
     @Input()
-    public journal: JournalEntity;
+    public entity: JournalEntity;
+    @Input()
+    public journal: JournalV1;
     public date: string;
 
     public ngOnInit() {
-        this.date = new Date(this.journal.timestamp).toLocaleDateString();
+        this.date = new Date(this.journal.created).toLocaleDateString();
     }
 }

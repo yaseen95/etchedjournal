@@ -22,7 +22,7 @@
 
         <div class="navbar-menu" [ngClass]="{ 'is-active': burgerIsActive }">
             <div class="navbar-start">
-                <ng-container *ngIf="store.journals.length > 3">
+                <ng-container *ngIf="store.entities.length > 3">
                     <!-- Display journals in a dropdown if 3 or more journals -->
                     <!-- toggleJournalDropdown() changes whether the dropdown is
                     expanded/collapsed on mobile/tablet. By default it is visible in the menu on
@@ -42,22 +42,23 @@
                                 'is-hidden-mobile is-hidden-tablet-only': collapseDropdownOnMobile
                             }"
                         >
-                            <ng-container *ngFor="let j of store.journals">
+                            <ng-container *ngFor="let j of store.entities">
                                 <a
                                     class="navbar-item journal-nav-item"
                                     [routerLink]="['journals', j.id]"
-                                    >{{ j.content }}</a
                                 >
+                                    {{ getJournalName(j.id) }}
+                                </a>
                             </ng-container>
                         </div>
                     </div>
                 </ng-container>
-                <ng-container *ngIf="store.journals.length <= 3">
-                    <ng-container *ngFor="let j of store.journals">
+                <ng-container *ngIf="store.entities.length <= 3">
+                    <ng-container *ngFor="let j of store.entities">
                         <!-- Display journals on navbar if 3 or fewer journals -->
-                        <a class="navbar-item journal-nav-item" [routerLink]="['journals', j.id]">{{
-                            j.content
-                        }}</a>
+                        <a class="navbar-item journal-nav-item" [routerLink]="['journals', j.id]">
+                            {{ getJournalName(j.id)}}
+                        </a>
                     </ng-container>
                 </ng-container>
             </div>

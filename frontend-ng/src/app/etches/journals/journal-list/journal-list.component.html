@@ -1,8 +1,12 @@
 <p class="title is-3">Journals</p>
-<div *ngIf="journals.length > 0">
-    <app-journal-list-item *ngFor="let j of journals" [journal]="j"> </app-journal-list-item>
+<div *ngIf="entities.length > 0">
+    <app-journal-list-item *ngFor="let j of entities"
+                           [entity]="j"
+                           [journal]="journalsById.get(j.id)"
+    >
+    </app-journal-list-item>
 </div>
-<div *ngIf="journals.length == 0">
+<div *ngIf="entities.length == 0">
     <p>No journals</p>
 </div>
 <a routerLink="/journals/new">

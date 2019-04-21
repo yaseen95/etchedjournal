@@ -65,7 +65,7 @@ describe('JournalsContainerComponent', () => {
 
     it('displays list of journals', () => {
         store.loadedOnce = true;
-        store.journals = [];
+        store.entities = [];
         fixture.detectChanges();
         TestUtils.queryExpectOne(fixture.debugElement, 'app-journal-list');
     });

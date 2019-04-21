@@ -4,9 +4,11 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { NavigationExtras, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { JournalV1 } from '../../../models/journal/journal-v1';
+import { ClockService } from '../../../services/clock.service';
+import { FakeClock } from '../../../services/clock.service.spec';
 import { FakeJournalStore } from '../../../services/fakes.service.spec';
 import { JournalEntity } from '../../../services/models/journal-entity';
-import { OwnerType } from '../../../services/models/owner-type';
 import { Schema } from '../../../services/models/schema';
 import { JournalStore } from '../../../stores/journal.store';
 import { TestUtils } from '../../../utils/test-utils.spec';
@@ -18,10 +20,12 @@ describe('CreateJournalComponent', () => {
     let routerSpy: any;
     let createJournalForm: FormGroup;
     let journalStore: JournalStore;
+    let clock: FakeClock;
 
     beforeEach(async(() => {
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         journalStore = new FakeJournalStore();
+        clock = new FakeClock(0);
 
         TestBed.configureTestingModule({
             declarations: [CreateJournalComponent],
@@ -29,6 +33,7 @@ describe('CreateJournalComponent', () => {
             providers: [
                 { provide: JournalStore, useValue: journalStore },
                 { provide: Router, useValue: routerSpy },
+                { provide: ClockService, useValue: clock },
             ],
         }).compileComponents();
     }));
@@ -132,29 +137,41 @@ describe('CreateJournalComponent', () => {
         expect(component.submitClicked).toBeTruthy();
     });
 
+    it('creates journal', async () => {
+        const createJournalSpy = spyOn(journalStore, 'createJournal');
+        const entity = {
+            id: 'jid',
+            content: 'ciphertext',
+            schema: Schema.V1_0,
+        } as JournalEntity;
+        createJournalSpy.and.returnValue(entity);
+
+        clock.time = 123;
+        await component.createJournal('title');
+
+        const journal = new JournalV1({ name: 'title', created: 123 });
+        expect(createJournalSpy).toHaveBeenCalledTimes(1);
+        expect(createJournalSpy).toHaveBeenCalledWith(journal);
+    });
+
     it('navigates to create entry page after creating journal', fakeAsync(() => {
         const nameControl = createJournalForm.controls.journalName;
         nameControl.setValue('title');
 
         const createJournalSpy = spyOn(journalStore, 'createJournal');
-        const journal: JournalEntity = {
+        const entity = {
             id: '1234567890abcdef',
-            owner: 'owner',
-            ownerType: OwnerType.USER,
-            content: 'content',
-            timestamp: 1,
-            keyPairId: 'kpId',
-            version: 1,
+            content: 'ciphertext',
             schema: Schema.V1_0,
-        };
-        createJournalSpy.and.returnValue(Promise.resolve(journal));
-        component.createJournal();
+        } as JournalEntity;
+        createJournalSpy.and.returnValue(Promise.resolve(entity));
+        component.createJournal('title');
 
         tick();
 
         expect(component.creatingJournal).toBeFalsy();
         expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
-        const navExtras: NavigationExtras = { queryParams: { journalId: journal.id } };
+        const navExtras: NavigationExtras = { queryParams: { journalId: entity.id } };
         expect(routerSpy.navigate).toHaveBeenCalledWith(['entries/new'], navExtras);
     }));
 });

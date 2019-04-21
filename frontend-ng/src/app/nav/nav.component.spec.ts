@@ -2,13 +2,29 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MobxAngularModule } from 'mobx-angular';
+import { JournalV1 } from '../models/journal/journal-v1';
 import { AuthService } from '../services/auth.service';
 import { FakeJournalStore } from '../services/fakes.service.spec';
 import { JournalEntity } from '../services/models/journal-entity';
+import { OwnerType } from '../services/models/owner-type';
+import { Schema } from '../services/models/schema';
 import { JournalStore } from '../stores/journal.store';
 import { TestUtils } from '../utils/test-utils.spec';
 import { NavComponent } from './nav.component';
 import TEST_USER = TestUtils.TEST_USER;
+
+function createJournalEntity(j: { id: string; content: string }): JournalEntity {
+    return {
+        id: j.id,
+        content: j.content,
+        schema: Schema.V1_0,
+        version: 1,
+        timestamp: 1_000,
+        keyPairId: 'kpId',
+        owner: 'owner',
+        ownerType: OwnerType.USER,
+    };
+}
 
 describe('NavComponent', () => {
     let component: NavComponent;
@@ -17,15 +33,24 @@ describe('NavComponent', () => {
     let journalStore: JournalStore;
 
     const TEST_JOURNALS: JournalEntity[] = [
-        { content: '1', id: 'abc' },
-        { content: '2', id: 'def' },
-        { content: '3', id: 'ghi' },
-        { content: '4', id: 'jkl' },
-    ] as JournalEntity[];
+        createJournalEntity({ id: 'abc', content: '1' }),
+        createJournalEntity({ id: 'def', content: '2' }),
+        createJournalEntity({ id: 'ghi', content: '3' }),
+        createJournalEntity({ id: 'jkl', content: '4' }),
+    ];
+
+    const JOURNALS_BY_ID: Map<string, JournalV1> = new Map<string, JournalV1>();
+    JOURNALS_BY_ID.set('abc', new JournalV1({ name: 'journal abc', created: 1 }));
+    JOURNALS_BY_ID.set('def', new JournalV1({ name: 'journal def', created: 1 }));
+    JOURNALS_BY_ID.set('ghi', new JournalV1({ name: 'journal ghi', created: 1 }));
+    JOURNALS_BY_ID.set('jkl', new JournalV1({ name: 'journal jkl', created: 1 }));
 
     beforeEach(async(() => {
         authSpy = jasmine.createSpyObj('AuthService', ['getUser', 'logout']);
         journalStore = new FakeJournalStore();
+        journalStore.journals = Array.from(JOURNALS_BY_ID.values());
+        journalStore.entities = TEST_JOURNALS;
+        journalStore.journalsById = JOURNALS_BY_ID;
 
         TestBed.configureTestingModule({
             declarations: [NavComponent],
@@ -88,23 +113,24 @@ describe('NavComponent', () => {
     });
 
     it('displays links to journals', () => {
-        journalStore.journals = TEST_JOURNALS.slice(0, 2);
+        journalStore.entities = TEST_JOURNALS.slice(0, 2);
         fixture.detectChanges();
 
         const items = fixture.debugElement.queryAll(By.css('.journal-nav-item'));
         expect(items.length).toEqual(2);
         expect(items[0].properties.href).toEqual('/journals/abc');
+        expect(items[0].nativeElement.innerText.trim()).toEqual('journal abc');
         expect(items[1].properties.href).toEqual('/journals/def');
+        expect(items[1].nativeElement.innerText.trim()).toEqual('journal def');
     });
 
-    it('journals are not display in dropdown when 3 or less', () => {
-        journalStore.journals = TEST_JOURNALS.slice(0, 3);
+    it('journals are not displayed in dropdown when 3 or less', () => {
+        journalStore.entities = TEST_JOURNALS.slice(0, 3);
         fixture.detectChanges();
         TestUtils.queryExpectNone(fixture.debugElement, '.navbar-dropdown');
     });
 
     it('journals are displayed in dropdown when more than 3', () => {
-        journalStore.journals = TEST_JOURNALS.slice();
         fixture.detectChanges();
 
         const dropdownDe = TestUtils.queryExpectOne(fixture.debugElement, '.navbar-dropdown');
@@ -115,7 +141,6 @@ describe('NavComponent', () => {
 
     it('collapseDropdownOnMobile collapses dropdown on mobile and tablet', () => {
         component.collapseDropdownOnMobile = true;
-        journalStore.journals = TEST_JOURNALS.slice();
 
         fixture.detectChanges();
 
@@ -126,7 +151,6 @@ describe('NavComponent', () => {
 
     it('collapseDropdownOnMobile expands dropdown on mobile and tablet', () => {
         component.collapseDropdownOnMobile = false;
-        journalStore.journals = TEST_JOURNALS.slice();
 
         fixture.detectChanges();
 
@@ -147,7 +171,6 @@ describe('NavComponent', () => {
     });
 
     it('clicking navbar-item dropdown togglesDropdown', () => {
-        journalStore.journals = TEST_JOURNALS.slice();
         component.collapseDropdownOnMobile = true;
         fixture.detectChanges();
 
