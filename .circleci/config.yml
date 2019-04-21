@@ -30,7 +30,7 @@ jobs:
           paths:
             - ~/.gradle
             - ~/.m2
-          key: gradle-dependencies-{{ checksum "build.gradle" }}
+          key: gradle-dependencies-{{ checksum "backend/build.gradle" }}
 
       - save_cache:
           paths:
