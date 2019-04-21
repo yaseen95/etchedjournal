@@ -21,7 +21,7 @@ describe('JournalListItemComponent', () => {
         version: 1,
         schema: Schema.V1_0,
     };
-    const journal: JournalV1 = new JournalV1({name: 'work journal', created: 1_000});
+    const journal: JournalV1 = new JournalV1({ name: 'work journal', created: 1_000 });
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({

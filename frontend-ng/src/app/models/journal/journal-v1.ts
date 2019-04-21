@@ -7,7 +7,7 @@ export class JournalV1 extends AbstractJournal {
     /** timestamp the journal was created on the user's computer */
     public readonly created: number;
 
-    constructor(entry: { name: string; created: number; }) {
+    constructor(entry: { name: string; created: number }) {
         super();
         this.name = entry.name;
         this.created = entry.created;

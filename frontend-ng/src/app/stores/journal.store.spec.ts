@@ -72,7 +72,7 @@ describe('JournalStore', () => {
         expect(store.entities[0]).toEqual({ ...entity, content: journalBlob } as JournalEntity);
 
         expect(store.journals.length).toEqual(1);
-        const expectedJournal = new JournalV1({name: 'journal name', created: 123});
+        const expectedJournal = new JournalV1({ name: 'journal name', created: 123 });
         expect(store.journals[0]).toEqual(Object.assign({}, expectedJournal));
 
         expect(store.journalsById.size).toEqual(1);

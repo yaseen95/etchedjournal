@@ -36,8 +36,8 @@ describe('JournalListComponent', () => {
         },
     ];
     const journalsById: Map<string, JournalV1> = new Map();
-    journalsById.set('1', new JournalV1({name: 'journal1', created: 1_000}));
-    journalsById.set('2', new JournalV1({name: 'journal2', created: 2_000}));
+    journalsById.set('1', new JournalV1({ name: 'journal1', created: 1_000 }));
+    journalsById.set('2', new JournalV1({ name: 'journal2', created: 2_000 }));
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({

@@ -42,7 +42,7 @@ export class CreateJournalComponent {
 
     public async createJournal(name: string) {
         this.creatingJournal = true;
-        const journal = new JournalV1({ name: name, created: this.clock.nowMillis() });
+        const journal = new JournalV1({ name, created: this.clock.nowMillis() });
         const created = await this.journalStore.createJournal(journal);
         this.creatingJournal = false;
         const navExtras = { queryParams: { journalId: created.id } };

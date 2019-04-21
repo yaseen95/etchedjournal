@@ -13,7 +13,7 @@ import { TestUtils } from '../utils/test-utils.spec';
 import { NavComponent } from './nav.component';
 import TEST_USER = TestUtils.TEST_USER;
 
-function createJournalEntity(j: {id: string, content: string}): JournalEntity {
+function createJournalEntity(j: { id: string; content: string }): JournalEntity {
     return {
         id: j.id,
         content: j.content,
@@ -33,17 +33,17 @@ describe('NavComponent', () => {
     let journalStore: JournalStore;
 
     const TEST_JOURNALS: JournalEntity[] = [
-        createJournalEntity({id: 'abc', content: '1'}),
-        createJournalEntity({id: 'def', content: '2'}),
-        createJournalEntity({id: 'ghi', content: '3'}),
-        createJournalEntity({id: 'jkl', content: '4'}),
+        createJournalEntity({ id: 'abc', content: '1' }),
+        createJournalEntity({ id: 'def', content: '2' }),
+        createJournalEntity({ id: 'ghi', content: '3' }),
+        createJournalEntity({ id: 'jkl', content: '4' }),
     ];
 
     const JOURNALS_BY_ID: Map<string, JournalV1> = new Map<string, JournalV1>();
-    JOURNALS_BY_ID.set('abc', new JournalV1({name: 'journal abc', created: 1}));
-    JOURNALS_BY_ID.set('def', new JournalV1({name: 'journal def', created: 1}));
-    JOURNALS_BY_ID.set('ghi', new JournalV1({name: 'journal ghi', created: 1}));
-    JOURNALS_BY_ID.set('jkl', new JournalV1({name: 'journal jkl', created: 1}));
+    JOURNALS_BY_ID.set('abc', new JournalV1({ name: 'journal abc', created: 1 }));
+    JOURNALS_BY_ID.set('def', new JournalV1({ name: 'journal def', created: 1 }));
+    JOURNALS_BY_ID.set('ghi', new JournalV1({ name: 'journal ghi', created: 1 }));
+    JOURNALS_BY_ID.set('jkl', new JournalV1({ name: 'journal jkl', created: 1 }));
 
     beforeEach(async(() => {
         authSpy = jasmine.createSpyObj('AuthService', ['getUser', 'logout']);

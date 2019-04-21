@@ -149,11 +149,9 @@ describe('CreateJournalComponent', () => {
         clock.time = 123;
         await component.createJournal('title');
 
+        const journal = new JournalV1({ name: 'title', created: 123 });
         expect(createJournalSpy).toHaveBeenCalledTimes(1);
-        expect(createJournalSpy).toHaveBeenCalledWith(new JournalV1({
-            name: 'title',
-            created: 123,
-        }));
+        expect(createJournalSpy).toHaveBeenCalledWith(journal);
     });
 
     it('navigates to create entry page after creating journal', fakeAsync(() => {
