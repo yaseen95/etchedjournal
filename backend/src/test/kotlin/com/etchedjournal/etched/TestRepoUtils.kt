@@ -23,14 +23,15 @@ class TestRepoUtils(
         id: String,
         content: ByteArray,
         keyPairId: String,
-        timestamp: Instant = Instant.EPOCH,
+        created: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER,
         schema: Schema = Schema.V1_0
     ): Journal {
         val j = Journal(
             id.padEnd(11, '0'),
-            timestamp,
+            created,
+            null,
             content,
             owner,
             ownerType,
@@ -46,14 +47,15 @@ class TestRepoUtils(
         journal: Journal,
         content: ByteArray,
         keyPairId: String,
-        timestamp: Instant = Instant.EPOCH,
+        created: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER,
         schema: Schema = Schema.V1_0
     ): Entry {
         val e = Entry(
             id.padEnd(11, '0'),
-            timestamp,
+            created,
+            null,
             content,
             owner,
             ownerType,
@@ -70,14 +72,14 @@ class TestRepoUtils(
         entry: Entry,
         content: ByteArray,
         keyPairId: String,
-        timestamp: Instant = Instant.EPOCH,
+        created: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER,
         schema: Schema = Schema.V1_0
     ): Etch {
         val e = Etch(
             id.padEnd(11, '0'),
-            timestamp,
+            created,
             content,
             owner,
             ownerType,

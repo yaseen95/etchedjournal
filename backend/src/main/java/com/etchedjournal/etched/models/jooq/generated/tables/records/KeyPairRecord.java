@@ -33,7 +33,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class KeyPairRecord extends UpdatableRecordImpl<KeyPairRecord> implements Record9<String, Instant, byte[], byte[], String, OwnerType, String, Integer, Integer> {
 
-    private static final long serialVersionUID = -1616303021;
+    private static final long serialVersionUID = 2020987091;
 
     /**
      * Setter for <code>public.key_pair.id</code>.
@@ -52,18 +52,18 @@ public class KeyPairRecord extends UpdatableRecordImpl<KeyPairRecord> implements
     }
 
     /**
-     * Setter for <code>public.key_pair.timestamp</code>.
+     * Setter for <code>public.key_pair.created</code>.
      */
-    public KeyPairRecord setTimestamp(Instant value) {
+    public KeyPairRecord setCreated(Instant value) {
         set(1, value);
         return this;
     }
 
     /**
-     * Getter for <code>public.key_pair.timestamp</code>.
+     * Getter for <code>public.key_pair.created</code>.
      */
     @NotNull
-    public Instant getTimestamp() {
+    public Instant getCreated() {
         return (Instant) get(1);
     }
 
@@ -226,7 +226,7 @@ public class KeyPairRecord extends UpdatableRecordImpl<KeyPairRecord> implements
      */
     @Override
     public Field<Instant> field2() {
-        return KeyPair.KEY_PAIR.TIMESTAMP;
+        return KeyPair.KEY_PAIR.CREATED;
     }
 
     /**
@@ -298,7 +298,7 @@ public class KeyPairRecord extends UpdatableRecordImpl<KeyPairRecord> implements
      */
     @Override
     public Instant component2() {
-        return getTimestamp();
+        return getCreated();
     }
 
     /**
@@ -370,7 +370,7 @@ public class KeyPairRecord extends UpdatableRecordImpl<KeyPairRecord> implements
      */
     @Override
     public Instant value2() {
-        return getTimestamp();
+        return getCreated();
     }
 
     /**
@@ -443,7 +443,7 @@ public class KeyPairRecord extends UpdatableRecordImpl<KeyPairRecord> implements
      */
     @Override
     public KeyPairRecord value2(Instant value) {
-        setTimestamp(value);
+        setCreated(value);
         return this;
     }
 
@@ -541,11 +541,11 @@ public class KeyPairRecord extends UpdatableRecordImpl<KeyPairRecord> implements
     /**
      * Create a detached, initialised KeyPairRecord
      */
-    public KeyPairRecord(String id, Instant timestamp, byte[] publicKey, byte[] privateKey, String owner, OwnerType ownerType, String salt, Integer iterations, Integer version) {
+    public KeyPairRecord(String id, Instant created, byte[] publicKey, byte[] privateKey, String owner, OwnerType ownerType, String salt, Integer iterations, Integer version) {
         super(KeyPair.KEY_PAIR);
 
         set(0, id);
-        set(1, timestamp);
+        set(1, created);
         set(2, publicKey);
         set(3, privateKey);
         set(4, owner);

@@ -6,6 +6,7 @@ import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
+import com.etchedjournal.etched.isNull
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import org.hamcrest.Matchers.`is`
@@ -82,7 +83,8 @@ class EntryServiceControllerTests {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$", hasSize<Any>(1)))
             .andExpect(jsonPath("$[0].id", `is`(e.id)))
-            .andExpect(jsonPath("$[0].timestamp", `is`(0)))
+            .andExpect(jsonPath("$[0].created", `is`(0)))
+            .andExpect(jsonPath("$[0].modified", isNull()))
             .andExpect(jsonPath("$[0].content", `is`("AQI=")))
             .andExpect(jsonPath("$[0].owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$[0].ownerType", `is`("USER")))
@@ -101,14 +103,16 @@ class EntryServiceControllerTests {
 
         mockMvc.perform(get("$ENTRIES_PATH/${e.id}"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("\$.id", `is`(e.id)))
-            .andExpect(jsonPath("\$.timestamp", `is`(0)))
-            .andExpect(jsonPath("\$.content", `is`("AQI=")))
-            .andExpect(jsonPath("\$.owner", `is`(TESTER_USER_ID)))
-            .andExpect(jsonPath("\$.ownerType", `is`("USER")))
+            .andExpect(jsonPath("$.id", `is`(e.id)))
+            .andExpect(jsonPath("$.created", `is`(0)))
+            .andExpect(jsonPath("$.modified", isNull()))
+            .andExpect(jsonPath("$.content", `is`("AQI=")))
+            .andExpect(jsonPath("$.modified", isNull()))
+            .andExpect(jsonPath("$.owner", `is`(TESTER_USER_ID)))
+            .andExpect(jsonPath("$.ownerType", `is`("USER")))
             // These shouldn't be in the payload
-            .andExpect(jsonPath("\$.etches").doesNotExist())
-            .andExpect(jsonPath("\$.getUserId").doesNotExist())
+            .andExpect(jsonPath("$.etches").doesNotExist())
+            .andExpect(jsonPath("$.getUserId").doesNotExist())
     }
 
     @Test
@@ -164,11 +168,11 @@ class EntryServiceControllerTests {
                 .content(entryRequest)
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("\$.id").value(ID_LENGTH_MATCHER))
-            .andExpect(jsonPath("\$.timestamp").value(TIMESTAMP_RECENT_MATCHER))
-            .andExpect(jsonPath("\$.content", `is`("abcd")))
-            .andExpect(jsonPath("\$.owner", `is`(TESTER_USER_ID)))
-            .andExpect(jsonPath("\$.ownerType", `is`("USER")))
+            .andExpect(jsonPath("$.id").value(ID_LENGTH_MATCHER))
+            .andExpect(jsonPath("$.created").value(TIMESTAMP_RECENT_MATCHER))
+            .andExpect(jsonPath("$.modified", isNull()))
+            .andExpect(jsonPath("$.content", `is`("abcd")))
+            .andExpect(jsonPath("$.owner", `is`(TESTER_USER_ID)))
     }
 
     @Test

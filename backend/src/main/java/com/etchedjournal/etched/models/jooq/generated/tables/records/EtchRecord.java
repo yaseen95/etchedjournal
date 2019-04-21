@@ -34,7 +34,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class EtchRecord extends UpdatableRecordImpl<EtchRecord> implements Record9<String, Instant, byte[], String, OwnerType, String, String, Integer, Schema> {
 
-    private static final long serialVersionUID = -567368943;
+    private static final long serialVersionUID = 193514989;
 
     /**
      * Setter for <code>public.etch.id</code>.
@@ -53,18 +53,18 @@ public class EtchRecord extends UpdatableRecordImpl<EtchRecord> implements Recor
     }
 
     /**
-     * Setter for <code>public.etch.timestamp</code>.
+     * Setter for <code>public.etch.created</code>.
      */
-    public EtchRecord setTimestamp(Instant value) {
+    public EtchRecord setCreated(Instant value) {
         set(1, value);
         return this;
     }
 
     /**
-     * Getter for <code>public.etch.timestamp</code>.
+     * Getter for <code>public.etch.created</code>.
      */
     @NotNull
-    public Instant getTimestamp() {
+    public Instant getCreated() {
         return (Instant) get(1);
     }
 
@@ -226,7 +226,7 @@ public class EtchRecord extends UpdatableRecordImpl<EtchRecord> implements Recor
      */
     @Override
     public Field<Instant> field2() {
-        return Etch.ETCH.TIMESTAMP;
+        return Etch.ETCH.CREATED;
     }
 
     /**
@@ -298,7 +298,7 @@ public class EtchRecord extends UpdatableRecordImpl<EtchRecord> implements Recor
      */
     @Override
     public Instant component2() {
-        return getTimestamp();
+        return getCreated();
     }
 
     /**
@@ -370,7 +370,7 @@ public class EtchRecord extends UpdatableRecordImpl<EtchRecord> implements Recor
      */
     @Override
     public Instant value2() {
-        return getTimestamp();
+        return getCreated();
     }
 
     /**
@@ -443,7 +443,7 @@ public class EtchRecord extends UpdatableRecordImpl<EtchRecord> implements Recor
      */
     @Override
     public EtchRecord value2(Instant value) {
-        setTimestamp(value);
+        setCreated(value);
         return this;
     }
 
@@ -541,11 +541,11 @@ public class EtchRecord extends UpdatableRecordImpl<EtchRecord> implements Recor
     /**
      * Create a detached, initialised EtchRecord
      */
-    public EtchRecord(String id, Instant timestamp, byte[] content, String owner, OwnerType ownerType, String entryId, String keyPairId, Integer version, Schema schema) {
+    public EtchRecord(String id, Instant created, byte[] content, String owner, OwnerType ownerType, String entryId, String keyPairId, Integer version, Schema schema) {
         super(Etch.ETCH);
 
         set(0, id);
-        set(1, timestamp);
+        set(1, created);
         set(2, content);
         set(3, owner);
         set(4, ownerType);

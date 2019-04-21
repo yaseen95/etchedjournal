@@ -50,7 +50,7 @@ class KeyPairRepositoryTest {
 
         val retrieved = repo.findById("abcdefghijk")!!
         assertEquals("abcdefghijk", retrieved.id)
-        assertEquals(Instant.EPOCH, retrieved.timestamp)
+        assertEquals(Instant.EPOCH, retrieved.created)
         assertArrayEquals(byteArrayOf(1), retrieved.publicKey)
         assertArrayEquals(byteArrayOf(2), retrieved.privateKey)
         assertEquals("owner", retrieved.owner)

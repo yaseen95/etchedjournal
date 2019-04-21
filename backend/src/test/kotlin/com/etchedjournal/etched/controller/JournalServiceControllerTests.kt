@@ -6,6 +6,7 @@ import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
+import com.etchedjournal.etched.isNull
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import com.etchedjournal.etched.repository.JournalRepository
 import org.hamcrest.Matchers.`is`
@@ -89,14 +90,15 @@ class JournalServiceControllerTests {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$", hasSize<Any>(1)))
             .andExpect(jsonPath("$[0].id", `is`(j.id)))
-            .andExpect(jsonPath("$[0].timestamp", `is`(0)))
+            .andExpect(jsonPath("$[0].created", `is`(0)))
+            .andExpect(jsonPath("$[0].modified", isNull()))
             .andExpect(jsonPath("$[0].content", `is`("AQI=")))
             .andExpect(jsonPath("$[0].owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$[0].ownerType", `is`("USER")))
             .andExpect(jsonPath("$[0].keyPairId", `is`(keyPair.id)))
             .andExpect(jsonPath("$[0].version", `is`(1)))
             .andExpect(jsonPath("$[0].schema", `is`("V1_0")))
-            .andExpect(jsonPath("$[0].*", hasSize<Any>(8)))
+            .andExpect(jsonPath("$[0].*", hasSize<Any>(9)))
     }
 
     @Test
@@ -111,14 +113,15 @@ class JournalServiceControllerTests {
         mockMvc.perform(get("$JOURNALS_URL/${j.id}"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id", `is`(j.id)))
-            .andExpect(jsonPath("$.timestamp", `is`(0)))
+            .andExpect(jsonPath("$.created", `is`(0)))
+            .andExpect(jsonPath("$.modified", isNull()))
             .andExpect(jsonPath("$.content", `is`("AQI=")))
             .andExpect(jsonPath("$.owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$.ownerType", `is`("USER")))
             .andExpect(jsonPath("$.keyPairId", `is`(keyPair.id)))
             .andExpect(jsonPath("$.version", `is`(1)))
             .andExpect(jsonPath("$.schema", `is`("V1_0")))
-            .andExpect(jsonPath("$.*", hasSize<Any>(8)))
+            .andExpect(jsonPath("$.*", hasSize<Any>(9)))
     }
 
     @Test
@@ -151,12 +154,13 @@ class JournalServiceControllerTests {
                 )
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("\$.id").value(ID_LENGTH_MATCHER))
-            .andExpect(jsonPath("\$.timestamp").value(TIMESTAMP_RECENT_MATCHER))
-            .andExpect(jsonPath("\$.content", `is`("abcd")))
-            .andExpect(jsonPath("\$.owner", `is`(TESTER_USER_ID)))
-            .andExpect(jsonPath("\$.ownerType", `is`("USER")))
-            .andExpect(jsonPath("\$.schema", `is`("V1_0")))
+            .andExpect(jsonPath("$.id").value(ID_LENGTH_MATCHER))
+            .andExpect(jsonPath("$.created").value(TIMESTAMP_RECENT_MATCHER))
+            .andExpect(jsonPath("$.modified", isNull()))
+            .andExpect(jsonPath("$.content", `is`("abcd")))
+            .andExpect(jsonPath("$.owner", `is`(TESTER_USER_ID)))
+            .andExpect(jsonPath("$.ownerType", `is`("USER")))
+            .andExpect(jsonPath("$.schema", `is`("V1_0")))
     }
 
     companion object {

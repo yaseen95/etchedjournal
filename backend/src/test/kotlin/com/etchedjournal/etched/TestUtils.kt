@@ -3,6 +3,8 @@ package com.etchedjournal.etched
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers
 import org.springframework.stereotype.Component
 import java.io.IOException
 
@@ -43,3 +45,7 @@ val INVALID_ETCHED_IDS = listOf(
     "abcdefghij("   // symbols
     /* ktlint-enable no-multi-spaces */
 )
+
+fun isNull(): Matcher<Any> {
+    return Matchers.nullValue()
+}

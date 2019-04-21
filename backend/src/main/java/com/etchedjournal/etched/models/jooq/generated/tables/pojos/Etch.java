@@ -29,7 +29,7 @@ import javax.validation.constraints.Size;
 public class Etch {
 
     private final String    id;
-    private final Instant   timestamp;
+    private final Instant   created;
     private final byte[]    content;
     private final String    owner;
     private final OwnerType ownerType;
@@ -40,7 +40,7 @@ public class Etch {
 
     public Etch(Etch value) {
         this.id = value.id;
-        this.timestamp = value.timestamp;
+        this.created = value.created;
         this.content = value.content;
         this.owner = value.owner;
         this.ownerType = value.ownerType;
@@ -52,7 +52,7 @@ public class Etch {
 
     public Etch(
         String    id,
-        Instant   timestamp,
+        Instant   created,
         byte[]    content,
         String    owner,
         OwnerType ownerType,
@@ -62,7 +62,7 @@ public class Etch {
         Schema    schema
     ) {
         this.id = id;
-        this.timestamp = timestamp;
+        this.created = created;
         this.content = content;
         this.owner = owner;
         this.ownerType = ownerType;
@@ -78,8 +78,8 @@ public class Etch {
     }
 
     @NotNull
-    public Instant getTimestamp() {
-        return this.timestamp;
+    public Instant getCreated() {
+        return this.created;
     }
 
     @NotNull
@@ -133,11 +133,11 @@ public class Etch {
         }
         else if (!id.equals(other.id))
             return false;
-        if (timestamp == null) {
-            if (other.timestamp != null)
+        if (created == null) {
+            if (other.created != null)
                 return false;
         }
-        else if (!timestamp.equals(other.timestamp))
+        else if (!created.equals(other.created))
             return false;
         if (content == null) {
             if (other.content != null)
@@ -189,7 +189,7 @@ public class Etch {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
-        result = prime * result + ((this.timestamp == null) ? 0 : this.timestamp.hashCode());
+        result = prime * result + ((this.created == null) ? 0 : this.created.hashCode());
         result = prime * result + ((this.content == null) ? 0 : Arrays.hashCode(this.content));
         result = prime * result + ((this.owner == null) ? 0 : this.owner.hashCode());
         result = prime * result + ((this.ownerType == null) ? 0 : this.ownerType.hashCode());
@@ -205,7 +205,7 @@ public class Etch {
         StringBuilder sb = new StringBuilder("Etch (");
 
         sb.append(id);
-        sb.append(", ").append(timestamp);
+        sb.append(", ").append(created);
         sb.append(", ").append("[binary...]");
         sb.append(", ").append(owner);
         sb.append(", ").append(ownerType);

@@ -6,31 +6,19 @@ package com.etchedjournal.etched.models.jooq.generated.tables;
 
 import com.etchedjournal.etched.models.OwnerType;
 import com.etchedjournal.etched.models.Schema;
-import com.etchedjournal.etched.models.jooq.converter.IdConverter;
-import com.etchedjournal.etched.models.jooq.converter.InstantConverter;
-import com.etchedjournal.etched.models.jooq.converter.OwnerTypeConverter;
-import com.etchedjournal.etched.models.jooq.converter.SchemaConverter;
+import com.etchedjournal.etched.models.jooq.converter.*;
 import com.etchedjournal.etched.models.jooq.generated.Indexes;
 import com.etchedjournal.etched.models.jooq.generated.Keys;
 import com.etchedjournal.etched.models.jooq.generated.Public;
 import com.etchedjournal.etched.models.jooq.generated.tables.records.EntryRecord;
+import org.jooq.*;
+import org.jooq.impl.DSL;
+import org.jooq.impl.TableImpl;
 
+import javax.annotation.Generated;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.annotation.Generated;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Index;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.UniqueKey;
-import org.jooq.impl.DSL;
-import org.jooq.impl.TableImpl;
 
 
 /**
@@ -46,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Entry extends TableImpl<EntryRecord> {
 
-    private static final long serialVersionUID = -959650170;
+    private static final long serialVersionUID = -547132969;
 
     /**
      * The reference instance of <code>public.entry</code>
@@ -67,9 +55,14 @@ public class Entry extends TableImpl<EntryRecord> {
     public final TableField<EntryRecord, String> ID = createField("id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "", new IdConverter());
 
     /**
-     * The column <code>public.entry.timestamp</code>.
+     * The column <code>public.entry.created</code>.
      */
-    public final TableField<EntryRecord, Instant> TIMESTAMP = createField("timestamp", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "", new InstantConverter());
+    public final TableField<EntryRecord, Instant> CREATED = createField("created", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "", new InstantConverter());
+
+    /**
+     * The column <code>public.entry.modified</code>.
+     */
+    public final TableField<EntryRecord, Instant> MODIFIED = createField("modified", org.jooq.impl.SQLDataType.TIMESTAMP, this, "", new NullableInstantConverter());
 
     /**
      * The column <code>public.entry.content</code>.
