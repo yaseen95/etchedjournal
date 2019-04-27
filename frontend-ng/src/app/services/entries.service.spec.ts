@@ -1,12 +1,14 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
+import { TestUtils } from '../utils/test-utils.spec';
 
 import { CreateEntryRequest, EntriesService } from './entries.service';
 import { EncryptedEntityRequest } from './etched-api-utils';
 import { EntryEntity } from './models/entry-entity';
 import { OwnerType } from './models/owner-type';
 import { Schema } from './models/schema';
+import createEntryEntity = TestUtils.createEntryEntity;
 
 describe('EntriesService', () => {
     let injector: TestBed;
@@ -38,23 +40,9 @@ describe('EntriesService', () => {
         service.createEntry(createEntryReq).subscribe(result => {
             expect(result.id).toEqual('entryId');
             expect(result.content).toEqual('base64Content');
-            expect(result.timestamp).toEqual(1);
-            expect(result.owner).toEqual('user');
-            expect(result.ownerType).toEqual(OwnerType.USER);
         });
 
-        const entry: EntryEntity = {
-            id: 'entryId',
-            content: 'base64Content',
-            timestamp: 1,
-            owner: 'user',
-            // Declaring string `as OwnerType` because the API returns it as a string
-            ownerType: 'USER' as OwnerType,
-            keyPairId: 'kpId',
-            journalId: 'jid',
-            version: 1,
-            schema: Schema.V1_0,
-        };
+        const entry: EntryEntity = createEntryEntity({ id: 'entryId', content: 'base64Content' });
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries?journalId=journalId`);
         expect(req.request.method).toEqual('POST');
@@ -68,29 +56,10 @@ describe('EntriesService', () => {
             expect(result[1].content).toEqual('entry2');
         });
 
-        const entries = new Array<EntryEntity>(2);
-        entries[0] = {
-            content: 'entry1',
-            ownerType: OwnerType.USER,
-            owner: 'abc',
-            timestamp: 1,
-            id: '1',
-            keyPairId: 'kpId',
-            journalId: 'jid',
-            version: 1,
-            schema: Schema.V1_0,
-        };
-        entries[1] = {
-            content: 'entry2',
-            ownerType: OwnerType.USER,
-            owner: 'abc',
-            timestamp: 2,
-            id: '2',
-            keyPairId: 'kpId',
-            journalId: 'jid',
-            version: 1,
-            schema: Schema.V1_0,
-        };
+        const entries: EntryEntity[] = [
+            createEntryEntity({ content: 'entry1', id: '1' }),
+            createEntryEntity({ content: 'entry2', id: '1' }),
+        ];
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries?journalId=journalId`);
         expect(req.request.method).toEqual('GET');
@@ -100,22 +69,11 @@ describe('EntriesService', () => {
     it('get entry', () => {
         service.getEntry('entry1').subscribe(result => {
             expect(result.id).toEqual('entry1');
-            expect(result.timestamp).toEqual(1);
             expect(result.owner).toEqual('owner');
             expect(result.keyPairId).toEqual('kpId');
         });
 
-        const entry: EntryEntity = {
-            content: 'content',
-            ownerType: OwnerType.USER,
-            owner: 'owner',
-            timestamp: 1,
-            id: 'entry1',
-            keyPairId: 'kpId',
-            journalId: 'jid',
-            version: 1,
-            schema: Schema.V1_0,
-        };
+        const entry: EntryEntity = createEntryEntity({ id: 'entry1' });
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries/entry1`);
         expect(req.request.method).toEqual('GET');

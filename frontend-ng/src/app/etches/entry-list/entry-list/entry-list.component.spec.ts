@@ -1,18 +1,15 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
 
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { runInAction } from 'mobx';
 import { MobxAngularModule } from 'mobx-angular';
 import { EntryV1 } from '../../../models/entry/entry-v1';
 import { FakeEntryStore } from '../../../services/fakes.service.spec';
-import { OwnerType } from '../../../services/models/owner-type';
-import { Schema } from '../../../services/models/schema';
 import { EntryStore } from '../../../stores/entry.store';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { EntryListItemComponent } from '../entry-list-item/entry-list-item.component';
 import { EntryListComponent } from './entry-list.component';
+import createEntryEntity = TestUtils.createEntryEntity;
 
 describe('EntryListComponent', () => {
     let component: EntryListComponent;
@@ -49,30 +46,7 @@ describe('EntryListComponent', () => {
 
         entryStore.entries = [entry1, entry2];
         entryStore.entriesById = new Map().set('id1', entry1).set('id2', entry2);
-        entryStore.entities = [
-            {
-                id: 'id1',
-                timestamp: 1_000,
-                owner: 'owner1',
-                ownerType: OwnerType.USER,
-                content: 'ciphertext1',
-                keyPairId: 'kpId',
-                journalId: 'jid',
-                version: 1,
-                schema: Schema.V1_0,
-            },
-            {
-                id: 'id2',
-                timestamp: 2_000,
-                owner: 'owner2',
-                ownerType: OwnerType.USER,
-                content: 'ciphertext2',
-                keyPairId: 'kpId',
-                journalId: 'jid',
-                version: 1,
-                schema: Schema.V1_0,
-            },
-        ];
+        entryStore.entities = [createEntryEntity({ id: 'id1' }), createEntryEntity({ id: 'id2' })];
 
         fixture.detectChanges();
 

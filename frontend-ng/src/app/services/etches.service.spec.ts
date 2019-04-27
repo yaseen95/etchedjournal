@@ -1,13 +1,13 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
+import { TestUtils } from '../utils/test-utils.spec';
 import { EncryptedEntityRequest } from './etched-api-utils';
 
 import { CreateEtchesRequest, EtchesService } from './etches.service';
-import { EntryEntity } from './models/entry-entity';
 import { EtchEntity } from './models/etch-entity';
-import { OwnerType } from './models/owner-type';
 import { Schema } from './models/schema';
+import createEtchEntity = TestUtils.createEtchEntity;
 
 describe('EtchesService', () => {
     let injector: TestBed;
@@ -41,30 +41,10 @@ describe('EtchesService', () => {
             expect(result[1].content).toEqual('etch2');
         });
 
-        const etches = new Array<EtchEntity>(2);
-        etches[0] = {
-            content: 'etch1',
-            // Declaring string `as OwnerType` because the API returns it as a string
-            ownerType: OwnerType.USER,
-            owner: 'abc',
-            timestamp: 1,
-            id: '1',
-            keyPairId: 'kpId',
-            entryId: 'entryId',
-            version: 1,
-            schema: Schema.V1_0,
-        };
-        etches[1] = {
-            content: 'etch2',
-            ownerType: OwnerType.USER,
-            owner: 'abc',
-            timestamp: 2,
-            id: '2',
-            keyPairId: 'kpId',
-            entryId: 'entryId',
-            version: 1,
-            schema: Schema.V1_0,
-        };
+        const etches: EtchEntity[] = [
+            createEtchEntity({ content: 'etch1' }),
+            createEtchEntity({ content: 'etch2' }),
+        ];
 
         const req = httpMock.expectOne(`${environment.API_URL}/etches?entryId=entryId`);
         expect(req.request.method).toEqual('POST');
@@ -75,32 +55,15 @@ describe('EtchesService', () => {
         service.getEtches('entry1').subscribe(etches => {
             expect(etches.length).toEqual(2);
             expect(etches[0].content).toEqual('etch1');
+            expect(etches[0].entryId).toEqual('entry1');
             expect(etches[1].content).toEqual('etch2');
+            expect(etches[1].entryId).toEqual('entry1');
         });
 
-        const entries = new Array<EntryEntity>(2);
-        entries[0] = {
-            content: 'etch1',
-            ownerType: OwnerType.USER,
-            owner: 'owner',
-            timestamp: 1,
-            id: '1',
-            keyPairId: 'kpId',
-            journalId: 'jid',
-            version: 1,
-            schema: Schema.V1_0,
-        };
-        entries[1] = {
-            content: 'etch2',
-            ownerType: OwnerType.USER,
-            owner: 'owner',
-            timestamp: 2,
-            id: '2',
-            keyPairId: 'kpId',
-            journalId: 'jid',
-            version: 1,
-            schema: Schema.V1_0,
-        };
+        const entries: EtchEntity[] = [
+            createEtchEntity({ content: 'etch1', entryId: 'entry1' }),
+            createEtchEntity({ content: 'etch2', entryId: 'entry1' }),
+        ];
 
         const req = httpMock.expectOne(`${environment.API_URL}/etches?entryId=entry1`);
         expect(req.request.method).toEqual('GET');

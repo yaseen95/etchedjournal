@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { EncryptedEntityRequest, ENTRIES_URL, JOURNAL_ID } from './etched-api-utils';
-import { Base64Str } from './models/encrypted-entity';
 import { EntryEntity } from './models/entry-entity';
 
 export interface CreateEntryRequest {

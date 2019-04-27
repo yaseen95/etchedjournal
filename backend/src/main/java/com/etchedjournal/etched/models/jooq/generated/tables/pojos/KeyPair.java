@@ -28,7 +28,7 @@ import javax.validation.constraints.Size;
 public class KeyPair {
 
     private final String    id;
-    private final Instant   timestamp;
+    private final Instant   created;
     private final byte[]    publicKey;
     private final byte[]    privateKey;
     private final String    owner;
@@ -39,7 +39,7 @@ public class KeyPair {
 
     public KeyPair(KeyPair value) {
         this.id = value.id;
-        this.timestamp = value.timestamp;
+        this.created = value.created;
         this.publicKey = value.publicKey;
         this.privateKey = value.privateKey;
         this.owner = value.owner;
@@ -51,7 +51,7 @@ public class KeyPair {
 
     public KeyPair(
         String    id,
-        Instant   timestamp,
+        Instant   created,
         byte[]    publicKey,
         byte[]    privateKey,
         String    owner,
@@ -61,7 +61,7 @@ public class KeyPair {
         Integer   version
     ) {
         this.id = id;
-        this.timestamp = timestamp;
+        this.created = created;
         this.publicKey = publicKey;
         this.privateKey = privateKey;
         this.owner = owner;
@@ -77,8 +77,8 @@ public class KeyPair {
     }
 
     @NotNull
-    public Instant getTimestamp() {
-        return this.timestamp;
+    public Instant getCreated() {
+        return this.created;
     }
 
     @NotNull
@@ -133,11 +133,11 @@ public class KeyPair {
         }
         else if (!id.equals(other.id))
             return false;
-        if (timestamp == null) {
-            if (other.timestamp != null)
+        if (created == null) {
+            if (other.created != null)
                 return false;
         }
-        else if (!timestamp.equals(other.timestamp))
+        else if (!created.equals(other.created))
             return false;
         if (publicKey == null) {
             if (other.publicKey != null)
@@ -189,7 +189,7 @@ public class KeyPair {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
-        result = prime * result + ((this.timestamp == null) ? 0 : this.timestamp.hashCode());
+        result = prime * result + ((this.created == null) ? 0 : this.created.hashCode());
         result = prime * result + ((this.publicKey == null) ? 0 : Arrays.hashCode(this.publicKey));
         result = prime * result + ((this.privateKey == null) ? 0 : Arrays.hashCode(this.privateKey));
         result = prime * result + ((this.owner == null) ? 0 : this.owner.hashCode());
@@ -205,7 +205,7 @@ public class KeyPair {
         StringBuilder sb = new StringBuilder("KeyPair (");
 
         sb.append(id);
-        sb.append(", ").append(timestamp);
+        sb.append(", ").append(created);
         sb.append(", ").append("[binary...]");
         sb.append(", ").append("[binary...]");
         sb.append(", ").append(owner);

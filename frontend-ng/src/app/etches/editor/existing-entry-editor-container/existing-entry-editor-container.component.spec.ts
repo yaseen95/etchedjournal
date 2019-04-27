@@ -25,18 +25,7 @@ describe('ExistingEntryEditorContainerComponent', () => {
     let etchStore: any;
     let loadEntrySpy: any;
 
-    const entryEntity: EntryEntity = {
-        timestamp: 1,
-        owner: 'owner',
-        ownerType: OwnerType.USER,
-        id: 'entryId',
-        content: 'ciphertext',
-        keyPairId: 'kpId',
-        journalId: 'jid',
-        version: 1,
-        schema: Schema.V1_0,
-    };
-
+    const entryEntity: EntryEntity = TestUtils.createEntryEntity({ id: 'entryId' });
     const entry: EntryV1 = new EntryV1({ content: 'Entry Title', timestamp: 1000 });
 
     beforeEach(async(() => {

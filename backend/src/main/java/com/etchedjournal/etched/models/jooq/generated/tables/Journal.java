@@ -8,6 +8,7 @@ import com.etchedjournal.etched.models.OwnerType;
 import com.etchedjournal.etched.models.Schema;
 import com.etchedjournal.etched.models.jooq.converter.IdConverter;
 import com.etchedjournal.etched.models.jooq.converter.InstantConverter;
+import com.etchedjournal.etched.models.jooq.converter.NullableInstantConverter;
 import com.etchedjournal.etched.models.jooq.converter.OwnerTypeConverter;
 import com.etchedjournal.etched.models.jooq.converter.SchemaConverter;
 import com.etchedjournal.etched.models.jooq.generated.Indexes;
@@ -46,7 +47,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Journal extends TableImpl<JournalRecord> {
 
-    private static final long serialVersionUID = -755406426;
+    private static final long serialVersionUID = -1050992683;
 
     /**
      * The reference instance of <code>public.journal</code>
@@ -67,9 +68,14 @@ public class Journal extends TableImpl<JournalRecord> {
     public final TableField<JournalRecord, String> ID = createField("id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "", new IdConverter());
 
     /**
-     * The column <code>public.journal.timestamp</code>.
+     * The column <code>public.journal.created</code>.
      */
-    public final TableField<JournalRecord, Instant> TIMESTAMP = createField("timestamp", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "", new InstantConverter());
+    public final TableField<JournalRecord, Instant> CREATED = createField("created", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "", new InstantConverter());
+
+    /**
+     * The column <code>public.journal.modified</code>.
+     */
+    public final TableField<JournalRecord, Instant> MODIFIED = createField("modified", org.jooq.impl.SQLDataType.TIMESTAMP, this, "", new NullableInstantConverter());
 
     /**
      * The column <code>public.journal.content</code>.

@@ -54,6 +54,7 @@ class JournalRepositoryIntegrationTest {
         var journal = Journal(
             id,
             Instant.EPOCH,
+            null,
             byteArrayOf(1, 2),
             TestAuthService.TESTER_USER_ID,
             OwnerType.USER,
@@ -71,6 +72,7 @@ class JournalRepositoryIntegrationTest {
         var journal1 = Journal(
             id,
             Instant.EPOCH,
+            null,
             byteArrayOf(1, 2),
             TestAuthService.TESTER_USER_ID,
             OwnerType.USER,
@@ -84,6 +86,7 @@ class JournalRepositoryIntegrationTest {
         val journal2 = Journal(
             id,
             Instant.EPOCH,
+            null,
             byteArrayOf(1, 2),
             TestAuthService.TESTER_USER_ID,
             OwnerType.USER,
@@ -102,6 +105,7 @@ class JournalRepositoryIntegrationTest {
         val journal = Journal(
             id,
             Instant.EPOCH,
+            null,
             byteArrayOf(1, 2),
             TestAuthService.TESTER_USER_ID,
             OwnerType.USER,

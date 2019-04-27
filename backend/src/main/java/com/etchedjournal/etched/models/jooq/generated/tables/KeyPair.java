@@ -45,7 +45,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class KeyPair extends TableImpl<KeyPairRecord> {
 
-    private static final long serialVersionUID = -648278794;
+    private static final long serialVersionUID = 695988488;
 
     /**
      * The reference instance of <code>public.key_pair</code>
@@ -66,9 +66,9 @@ public class KeyPair extends TableImpl<KeyPairRecord> {
     public final TableField<KeyPairRecord, String> ID = createField("id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "", new IdConverter());
 
     /**
-     * The column <code>public.key_pair.timestamp</code>.
+     * The column <code>public.key_pair.created</code>.
      */
-    public final TableField<KeyPairRecord, Instant> TIMESTAMP = createField("timestamp", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "", new InstantConverter());
+    public final TableField<KeyPairRecord, Instant> CREATED = createField("created", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "", new InstantConverter());
 
     /**
      * The column <code>public.key_pair.public_key</code>.

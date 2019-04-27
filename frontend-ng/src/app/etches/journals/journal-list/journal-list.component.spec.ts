@@ -5,35 +5,17 @@ import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { JournalV1 } from '../../../models/journal/journal-v1';
 import { JournalEntity } from '../../../services/models/journal-entity';
-import { OwnerType } from '../../../services/models/owner-type';
-import { Schema } from '../../../services/models/schema';
+import { TestUtils } from '../../../utils/test-utils.spec';
 import { JournalListItemComponent } from '../journal-list-item/journal-list-item.component';
 import { JournalListComponent } from './journal-list.component';
+import createJournalEntity = TestUtils.createJournalEntity;
 
 describe('JournalListComponent', () => {
     let component: JournalListComponent;
     let fixture: ComponentFixture<JournalListComponent>;
     const entities: JournalEntity[] = [
-        {
-            id: '1',
-            timestamp: 0,
-            ownerType: OwnerType.USER,
-            owner: 'tester1',
-            content: 'journal1 content',
-            keyPairId: 'kpId',
-            version: 1,
-            schema: Schema.V1_0,
-        },
-        {
-            id: '2',
-            timestamp: 1,
-            ownerType: OwnerType.USER,
-            owner: 'tester1',
-            content: 'journal2 content',
-            keyPairId: 'kpId',
-            version: 1,
-            schema: Schema.V1_0,
-        },
+        createJournalEntity({ id: '1' }),
+        createJournalEntity({ id: '2' }),
     ];
     const journalsById: Map<string, JournalV1> = new Map();
     journalsById.set('1', new JournalV1({ name: 'journal1', created: 1_000 }));

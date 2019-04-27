@@ -1,6 +1,11 @@
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
+import { EntryEntity } from '../services/models/entry-entity';
+import { EtchEntity } from '../services/models/etch-entity';
 import { EtchedUser } from '../services/models/etched-user';
+import { JournalEntity } from '../services/models/journal-entity';
+import { OwnerType } from '../services/models/owner-type';
+import { Schema } from '../services/models/schema';
 
 export namespace TestUtils {
     /**
@@ -51,4 +56,56 @@ export namespace TestUtils {
 
     /** base64 encoded byte arary of [5, 6, 7, 8] */
     export const MOCK_PRIV_KEY_BASE_64_STR = 'BQYHCA==';
+
+    export function createEntryEntity(entity?: Partial<EntryEntity>): EntryEntity {
+        entity = getIfDefinedOrDefault(entity, {});
+        return {
+            id: getIfDefinedOrDefault(entity.id, 'id'),
+            created: getIfDefinedOrDefault(entity.created, 0),
+            modified: getIfDefinedOrDefault(entity.modified, null),
+            journalId: getIfDefinedOrDefault(entity.journalId, 'jId'),
+            content: getIfDefinedOrDefault(entity.content, 'ciphertext'),
+            keyPairId: getIfDefinedOrDefault(entity.keyPairId, 'kpId'),
+            owner: getIfDefinedOrDefault(entity.owner, 'owner'),
+            ownerType: getIfDefinedOrDefault(entity.ownerType, OwnerType.USER),
+            schema: getIfDefinedOrDefault(entity.schema, Schema.V1_0),
+            version: getIfDefinedOrDefault(entity.version, 1),
+        };
+    }
+
+    export function createJournalEntity(entity?: Partial<JournalEntity>): JournalEntity {
+        entity = getIfDefinedOrDefault(entity, {});
+        return {
+            id: getIfDefinedOrDefault(entity.id, 'id'),
+            created: getIfDefinedOrDefault(entity.created, 0),
+            modified: getIfDefinedOrDefault(entity.modified, null),
+            content: getIfDefinedOrDefault(entity.content, 'ciphertext'),
+            keyPairId: getIfDefinedOrDefault(entity.keyPairId, 'kpId'),
+            owner: getIfDefinedOrDefault(entity.owner, 'owner'),
+            ownerType: getIfDefinedOrDefault(entity.ownerType, OwnerType.USER),
+            schema: getIfDefinedOrDefault(entity.schema, Schema.V1_0),
+            version: getIfDefinedOrDefault(entity.version, 1),
+        };
+    }
+
+    export function createEtchEntity(entity?: Partial<EtchEntity>): EtchEntity {
+        entity = getIfDefinedOrDefault(entity, {});
+        return {
+            id: getIfDefinedOrDefault(entity.id, 'id'),
+            created: getIfDefinedOrDefault(entity.created, 0),
+            content: getIfDefinedOrDefault(entity.content, 'ciphertext'),
+            keyPairId: getIfDefinedOrDefault(entity.keyPairId, 'kpId'),
+            owner: getIfDefinedOrDefault(entity.owner, 'owner'),
+            ownerType: getIfDefinedOrDefault(entity.ownerType, OwnerType.USER),
+            entryId: getIfDefinedOrDefault(entity.entryId, 'entryId'),
+            schema: getIfDefinedOrDefault(entity.schema, Schema.V1_0),
+            version: getIfDefinedOrDefault(entity.version, 1),
+        };
+    }
+
+    export function getIfDefinedOrDefault<T>(x: T | undefined, defaultX: T): T {
+        // called defaultX because `default` is reserved and I can't call it `default_` due to
+        // linting
+        return x === undefined ? defaultX : x;
+    }
 }

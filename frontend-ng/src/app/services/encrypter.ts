@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcryptjs';
 import * as openpgp from 'openpgp';
 import { environment } from '../../environments/environment';
-import { Base64Str, EncryptedEntity } from './models/encrypted-entity';
+import { Base64Str } from './models/types';
 
 const DEFAULT_CURVE = 'p521';
 
@@ -266,7 +266,7 @@ export class Encrypter {
         return openpgp.stream.readToEnd(decrypted.data);
     }
 
-    public async decryptEntities<T extends EncryptedEntity>(encrypted: T[]): Promise<T[]> {
+    public async decryptEntities<T extends { content: string }>(encrypted: T[]): Promise<T[]> {
         const copy: T[] = encrypted.slice(0);
         const decPromises = encrypted.map(j => this.decrypt(j.content));
         const decrypted = await Promise.all(decPromises);
@@ -276,7 +276,7 @@ export class Encrypter {
         return copy;
     }
 
-    public async decryptEntity<T extends EncryptedEntity>(encrypted: T): Promise<T> {
+    public async decryptEntity<T extends { content: string }>(encrypted: T): Promise<T> {
         const copy = { ...encrypted };
         copy.content = await this.decrypt(copy.content);
         return copy;

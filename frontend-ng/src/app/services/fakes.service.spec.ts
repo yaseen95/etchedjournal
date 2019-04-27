@@ -8,7 +8,7 @@ import { EncrypterService } from './encrypter.service';
 import { EntriesService } from './entries.service';
 import { EtchesService } from './etches.service';
 import { JournalsService } from './journals.service';
-import { Base64Str } from './models/encrypted-entity';
+import { Base64Str } from './models/types';
 import { SecureStorageService } from './secure-storage.service';
 
 export class FakeEncrypter extends Encrypter {

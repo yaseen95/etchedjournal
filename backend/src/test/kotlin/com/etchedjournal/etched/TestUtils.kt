@@ -1,5 +1,8 @@
 package com.etchedjournal.etched
 
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers
+
 val INVALID_ETCHED_IDS = listOf(
     /* ktlint-disable no-multi-spaces */
     "abc", // too short
@@ -12,3 +15,7 @@ val INVALID_ETCHED_IDS = listOf(
     "abcdefghij("   // symbols
     /* ktlint-enable no-multi-spaces */
 )
+
+fun isNull(): Matcher<Any> {
+    return Matchers.nullValue()
+}

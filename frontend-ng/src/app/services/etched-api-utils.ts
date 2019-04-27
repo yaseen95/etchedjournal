@@ -1,6 +1,6 @@
 import { environment } from '../../environments/environment';
-import { Base64Str } from './models/encrypted-entity';
 import { Schema } from './models/schema';
+import { Base64Str } from './models/types';
 
 export const SELF_URL = `${environment.API_URL}/auth/self`;
 export const ENTRIES_URL = `${environment.API_URL}/entries`;

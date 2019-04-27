@@ -2,8 +2,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RouterTestingModule } from '@angular/router/testing';
 import { EntryV1 } from '../../../models/entry/entry-v1';
-import { OwnerType } from '../../../services/models/owner-type';
-import { Schema } from '../../../services/models/schema';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { EntryListItemComponent } from './entry-list-item.component';
 
@@ -22,18 +20,7 @@ describe('EntryListItemComponent', () => {
         fixture = TestBed.createComponent(EntryListItemComponent);
         component = fixture.componentInstance;
 
-        component.entity = {
-            content: 'ciphertext',
-            timestamp: 2000,
-            owner: 'owner',
-            ownerType: OwnerType.USER,
-            id: 'abcdef',
-            keyPairId: 'kpId',
-            journalId: 'jid',
-            version: 1,
-            schema: Schema.V1_0,
-        };
-
+        component.entity = TestUtils.createEntryEntity({ id: 'abcdef' });
         component.entry = new EntryV1({ content: 'Title of the entry', timestamp: 1000 });
         fixture.detectChanges();
     });

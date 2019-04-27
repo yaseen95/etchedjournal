@@ -1,11 +1,12 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
+import { TestUtils } from '../utils/test-utils.spec';
 
 import { JournalsService } from './journals.service';
 import { JournalEntity } from './models/journal-entity';
-import { OwnerType } from './models/owner-type';
 import { Schema } from './models/schema';
+import createJournalEntity = TestUtils.createJournalEntity;
 
 describe('JournalsService', () => {
     let injector: TestBed;
@@ -30,25 +31,11 @@ describe('JournalsService', () => {
     it('create journal', () => {
         const createJournalReq = { keyPairId: 'kpId', content: 'content', schema: Schema.V1_0 };
         service.createJournal(createJournalReq).subscribe((result: JournalEntity) => {
-            expect(result.id).toEqual('entryId');
-            expect(result.content).toEqual('base64Content');
-            expect(result.timestamp).toEqual(1);
-            expect(result.owner).toEqual('user');
-            expect(result.ownerType).toEqual(OwnerType.USER);
-            expect(result.keyPairId).toEqual('kpId');
+            expect(result.id).toEqual('jId');
+            expect(result.content).toEqual('ciphertext');
         });
 
-        const journal: JournalEntity = {
-            id: 'entryId',
-            content: 'base64Content',
-            timestamp: 1,
-            owner: 'user',
-            // Declaring string `as OwnerType` because the API returns it as a string
-            ownerType: 'USER' as OwnerType,
-            keyPairId: 'kpId',
-            version: 1,
-            schema: Schema.V1_0,
-        };
+        const journal = createJournalEntity({ id: 'jId' });
 
         const req = httpMock.expectOne(`${environment.API_URL}/journals`);
         expect(req.request.method).toEqual('POST');
@@ -58,25 +45,11 @@ describe('JournalsService', () => {
     it('get journals', () => {
         service.getJournals().subscribe((journals: JournalEntity[]) => {
             expect(journals.length).toEqual(1);
-            expect(journals[0].id).toEqual('entryId');
-            expect(journals[0].content).toEqual('base64Content');
-            expect(journals[0].timestamp).toEqual(1);
-            expect(journals[0].owner).toEqual('user');
-            expect(journals[0].ownerType).toEqual(OwnerType.USER);
-            expect(journals[0].keyPairId).toEqual('kpId');
-            expect(journals[0].schema).toEqual(Schema.V1_0);
+            expect(journals[0].id).toEqual('jId');
+            expect(journals[0].content).toEqual('ciphertext');
         });
 
-        const journal: JournalEntity = {
-            id: 'entryId',
-            content: 'base64Content',
-            timestamp: 1,
-            owner: 'user',
-            ownerType: OwnerType.USER,
-            keyPairId: 'kpId',
-            version: 1,
-            schema: Schema.V1_0,
-        };
+        const journal: JournalEntity = createJournalEntity({ id: 'jId' });
 
         const req = httpMock.expectOne(`${environment.API_URL}/journals`);
         expect(req.request.method).toEqual('GET');

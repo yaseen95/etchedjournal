@@ -144,6 +144,13 @@ jooq {
                         userType = 'java.time.Instant'
                         converter = 'com.etchedjournal.etched.models.jooq.converter.InstantConverter'
                         types = 'TIMESTAMP'
+                        nullability = 'NOT_NULL'
+                    }
+                    forcedType {
+                        userType = 'java.time.Instant'
+                        converter = 'com.etchedjournal.etched.models.jooq.converter.NullableInstantConverter'
+                        types = 'TIMESTAMP'
+                        nullability = 'NULL'
                     }
                     forcedType {
                         userType = 'String'
