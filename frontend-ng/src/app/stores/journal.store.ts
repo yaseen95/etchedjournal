@@ -5,7 +5,7 @@ import { SimpleReader } from '../models/reader';
 import { SimpleWriter } from '../models/writer';
 import { EncrypterService } from '../services/encrypter.service';
 import { EncryptedEntityRequest } from '../services/etched-api-utils';
-import { JournalsService } from '../services/journals.service';
+import { JournalService } from '../services/journal.service';
 import { JournalEntity } from '../services/models/journal-entity';
 
 interface JournalAndEntity {
@@ -22,7 +22,7 @@ export class JournalStore {
     public journalsById: Map<string, AbstractJournal> = new Map<string, AbstractJournal>();
 
     constructor(
-        private journalsService: JournalsService,
+        private journalService: JournalService,
         private encrypterService: EncrypterService
     ) {
         encrypterService.encrypterObs.subscribe(() => this.initStore());
@@ -42,7 +42,7 @@ export class JournalStore {
     public async loadJournals(): Promise<JournalEntity[]> {
         this.loading = true;
 
-        const encrypted = await this.journalsService.getJournals().toPromise();
+        const encrypted = await this.journalService.getJournals().toPromise();
 
         const journals: AbstractJournal[] = [];
         const entities: JournalEntity[] = [];
@@ -81,6 +81,6 @@ export class JournalStore {
             content: ciphertext,
             schema: journal.schema,
         };
-        return await this.journalsService.createJournal(req).toPromise();
+        return await this.journalService.createJournal(req).toPromise();
     }
 }

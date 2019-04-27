@@ -5,9 +5,9 @@ import { JournalStore } from '../stores/journal.store';
 import { ObjectUtils } from '../utils/object-utils';
 import { Encrypter } from './encrypter';
 import { EncrypterService } from './encrypter.service';
-import { EntriesService } from './entries.service';
-import { EtchesService } from './etches.service';
-import { JournalsService } from './journals.service';
+import { EntryService } from './entry.service';
+import { EtchService } from './etch.service';
+import { JournalService } from './journal.service';
 import { Base64Str } from './models/types';
 import { SecureStorageService } from './secure-storage.service';
 
@@ -59,37 +59,37 @@ export class FakeEncrypterService extends EncrypterService {
 
 export class FakeJournalStore extends JournalStore {
     public encrypterServiceFake: FakeEncrypterService;
-    public journalsServiceSpy: JournalsService;
+    public journalServiceSpy: JournalService;
 
     constructor() {
         const encrypter = new FakeEncrypter();
         const encService = new FakeEncrypterService();
         encService.encrypter = encrypter;
 
-        const journalsService = jasmine.createSpyObj('JournalsService', [
+        const journalService = jasmine.createSpyObj('JournalService', [
             'getJournals',
             'createJournal',
         ]);
 
-        journalsService.getJournals.and.returnValue(of([]));
-        journalsService.createJournal.and.returnValue(EMPTY);
+        journalService.getJournals.and.returnValue(of([]));
+        journalService.createJournal.and.returnValue(EMPTY);
 
-        super(journalsService, encService);
+        super(journalService, encService);
 
         this.encrypterServiceFake = encService;
-        this.journalsServiceSpy = journalsService;
+        this.journalServiceSpy = journalService;
     }
 }
 
 export class FakeEntryStore extends EntryStore {
     public encrypterServiceFake: FakeEncrypterService;
-    public entryServiceSpy: EntriesService;
+    public entryServiceSpy: EntryService;
 
     constructor() {
         const encService = new FakeEncrypterService();
         encService.encrypter = new FakeEncrypter();
 
-        const entryService = jasmine.createSpyObj('EntriesService', [
+        const entryService = jasmine.createSpyObj('EntryService', [
             'getEntries',
             'createEntry',
             'getEntry',
@@ -108,13 +108,13 @@ export class FakeEntryStore extends EntryStore {
 
 export class FakeEtchStore extends EtchStore {
     public encrypterServiceFake: EncrypterService;
-    public etchServiceMock: EtchesService;
+    public etchServiceMock: EtchService;
 
     constructor() {
         const encService = new FakeEncrypterService();
         encService.encrypter = new FakeEncrypter();
 
-        const etchService = jasmine.createSpyObj('EtchesService', ['getEtches', 'postEtches']);
+        const etchService = jasmine.createSpyObj('EtchService', ['getEtches', 'postEtches']);
         etchService.getEtches.and.returnValue(of([]));
         etchService.postEtches.and.returnValue(of([]));
 

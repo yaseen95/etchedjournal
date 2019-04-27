@@ -2,7 +2,7 @@ import { of } from 'rxjs';
 import { EntryV1 } from '../models/entry/entry-v1';
 import { SimpleWriter, Writer } from '../models/writer';
 import { EncrypterService } from '../services/encrypter.service';
-import { CreateEntryRequest, EntriesService } from '../services/entries.service';
+import { CreateEntryRequest, EntryService } from '../services/entry.service';
 import { FakeEncrypter, FakeEncrypterService } from '../services/fakes.service.spec';
 import { EntryEntity } from '../services/models/entry-entity';
 import { Schema } from '../services/models/schema';
@@ -12,20 +12,20 @@ describe('EntryStore', () => {
     let store: EntryStore;
     let fakeEncrypter: FakeEncrypter;
     let encrypterService: FakeEncrypterService;
-    let entriesServiceSpy: any;
+    let entryServiceSpy: any;
 
     beforeEach(() => {
         fakeEncrypter = new FakeEncrypter();
         encrypterService = new FakeEncrypterService();
         encrypterService.encrypter = fakeEncrypter;
 
-        entriesServiceSpy = jasmine.createSpyObj('EntriesService', [
+        entryServiceSpy = jasmine.createSpyObj('EntryService', [
             'createEntry',
             'getEntries',
             'getEntry',
         ]);
 
-        store = new EntryStore(entriesServiceSpy, encrypterService);
+        store = new EntryStore(entryServiceSpy, encrypterService);
     });
 
     it('variables are uninitialized after construction', () => {
@@ -42,7 +42,7 @@ describe('EntryStore', () => {
                 schema: Schema.V1_0,
             },
         ];
-        entriesServiceSpy.getEntries.and.returnValue(of(entities));
+        entryServiceSpy.getEntries.and.returnValue(of(entities));
         fakeEncrypter.setDecryptResponse('{"content":"foo"}');
 
         await store.loadEntries('jid');
@@ -58,8 +58,8 @@ describe('EntryStore', () => {
 
         expect(store.loading).toBe(false);
 
-        expect(entriesServiceSpy.getEntries).toHaveBeenCalledTimes(1);
-        expect(entriesServiceSpy.getEntries).toHaveBeenCalledWith('jid');
+        expect(entryServiceSpy.getEntries).toHaveBeenCalledTimes(1);
+        expect(entryServiceSpy.getEntries).toHaveBeenCalledWith('jid');
     });
 
     it('loadEntry loads and decrypts entry', async () => {
@@ -68,13 +68,13 @@ describe('EntryStore', () => {
             content: 'ciphertext',
             id: 'entryId',
         };
-        entriesServiceSpy.getEntry.and.returnValue(of(encrypted));
+        entryServiceSpy.getEntry.and.returnValue(of(encrypted));
         fakeEncrypter.setDecryptResponse('{"content": "plaintext"}');
 
         const result = await store.loadEntry('entryId');
 
-        expect(entriesServiceSpy.getEntry).toHaveBeenCalledTimes(1);
-        expect(entriesServiceSpy.getEntry).toHaveBeenCalledWith('entryId');
+        expect(entryServiceSpy.getEntry).toHaveBeenCalledTimes(1);
+        expect(entryServiceSpy.getEntry).toHaveBeenCalledWith('entryId');
 
         expect(store.loading).toBeFalsy();
         expect(result.content).toEqual('{"content": "plaintext"}');
@@ -86,7 +86,7 @@ describe('EntryStore', () => {
 
     it('createEntry encrypts and creates entry', async () => {
         const j = { id: '1', content: 'abc' };
-        entriesServiceSpy.createEntry.and.returnValue(of(j));
+        entryServiceSpy.createEntry.and.returnValue(of(j));
         fakeEncrypter.setEncryptResponse('ciphertext');
 
         const writerSpy = jasmine.createSpyObj('Writer', ['write']);
@@ -105,8 +105,8 @@ describe('EntryStore', () => {
                 schema: Schema.V1_0,
             },
         };
-        expect(entriesServiceSpy.createEntry).toHaveBeenCalledTimes(1);
-        expect(entriesServiceSpy.createEntry).toHaveBeenCalledWith(expectedCreateEntryReq);
+        expect(entryServiceSpy.createEntry).toHaveBeenCalledTimes(1);
+        expect(entryServiceSpy.createEntry).toHaveBeenCalledWith(expectedCreateEntryReq);
 
         expect(writerSpy.write).toHaveBeenCalledTimes(1);
         expect(writerSpy.write).toHaveBeenCalledWith(createEntry('title'));

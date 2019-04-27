@@ -13,7 +13,7 @@ export interface CreateEtchesRequest {
 @Injectable({
     providedIn: 'root',
 })
-export class EtchesService {
+export class EtchService {
     constructor(private http: HttpClient) {}
 
     public postEtches(req: CreateEtchesRequest): Observable<EtchEntity[]> {

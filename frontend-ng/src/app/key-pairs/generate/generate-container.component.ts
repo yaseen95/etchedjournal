@@ -5,7 +5,7 @@ import { EtchedRoutes } from '../../app-routing-utils';
 import { AuthService } from '../../services/auth.service';
 import { Encrypter, KeyPair } from '../../services/encrypter';
 import { EncrypterService } from '../../services/encrypter.service';
-import { KeyPairsService } from '../../services/key-pairs.service';
+import { KeyPairService } from '../../services/key-pair.service';
 import { Base64Str } from '../../services/models/types';
 
 @Component({
@@ -26,7 +26,7 @@ export class GenerateContainerComponent {
     constructor(
         private encrypterService: EncrypterService,
         private authService: AuthService,
-        private keyPairsService: KeyPairsService,
+        private keyPairService: KeyPairService,
         private router: Router
     ) {
         this.state = this.ENTERING_PASSPHRASE;
@@ -83,7 +83,7 @@ export class GenerateContainerComponent {
         iterations: number
     ) {
         this.state = this.UPLOADING_KEYS;
-        this.keyPairsService
+        this.keyPairService
             .createKeyPair({ publicKey, privateKey, salt, iterations })
             .subscribe(result => {
                 this.encrypterService.encrypter.keyPairId = result.id;

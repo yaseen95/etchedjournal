@@ -4,23 +4,23 @@ import { environment } from '../../environments/environment';
 import { TestUtils } from '../utils/test-utils.spec';
 import { EncryptedEntityRequest } from './etched-api-utils';
 
-import { CreateEtchesRequest, EtchesService } from './etches.service';
+import { CreateEtchesRequest, EtchService } from './etch.service';
 import { EtchEntity } from './models/etch-entity';
 import { Schema } from './models/schema';
 import createEtchEntity = TestUtils.createEtchEntity;
 
-describe('EtchesService', () => {
+describe('EtchService', () => {
     let injector: TestBed;
-    let service: EtchesService;
+    let service: EtchService;
     let httpMock: HttpTestingController;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [EtchesService],
+            providers: [EtchService],
         });
         injector = getTestBed();
-        service = injector.get(EtchesService);
+        service = injector.get(EtchService);
         httpMock = injector.get(HttpTestingController);
     });
 

@@ -3,23 +3,23 @@ import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import { TestUtils } from '../utils/test-utils.spec';
 
-import { JournalsService } from './journals.service';
+import { JournalService } from './journal.service';
 import { JournalEntity } from './models/journal-entity';
 import { Schema } from './models/schema';
 import createJournalEntity = TestUtils.createJournalEntity;
 
-describe('JournalsService', () => {
+describe('JournalService', () => {
     let injector: TestBed;
-    let service: JournalsService;
+    let service: JournalService;
     let httpMock: HttpTestingController;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [JournalsService],
+            providers: [JournalService],
         });
         injector = getTestBed();
-        service = injector.get(JournalsService);
+        service = injector.get(JournalService);
         httpMock = injector.get(HttpTestingController);
     });
 

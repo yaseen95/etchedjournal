@@ -9,7 +9,7 @@ import { KeyPairEntity } from './models/key-pair-entity';
 @Injectable({
     providedIn: 'root',
 })
-export class KeyPairsService {
+export class KeyPairService {
     constructor(private http: HttpClient) {}
 
     public createKeyPair(req: CreateKeyPairRequest): Observable<KeyPairEntity> {

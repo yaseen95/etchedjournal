@@ -8,7 +8,7 @@ import { JournalEntity } from './models/journal-entity';
 @Injectable({
     providedIn: 'root',
 })
-export class JournalsService {
+export class JournalService {
     constructor(private http: HttpClient) {}
 
     public getJournals(): Observable<JournalEntity[]> {

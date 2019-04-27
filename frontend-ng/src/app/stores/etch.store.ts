@@ -3,7 +3,7 @@ import * as mobx from 'mobx-angular';
 import { AbstractEtch, EtchV1 } from '../models/etch/etch';
 import { EncrypterService } from '../services/encrypter.service';
 import { EncryptedEntityRequest } from '../services/etched-api-utils';
-import { CreateEtchesRequest, EtchesService } from '../services/etches.service';
+import { CreateEtchesRequest, EtchService } from '../services/etch.service';
 import { EtchEntity } from '../services/models/etch-entity';
 import { Schema } from '../services/models/schema';
 
@@ -21,7 +21,7 @@ export class EtchStore {
         loading: false,
     };
 
-    constructor(private etchService: EtchesService, private encrypterService: EncrypterService) {}
+    constructor(private etchService: EtchService, private encrypterService: EncrypterService) {}
 
     @mobx.action
     public async loadEtches(entryId: string) {

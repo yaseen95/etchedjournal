@@ -5,7 +5,7 @@ import { EntryV1 } from '../models/entry/entry-v1';
 import { SimpleReader } from '../models/reader';
 import { SimpleWriter } from '../models/writer';
 import { EncrypterService } from '../services/encrypter.service';
-import { CreateEntryRequest, EntriesService } from '../services/entries.service';
+import { CreateEntryRequest, EntryService } from '../services/entry.service';
 import { EncryptedEntityRequest } from '../services/etched-api-utils';
 import { EntryEntity } from '../services/models/entry-entity';
 
@@ -21,7 +21,7 @@ export class EntryStore {
     @mobx.observable public loading: boolean = false;
     public entriesById: Map<string, AbstractEntry> = new Map();
 
-    constructor(private entryService: EntriesService, private encrypterService: EncrypterService) {}
+    constructor(private entryService: EntryService, private encrypterService: EncrypterService) {}
 
     @mobx.action
     public async loadEntries(journalId: string) {

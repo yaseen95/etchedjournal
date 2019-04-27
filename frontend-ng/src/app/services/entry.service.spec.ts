@@ -3,25 +3,25 @@ import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import { TestUtils } from '../utils/test-utils.spec';
 
-import { CreateEntryRequest, EntriesService } from './entries.service';
+import { CreateEntryRequest, EntryService } from './entry.service';
 import { EncryptedEntityRequest } from './etched-api-utils';
 import { EntryEntity } from './models/entry-entity';
 import { OwnerType } from './models/owner-type';
 import { Schema } from './models/schema';
 import createEntryEntity = TestUtils.createEntryEntity;
 
-describe('EntriesService', () => {
+describe('EntryService', () => {
     let injector: TestBed;
-    let service: EntriesService;
+    let service: EntryService;
     let httpMock: HttpTestingController;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [EntriesService],
+            providers: [EntryService],
         });
         injector = getTestBed();
-        service = injector.get(EntriesService);
+        service = injector.get(EntryService);
         httpMock = injector.get(HttpTestingController);
     });
 

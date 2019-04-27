@@ -2,22 +2,22 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import { CreateKeyPairRequest } from './dtos/create-key-pair-request';
-import { KeyPairsService } from './key-pairs.service';
+import { KeyPairService } from './key-pair.service';
 import { KeyPairEntity } from './models/key-pair-entity';
 import { OwnerType } from './models/owner-type';
 
-describe('KeyPairsService', () => {
+describe('KeyPairService', () => {
     let injector: TestBed;
-    let service: KeyPairsService;
+    let service: KeyPairService;
     let httpMock: HttpTestingController;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [KeyPairsService],
+            providers: [KeyPairService],
         });
         injector = getTestBed();
-        service = injector.get(KeyPairsService);
+        service = injector.get(KeyPairService);
         httpMock = injector.get(HttpTestingController);
     });
 

@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import { Encrypter, KeyPair } from '../../services/encrypter';
 import { EncrypterService } from '../../services/encrypter.service';
 import { FakeEncrypterService } from '../../services/fakes.service.spec';
-import { KeyPairsService } from '../../services/key-pairs.service';
+import { KeyPairService } from '../../services/key-pair.service';
 import { ConfigurePassphraseComponent } from '../../user/configure-passphrase/configure-passphrase.component';
 import { SpinnerComponent } from '../../utils/spinner/spinner.component';
 import { TestUtils } from '../../utils/test-utils.spec';
@@ -17,7 +17,7 @@ import { GenerateContainerComponent } from './generate-container.component';
 describe('GenerateContainerComponent', () => {
     let component: GenerateContainerComponent;
     let fixture: ComponentFixture<GenerateContainerComponent>;
-    let keyPairsServiceSpy: any;
+    let keyPairServiceSpy: any;
     let encrypterSpy: any;
     let encrypterGenKeySpy: any;
     let encrypterSymEncryptSpy: any;
@@ -26,7 +26,7 @@ describe('GenerateContainerComponent', () => {
     let routerSpy: any;
 
     beforeEach(async () => {
-        keyPairsServiceSpy = jasmine.createSpyObj('KeyPairsService', ['createKeyPair']);
+        keyPairServiceSpy = jasmine.createSpyObj('KeyPairService', ['createKeyPair']);
 
         encrypterSpy = jasmine.createSpyObj('Encrypter', ['encrypt']);
         const encrypterService = new FakeEncrypterService();
@@ -61,7 +61,7 @@ describe('GenerateContainerComponent', () => {
             ],
             imports: [ReactiveFormsModule],
             providers: [
-                { provide: KeyPairsService, useValue: keyPairsServiceSpy },
+                { provide: KeyPairService, useValue: keyPairServiceSpy },
                 { provide: EncrypterService, useValue: encrypterService },
                 { provide: AuthService, useValue: authSpy },
                 { provide: Router, useValue: routerSpy },
@@ -111,7 +111,7 @@ describe('GenerateContainerComponent', () => {
         encrypterFromSpy.and.returnValue(Promise.resolve(encrypter));
 
         // Mock out the create key pair response
-        keyPairsServiceSpy.createKeyPair.and.returnValue(of({}));
+        keyPairServiceSpy.createKeyPair.and.returnValue(of({}));
 
         component.onPassphraseConfigured('passphrase');
 
@@ -125,8 +125,8 @@ describe('GenerateContainerComponent', () => {
         expect(encrypterFromSpy).toHaveBeenCalledTimes(1);
 
         // Then upload the public key (as base64 string) and the private key
-        expect(keyPairsServiceSpy.createKeyPair).toHaveBeenCalledTimes(1);
-        expect(keyPairsServiceSpy.createKeyPair).toHaveBeenCalledWith({
+        expect(keyPairServiceSpy.createKeyPair).toHaveBeenCalledTimes(1);
+        expect(keyPairServiceSpy.createKeyPair).toHaveBeenCalledWith({
             // The public key is base64 encoded byte array of [1, 2, 3, 4]
             publicKey: 'AQIDBA==',
             privateKey: 'BQYHCA==',

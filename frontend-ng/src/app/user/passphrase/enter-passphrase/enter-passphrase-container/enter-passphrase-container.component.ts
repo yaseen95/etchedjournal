@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EtchedRoutes } from '../../../../app-routing-utils';
 import { Encrypter, IncorrectPassphraseError } from '../../../../services/encrypter';
 import { EncrypterService } from '../../../../services/encrypter.service';
-import { KeyPairsService } from '../../../../services/key-pairs.service';
+import { KeyPairService } from '../../../../services/key-pair.service';
 import { KeyPairEntity } from '../../../../services/models/key-pair-entity';
 
 @Component({
@@ -25,7 +25,7 @@ export class EnterPassphraseContainerComponent implements OnInit {
 
     constructor(
         private encrypterService: EncrypterService,
-        private keyPairsService: KeyPairsService,
+        private keyPairService: KeyPairService,
         private route: ActivatedRoute,
         private router: Router
     ) {
@@ -42,7 +42,7 @@ export class EnterPassphraseContainerComponent implements OnInit {
     }
 
     public downloadKeys() {
-        return this.keyPairsService.getKeyPairs().subscribe(keys => {
+        return this.keyPairService.getKeyPairs().subscribe(keys => {
             if (keys.length === 0) {
                 return this.router.navigate([EtchedRoutes.KEYS_GENERATE_PATH]);
             }

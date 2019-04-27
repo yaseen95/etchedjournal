@@ -1,6 +1,6 @@
 import { of } from 'rxjs';
 import { EtchV1 } from '../models/etch/etch';
-import { EtchesService } from '../services/etches.service';
+import { EtchService } from '../services/etch.service';
 import { FakeEncrypter, FakeEncrypterService } from '../services/fakes.service.spec';
 import { EtchEntity } from '../services/models/etch-entity';
 import { EtchStore } from './etch.store';
@@ -16,7 +16,7 @@ describe('EtchStore', () => {
         encrypterService = new FakeEncrypterService();
         encrypterService.encrypter = fakeEncrypter;
 
-        etchServiceMock = jasmine.createSpyObj('EtchesService', ['postEtches', 'getEtches']);
+        etchServiceMock = jasmine.createSpyObj('EtchService', ['postEtches', 'getEtches']);
 
         store = new EtchStore(etchServiceMock, encrypterService);
     });

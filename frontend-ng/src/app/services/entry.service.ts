@@ -13,7 +13,7 @@ export interface CreateEntryRequest {
 @Injectable({
     providedIn: 'root',
 })
-export class EntriesService {
+export class EntryService {
     constructor(private http: HttpClient) {}
 
     public createEntry(req: CreateEntryRequest): Observable<EntryEntity> {

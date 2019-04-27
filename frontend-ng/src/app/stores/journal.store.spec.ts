@@ -1,7 +1,7 @@
 import { of } from 'rxjs';
 import { JournalV1 } from '../models/journal/journal-v1';
 import { FakeEncrypter, FakeEncrypterService } from '../services/fakes.service.spec';
-import { JournalsService } from '../services/journals.service';
+import { JournalService } from '../services/journal.service';
 import { JournalEntity } from '../services/models/journal-entity';
 import { Schema } from '../services/models/schema';
 
@@ -18,7 +18,7 @@ describe('JournalStore', () => {
         encrypterService = new FakeEncrypterService();
         encrypterService.encrypter = fakeEncrypter;
 
-        journalServiceSpy = jasmine.createSpyObj('JournalsService', [
+        journalServiceSpy = jasmine.createSpyObj('JournalService', [
             'createJournal',
             'getJournals',
         ]);

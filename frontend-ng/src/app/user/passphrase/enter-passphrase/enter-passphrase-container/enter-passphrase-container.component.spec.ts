@@ -7,7 +7,7 @@ import { EtchedRoutes } from '../../../../app-routing-utils';
 import { Encrypter, IncorrectPassphraseError } from '../../../../services/encrypter';
 import { EncrypterService } from '../../../../services/encrypter.service';
 import { FakeEncrypterService } from '../../../../services/fakes.service.spec';
-import { KeyPairsService } from '../../../../services/key-pairs.service';
+import { KeyPairService } from '../../../../services/key-pair.service';
 import { OwnerType } from '../../../../services/models/owner-type';
 import { SpinnerComponent } from '../../../../utils/spinner/spinner.component';
 import { TestUtils } from '../../../../utils/test-utils.spec';
@@ -19,7 +19,7 @@ import MOCK_PUB_KEY_BASE_64_STR = TestUtils.MOCK_PUB_KEY_BASE_64_STR;
 describe('EnterPassphraseContainerComponent', () => {
     let component: EnterPassphraseContainerComponent;
     let fixture: ComponentFixture<EnterPassphraseContainerComponent>;
-    let keyPairsServiceSpy: any;
+    let keyPairServiceSpy: any;
     let from2Spy: any;
     let routerSpy: any;
     let encService: FakeEncrypterService;
@@ -30,10 +30,10 @@ describe('EnterPassphraseContainerComponent', () => {
     };
 
     beforeEach(async(() => {
-        keyPairsServiceSpy = jasmine.createSpyObj('KeyPairsService', ['getKeyPairs']);
+        keyPairServiceSpy = jasmine.createSpyObj('KeyPairService', ['getKeyPairs']);
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
-        keyPairsServiceSpy.getKeyPairs.and.returnValue(of([testKeyPair]));
+        keyPairServiceSpy.getKeyPairs.and.returnValue(of([testKeyPair]));
 
         from2Spy = spyOn(Encrypter, 'from2');
         from2Spy.and.returnValue(Promise.resolve({}));
@@ -49,7 +49,7 @@ describe('EnterPassphraseContainerComponent', () => {
             ],
             imports: [ReactiveFormsModule],
             providers: [
-                { provide: KeyPairsService, useValue: keyPairsServiceSpy },
+                { provide: KeyPairService, useValue: keyPairServiceSpy },
                 { provide: Router, useValue: routerSpy },
                 {
                     provide: ActivatedRoute,
@@ -77,7 +77,7 @@ describe('EnterPassphraseContainerComponent', () => {
         tick();
 
         expect(component.ngOnInit).toHaveBeenCalledTimes(1);
-        expect(keyPairsServiceSpy.getKeyPairs).toHaveBeenCalledTimes(1);
+        expect(keyPairServiceSpy.getKeyPairs).toHaveBeenCalledTimes(1);
 
         expect(component.state).toEqual(component.ENTERING_PASSPHRASE);
         expect(component.keyPair as any).toEqual(testKeyPair);
@@ -98,7 +98,7 @@ describe('EnterPassphraseContainerComponent', () => {
             { publicKey: MOCK_PUB_KEY_BASE_64_STR, privateKey: MOCK_PRIV_KEY_BASE_64_STR },
             { publicKey: MOCK_PUB_KEY_BASE_64_STR, privateKey: MOCK_PRIV_KEY_BASE_64_STR },
         ];
-        keyPairsServiceSpy.getKeyPairs.and.returnValue(of(keyPairs));
+        keyPairServiceSpy.getKeyPairs.and.returnValue(of(keyPairs));
 
         try {
             component.downloadKeys();
@@ -115,7 +115,7 @@ describe('EnterPassphraseContainerComponent', () => {
 
         // return zero keys
         const keyPairs = [];
-        keyPairsServiceSpy.getKeyPairs.and.returnValue(of(keyPairs));
+        keyPairServiceSpy.getKeyPairs.and.returnValue(of(keyPairs));
 
         component.downloadKeys();
         tick();
