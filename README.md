@@ -1,7 +1,7 @@
 # Etched Journal (In Development)
 A journal where entries are "etched" in stone. That's the idea anyway.
 
-[![Build Status](https://travis-ci.org/yaseenkadir/etchedjournal.svg?branch=master)](https://travis-ci.org/yaseenkadir/etchedjournal)
+[![CircleCI](https://circleci.com/gh/yaseenkadir/etchedjournal.svg?style=svg)](https://circleci.com/gh/yaseenkadir/etchedjournal)
 
 A few years ago I started journaling and I set a rule where I would try my best not to press
 backspace. It feels like a cool enough idea to implement.
