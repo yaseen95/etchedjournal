@@ -110,7 +110,7 @@ class TxnHelperIntegrationTest {
         keyPair.salt = "salt"
         keyPair.owner = "owner"
         keyPair.ownerType = OwnerType.USER
-        keyPair.timestamp = Instant.EPOCH
+        keyPair.created = Instant.EPOCH
         return keyPair
     }
 
