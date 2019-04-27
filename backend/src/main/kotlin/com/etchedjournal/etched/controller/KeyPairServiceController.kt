@@ -1,10 +1,10 @@
 package com.etchedjournal.etched.controller
 
-import com.etchedjournal.etched.dto.CreateKeypairRequest
+import com.etchedjournal.etched.dto.CreateKeyPairRequest
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import com.etchedjournal.etched.repository.TxnHelper
 import com.etchedjournal.etched.service.AuthService
-import com.etchedjournal.etched.service.KeypairService
+import com.etchedjournal.etched.service.KeyPairService
 import com.etchedjournal.etched.service.exception.BadRequestException
 import com.etchedjournal.etched.utils.PgpUtils
 import com.etchedjournal.etched.utils.getAlgorithmStr
@@ -23,22 +23,22 @@ import javax.validation.Valid
 @RestController
 @RequestMapping("/api/v1/keypairs")
 @Validated
-class KeypairServiceController(
-    private val keypairService: KeypairService,
+class KeyPairServiceController(
+    private val keyPairService: KeyPairService,
     private val authService: AuthService,
     private val txnHelper: TxnHelper
 ) {
 
     @PostMapping("")
-    fun create(@RequestBody @Valid req: CreateKeypairRequest): KeyPair {
-        logger.info("Creating keypair")
+    fun create(@RequestBody @Valid req: CreateKeyPairRequest): KeyPair {
+        logger.info("Creating keyPair")
         val pubKey = PgpUtils.readPublicKey(req.publicKey)
         logger.info("KeyPair using {} alg, with bit size {}", pubKey.getAlgorithmStr(),
             pubKey.bitStrength)
-        // TODO: Prevent keypair creation if key is not strong enough
+        // TODO: Prevent keyPair creation if key is not strong enough
         // E.g. prevent <= 2048 RSA keys
         // TODO: Validate that key was created recently
-        // TODO: Prevent keypair with weak salt and low iteration count
+        // TODO: Prevent keyPair with weak salt and low iteration count
 
         // Verify that the user id is valid
         val currUserId = authService.getUserId()
@@ -50,22 +50,22 @@ class KeypairServiceController(
             throw BadRequestException()
         }
         logger.info("Registering key with with user id {}", pubKey.getUserId())
-        return txnHelper.execute { txn -> keypairService.createKeypair(txn = txn, req = req) }
+        return txnHelper.execute { txn -> keyPairService.createKeyPair(txn = txn, req = req) }
     }
 
     @GetMapping("")
     fun getKeypairs(): List<KeyPair> {
-        logger.info("Getting keypairs")
-        return txnHelper.execute { txn -> keypairService.getUserKeypairs(txn) }
+        logger.info("Getting key pairs")
+        return txnHelper.execute { txn -> keyPairService.getUserKeyPairs(txn) }
     }
 
     @GetMapping("/{keypairId}")
     fun getKeypair(@PathVariable @Valid @IsEtchedId keypairId: String): KeyPair {
-        logger.info("Getting keypair with id {}", keypairId)
-        return txnHelper.execute { txn -> keypairService.getKeypair(txn, keypairId) }
+        logger.info("Getting key pair with id {}", keypairId)
+        return txnHelper.execute { txn -> keyPairService.getKeyPair(txn, keypairId) }
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(KeypairServiceController::class.java)
+        private val logger = LoggerFactory.getLogger(KeyPairServiceController::class.java)
     }
 }

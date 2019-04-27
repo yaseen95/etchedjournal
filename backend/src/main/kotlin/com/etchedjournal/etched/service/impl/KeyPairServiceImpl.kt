@@ -1,12 +1,12 @@
 package com.etchedjournal.etched.service.impl
 
-import com.etchedjournal.etched.dto.CreateKeypairRequest
+import com.etchedjournal.etched.dto.CreateKeyPairRequest
 import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import com.etchedjournal.etched.repository.KeyPairRepository
 import com.etchedjournal.etched.repository.Transaction
 import com.etchedjournal.etched.service.AuthService
-import com.etchedjournal.etched.service.KeypairService
+import com.etchedjournal.etched.service.KeyPairService
 import com.etchedjournal.etched.service.exception.ForbiddenException
 import com.etchedjournal.etched.service.exception.NotFoundException
 import com.etchedjournal.etched.utils.id.IdGenerator
@@ -16,13 +16,13 @@ import org.springframework.stereotype.Service
 import java.time.Instant
 
 @Service
-class KeypairServiceImpl(
+class KeyPairServiceImpl(
     private val keyPairRepo: KeyPairRepository,
     private val authService: AuthService,
     private val idGenerator: IdGenerator
-) : KeypairService {
+) : KeyPairService {
 
-    override fun createKeypair(txn: Transaction, req: CreateKeypairRequest): KeyPair {
+    override fun createKeyPair(txn: Transaction, req: CreateKeyPairRequest): KeyPair {
         logger.info("Creating key pair")
         var k = KeyPair(
             idGenerator.generateId(),
@@ -40,35 +40,35 @@ class KeypairServiceImpl(
         return k
     }
 
-    override fun getUserKeypairs(txn: Transaction): List<KeyPair> {
+    override fun getUserKeyPairs(txn: Transaction): List<KeyPair> {
         val userId = authService.getUserId()
-        logger.info("Getting keypairs for {}", userId)
+        logger.info("Getting key pairs for {}", userId)
         val userKeypairs = keyPairRepo.fetchByOwner(txn, userId)
-        logger.info("Found {} keypairs for {}", userKeypairs.size, userId)
+        logger.info("Found {} key pairs for {}", userKeypairs.size, userId)
         return userKeypairs
     }
 
-    override fun getKeypair(txn: Transaction, id: String): KeyPair {
-        logger.info("Attempting to get keypair with id {}", id)
-        val keypair: KeyPair? = keyPairRepo.findById(txn, id)
+    override fun getKeyPair(txn: Transaction, id: String): KeyPair {
+        logger.info("Attempting to get keyPair with id {}", id)
+        val keyPair: KeyPair? = keyPairRepo.findById(txn, id)
 
-        if (keypair == null) {
-            logger.info("Unable to find keypair with id {}", id)
+        if (keyPair == null) {
+            logger.info("Unable to find keyPair with id {}", id)
             throw NotFoundException()
         }
 
-        if (keypair.owner != authService.getUserId()) {
+        if (keyPair.owner != authService.getUserId()) {
             // An attacker is attempting to access another persons keys!!!
-            logger.error("[SECURITY] {} attempted to access keypair {} which belongs to {}",
-                authService.getUserId(), id, keypair.owner)
+            logger.error("[SECURITY] {} attempted to access keyPair {} which belongs to {}",
+                authService.getUserId(), id, keyPair.owner)
             throw ForbiddenException()
         }
 
-        logger.info("Fetched keypair with id {}", id)
-        return keypair
+        logger.info("Fetched keyPair with id {}", id)
+        return keyPair
     }
 
     companion object {
-        private val logger: Logger = LoggerFactory.getLogger(KeypairServiceImpl::class.java)
+        private val logger: Logger = LoggerFactory.getLogger(KeyPairServiceImpl::class.java)
     }
 }

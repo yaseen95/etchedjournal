@@ -7,7 +7,7 @@ import com.etchedjournal.etched.repository.JournalRepository
 import com.etchedjournal.etched.repository.Transaction
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.JournalService
-import com.etchedjournal.etched.service.KeypairService
+import com.etchedjournal.etched.service.KeyPairService
 import com.etchedjournal.etched.service.exception.ForbiddenException
 import com.etchedjournal.etched.service.exception.NotFoundException
 import com.etchedjournal.etched.utils.id.IdGenerator
@@ -20,7 +20,7 @@ class JournalServiceImpl(
     private val journalRepo: JournalRepository,
     private val authService: AuthService,
     private val idGenerator: IdGenerator,
-    private val keyPairService: KeypairService
+    private val keyPairService: KeyPairService
 ) : JournalService {
 
     override fun getJournal(txn: Transaction, id: String): Journal {
@@ -48,7 +48,7 @@ class JournalServiceImpl(
         logger.info("Creating journal {}", req)
 
         // Get key pair to check permissions
-        val keyPair = keyPairService.getKeypair(txn, req.keyPairId)
+        val keyPair = keyPairService.getKeyPair(txn, req.keyPairId)
 
         var journal = Journal(
             idGenerator.generateId(),

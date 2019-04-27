@@ -8,7 +8,7 @@ import com.etchedjournal.etched.repository.Transaction
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.EntryService
 import com.etchedjournal.etched.service.EtchService
-import com.etchedjournal.etched.service.KeypairService
+import com.etchedjournal.etched.service.KeyPairService
 import com.etchedjournal.etched.service.exception.BadRequestException
 import com.etchedjournal.etched.service.exception.NotFoundException
 import com.etchedjournal.etched.utils.id.IdGenerator
@@ -23,7 +23,7 @@ class EtchServiceImpl(
     private val entryService: EntryService,
     private val authService: AuthService,
     private val idGenerator: IdGenerator,
-    private val keyPairService: KeypairService
+    private val keyPairService: KeyPairService
 ) : EtchService {
 
     override fun getEtches(txn: Transaction, entryId: String): List<Etch> {
@@ -46,7 +46,7 @@ class EtchServiceImpl(
             throw BadRequestException(message = "Can only create etches for one key pair at a time")
         }
         // Get the key pair and entry just to check permissions
-        keyPairService.getKeypair(txn = txn, id = etches[0].keyPairId)
+        keyPairService.getKeyPair(txn = txn, id = etches[0].keyPairId)
         entryService.getEntry(txn, entryId)
 
         // TODO: Handle empty list

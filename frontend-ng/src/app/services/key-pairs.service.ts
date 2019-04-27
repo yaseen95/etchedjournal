@@ -13,10 +13,10 @@ export class KeyPairsService {
     constructor(private http: HttpClient) {}
 
     public createKeyPair(req: CreateKeyPairRequest): Observable<KeyPairEntity> {
-        console.info('Creating keypair');
+        console.info('Creating keyPair');
         return this.http
             .post<KeyPairEntity>(KEYPAIRS_URL, req)
-            .pipe(tap(keypair => console.info(`Created ${JSON.stringify(keypair)}`)));
+            .pipe(tap(keyPair => console.info(`Created ${JSON.stringify(keyPair)}`)));
     }
 
     public getKeyPairs(): Observable<KeyPairEntity[]> {

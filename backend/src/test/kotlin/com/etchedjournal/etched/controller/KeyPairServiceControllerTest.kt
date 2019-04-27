@@ -32,7 +32,7 @@ import org.springframework.web.context.WebApplicationContext
 @RunWith(SpringRunner::class)
 @SpringBootTest
 @ContextConfiguration(classes = [TestConfig::class])
-class KeypairServiceControllerTest {
+class KeyPairServiceControllerTest {
 
     private lateinit var mockMvc: MockMvc
 
@@ -55,7 +55,7 @@ class KeypairServiceControllerTest {
 
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
-    fun `GET keypairs`() {
+    fun `GET keyPairs`() {
         testRepo.createKeyPair(
             id = "k1",
             publicKey = byteArrayOf(1, 2, 3, 4),
@@ -95,14 +95,14 @@ class KeypairServiceControllerTest {
 
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
-    fun `GET keypairs - no keys`() {
+    fun `GET keyPairs - no keys`() {
         mockMvc.perform(get("/api/v1/keypairs"))
             .andExpect(status().isOk)
             .andExpect(content().json("[]", true))
     }
 
     @Test
-    fun `GET keypairs - unauthenticated`() {
+    fun `GET keyPairs - unauthenticated`() {
         mockMvc.perform(get("/api/v1/keypairs"))
             .andExpect(status().isUnauthorized)
             .andExpect(content().string(""))
@@ -110,16 +110,16 @@ class KeypairServiceControllerTest {
 
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
-    fun `GET keypair`() {
-        val keypair = testRepo.createKeyPair(
+    fun `GET key pair`() {
+        val keyPair = testRepo.createKeyPair(
             id = "k1",
             publicKey = byteArrayOf(1, 2, 3, 4),
             privateKey = byteArrayOf(5, 6, 7, 8)
         )
 
-        mockMvc.perform(get("/api/v1/keypairs/${keypair.id}"))
+        mockMvc.perform(get("/api/v1/keypairs/${keyPair.id}"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.id", `is`(keypair.id)))
+            .andExpect(jsonPath("$.id", `is`(keyPair.id)))
             .andExpect(jsonPath("$.created", `is`(0)))
             .andExpect(jsonPath("$.publicKey", `is`("AQIDBA==")))
             .andExpect(jsonPath("$.privateKey", `is`("BQYHCA==")))
@@ -133,17 +133,17 @@ class KeypairServiceControllerTest {
 
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
-    fun `GET keypair - not found`() {
+    fun `GET keyPair - not found`() {
         mockMvc.perform(get("/api/v1/keypairs/foobarbaz10"))
             .andExpect(status().isNotFound)
     }
 
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
-    fun `GET keypair - belongs to other user is forbidden`() {
-        val keypair = testRepo.createKeyPair(id = "k1", owner = "somebody else")
+    fun `GET keyPair - belongs to other user is forbidden`() {
+        val keyPair = testRepo.createKeyPair(id = "k1", owner = "somebody else")
 
-        mockMvc.perform(get("/api/v1/keypairs/${keypair.id}"))
+        mockMvc.perform(get("/api/v1/keypairs/${keyPair.id}"))
             .andExpect(status().isForbidden)
             .andExpect(content().json(
                 """
@@ -156,17 +156,17 @@ class KeypairServiceControllerTest {
     }
 
     @Test
-    fun `GET keypair - unauthenticated`() {
-        val keypair = testRepo.createKeyPair(id = "k1")
+    fun `GET keyPair - unauthenticated`() {
+        val keyPair = testRepo.createKeyPair(id = "k1")
 
-        mockMvc.perform(get("/api/v1/keypairs/${keypair.id}"))
+        mockMvc.perform(get("/api/v1/keypairs/${keyPair.id}"))
             .andExpect(status().isUnauthorized)
             .andExpect(content().string(""))
     }
 
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
-    fun `GET keypair - invalid etched id returns 400`() {
+    fun `GET keyPair - invalid etched id returns 400`() {
         for (id in INVALID_ETCHED_IDS) {
             mockMvc.perform(get("/api/v1/keypairs/$id"))
                 .andExpect(status().isBadRequest)
@@ -176,7 +176,7 @@ class KeypairServiceControllerTest {
 
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
-    fun `POST keypairs`() {
+    fun `POST keyPairs`() {
         val publicKey = PgpUtilsTest.TESTER_RSA_4096_OPENPGPJS_PUBLIC_KEY.replace("\n", "")
 
         mockMvc.perform(
@@ -208,7 +208,7 @@ class KeypairServiceControllerTest {
 
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
-    fun `POST keypairs - 2048 bit RSA key`() {
+    fun `POST keyPairs - 2048 bit RSA key`() {
         val publicKey = PgpUtilsTest.TESTER_RSA_2048_OPENPGPJS_PUBLIC_KEY.replace("\n", "")
 
         mockMvc.perform(
@@ -231,7 +231,7 @@ class KeypairServiceControllerTest {
 
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
-    fun `POST keypairs - 4096 bit RSA key`() {
+    fun `POST keyPairs - 4096 bit RSA key`() {
         val publicKey = PgpUtilsTest.TESTER_RSA_4096_OPENPGPJS_PUBLIC_KEY.replace("\n", "")
 
         mockMvc.perform(
@@ -254,7 +254,7 @@ class KeypairServiceControllerTest {
 
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
-    fun `POST keypairs - public key invalid format`() {
+    fun `POST keyPairs - public key invalid format`() {
         mockMvc.perform(
             post("/api/v1/keypairs")
                 .content(
@@ -282,7 +282,7 @@ class KeypairServiceControllerTest {
 
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
-    fun `POST keypairs - private key invalid format`() {
+    fun `POST keyPairs - private key invalid format`() {
         mockMvc.perform(
             post("/api/v1/keypairs")
                 .content(
@@ -309,7 +309,7 @@ class KeypairServiceControllerTest {
     }
 
     @Test
-    fun `POST keypairs - unauthenticated`() {
+    fun `POST keyPairs - unauthenticated`() {
         val publicKey = PgpUtilsTest.ABCDEF_RSA_2048_OPENPGPJS_PUBLIC_KEY.replace("\n", "")
 
         mockMvc.perform(
@@ -332,7 +332,7 @@ class KeypairServiceControllerTest {
 
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
-    fun `POST keypairs - public key has incorrect user id`() {
+    fun `POST keyPairs - public key has incorrect user id`() {
         // user id is "abcdef <abcdef@user.etchedjournal.com>" for this key
         // But we expect the id to use the uuids not the usernames
         val publicKey = PgpUtilsTest.ABCDEF_RSA_2048_OPENPGPJS_PUBLIC_KEY.replace("\n", "")

@@ -8,7 +8,7 @@ import com.etchedjournal.etched.repository.Transaction
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.EntryService
 import com.etchedjournal.etched.service.JournalService
-import com.etchedjournal.etched.service.KeypairService
+import com.etchedjournal.etched.service.KeyPairService
 import com.etchedjournal.etched.service.exception.ForbiddenException
 import com.etchedjournal.etched.service.exception.NotFoundException
 import com.etchedjournal.etched.utils.id.IdGenerator
@@ -23,7 +23,7 @@ class EntryServiceImpl(
     private val authService: AuthService,
     private val journalService: JournalService,
     private val idGenerator: IdGenerator,
-    private val keyPairService: KeypairService
+    private val keyPairService: KeyPairService
 ) : EntryService {
 
     override fun getEntry(txn: Transaction, entryId: String): Entry {
@@ -61,7 +61,7 @@ class EntryServiceImpl(
             authService.getUserId(),
             OwnerType.USER,
             journalId,
-            keyPairService.getKeypair(txn, req.keyPairId).id,
+            keyPairService.getKeyPair(txn, req.keyPairId).id,
             0,
             req.schema
         )
