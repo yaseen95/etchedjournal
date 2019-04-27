@@ -27,12 +27,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
-@Transactional
 @ContextConfiguration(classes = [TestConfig::class])
 class KeypairServiceControllerTest {
 
@@ -46,6 +44,8 @@ class KeypairServiceControllerTest {
 
     @Before
     fun setup() {
+        testRepo.cleanDb()
+
         mockMvc = MockMvcBuilders
             .webAppContextSetup(webApplicationContext)
             // Have to apply apply spring security mock

@@ -4,6 +4,7 @@ import com.etchedjournal.etched.dto.EncryptedEntityRequest
 import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Entry
 import com.etchedjournal.etched.repository.EntryRepository
+import com.etchedjournal.etched.repository.Transaction
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.EntryService
 import com.etchedjournal.etched.service.JournalService
@@ -25,9 +26,9 @@ class EntryServiceImpl(
     private val keyPairService: KeypairService
 ) : EntryService {
 
-    override fun getEntry(entryId: String): Entry {
+    override fun getEntry(txn: Transaction, entryId: String): Entry {
         logger.info("Attempting to get Entry(id={})", entryId)
-        val entry: Entry = entryRepo.findById(entryId)
+        val entry: Entry = entryRepo.findById(txn, entryId)
             ?: throw NotFoundException("Unable to find entry with id $entryId")
 
         // TODO: Create util to check entity access
@@ -42,15 +43,15 @@ class EntryServiceImpl(
         return entry
     }
 
-    override fun getEntries(journalId: String): List<Entry> {
+    override fun getEntries(txn: Transaction, journalId: String): List<Entry> {
         logger.info("Getting entries for journal {}", journalId)
-        checkJournalExists(journalId)
-        return entryRepo.fetchByJournal(journalId)
+        checkJournalExists(txn, journalId)
+        return entryRepo.fetchByJournal(txn, journalId)
     }
 
-    override fun create(req: EncryptedEntityRequest, journalId: String): Entry {
+    override fun create(txn: Transaction, req: EncryptedEntityRequest, journalId: String): Entry {
         logger.info("Creating entry for journal {}", journalId)
-        checkJournalExists(journalId)
+        checkJournalExists(txn, journalId)
 
         var entry = Entry(
             idGenerator.generateId(),
@@ -59,18 +60,18 @@ class EntryServiceImpl(
             authService.getUserId(),
             OwnerType.USER,
             journalId,
-            keyPairService.getKeypair(req.keyPairId).id,
+            keyPairService.getKeypair(txn, req.keyPairId).id,
             0,
             req.schema
         )
-        entry = entryRepo.create(entry)
+        entry = entryRepo.create(txn, entry)
         logger.info("Created {}", entry)
         return entry
     }
 
-    private fun checkJournalExists(journalId: String) {
+    private fun checkJournalExists(txn: Transaction, journalId: String) {
         // Will throw appropriate exceptions if it does not exist
-        journalService.exists(journalId)
+        journalService.exists(txn, journalId)
     }
 
     companion object {

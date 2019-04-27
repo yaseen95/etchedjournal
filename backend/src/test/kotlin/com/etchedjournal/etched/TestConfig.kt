@@ -4,6 +4,7 @@ import com.etchedjournal.etched.repository.EntryRepository
 import com.etchedjournal.etched.repository.EtchRepository
 import com.etchedjournal.etched.repository.JournalRepository
 import com.etchedjournal.etched.repository.KeyPairRepository
+import com.etchedjournal.etched.repository.TxnHelper
 import com.etchedjournal.etched.security.CognitoAuthenticationFilter
 import com.etchedjournal.etched.service.AuthService
 import com.nhaarman.mockitokotlin2.mock
@@ -30,6 +31,7 @@ class TestConfig {
 
     @Bean
     fun testRepoUtils(
+        txnHelper: TxnHelper,
         entryRepository: EntryRepository,
         etchRepo: EtchRepository,
         keyPairRepo: KeyPairRepository,
@@ -39,7 +41,8 @@ class TestConfig {
             entryRepo = entryRepository,
             etchRepo = etchRepo,
             keyPairRepo = keyPairRepo,
-            journalRepo = journalRepo
+            journalRepo = journalRepo,
+            txnHelper = txnHelper
         )
     }
 

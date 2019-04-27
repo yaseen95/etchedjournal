@@ -8,6 +8,7 @@ import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import com.etchedjournal.etched.repository.JournalRepository
+import com.etchedjournal.etched.repository.TxnHelper
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
 import org.junit.Assert.assertEquals
@@ -47,11 +48,16 @@ class JournalServiceControllerTests {
     @Autowired
     private lateinit var testRepoUtils: TestRepoUtils
 
+    @Autowired
+    private lateinit var txnHelper: TxnHelper
+
     private lateinit var mockMvc: MockMvc
     private lateinit var keyPair: KeyPair
 
     @Before
     fun setup() {
+        testRepoUtils.cleanDb()
+
         keyPair = testRepoUtils.createKeyPair(
             id = "keyPair1",
             publicKey = byteArrayOf(1, 2),
@@ -69,7 +75,10 @@ class JournalServiceControllerTests {
     @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET journals - returns empty list when no journals`() {
         // Precondition - no journals should exist
-        assertEquals(0, journalRepo.fetchByOwner(TESTER_USER_ID).size)
+        val result = txnHelper.execute { txn ->
+            journalRepo.fetchByOwner(txn, TESTER_USER_ID).size
+        }
+        assertEquals(0, result)
 
         mockMvc.perform(get(JOURNALS_URL))
             .andExpect(status().isOk)
@@ -135,7 +144,8 @@ class JournalServiceControllerTests {
     @WithMockUser(username = "tester", roles = ["USER"])
     fun `POST journal - creates a journal`() {
         // Precondition - no journals should exist
-        assertEquals(0, journalRepo.fetchByOwner(TESTER_USER_ID).size)
+        val result = txnHelper.execute { journalRepo.fetchByOwner(it, TESTER_USER_ID).size }
+        assertEquals(0, result)
 
         mockMvc.perform(
             post(JOURNALS_URL)

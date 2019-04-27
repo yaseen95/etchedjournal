@@ -2,32 +2,31 @@ package com.etchedjournal.etched.repository
 
 import com.etchedjournal.etched.models.jooq.generated.Tables
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Etch
-import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 
 @Repository
-class EtchRepository(private val dslContext: DSLContext) {
+class EtchRepository {
 
-    fun fetchByEntryId(entryId: String): List<Etch> {
-        return dslContext.selectFrom(Tables.ETCH)
+    fun fetchByEntryId(txn: Transaction, entryId: String): List<Etch> {
+        return txn.dslCtx.selectFrom(Tables.ETCH)
             .where(Tables.ETCH.ENTRY_ID.eq(entryId))
             .orderBy(Tables.ETCH.ID.asc())
             .fetch()
             .into(Etch::class.java)
     }
 
-    fun findById(id: String): Etch? {
-        return dslContext.selectFrom(Tables.ETCH)
+    fun findById(txn: Transaction, id: String): Etch? {
+        return txn.dslCtx.selectFrom(Tables.ETCH)
             .where(Tables.ETCH.ID.eq(id))
             .fetchOne()
             ?.into(Etch::class.java)
     }
 
-    fun createEtches(etches: List<Etch>): List<Etch> {
+    fun createEtches(txn: Transaction, etches: List<Etch>): List<Etch> {
         return etches.map {
             // Can't use batchInsert due to version issues
             // https://github.com/jOOQ/jOOQ/issues/8283
-            val r = dslContext.newRecord(Tables.ETCH)
+            val r = txn.dslCtx.newRecord(Tables.ETCH)
             r.from(it)
             r.insert()
             r.into(Etch::class.java)

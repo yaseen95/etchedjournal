@@ -4,14 +4,17 @@ import com.auth0.jwk.Jwk
 import com.auth0.jwk.JwkProvider
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.etchedjournal.etched.security.jwt.TokenProcessor
+import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
-import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -20,7 +23,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 import java.security.KeyFactory
 import java.security.interfaces.RSAPrivateKey
@@ -33,9 +35,34 @@ import java.util.Base64
 // These tests actually test the filter in the context of the running app
 @RunWith(SpringRunner::class)
 @SpringBootTest
-@Transactional
-@ContextConfiguration(classes = [CognitoFilterTestConfig::class])
 class CognitoAuthenticationFilterWebTest {
+
+    @TestConfiguration
+    class CognitoFilterTestConfig {
+
+        @Bean
+        fun jwkProvider(): JwkProvider {
+            return mock()
+        }
+
+        @Bean
+        fun tokenProcessor(jwkProvider: JwkProvider): TokenProcessor {
+            return TokenProcessor(jwkProvider)
+        }
+
+        @Bean
+        fun mapper(): CognitoAuthenticationMapper {
+            return CognitoAuthenticationMapper()
+        }
+
+        @Bean
+        fun cognitoFilter(
+            tokenProcessor: TokenProcessor,
+            mapper: CognitoAuthenticationMapper
+        ): CognitoAuthenticationFilter {
+            return CognitoAuthenticationFilter(tokenProcessor, mapper)
+        }
+    }
 
     private lateinit var mockMvc: MockMvc
 

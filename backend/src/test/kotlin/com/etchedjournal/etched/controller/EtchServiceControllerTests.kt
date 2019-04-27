@@ -51,6 +51,8 @@ class EtchServiceControllerTests {
 
     @Before
     fun setup() {
+        testRepoUtils.cleanDb()
+
         keyPair = testRepoUtils.createKeyPair(
             id = "keyPair1",
             publicKey = byteArrayOf(1, 2),

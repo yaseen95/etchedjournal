@@ -2,6 +2,8 @@ package com.etchedjournal.etched
 
 import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.Schema
+import com.etchedjournal.etched.models.jooq.generated.Public
+import com.etchedjournal.etched.models.jooq.generated.Tables
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Entry
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Etch
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
@@ -10,14 +12,29 @@ import com.etchedjournal.etched.repository.EntryRepository
 import com.etchedjournal.etched.repository.EtchRepository
 import com.etchedjournal.etched.repository.JournalRepository
 import com.etchedjournal.etched.repository.KeyPairRepository
+import com.etchedjournal.etched.repository.TxnHelper
 import java.time.Instant
 
 class TestRepoUtils(
     private val entryRepo: EntryRepository,
     private val etchRepo: EtchRepository,
     private val keyPairRepo: KeyPairRepository,
-    private val journalRepo: JournalRepository
+    private val journalRepo: JournalRepository,
+    private val txnHelper: TxnHelper
 ) {
+
+    fun cleanDb() {
+        txnHelper.execute { txn ->
+            if (Public.PUBLIC.tables.size != 4) {
+                throw RuntimeException("Need to update tests when adding more tables")
+            }
+            // Need to drop tables in a specific order to avoid foreign key constraints
+            txn.dslCtx.deleteFrom(Tables.ETCH).execute()
+            txn.dslCtx.deleteFrom(Tables.ENTRY).execute()
+            txn.dslCtx.deleteFrom(Tables.JOURNAL).execute()
+            txn.dslCtx.deleteFrom(Tables.KEY_PAIR).execute()
+        }
+    }
 
     fun createJournal(
         id: String,
@@ -38,7 +55,7 @@ class TestRepoUtils(
             0,
             schema
         )
-        return journalRepo.create(j)
+        return txnHelper.execute { txn -> journalRepo.create(txn, j) }
     }
 
     fun createEntry(
@@ -62,7 +79,7 @@ class TestRepoUtils(
             0,
             schema
         )
-        return entryRepo.create(e)
+        return txnHelper.execute { txn -> entryRepo.create(txn, e) }
     }
 
     fun createEtch(
@@ -86,7 +103,7 @@ class TestRepoUtils(
             0,
             schema
         )
-        return etchRepo.createEtches(listOf(e))[0]
+        return txnHelper.execute { txn -> etchRepo.createEtches(txn, listOf(e))[0] }
     }
 
     fun createKeyPair(
@@ -110,7 +127,6 @@ class TestRepoUtils(
             iterations,
             0
         )
-        keyPairRepo.create(k)
-        return k
+        return txnHelper.execute { txn -> keyPairRepo.create(txn, k) }
     }
 }

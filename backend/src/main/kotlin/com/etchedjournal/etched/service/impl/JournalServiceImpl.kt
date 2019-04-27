@@ -4,6 +4,7 @@ import com.etchedjournal.etched.dto.EncryptedEntityRequest
 import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
 import com.etchedjournal.etched.repository.JournalRepository
+import com.etchedjournal.etched.repository.Transaction
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.JournalService
 import com.etchedjournal.etched.service.KeypairService
@@ -22,9 +23,9 @@ class JournalServiceImpl(
     private val keyPairService: KeypairService
 ) : JournalService {
 
-    override fun getJournal(id: String): Journal {
+    override fun getJournal(txn: Transaction, id: String): Journal {
         logger.info("Attempting to get journal {}", id)
-        val journal = journalRepo.findById(id)
+        val journal = journalRepo.findById(txn, id)
         if (journal == null) {
             logger.info("Journal {} not found", id)
             throw NotFoundException()
@@ -38,16 +39,16 @@ class JournalServiceImpl(
         return journal
     }
 
-    override fun getJournals(): List<Journal> {
+    override fun getJournals(txn: Transaction): List<Journal> {
         logger.info("Getting journals for {}", authService.getUserId())
-        return journalRepo.fetchByOwner(authService.getUserId())
+        return journalRepo.fetchByOwner(txn, authService.getUserId())
     }
 
-    override fun create(req: EncryptedEntityRequest): Journal {
+    override fun create(txn: Transaction, req: EncryptedEntityRequest): Journal {
         logger.info("Creating journal {}", req)
 
         // Get key pair to check permissions
-        val keyPair = keyPairService.getKeypair(req.keyPairId)
+        val keyPair = keyPairService.getKeypair(txn, req.keyPairId)
 
         var journal = Journal(
             idGenerator.generateId(),
@@ -60,15 +61,15 @@ class JournalServiceImpl(
             req.schema
         )
 
-        journal = journalRepo.create(journal)
+        journal = journalRepo.create(txn, journal)
         logger.info("Successfully created journal {}", journal)
         return journal
     }
 
-    override fun exists(id: String): Boolean {
+    override fun exists(txn: Transaction, id: String): Boolean {
         logger.info("Checking if journal {} exists", id)
         // getJournal will throw if user can't access or journal does not exist
-        getJournal(id)
+        getJournal(txn, id)
         return true
     }
 

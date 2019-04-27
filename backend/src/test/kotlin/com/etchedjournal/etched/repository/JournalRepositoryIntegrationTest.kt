@@ -1,6 +1,7 @@
 package com.etchedjournal.etched.repository
 
 import com.etchedjournal.etched.TestAuthService
+import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.models.OwnerType
@@ -8,10 +9,9 @@ import com.etchedjournal.etched.models.Schema
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import com.etchedjournal.etched.utils.id.IdSerializer
-import org.jooq.DSLContext
 import org.jooq.exception.DataAccessException
-import org.junit.Assert
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,14 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
-import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
-@Transactional
 @ContextConfiguration(classes = [TestConfig::class])
-class JournalRepositoryTest {
+class JournalRepositoryIntegrationTest {
 
     @Autowired
     private lateinit var repo: JournalRepository
@@ -35,12 +33,14 @@ class JournalRepositoryTest {
     private lateinit var testRepoUtils: TestRepoUtils
 
     @Autowired
-    private lateinit var dslContext: DSLContext
+    private lateinit var txnHelper: TxnHelper
 
     private lateinit var keyPair: KeyPair
 
     @Before
     fun setup() {
+        testRepoUtils.cleanDb()
+
         keyPair = testRepoUtils.createKeyPair(
             id = IdSerializer.serialize(10_000),
             publicKey = byteArrayOf(1, 2),
@@ -61,7 +61,7 @@ class JournalRepositoryTest {
             0,
             Schema.V1_0
         )
-        journal = repo.create(journal)
+        journal = txnHelper.execute { repo.create(it, journal) }
         assertEquals(1, journal.version)
     }
 
@@ -78,7 +78,7 @@ class JournalRepositoryTest {
             0,
             Schema.V1_0
         )
-        journal1 = repo.create(journal1)
+        journal1 = txnHelper.execute { repo.create(it, journal1) }
         assertEquals(1, journal1.version)
 
         val journal2 = Journal(
@@ -93,7 +93,7 @@ class JournalRepositoryTest {
             Schema.V1_0
         )
         // Try to create again with the version 0
-        repo.create(journal2)
+        txnHelper.execute { repo.create(it, journal2) }
     }
 
     @Test
@@ -109,15 +109,16 @@ class JournalRepositoryTest {
             0,
             Schema.V1_0
         )
-        val created = repo.create(journal)
+        val created = txnHelper.execute { repo.create(it, journal) }
 
-        val found = repo.findById(created.id)
+        val found = txnHelper.execute { repo.findById(it, created.id) }
         assertEquals(found, created)
     }
 
     @Test
     fun `returns null when no item with id exists`() {
-        Assert.assertNull(repo.findById(IdSerializer.serialize(24)))
+        val result = txnHelper.execute { repo.findById(it, IdSerializer.serialize(24)) }
+        assertNull(result)
     }
 
     @Test
@@ -135,7 +136,7 @@ class JournalRepositoryTest {
             )
         }
 
-        val fetched = repo.fetchByOwner(TestAuthService.TESTER_USER_ID)
+        val fetched = txnHelper.execute { repo.fetchByOwner(it, TESTER_USER_ID) }
         val fetchedIds = fetched.map { it.id }
         // Is this test robust enough?
         assertEquals(listOf(id1, id2, id3), fetchedIds)
