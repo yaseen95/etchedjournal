@@ -6,19 +6,32 @@ package com.etchedjournal.etched.models.jooq.generated.tables;
 
 import com.etchedjournal.etched.models.OwnerType;
 import com.etchedjournal.etched.models.Schema;
-import com.etchedjournal.etched.models.jooq.converter.*;
+import com.etchedjournal.etched.models.jooq.converter.IdConverter;
+import com.etchedjournal.etched.models.jooq.converter.InstantConverter;
+import com.etchedjournal.etched.models.jooq.converter.NullableInstantConverter;
+import com.etchedjournal.etched.models.jooq.converter.OwnerTypeConverter;
+import com.etchedjournal.etched.models.jooq.converter.SchemaConverter;
 import com.etchedjournal.etched.models.jooq.generated.Indexes;
 import com.etchedjournal.etched.models.jooq.generated.Keys;
 import com.etchedjournal.etched.models.jooq.generated.Public;
 import com.etchedjournal.etched.models.jooq.generated.tables.records.EntryRecord;
-import org.jooq.*;
-import org.jooq.impl.DSL;
-import org.jooq.impl.TableImpl;
 
-import javax.annotation.Generated;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.annotation.Generated;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Index;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.UniqueKey;
+import org.jooq.impl.DSL;
+import org.jooq.impl.TableImpl;
 
 
 /**

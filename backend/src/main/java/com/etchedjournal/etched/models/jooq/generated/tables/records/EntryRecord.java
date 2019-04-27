@@ -7,16 +7,18 @@ package com.etchedjournal.etched.models.jooq.generated.tables.records;
 import com.etchedjournal.etched.models.OwnerType;
 import com.etchedjournal.etched.models.Schema;
 import com.etchedjournal.etched.models.jooq.generated.tables.Entry;
+
+import java.time.Instant;
+
+import javax.annotation.Generated;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record10;
 import org.jooq.Row10;
 import org.jooq.impl.UpdatableRecordImpl;
-
-import javax.annotation.Generated;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.time.Instant;
 
 
 /**
