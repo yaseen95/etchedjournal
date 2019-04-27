@@ -35,12 +35,17 @@ class EtchRepositoryTest {
     @Autowired
     private lateinit var testRepoUtils: TestRepoUtils
 
+    @Autowired
+    private lateinit var txnHelper: TxnHelper
+
     private lateinit var keyPair: KeyPair
     private lateinit var journal: Journal
     private lateinit var entry: Entry
 
     @Before
     fun setup() {
+        testRepoUtils.cleanDb()
+
         keyPair = testRepoUtils.createKeyPair(
             id = IdSerializer.serialize(10_000),
             publicKey = byteArrayOf(1, 2),
@@ -75,7 +80,7 @@ class EtchRepositoryTest {
             0,
             Schema.V1_0
         )
-        val created = repo.createEtches(listOf(e))[0]
+        val created = txnHelper.execute { repo.createEtches(it, listOf(e))[0] }
         assertEquals(1, created.version)
     }
 
@@ -93,7 +98,7 @@ class EtchRepositoryTest {
             0,
             Schema.V1_0
         )
-        e1 = repo.createEtches(listOf(e1))[0]
+        e1 = txnHelper.execute { repo.createEtches(it, listOf(e1))[0] }
         assertEquals(1, e1.version)
 
         val e2 = Etch(
@@ -109,7 +114,7 @@ class EtchRepositoryTest {
             Schema.V1_0
         )
         // Try to create again with the version 0
-        repo.createEtches(listOf(e2))
+        txnHelper.execute { repo.createEtches(it, listOf(e2)) }
     }
 
     @Test
@@ -126,15 +131,15 @@ class EtchRepositoryTest {
             0,
             Schema.V1_0
         )
-        val created = repo.createEtches(listOf(e))[0]
-
-        val found = repo.findById(created.id)
+        val created = txnHelper.execute { repo.createEtches(it, listOf(e))[0] }
+        val found = txnHelper.execute { repo.findById(it, created.id) }
         assertEquals(found, created)
     }
 
     @Test
     fun `returns null when no item with id exists`() {
-        assertNull(repo.findById(IdSerializer.serialize(24)))
+        val result = txnHelper.execute { repo.findById(it, IdSerializer.serialize(24)) }
+        assertNull(result)
     }
 
     @Test
@@ -153,7 +158,7 @@ class EtchRepositoryTest {
             )
         }
 
-        val fetched = repo.fetchByEntryId(entry.id)
+        val fetched = txnHelper.execute { repo.fetchByEntryId(it, entry.id) }
         val fetchedIds = fetched.map { it.id }
         assertEquals(listOf(id1, id2, id3), fetchedIds)
     }

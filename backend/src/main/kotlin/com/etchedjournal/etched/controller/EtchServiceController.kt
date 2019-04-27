@@ -2,6 +2,7 @@ package com.etchedjournal.etched.controller
 
 import com.etchedjournal.etched.dto.EncryptedEntityRequest
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Etch
+import com.etchedjournal.etched.repository.TxnHelper
 import com.etchedjournal.etched.service.EtchService
 import com.etchedjournal.etched.utils.id.IsEtchedId
 import org.slf4j.LoggerFactory
@@ -18,16 +19,19 @@ import javax.validation.Valid
 @RequestMapping("/api/v1/etches")
 @RestController
 @Validated
-class EtchServiceController(private val etchService: EtchService) {
+class EtchServiceController(
+    private val etchService: EtchService,
+    private val txnHelper: TxnHelper
+) {
 
     @GetMapping("")
     fun getEtches(@RequestParam @Valid @IsEtchedId entryId: String): List<Etch> {
-        return etchService.getEtches(entryId)
+        return txnHelper.execute { txn -> etchService.getEtches(txn, entryId) }
     }
 
     @GetMapping("/{etchId}")
     fun getEtch(@PathVariable @Valid @IsEtchedId etchId: String): Etch {
-        return etchService.getEtch(etchId)
+        return txnHelper.execute { txn -> etchService.getEtch(txn, etchId) }
     }
 
     @PostMapping("")
@@ -36,7 +40,7 @@ class EtchServiceController(private val etchService: EtchService) {
         @RequestBody etches: List<@Valid EncryptedEntityRequest>
     ): List<Etch> {
         logger.info("Creating etches for entry {}", entryId)
-        val createdEtches = etchService.create(etches, entryId)
+        val createdEtches = txnHelper.execute { txn -> etchService.create(txn, etches, entryId) }
         logger.info("Created {} etches for entry {}", createdEtches.size, entryId)
         return createdEtches
     }

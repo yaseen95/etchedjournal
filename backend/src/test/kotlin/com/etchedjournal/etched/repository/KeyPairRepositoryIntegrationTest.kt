@@ -1,6 +1,6 @@
 package com.etchedjournal.etched.repository
 
-import com.etchedjournal.etched.TestAuthService
+import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.models.OwnerType
@@ -12,6 +12,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,6 +34,14 @@ class KeyPairRepositoryTest {
     @Autowired
     private lateinit var testRepoUtils: TestRepoUtils
 
+    @Autowired
+    private lateinit var txnHelper: TxnHelper
+
+    @Before
+    fun setup() {
+        testRepoUtils.cleanDb()
+    }
+
     @Test
     fun `create and get`() {
         val keyPair = KeyPair(
@@ -46,9 +55,11 @@ class KeyPairRepositoryTest {
             10,
             null
         )
-        repo.create(keyPair)
+        val retrieved: KeyPair = txnHelper.execute {
+            repo.create(it, keyPair)
+            repo.findById(it, "abcdefghijk")!!
+        }
 
-        val retrieved = repo.findById("abcdefghijk")!!
         assertEquals("abcdefghijk", retrieved.id)
         assertEquals(Instant.EPOCH, retrieved.timestamp)
         assertArrayEquals(byteArrayOf(1), retrieved.publicKey)
@@ -74,13 +85,14 @@ class KeyPairRepositoryTest {
             10,
             null
         )
-        repo.create(keyPair)
-
-        try {
-            repo.create(keyPair)
-            fail()
-        } catch (e: DataAccessException) {
-            assertTrue(e.message!!.contains("Key (id)=(1) already exists."))
+        txnHelper.execute {
+            repo.create(it, keyPair)
+            try {
+                repo.create(it, keyPair)
+                fail()
+            } catch (e: DataAccessException) {
+                assertTrue(e.message!!.contains("Key (id)=(1) already exists."))
+            }
         }
     }
 
@@ -95,7 +107,7 @@ class KeyPairRepositoryTest {
             testRepoUtils.createKeyPair(id = it)
         }
 
-        val fetched = repo.fetchByOwner(TestAuthService.TESTER_USER_ID)
+        val fetched = txnHelper.execute { repo.fetchByOwner(it, TESTER_USER_ID) }
         val fetchedIds = fetched.map { it.id }
         // Is this test robust enough?
         assertEquals(listOf(id1, id2, id3), fetchedIds)
@@ -103,6 +115,7 @@ class KeyPairRepositoryTest {
 
     @Test
     fun `returns null when no key pair with id exists`() {
-        assertNull(repo.findById(IdSerializer.serialize(100)))
+        val result = txnHelper.execute { repo.findById(it, IdSerializer.serialize(100)) }
+        assertNull(result)
     }
 }

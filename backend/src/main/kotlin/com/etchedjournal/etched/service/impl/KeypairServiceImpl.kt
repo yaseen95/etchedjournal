@@ -4,6 +4,7 @@ import com.etchedjournal.etched.dto.CreateKeypairRequest
 import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import com.etchedjournal.etched.repository.KeyPairRepository
+import com.etchedjournal.etched.repository.Transaction
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.KeypairService
 import com.etchedjournal.etched.service.exception.ForbiddenException
@@ -21,7 +22,7 @@ class KeypairServiceImpl(
     private val idGenerator: IdGenerator
 ) : KeypairService {
 
-    override fun createKeypair(req: CreateKeypairRequest): KeyPair {
+    override fun createKeypair(txn: Transaction, req: CreateKeypairRequest): KeyPair {
         logger.info("Creating key pair")
         var k = KeyPair(
             idGenerator.generateId(),
@@ -34,22 +35,22 @@ class KeypairServiceImpl(
             req.iterations,
             null
         )
-        k = keyPairRepo.create(k)
+        k = keyPairRepo.create(txn, k)
         logger.info("Created key pair {}", k)
         return k
     }
 
-    override fun getUserKeypairs(): List<KeyPair> {
+    override fun getUserKeypairs(txn: Transaction): List<KeyPair> {
         val userId = authService.getUserId()
         logger.info("Getting keypairs for {}", userId)
-        val userKeypairs = keyPairRepo.fetchByOwner(userId)
+        val userKeypairs = keyPairRepo.fetchByOwner(txn, userId)
         logger.info("Found {} keypairs for {}", userKeypairs.size, userId)
         return userKeypairs
     }
 
-    override fun getKeypair(id: String): KeyPair {
+    override fun getKeypair(txn: Transaction, id: String): KeyPair {
         logger.info("Attempting to get keypair with id {}", id)
-        val keypair: KeyPair? = keyPairRepo.findById(id)
+        val keypair: KeyPair? = keyPairRepo.findById(txn, id)
 
         if (keypair == null) {
             logger.info("Unable to find keypair with id {}", id)

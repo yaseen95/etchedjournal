@@ -2,6 +2,7 @@ package com.etchedjournal.etched.controller
 
 import com.etchedjournal.etched.dto.CreateKeypairRequest
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
+import com.etchedjournal.etched.repository.TxnHelper
 import com.etchedjournal.etched.service.AuthService
 import com.etchedjournal.etched.service.KeypairService
 import com.etchedjournal.etched.service.exception.BadRequestException
@@ -24,7 +25,8 @@ import javax.validation.Valid
 @Validated
 class KeypairServiceController(
     private val keypairService: KeypairService,
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val txnHelper: TxnHelper
 ) {
 
     @PostMapping("")
@@ -48,20 +50,19 @@ class KeypairServiceController(
             throw BadRequestException()
         }
         logger.info("Registering key with with user id {}", pubKey.getUserId())
-
-        return keypairService.createKeypair(req = req)
+        return txnHelper.execute { txn -> keypairService.createKeypair(txn = txn, req = req) }
     }
 
     @GetMapping("")
     fun getKeypairs(): List<KeyPair> {
         logger.info("Getting keypairs")
-        return keypairService.getUserKeypairs()
+        return txnHelper.execute { txn -> keypairService.getUserKeypairs(txn) }
     }
 
     @GetMapping("/{keypairId}")
     fun getKeypair(@PathVariable @Valid @IsEtchedId keypairId: String): KeyPair {
         logger.info("Getting keypair with id {}", keypairId)
-        return keypairService.getKeypair(keypairId)
+        return txnHelper.execute { txn -> keypairService.getKeypair(txn, keypairId) }
     }
 
     companion object {

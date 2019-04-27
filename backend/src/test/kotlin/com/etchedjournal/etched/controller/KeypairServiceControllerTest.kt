@@ -46,6 +46,8 @@ class KeypairServiceControllerTest {
 
     @Before
     fun setup() {
+        testRepo.cleanDb()
+
         mockMvc = MockMvcBuilders
             .webAppContextSetup(webApplicationContext)
             // Have to apply apply spring security mock
