@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import * as mobx from 'mobx-angular';
 import { AbstractEtch, EtchV1 } from '../models/etch/etch';
 import { EncrypterService } from '../services/encrypter.service';
-import { EncryptedEntityRequest } from '../services/etched-api-utils';
 import { CreateEtchesRequest, EtchService } from '../services/etch.service';
+import { EncryptedEntityRequest } from '../services/etched-api-utils';
 import { EtchEntity } from '../services/models/etch-entity';
 import { Schema } from '../services/models/schema';
 
