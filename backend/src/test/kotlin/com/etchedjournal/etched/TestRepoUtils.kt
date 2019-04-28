@@ -1,5 +1,6 @@
 package com.etchedjournal.etched
 
+import com.etchedjournal.etched.TestAuthService.Companion.TESTER
 import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.Schema
 import com.etchedjournal.etched.models.jooq.generated.Public
@@ -8,11 +9,13 @@ import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Entry
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Etch
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
+import com.etchedjournal.etched.models.jooq.generated.tables.records.JournalRecord
 import com.etchedjournal.etched.repository.EntryRepository
 import com.etchedjournal.etched.repository.EtchRepository
 import com.etchedjournal.etched.repository.JournalRepository
 import com.etchedjournal.etched.repository.KeyPairRepository
 import com.etchedjournal.etched.repository.TxnHelper
+import com.etchedjournal.etched.utils.id.IdSerializer
 import java.time.Instant
 
 class TestRepoUtils(
@@ -37,18 +40,19 @@ class TestRepoUtils(
     }
 
     fun createJournal(
-        id: String,
-        content: ByteArray,
+        id: String = ID_1,
         keyPairId: String,
+        content: ByteArray = byteArrayOf(1),
         created: Instant = Instant.EPOCH,
-        owner: String = TestAuthService.TESTER_USER_ID,
+        modified: Instant? = null,
+        owner: String = TESTER.id,
         ownerType: OwnerType = OwnerType.USER,
         schema: Schema = Schema.V1_0
-    ): Journal {
+    ): JournalRecord {
         val j = Journal(
             id.padEnd(11, '0'),
             created,
-            null,
+            modified,
             content,
             owner,
             ownerType,
@@ -61,7 +65,7 @@ class TestRepoUtils(
 
     fun createEntry(
         id: String,
-        journal: Journal,
+        journal: JournalRecord,
         content: ByteArray,
         keyPairId: String,
         created: Instant = Instant.EPOCH,
@@ -130,5 +134,10 @@ class TestRepoUtils(
             0
         )
         return txnHelper.execute { txn -> keyPairRepo.create(txn, k) }
+    }
+
+    companion object {
+        val ID_1 = IdSerializer.serialize(1)
+        val ID_2 = IdSerializer.serialize(2)
     }
 }

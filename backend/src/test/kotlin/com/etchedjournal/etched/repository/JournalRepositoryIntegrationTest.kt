@@ -62,7 +62,7 @@ class JournalRepositoryIntegrationTest {
             0,
             Schema.V1_0
         )
-        journal = txnHelper.execute { repo.create(it, journal) }
+        journal = txnHelper.execute { repo.create(it, journal) }.into(Journal::class.java)
         assertEquals(1, journal.version)
     }
 
@@ -80,7 +80,7 @@ class JournalRepositoryIntegrationTest {
             0,
             Schema.V1_0
         )
-        journal1 = txnHelper.execute { repo.create(it, journal1) }
+        journal1 = txnHelper.execute { repo.create(it, journal1) }.into(Journal::class.java)
         assertEquals(1, journal1.version)
 
         val journal2 = Journal(
@@ -114,7 +114,6 @@ class JournalRepositoryIntegrationTest {
             Schema.V1_0
         )
         val created = txnHelper.execute { repo.create(it, journal) }
-
         val found = txnHelper.execute { repo.findById(it, created.id) }
         assertEquals(found, created)
     }

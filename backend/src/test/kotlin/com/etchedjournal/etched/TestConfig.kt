@@ -8,7 +8,6 @@ import com.etchedjournal.etched.repository.TxnHelper
 import com.etchedjournal.etched.security.CognitoAuthenticationFilter
 import com.etchedjournal.etched.service.AuthService
 import com.nhaarman.mockitokotlin2.mock
-import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
@@ -19,14 +18,15 @@ import javax.servlet.http.HttpServletResponse
 @TestConfiguration
 class TestConfig {
 
-    companion object {
-        private val logger = LoggerFactory.getLogger(TestConfig::class.java)
-    }
-
     @Bean
     @Primary
     fun authService(): AuthService {
         return TestAuthService()
+    }
+
+    @Bean
+    fun testAuthService(): TestAuthService {
+        return authService() as TestAuthService
     }
 
     @Bean

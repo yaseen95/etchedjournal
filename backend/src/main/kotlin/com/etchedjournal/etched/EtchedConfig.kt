@@ -1,6 +1,7 @@
 package com.etchedjournal.etched
 
 import com.etchedjournal.etched.security.ExceptionHandledFilter
+import com.etchedjournal.etched.utils.clock.Clock
 import com.etchedjournal.etched.utils.id.CamflakeIdGenerator
 import com.etchedjournal.etched.utils.id.IdGenerator
 import com.etchedjournal.etched.utils.id.camflake.Camflake
@@ -44,6 +45,11 @@ class EtchedConfig {
     @Bean
     fun sqlDialect(): SQLDialect {
         return SQLDialect.POSTGRES_10
+    }
+
+    @Bean
+    fun clock(): Clock {
+        return Clock.INSTANCE
     }
 }
 

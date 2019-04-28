@@ -6,8 +6,8 @@ import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.Schema
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Entry
-import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
+import com.etchedjournal.etched.models.jooq.generated.tables.records.JournalRecord
 import com.etchedjournal.etched.utils.id.IdSerializer
 import org.jooq.exception.DataAccessException
 import org.junit.Assert.assertEquals
@@ -36,7 +36,7 @@ class EntryRepositoryIntegrationTest {
     private lateinit var txnHelper: TxnHelper
 
     private lateinit var keyPair: KeyPair
-    private lateinit var journal: Journal
+    private lateinit var journal: JournalRecord
 
     @Before
     fun setup() {
