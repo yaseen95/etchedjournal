@@ -34,7 +34,6 @@ describe('NavComponent', () => {
     beforeEach(async(() => {
         authSpy = jasmine.createSpyObj('AuthService', ['getUser', 'logout']);
         journalStore = new FakeJournalStore();
-        journalStore.journals = Array.from(JOURNALS_BY_ID.values());
         journalStore.entities = TEST_JOURNALS;
         journalStore.journalsById = JOURNALS_BY_ID;
 

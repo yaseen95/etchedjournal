@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
+import { action, computed, observable } from 'mobx-angular';
 import * as mobx from 'mobx-angular';
 import { AbstractJournal } from '../models/journal/abstract-journal';
 import { SimpleReader } from '../models/reader';
 import { SimpleWriter } from '../models/writer';
 import { EncrypterService } from '../services/encrypter.service';
 import { EncryptedEntityRequest } from '../services/etched-api-utils';
-import { JournalService } from '../services/journal.service';
+import { JournalService, UpdateJournalReq } from '../services/journal.service';
 import { JournalEntity } from '../services/models/journal-entity';
 
 interface JournalAndEntity {
@@ -15,10 +16,9 @@ interface JournalAndEntity {
 
 @Injectable()
 export class JournalStore {
-    @mobx.observable public entities: JournalEntity[] = [];
-    @mobx.observable public journals: AbstractJournal[] = [];
-    @mobx.observable public loading: boolean = false;
-    @mobx.observable public loadedOnce: boolean = false;
+    @observable public entities: JournalEntity[] = [];
+    @observable public loading: boolean = false;
+    @observable public loadedOnce: boolean = false;
     public journalsById: Map<string, AbstractJournal> = new Map<string, AbstractJournal>();
 
     constructor(
@@ -34,26 +34,35 @@ export class JournalStore {
      * MUST be called after the encrypter has been set otherwise journals cannot be decrypted
      */
     private async initStore() {
-        // noinspection JSIgnoredPromiseFromCall
-        await this.loadJournals();
+        await this.getJournals();
     }
 
-    @mobx.action
-    public async loadJournals(): Promise<JournalEntity[]> {
+    /**
+     * Decrypted journals ordered in the same order as the journal entities
+     */
+    @computed
+    public get journals(): AbstractJournal[] {
+        const entityIds = this.entities.map(e => e.id);
+        const journals = [];
+        entityIds.forEach(id => {
+            journals.push(this.journalsById.get(id));
+        });
+        return journals;
+    }
+
+    @action
+    public async getJournals(): Promise<JournalEntity[]> {
         this.loading = true;
 
         const encrypted = await this.journalService.getJournals().toPromise();
 
-        const journals: AbstractJournal[] = [];
         const entities: JournalEntity[] = [];
         for (const e of encrypted) {
             const result = await this.decryptAndReadJournal(e);
             this.journalsById.set(e.id, result.journal);
             entities.push(result.entity);
-            journals.push(result.journal);
         }
 
-        this.journals = journals;
         this.entities = entities;
         this.loading = false;
         this.loadedOnce = true;
@@ -69,18 +78,51 @@ export class JournalStore {
         return { entity: decrypted, journal };
     }
 
-    @mobx.action
+    @action
     public async createJournal(journal: AbstractJournal): Promise<JournalEntity> {
-        const enc = this.encrypterService.encrypter;
-        const writer = SimpleWriter.getWriter<AbstractJournal>(journal.schema);
-        const blobified = writer.write(journal);
-        const ciphertext = await enc.encrypt(blobified);
-
+        const ciphertext = await this.encrypt(journal);
         const req: EncryptedEntityRequest = {
-            keyPairId: enc.keyPairId,
+            keyPairId: this.encrypterService.encrypter.keyPairId,
             content: ciphertext,
             schema: journal.schema,
         };
         return await this.journalService.createJournal(req).toPromise();
+    }
+
+    @action
+    public async updateJournal(id: string, journal: AbstractJournal): Promise<JournalEntity> {
+        const ciphertext = await this.encrypt(journal);
+        const req: UpdateJournalReq = {
+            entityReq: {
+                keyPairId: this.encrypterService.encrypter.keyPairId,
+                content: ciphertext,
+                schema: journal.schema,
+            },
+            journalId: id,
+        };
+
+        const encryptedEntity = await this.journalService.updateJournal(req).toPromise();
+        const journalAndEntity = await this.decryptAndReadJournal(encryptedEntity);
+
+        this.updateJournalState(journalAndEntity);
+        return journalAndEntity.entity;
+    }
+
+    private async encrypt(journal: AbstractJournal) {
+        const enc = this.encrypterService.encrypter;
+        const writer = SimpleWriter.getWriter<AbstractJournal>(journal.schema);
+        const blobified = writer.write(journal);
+        return await enc.encrypt(blobified);
+    }
+
+    private updateJournalState(journalAndEntity: JournalAndEntity) {
+        const entity = journalAndEntity.entity;
+        const updateIndex = this.entities.findIndex(e => e.id === entity.id);
+        if (updateIndex >= 0) {
+            this.entities[updateIndex] = entity;
+        } else {
+            this.entities.push(entity);
+        }
+        this.journalsById.set(entity.id, journalAndEntity.journal);
     }
 }

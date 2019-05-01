@@ -24,4 +24,17 @@ export class JournalService {
             .post<JournalEntity>(JOURNALS_URL, req)
             .pipe(tap(j => console.info(`Created journal ${j.id}`)));
     }
+
+    public updateJournal(req: UpdateJournalReq): Observable<JournalEntity> {
+        console.info(`Updating journal ${req.journalId}`);
+        const url = `${JOURNALS_URL}/${req.journalId}`;
+        return this.http
+            .post<JournalEntity>(url, req.entityReq)
+            .pipe(tap(j => console.info(`Updated journal ${j.id}`)));
+    }
+}
+
+export interface UpdateJournalReq {
+    entityReq: EncryptedEntityRequest;
+    journalId: string;
 }
