@@ -108,4 +108,16 @@ export namespace TestUtils {
         // linting
         return x === undefined ? defaultX : x;
     }
+
+    export function triggerKeyUp(de: DebugElement, key: string) {
+        de.triggerEventHandler('keyup', { key: key });
+    }
+
+    export function triggerInput(de: DebugElement) {
+        de.triggerEventHandler('input', { target: de.nativeElement });
+    }
+
+    export function triggerBlur(de: DebugElement) {
+        de.triggerEventHandler('blur', null);
+    }
 }

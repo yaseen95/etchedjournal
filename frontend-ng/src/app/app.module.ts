@@ -32,6 +32,7 @@ import { EnterPassphraseContainerComponent } from './user/passphrase/enter-passp
 import { EnterPassphraseComponent } from './user/passphrase/enter-passphrase/enter-passphrase.component';
 import { RegisterContainerComponent } from './user/register/register-container/register-container.component';
 import { RegisterComponent } from './user/register/register.component';
+import { EditableText } from './utils/editable-text/editable-text.component';
 import { SpinnerComponent } from './utils/spinner/spinner.component';
 
 @NgModule({
@@ -74,6 +75,9 @@ import { SpinnerComponent } from './utils/spinner/spinner.component';
         AppAutoFocusDirective,
 
         GenerateContainerComponent,
+
+        // UI Components
+        EditableText,
     ],
     imports: [
         AppRoutingModule,

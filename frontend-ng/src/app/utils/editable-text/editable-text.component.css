@@ -1,0 +1,30 @@
+#edit-icon {
+    margin-left: 5px;
+    color: rgba(32, 41, 57, 0.6);
+    cursor: pointer;
+}
+
+#editable-text:hover #edit-icon {
+    /* Is displayed on mobile by default, on desktop display it on hover */
+    display: inline !important;
+}
+
+/* The input has a bottom border, when switching between edit modes the elements move up/down due
+to the bottom border. We add the the margin to prevent elements moving when changing modes. */
+.pad-input-border {
+    margin-bottom: 1px;
+}
+
+input, input:focus, input:hover, input:active {
+    box-shadow: none;
+    padding: 0;
+    height: inherit;
+    line-height: inherit;
+    font-size: inherit;
+    border-bottom: black 1px solid;
+    border-radius: 0;
+    border-bottom-style: dashed;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
