@@ -15,8 +15,7 @@ export class JournalListItemComponent implements OnInit {
     public journal: JournalV1;
     public date: string;
 
-    public constructor(private journalStore: JournalStore) {
-    }
+    public constructor(private journalStore: JournalStore) {}
 
     public ngOnInit() {
         this.date = new Date(this.journal.created).toLocaleDateString();

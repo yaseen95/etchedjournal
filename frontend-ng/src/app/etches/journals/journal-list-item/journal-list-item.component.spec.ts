@@ -22,14 +22,9 @@ describe('JournalListItemComponent', () => {
         journalStore = new FakeJournalStore();
 
         TestBed.configureTestingModule({
-            declarations: [
-                JournalListItemComponent,
-                EditableText,
-            ],
+            declarations: [JournalListItemComponent, EditableText],
             imports: [RouterTestingModule],
-            providers: [
-                { provide: JournalStore, useValue: journalStore },
-            ],
+            providers: [{ provide: JournalStore, useValue: journalStore }],
         }).compileComponents();
     }));
 
@@ -52,7 +47,7 @@ describe('JournalListItemComponent', () => {
         component.renameJournal('updated name');
 
         expect(updateJournalSpy).toHaveBeenCalledTimes(1);
-        const expectedJournal = {...journal, name: 'updated name'};
+        const expectedJournal = { ...journal, name: 'updated name' };
         expect(updateJournalSpy).toHaveBeenCalledWith(entity.id, expectedJournal);
     });
 

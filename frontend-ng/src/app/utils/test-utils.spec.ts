@@ -110,7 +110,7 @@ export namespace TestUtils {
     }
 
     export function triggerKeyUp(de: DebugElement, key: string) {
-        de.triggerEventHandler('keyup', { key: key });
+        de.triggerEventHandler('keyup', { key });
     }
 
     export function triggerInput(de: DebugElement) {

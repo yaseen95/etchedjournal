@@ -31,9 +31,7 @@ describe('JournalListComponent', () => {
             declarations: [JournalListComponent, JournalListItemComponent],
             imports: [RouterTestingModule, ReactiveFormsModule],
             schemas: [NO_ERRORS_SCHEMA],
-            providers: [
-                { provide: JournalStore, useValue: journalStore },
-            ],
+            providers: [{ provide: JournalStore, useValue: journalStore }],
         }).compileComponents();
     }));
 

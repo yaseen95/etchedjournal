@@ -1,12 +1,12 @@
 <div class="journal-list-item">
     <div>
-        <editable-text
+        <app-editable-text
             class="title is-4"
             text="{{ journal.name }}"
             link="/journals/{{ entity.id }}"
             (onSave)="renameJournal($event)"
         >
-        </editable-text>
+        </app-editable-text>
     </div>
     <div>
         <p class="subtitle is-6">Created {{ date }}</p>

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
-    selector: 'editable-text',
+    selector: 'app-editable-text',
     templateUrl: './editable-text.component.html',
     styleUrls: ['./editable-text.component.css'],
 })
@@ -21,7 +21,7 @@ export class EditableText implements OnInit {
     public editing: boolean = false;
     private editingText: string = '';
 
-    ngOnInit(): void {
+    public ngOnInit(): void {
         if (this.text === undefined || this.text === null) {
             throw new Error('Text is required');
         }
@@ -32,17 +32,17 @@ export class EditableText implements OnInit {
     }
 
     public onKeyUp(event: KeyboardEvent) {
-        if (event.key === 'Enter' && this.editingText != '') {
+        if (event.key === 'Enter' && this.editingText !== '') {
             this.finishEditing();
         }
     }
 
     public onInput(event: TextEvent) {
-        this.editingText = (<HTMLInputElement>event.target).value.trim();
+        this.editingText = (event.target as HTMLInputElement).value.trim();
     }
 
     public onBlur() {
-        if (this.editingText != '') {
+        if (this.editingText !== '') {
             this.finishEditing();
         }
         this.editing = false;
