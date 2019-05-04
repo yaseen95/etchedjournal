@@ -1,6 +1,14 @@
 <div class="journal-list-item">
-    <p class="title is-4 journal-title">
-        <a routerLink="/journals/{{ entity.id }}">{{ journal.name }}</a>
-    </p>
-    <p class="subtitle is-6">Created {{ date }}</p>
+    <div>
+        <editable-text
+            class="title is-4"
+            text="{{ journal.name }}"
+            link="/journals/{{ entity.id }}"
+            (onSave)="renameJournal($event)"
+        >
+        </editable-text>
+    </div>
+    <div>
+        <p class="subtitle is-6">Created {{ date }}</p>
+    </div>
 </div>
