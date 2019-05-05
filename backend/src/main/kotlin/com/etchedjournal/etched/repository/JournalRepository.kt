@@ -8,21 +8,20 @@ import org.springframework.stereotype.Repository
 @Repository
 class JournalRepository {
 
-    fun findById(txn: Transaction, id: String): Journal? {
+    fun findById(txn: Transaction, id: String): JournalRecord? {
         return txn.dslCtx.selectFrom(Tables.JOURNAL)
             .where(Tables.JOURNAL.ID.eq(id))
             .fetchOne()
-            ?.into(Journal::class.java)
     }
 
-    fun create(txn: Transaction, journal: Journal): Journal {
+    fun create(txn: Transaction, journal: Journal): JournalRecord {
         val record: JournalRecord = txn.dslCtx.newRecord(Tables.JOURNAL)
         record.from(journal)
         record.insert()
-        return record.into(Journal::class.java)
+        return record
     }
 
-    fun fetchByOwner(txn: Transaction, owner: String): List<Journal> {
+    fun fetchByOwner(txn: Transaction, owner: String): List<JournalRecord> {
         return txn.dslCtx.selectFrom(Tables.JOURNAL)
             .where(Tables.JOURNAL.OWNER.eq(owner))
             // Specifying the order to get deterministic results
@@ -30,6 +29,12 @@ class JournalRepository {
             // https://www.postgresql.org/docs/10/sql-select.html
             .orderBy(Tables.JOURNAL.ID.asc())
             .fetch()
-            .into(Journal::class.java)
+    }
+
+    fun update(txn: Transaction, journal: JournalRecord): JournalRecord {
+        val oldVersion = journal.version
+        journal.store()
+        assert(oldVersion + 1 == journal.version)
+        return journal
     }
 }

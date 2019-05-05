@@ -3,13 +3,19 @@ package com.etchedjournal.etched.controller
 import com.etchedjournal.etched.ID_LENGTH_MATCHER
 import com.etchedjournal.etched.INVALID_ETCHED_IDS
 import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
+import com.etchedjournal.etched.TestAuthService.Companion.ALICE
+import com.etchedjournal.etched.TestAuthService.Companion.TESTER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
+import com.etchedjournal.etched.TestRepoUtils.Companion.ID_1
+import com.etchedjournal.etched.TestRepoUtils.Companion.ID_2
 import com.etchedjournal.etched.isNull
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
+import com.etchedjournal.etched.models.jooq.generated.tables.records.JournalRecord
 import com.etchedjournal.etched.repository.JournalRepository
 import com.etchedjournal.etched.repository.TxnHelper
+import com.etchedjournal.etched.utils.id.IdSerializer
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
 import org.junit.Assert.assertEquals
@@ -31,12 +37,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
-@Transactional
 @ContextConfiguration(classes = [TestConfig::class])
 class JournalServiceControllerTests {
 
@@ -171,6 +175,102 @@ class JournalServiceControllerTests {
             .andExpect(jsonPath("$.owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$.ownerType", `is`("USER")))
             .andExpect(jsonPath("$.schema", `is`("V1_0")))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["USER"])
+    fun `updateJournal - updates journal content`() {
+        val journal = createJournal()
+
+        mockMvc.perform(
+            post("$JOURNALS_URL/${journal.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                        "content": "abcd",
+                        "keyPairId": "${keyPair.id}",
+                        "schema": "V1_0"
+                    }
+                    """.trimIndent()
+                )
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id", `is`(ID_1)))
+            .andExpect(jsonPath("$.version", `is`(2)))
+            .andExpect(jsonPath("$.modified").value(TIMESTAMP_RECENT_MATCHER))
+            .andExpect(jsonPath("$.content", `is`("abcd")))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["USER"])
+    fun `updateJournal - update for other users journal is forbidden`() {
+        val aliceKeyPair = testRepoUtils.createKeyPair(id = ID_2, owner = ALICE.id)
+        val aliceJournal = createJournal(owner = ALICE.id, keyPairId = aliceKeyPair.id)
+        mockMvc.perform(
+            post("$JOURNALS_URL/${aliceJournal.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                        "content": "abcd",
+                        "keyPairId": "${keyPair.id}",
+                        "schema": "V1_0"
+                    }
+                    """.trimIndent()
+                )
+        )
+            .andExpect(status().isForbidden)
+            .andExpect(content().json("""{"message": "Forbidden"}""", true))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["USER"])
+    fun `updateJournal - updated key pair belongs to another user`() {
+        val aliceKeyPair = testRepoUtils.createKeyPair(id = ID_2)
+        val aliceJournal = createJournal(owner = ALICE.id, keyPairId = aliceKeyPair.id)
+        mockMvc.perform(
+            post("$JOURNALS_URL/${aliceJournal.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                        "content": "abcd",
+                        "keyPairId": "${aliceKeyPair.id}",
+                        "schema": "V1_0"
+                    }
+                    """.trimIndent()
+                )
+        )
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["USER"])
+    fun `updateJournal - update for non existent key pair 404s`() {
+        val journal = createJournal()
+        mockMvc.perform(
+            post("$JOURNALS_URL/${journal.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                        "content": "abcd",
+                        "keyPairId": "${IdSerializer.serialize(24)}",
+                        "schema": "V1_0"
+                    }
+                    """.trimIndent()
+                )
+        )
+            .andExpect(status().isNotFound)
+    }
+
+    private fun createJournal(
+        id: String = ID_1,
+        owner: String = TESTER.id,
+        keyPairId: String = keyPair.id
+    ): JournalRecord {
+        return testRepoUtils.createJournal(id = id, owner = owner, keyPairId = keyPairId)
     }
 
     companion object {

@@ -7,8 +7,8 @@ import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.isNull
-import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
+import com.etchedjournal.etched.models.jooq.generated.tables.records.JournalRecord
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
 import org.junit.Before
@@ -36,7 +36,7 @@ import org.springframework.web.context.WebApplicationContext
 class EntryServiceControllerTests {
 
     private lateinit var mockMvc: MockMvc
-    private lateinit var testJournal: Journal
+    private lateinit var testJournal: JournalRecord
     private lateinit var testKeyPair: KeyPair
 
     @Autowired

@@ -3,7 +3,7 @@ import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import { TestUtils } from '../utils/test-utils.spec';
 
-import { JournalService } from './journal.service';
+import { JournalService, UpdateJournalReq } from './journal.service';
 import { JournalEntity } from './models/journal-entity';
 import { Schema } from './models/schema';
 import createJournalEntity = TestUtils.createJournalEntity;
@@ -54,5 +54,26 @@ describe('JournalService', () => {
         const req = httpMock.expectOne(`${environment.API_URL}/journals`);
         expect(req.request.method).toEqual('GET');
         req.flush([journal]);
+    });
+
+    it('update journal', () => {
+        const updateReq: UpdateJournalReq = {
+            journalId: 'jid',
+            entityReq: {
+                keyPairId: 'kpId',
+                content: 'content',
+                schema: Schema.V1_0,
+            },
+        };
+        service.updateJournal(updateReq).subscribe(j => {
+            expect(j.id).toEqual('jid');
+        });
+
+        const journal: JournalEntity = createJournalEntity({ id: 'jid' });
+
+        const req = httpMock.expectOne(`${environment.API_URL}/journals/jid`);
+        expect(req.request.method).toEqual('POST');
+        expect(req.request.body).toEqual(updateReq.entityReq);
+        req.flush(journal);
     });
 });

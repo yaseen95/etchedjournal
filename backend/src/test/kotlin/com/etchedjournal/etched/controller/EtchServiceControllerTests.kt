@@ -7,8 +7,8 @@ import com.etchedjournal.etched.TestAuthService
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Entry
-import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
+import com.etchedjournal.etched.models.jooq.generated.tables.records.JournalRecord
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
 import org.junit.Before
@@ -40,7 +40,7 @@ class EtchServiceControllerTests {
 
     private lateinit var mockMvc: MockMvc
     private lateinit var entry: Entry
-    private lateinit var journal: Journal
+    private lateinit var journal: JournalRecord
     private lateinit var keyPair: KeyPair
 
     @Autowired

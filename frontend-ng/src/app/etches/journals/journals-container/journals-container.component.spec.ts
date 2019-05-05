@@ -5,6 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { MobxAngularModule } from 'mobx-angular';
 import { FakeJournalStore } from '../../../services/fakes.service.spec';
 import { JournalStore } from '../../../stores/journal.store';
+import { EditableText } from '../../../utils/editable-text/editable-text.component';
 import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { CreateJournalComponent } from '../create-journal/create-journal.component';
@@ -27,6 +28,7 @@ describe('JournalsContainerComponent', () => {
                 JournalListComponent,
                 JournalListItemComponent,
                 CreateJournalComponent,
+                EditableText,
             ],
             providers: [{ provide: JournalStore, useValue: store }],
             imports: [RouterTestingModule, ReactiveFormsModule, MobxAngularModule],

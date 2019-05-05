@@ -1,0 +1,25 @@
+<div id="editable-text">
+    <ng-container *ngIf="editing">
+        <input
+            class="input"
+            type="text"
+            [value]="text"
+            appAutoFocus
+            (input)="onInput($event)"
+            (keyup)="onKeyUp($event)"
+            (blur)="onBlur()"
+            [maxLength]="maxLength"
+        />
+    </ng-container>
+    <ng-container *ngIf="!editing">
+        <div class="pad-input-border">
+            <a *ngIf="link" routerLink="{{link}}" class="text">{{ text }}</a>
+            <span *ngIf="!link" class="text">{{ text }}</span>
+            <span (click)="edit()"
+                  id="edit-icon"
+                  class="is-inline-touch is-hidden-desktop">
+                <i class="far fa-edit"></i>
+            </span>
+        </div>
+    </ng-container>
+</div>
