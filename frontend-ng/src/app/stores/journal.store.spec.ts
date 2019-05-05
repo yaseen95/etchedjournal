@@ -123,7 +123,7 @@ describe('JournalStore', () => {
         expect(store.journals[0]).toEqual(Object.assign({}, createJournal('new name', 123)));
 
         expect(store.entities.length).toEqual(1);
-        const expected = { ...entity, content: journalBlob, };
+        const expected = { ...entity, content: journalBlob };
         expect(store.entities[0]).toEqual(expected as any);
     });
 });

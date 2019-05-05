@@ -29,7 +29,7 @@ export class EditableText implements OnInit {
             throw new Error('Text is required');
         }
         if (this.maxLength === undefined || this.maxLength === null || this.maxLength <= 0) {
-            throw new Error(`Must provide positive maxLength`);
+            throw new Error('Must provide positive maxLength');
         }
     }
 
