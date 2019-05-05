@@ -67,8 +67,9 @@ export class EntryStore {
             schema: entry.schema,
         };
         const req: CreateEntryRequest = { journalId, entry: encEntity };
-        // TODO should we add it to `entries` first?
-        return this.entryService.createEntry(req).toPromise();
+        const entity = await this.entryService.createEntry(req).toPromise();
+        this.updateEntryState({ entity, entry });
+        return entity;
     }
 
     @action
