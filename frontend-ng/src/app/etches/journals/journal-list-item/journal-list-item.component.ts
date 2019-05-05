@@ -21,12 +21,12 @@ export class JournalListItemComponent implements OnInit {
         this.date = new Date(this.journal.created).toLocaleDateString();
     }
 
-    public async renameJournal(name: string) {
+    public renameJournal(name: string) {
         // Only rename if the updated text is different
         if (name.trim() !== this.journal.name.trim()) {
             console.info('Renaming journal');
             const newJournal: JournalV1 = { ...this.journal, name };
-            await this.journalStore.updateJournal(this.entity.id, newJournal);
+            this.journalStore.updateJournal(this.entity.id, newJournal);
         }
     }
 }

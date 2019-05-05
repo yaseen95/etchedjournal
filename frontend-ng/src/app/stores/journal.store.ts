@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { action, computed, observable } from 'mobx-angular';
-import * as mobx from 'mobx-angular';
 import { AbstractJournal } from '../models/journal/abstract-journal';
 import { SimpleReader } from '../models/reader';
 import { SimpleWriter } from '../models/writer';
