@@ -143,7 +143,7 @@ describe('EntryStore', () => {
         expect(store.entriesById.get('1')).toEqual({ ...expectedEntry });
 
         expect(store.entities.length).toEqual(1);
-        const expectedEntity = { ...entity, content: entryBlob, };
+        const expectedEntity = { ...entity, content: entryBlob };
         expect(store.entities[0]).toEqual(expectedEntity as any);
     });
 
