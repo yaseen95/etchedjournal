@@ -3,10 +3,9 @@ import { getTestBed, TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import { TestUtils } from '../utils/test-utils.spec';
 
-import { CreateEntryRequest, EntryService } from './entry.service';
+import { CreateEntryRequest, EntryService, UpdateEntryReq } from './entry.service';
 import { EncryptedEntityRequest } from './etched-api-utils';
 import { EntryEntity } from './models/entry-entity';
-import { OwnerType } from './models/owner-type';
 import { Schema } from './models/schema';
 import createEntryEntity = TestUtils.createEntryEntity;
 
@@ -77,6 +76,27 @@ describe('EntryService', () => {
 
         const req = httpMock.expectOne(`${environment.API_URL}/entries/entry1`);
         expect(req.request.method).toEqual('GET');
+        req.flush(entry);
+    });
+
+    it('update entry', () => {
+        const updateReq: UpdateEntryReq = {
+            entryId: 'entryId',
+            entityReq: {
+                keyPairId: 'kpId',
+                content: 'content',
+                schema: Schema.V1_0,
+            },
+        };
+        service.updateEntry(updateReq).subscribe(e => {
+            expect(e.id).toEqual('entryId');
+        });
+
+        const entry: EntryEntity = createEntryEntity({ id: 'entryId' });
+
+        const req = httpMock.expectOne(`${environment.API_URL}/entries/entryId`);
+        expect(req.request.method).toEqual('POST');
+        expect(req.request.body).toEqual(updateReq.entityReq);
         req.flush(entry);
     });
 });

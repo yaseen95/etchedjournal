@@ -8,25 +8,30 @@ import org.springframework.stereotype.Repository
 @Repository
 class EntryRepository {
 
-    fun findById(txn: Transaction, id: String): Entry? {
+    fun findById(txn: Transaction, id: String): EntryRecord? {
         return txn.dslCtx.selectFrom(Tables.ENTRY)
             .where(Tables.ENTRY.ID.eq(id))
             .fetchOne()
-            ?.into(Entry::class.java)
     }
 
-    fun create(txn: Transaction, entry: Entry): Entry {
+    fun create(txn: Transaction, entry: Entry): EntryRecord {
         val record: EntryRecord = txn.dslCtx.newRecord(Tables.ENTRY)
         record.from(entry)
         record.insert()
-        return record.into(Entry::class.java)
+        return record
     }
 
-    fun fetchByJournal(txn: Transaction, journalId: String): List<Entry> {
+    fun fetchByJournal(txn: Transaction, journalId: String): List<EntryRecord> {
         return txn.dslCtx.selectFrom(Tables.ENTRY)
             .where(Tables.ENTRY.JOURNAL_ID.eq(journalId))
             .orderBy(Tables.ENTRY.ID.asc())
             .fetch()
-            .into(Entry::class.java)
+    }
+
+    fun update(txn: Transaction, entry: EntryRecord): EntryRecord {
+        val oldVersion = entry.version
+        entry.store()
+        assert(oldVersion + 1 == entry.version)
+        return entry
     }
 }

@@ -6,6 +6,7 @@ import { EtchQueueService } from '../../../services/etch-queue.service';
 import { Schema } from '../../../services/models/schema';
 import { EntryStore } from '../../../stores/entry.store';
 import { EtchStore } from '../../../stores/etch.store';
+import { maybeUpdateTitle } from '../editor-container-utils';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Default,
@@ -29,14 +30,14 @@ export class ExistingEntryEditorContainerComponent implements OnInit {
     }
 
     public ngOnInit() {
-        this.entryStore.loadEntry(this.entryId).then(() => {
+        this.entryStore.getEntry(this.entryId).then(() => {
             const entry = this.entryStore.entriesById.get(this.entryId);
-            switch (entry.version) {
+            switch (entry.schema) {
                 case Schema.V1_0:
                     this.title = (entry as EntryV1).content;
                     break;
                 default:
-                    throw new Error(`Unsupported version ${entry.version}`);
+                    throw new Error(`Unsupported version ${entry.schema}`);
             }
         });
         this.etchStore.loadEtches(this.entryId);
@@ -47,9 +48,7 @@ export class ExistingEntryEditorContainerComponent implements OnInit {
     }
 
     public onTitleChange(title: string) {
-        // TODO: Update the title on the backend once editing is allowed
-        console.info(`Next title is ${title}`);
-        this.title = title;
+        maybeUpdateTitle(this.entryStore, this.entryId, title);
     }
 
     public displaySpinner() {

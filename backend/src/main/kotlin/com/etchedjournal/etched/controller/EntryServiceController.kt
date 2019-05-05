@@ -4,6 +4,7 @@ import com.etchedjournal.etched.dto.EncryptedEntityRequest
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Entry
 import com.etchedjournal.etched.repository.TxnHelper
 import com.etchedjournal.etched.service.EntryService
+import com.etchedjournal.etched.service.dto.UpdateEntryReq
 import com.etchedjournal.etched.utils.id.IsEtchedId
 import org.slf4j.LoggerFactory
 import org.springframework.validation.annotation.Validated
@@ -30,6 +31,7 @@ class EntryServiceController(
     @GetMapping("/{entryId}")
     fun getEntry(@PathVariable @Valid @IsEtchedId entryId: String): Entry {
         return txnHelper.execute { txn -> entryService.getEntry(txn, entryId) }
+            .into(Entry::class.java)
     }
 
     /**
@@ -38,6 +40,7 @@ class EntryServiceController(
     @GetMapping("")
     fun getEntries(@RequestParam @Valid @IsEtchedId journalId: String): List<Entry> {
         return txnHelper.execute { txn -> entryService.getEntries(txn, journalId) }
+            .map { it.into(Entry::class.java) }
     }
 
     /**
@@ -51,7 +54,22 @@ class EntryServiceController(
         logger.info("Creating an entry for journal {}", journalId)
         val createdEntry = txnHelper.execute { txn -> entryService.create(txn, req, journalId) }
         logger.info("Created entry {}", createdEntry)
-        return createdEntry
+        return createdEntry.into(Entry::class.java)
+    }
+
+    @PostMapping("/{entryId}")
+    fun updateJournal(
+        @Valid @RequestBody req: EncryptedEntityRequest,
+        @PathVariable @Valid @IsEtchedId entryId: String
+    ): Entry {
+        val updateReq = UpdateEntryReq(
+            entryId = entryId,
+            content = req.content,
+            keyPairId = req.keyPairId,
+            schema = req.schema
+        )
+        val entry = txnHelper.execute { txn -> entryService.update(txn, updateReq) }
+        return entry.into(Entry::class.java)
     }
 
     companion object {

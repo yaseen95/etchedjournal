@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import * as mobx from 'mobx-angular';
+import { action, observable } from 'mobx-angular';
 import { AbstractEntry } from '../models/entry/abstract-entry';
 import { EntryV1 } from '../models/entry/entry-v1';
 import { SimpleReader } from '../models/reader';
 import { SimpleWriter } from '../models/writer';
 import { EncrypterService } from '../services/encrypter.service';
-import { CreateEntryRequest, EntryService } from '../services/entry.service';
+import { CreateEntryRequest, EntryService, UpdateEntryReq } from '../services/entry.service';
 import { EncryptedEntityRequest } from '../services/etched-api-utils';
 import { EntryEntity } from '../services/models/entry-entity';
 
@@ -16,29 +16,25 @@ interface EntryAndEntity {
 
 @Injectable()
 export class EntryStore {
-    @mobx.observable public entities: EntryEntity[] = [];
-    @mobx.observable public entries: AbstractEntry[] = [];
-    @mobx.observable public loading: boolean = false;
+    @observable public entities: EntryEntity[] = [];
+    @observable public loading: boolean = false;
     public entriesById: Map<string, AbstractEntry> = new Map();
 
     constructor(private entryService: EntryService, private encrypterService: EncrypterService) {}
 
-    @mobx.action
-    public async loadEntries(journalId: string) {
+    @action
+    public async getEntries(journalId: string) {
         this.loading = true;
         const encrypted = await this.entryService.getEntries(journalId).toPromise();
 
-        const decrypted: AbstractEntry[] = [];
         const entities: EntryEntity[] = [];
         for (const e of encrypted) {
             const result = await this.decryptAndReadEntry(e);
             this.entriesById.set(e.id, result.entry);
-            decrypted.push(result.entry);
             entities.push(result.entity);
         }
         // Do a complete replacement of entries and entities
         // TODO Figure out how to handle pagination with this model
-        this.entries = decrypted;
         this.entities = entities;
         this.loading = false;
     }
@@ -51,8 +47,8 @@ export class EntryStore {
         return { entity: decrypted, entry };
     }
 
-    @mobx.action
-    public async loadEntry(entryId: string): Promise<EntryEntity> {
+    @action
+    public async getEntry(entryId: string): Promise<EntryEntity> {
         this.loading = true;
         const encrypted = await this.entryService.getEntry(entryId).toPromise();
         const result = await this.decryptAndReadEntry(encrypted);
@@ -62,23 +58,54 @@ export class EntryStore {
         return result.entity;
     }
 
-    @mobx.action
+    @action
     public async createEntry(journalId: string, entry: AbstractEntry): Promise<EntryEntity> {
-        const enc = this.encrypterService.encrypter;
-
-        const writer = SimpleWriter.getWriter<EntryV1>(entry.version);
-        // Can safely cast as long as the writer above is `EntryV1Writer`. Will break if we add
-        // a new writer.
-        const blobified = writer.write(entry as EntryV1);
-        const ciphertext = await enc.encrypt(blobified);
-
+        const ciphertext = await this.encrypt(entry);
         const encEntity: EncryptedEntityRequest = {
             content: ciphertext,
-            keyPairId: enc.keyPairId,
-            schema: entry.version,
+            keyPairId: this.encrypterService.encrypter.keyPairId,
+            schema: entry.schema,
         };
         const req: CreateEntryRequest = { journalId, entry: encEntity };
-        // TODO should we add it to `entries` first?
-        return this.entryService.createEntry(req).toPromise();
+        const entity = await this.entryService.createEntry(req).toPromise();
+        this.updateEntryState({ entity, entry });
+        return entity;
+    }
+
+    @action
+    public async updateEntry(id: string, entry: AbstractEntry): Promise<EntryEntity> {
+        const ciphertext = await this.encrypt(entry);
+        const req: UpdateEntryReq = {
+            entityReq: {
+                keyPairId: this.encrypterService.encrypter.keyPairId,
+                content: ciphertext,
+                schema: entry.schema,
+            },
+            entryId: id,
+        };
+
+        const encryptedEntity = await this.entryService.updateEntry(req).toPromise();
+        const entryAndEntity = await this.decryptAndReadEntry(encryptedEntity);
+
+        this.updateEntryState(entryAndEntity);
+        return entryAndEntity.entity;
+    }
+
+    private async encrypt(entry: AbstractEntry) {
+        const enc = this.encrypterService.encrypter;
+        const writer = SimpleWriter.getWriter<AbstractEntry>(entry.schema);
+        const blobified = writer.write(entry);
+        return await enc.encrypt(blobified);
+    }
+
+    private updateEntryState(entryAndEntity: EntryAndEntity) {
+        const entity = entryAndEntity.entity;
+        const updateIndex = this.entities.findIndex(e => e.id === entity.id);
+        if (updateIndex >= 0) {
+            this.entities[updateIndex] = entity;
+        } else {
+            this.entities.push(entity);
+        }
+        this.entriesById.set(entity.id, entryAndEntity.entry);
     }
 }

@@ -33,7 +33,6 @@ describe('EntryListComponent', () => {
 
     it('empty list displays "No entries"', () => {
         entryStore.entities = [];
-        entryStore.entries = [];
         fixture.detectChanges();
 
         const p = TestUtils.queryExpectOne(fixture.debugElement, 'p');
@@ -41,10 +40,9 @@ describe('EntryListComponent', () => {
     });
 
     it('displays entries', () => {
-        const entry1 = new EntryV1({ content: 'title1', timestamp: 1_000 });
-        const entry2 = new EntryV1({ content: 'title2', timestamp: 2_000 });
+        const entry1 = new EntryV1({ content: 'title1', created: 1_000 });
+        const entry2 = new EntryV1({ content: 'title2', created: 2_000 });
 
-        entryStore.entries = [entry1, entry2];
         entryStore.entriesById = new Map().set('id1', entry1).set('id2', entry2);
         entryStore.entities = [createEntryEntity({ id: 'id1' }), createEntryEntity({ id: 'id2' })];
 

@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { EtchedRoutes } from '../../../app-routing-utils';
 import { EntryStore } from '../../../stores/entry.store';
 
 @Component({
-    // changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-entry-list',
     templateUrl: './entry-list.component.html',
     styleUrls: ['./entry-list.component.css'],

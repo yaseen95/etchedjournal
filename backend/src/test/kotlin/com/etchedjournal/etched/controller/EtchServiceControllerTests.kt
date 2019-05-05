@@ -6,8 +6,8 @@ import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
 import com.etchedjournal.etched.TestAuthService
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
-import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Entry
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
+import com.etchedjournal.etched.models.jooq.generated.tables.records.EntryRecord
 import com.etchedjournal.etched.models.jooq.generated.tables.records.JournalRecord
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
@@ -39,7 +39,7 @@ import org.springframework.web.context.WebApplicationContext
 class EtchServiceControllerTests {
 
     private lateinit var mockMvc: MockMvc
-    private lateinit var entry: Entry
+    private lateinit var entry: EntryRecord
     private lateinit var journal: JournalRecord
     private lateinit var keyPair: KeyPair
 
@@ -66,7 +66,7 @@ class EtchServiceControllerTests {
         )
         entry = testRepoUtils.createEntry(
             id = "entry1",
-            journal = journal,
+            journalId = journal.id,
             content = byteArrayOf(5, 6, 7, 8),
             keyPairId = keyPair.id
         )
@@ -89,7 +89,7 @@ class EtchServiceControllerTests {
         // Create an etch and check
         val e = testRepoUtils.createEtch(
             id = "e1",
-            entry = entry,
+            entryId = entry.id,
             content = byteArrayOf(1, 2),
             keyPairId = keyPair.id
         )
@@ -111,7 +111,7 @@ class EtchServiceControllerTests {
         // Create an etch and check
         val e = testRepoUtils.createEtch(
             id = "e1",
-            entry = entry,
+            entryId = entry.id,
             content = byteArrayOf(1, 2),
             keyPairId = keyPair.id
         )
@@ -145,7 +145,7 @@ class EtchServiceControllerTests {
     fun `GET etches for entry by other user is forbidden`() {
         val otherUserEntry = testRepoUtils.createEntry(
             id = "e1",
-            journal = journal,
+            journalId = journal.id,
             content = byteArrayOf(),
             owner = "abc",
             keyPairId = keyPair.id
@@ -254,7 +254,7 @@ class EtchServiceControllerTests {
             content = byteArrayOf(1, 2),
             keyPairId = keyPair.id,
             owner = "somebody else",
-            journal = journal
+            journalId = journal.id
         )
 
         val entryRequest =

@@ -3,12 +3,18 @@ package com.etchedjournal.etched.controller
 import com.etchedjournal.etched.ID_LENGTH_MATCHER
 import com.etchedjournal.etched.INVALID_ETCHED_IDS
 import com.etchedjournal.etched.TIMESTAMP_RECENT_MATCHER
+import com.etchedjournal.etched.TestAuthService
+import com.etchedjournal.etched.TestAuthService.Companion.ALICE
+import com.etchedjournal.etched.TestAuthService.Companion.TESTER
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
+import com.etchedjournal.etched.TestRepoUtils.Companion.ID_1
 import com.etchedjournal.etched.isNull
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
+import com.etchedjournal.etched.models.jooq.generated.tables.records.EntryRecord
 import com.etchedjournal.etched.models.jooq.generated.tables.records.JournalRecord
+import com.etchedjournal.etched.utils.id.IdSerializer
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
 import org.junit.Before
@@ -24,6 +30,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
@@ -77,7 +84,7 @@ class EntryServiceControllerTests {
             .andExpect(jsonPath("$", hasSize<Any>(0)))
 
         // Create an entry and check
-        val e = testRepoUtils.createEntry("e1", testJournal, byteArrayOf(1, 2), testKeyPair.id)
+        val e = testRepoUtils.createEntry("e1", testJournal.id, byteArrayOf(1, 2), testKeyPair.id)
 
         mockMvc.perform(get("$ENTRIES_PATH?journalId=${testJournal.id}"))
             .andExpect(status().isOk)
@@ -99,7 +106,7 @@ class EntryServiceControllerTests {
     @Test
     @WithMockUser(username = "tester", roles = ["USER"])
     fun `GET entry by ID`() {
-        val e = testRepoUtils.createEntry("e1", testJournal, byteArrayOf(1, 2), testKeyPair.id)
+        val e = testRepoUtils.createEntry("e1", testJournal.id, byteArrayOf(1, 2), testKeyPair.id)
 
         mockMvc.perform(get("$ENTRIES_PATH/${e.id}"))
             .andExpect(status().isOk)
@@ -120,7 +127,7 @@ class EntryServiceControllerTests {
     fun `GET entry by other user is forbidden`() {
         val otherUserEntry = testRepoUtils.createEntry(
             id = "otherEntry",
-            journal = testJournal,
+            journalId = testJournal.id,
             content = byteArrayOf(1, 2),
             owner = "abc",
             keyPairId = testKeyPair.id
@@ -333,6 +340,127 @@ class EntryServiceControllerTests {
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("\$.message",
                 `is`("'V1_1' is not a valid value for key 'schema'")))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["USER"])
+    fun `updateEntry - updates entry content`() {
+        val entry = createEntry()
+
+        mockMvc.perform(
+            post("$ENTRIES_PATH/${entry.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                        "content": "abcd",
+                        "keyPairId": "${testKeyPair.id}",
+                        "schema": "V1_0"
+                    }
+                    """.trimIndent()
+                )
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id", `is`(ID_1)))
+            .andExpect(jsonPath("$.version", `is`(2)))
+            .andExpect(jsonPath("$.modified").value(TIMESTAMP_RECENT_MATCHER))
+            .andExpect(jsonPath("$.content", `is`("abcd")))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["USER"])
+    fun `updateEntry - update for non existent entry 404s`() {
+        mockMvc.perform(
+            post("$ENTRIES_PATH/${IdSerializer.serialize(100)}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                        "content": "abcd",
+                        "keyPairId": "${testKeyPair.id}",
+                        "schema": "V1_0"
+                    }
+                    """.trimIndent()
+                )
+        )
+            .andExpect(status().isNotFound)
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["USER"])
+    fun `updateEntry - update for other users entry is forbidden`() {
+        val aliceKeyPair = testRepoUtils.createKeyPair(id = TestRepoUtils.ID_2, owner = TestAuthService.ALICE.id)
+        val aliceEntry = createEntry(owner = ALICE.id, keyPairId = aliceKeyPair.id)
+        mockMvc.perform(
+            post("$ENTRIES_PATH/${aliceEntry.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                        "content": "abcd",
+                        "keyPairId": "${testKeyPair.id}",
+                        "schema": "V1_0"
+                    }
+                    """.trimIndent()
+                )
+        )
+            .andExpect(status().isForbidden)
+            .andExpect(content().json("""{"message": "Forbidden"}""", true))
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["USER"])
+    fun `updateEntry - updated key pair belongs to another user`() {
+        val aliceKeyPair = testRepoUtils.createKeyPair(id = TestRepoUtils.ID_2)
+        val aliceEntry = createEntry(owner = ALICE.id, keyPairId = aliceKeyPair.id)
+        mockMvc.perform(
+            post("$ENTRIES_PATH/${aliceEntry.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                        "content": "abcd",
+                        "keyPairId": "${aliceKeyPair.id}",
+                        "schema": "V1_0"
+                    }
+                    """.trimIndent()
+                )
+        )
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    @WithMockUser(username = "tester", roles = ["USER"])
+    fun `updateEntry - update for non existent key pair 404s`() {
+        val entry = createEntry()
+        mockMvc.perform(
+            post("$ENTRIES_PATH/${entry.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                        "content": "abcd",
+                        "keyPairId": "${IdSerializer.serialize(24)}",
+                        "schema": "V1_0"
+                    }
+                    """.trimIndent()
+                )
+        )
+            .andExpect(status().isNotFound)
+    }
+
+    private fun createEntry(
+        id: String = ID_1,
+        owner: String = TESTER.id,
+        keyPairId: String = testKeyPair.id,
+        journalId: String = testJournal.id
+    ): EntryRecord {
+        return testRepoUtils.createEntry(
+            id = id,
+            journalId = journalId,
+            owner = owner,
+            keyPairId = keyPairId
+        )
     }
 
     companion object {

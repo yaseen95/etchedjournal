@@ -17,6 +17,6 @@ export class EntryListItemComponent implements OnInit {
     public timestampStr: string;
 
     public ngOnInit() {
-        this.timestampStr = new Date(this.entry.timestamp).toString();
+        this.timestampStr = new Date(this.entry.created).toString();
     }
 }
