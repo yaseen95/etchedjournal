@@ -5,9 +5,9 @@ import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.Schema
-import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Entry
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Etch
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
+import com.etchedjournal.etched.models.jooq.generated.tables.records.EntryRecord
 import com.etchedjournal.etched.models.jooq.generated.tables.records.JournalRecord
 import com.etchedjournal.etched.utils.id.IdSerializer
 import org.jooq.exception.DataAccessException
@@ -38,7 +38,7 @@ class EtchRepositoryIntegrationTest {
 
     private lateinit var keyPair: KeyPair
     private lateinit var journal: JournalRecord
-    private lateinit var entry: Entry
+    private lateinit var entry: EntryRecord
 
     @Before
     fun setup() {
@@ -58,7 +58,7 @@ class EtchRepositoryIntegrationTest {
 
         entry = testRepoUtils.createEntry(
             id = IdSerializer.serialize(30_000),
-            journal = journal,
+            journalId = journal.id,
             content = byteArrayOf(),
             keyPairId = keyPair.id
         )
@@ -152,7 +152,7 @@ class EtchRepositoryIntegrationTest {
                 id = it,
                 content = byteArrayOf(1, 2),
                 keyPairId = keyPair.id,
-                entry = entry
+                entryId = entry.id
             )
         }
 

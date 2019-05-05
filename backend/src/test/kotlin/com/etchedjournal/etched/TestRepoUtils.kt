@@ -9,6 +9,7 @@ import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Entry
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Etch
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Journal
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
+import com.etchedjournal.etched.models.jooq.generated.tables.records.EntryRecord
 import com.etchedjournal.etched.models.jooq.generated.tables.records.JournalRecord
 import com.etchedjournal.etched.repository.EntryRepository
 import com.etchedjournal.etched.repository.EtchRepository
@@ -64,23 +65,24 @@ class TestRepoUtils(
     }
 
     fun createEntry(
-        id: String,
-        journal: JournalRecord,
-        content: ByteArray,
-        keyPairId: String,
+        id: String = ID_1,
+        journalId: String = ID_1,
+        content: ByteArray = byteArrayOf(1),
+        keyPairId: String = ID_1,
         created: Instant = Instant.EPOCH,
-        owner: String = TestAuthService.TESTER_USER_ID,
+        modified: Instant? = null,
+        owner: String = TESTER.id,
         ownerType: OwnerType = OwnerType.USER,
         schema: Schema = Schema.V1_0
-    ): Entry {
+    ): EntryRecord {
         val e = Entry(
             id.padEnd(11, '0'),
             created,
-            null,
+            modified,
             content,
             owner,
             ownerType,
-            journal.id,
+            journalId,
             keyPairId,
             0,
             schema
@@ -89,10 +91,10 @@ class TestRepoUtils(
     }
 
     fun createEtch(
-        id: String,
-        entry: Entry,
-        content: ByteArray,
-        keyPairId: String,
+        id: String = ID_1,
+        entryId: String = ID_1,
+        content: ByteArray = byteArrayOf(1),
+        keyPairId: String = ID_1,
         created: Instant = Instant.EPOCH,
         owner: String = TestAuthService.TESTER_USER_ID,
         ownerType: OwnerType = OwnerType.USER,
@@ -104,7 +106,7 @@ class TestRepoUtils(
             content,
             owner,
             ownerType,
-            entry.id,
+            entryId,
             keyPairId,
             0,
             schema
@@ -113,7 +115,7 @@ class TestRepoUtils(
     }
 
     fun createKeyPair(
-        id: String,
+        id: String = ID_1,
         publicKey: ByteArray = byteArrayOf(),
         privateKey: ByteArray = byteArrayOf(),
         iterations: Int = 1,

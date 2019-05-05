@@ -1,8 +1,10 @@
 package com.etchedjournal.etched.repository
 
 import com.etchedjournal.etched.TestAuthService
+import com.etchedjournal.etched.TestAuthService.Companion.TESTER
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
+import com.etchedjournal.etched.TestRepoUtils.Companion.ID_1
 import com.etchedjournal.etched.models.OwnerType
 import com.etchedjournal.etched.models.Schema
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.Entry
@@ -10,6 +12,7 @@ import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import com.etchedjournal.etched.models.jooq.generated.tables.records.JournalRecord
 import com.etchedjournal.etched.utils.id.IdSerializer
 import org.jooq.exception.DataAccessException
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
@@ -43,13 +46,13 @@ class EntryRepositoryIntegrationTest {
         testRepoUtils.cleanDb()
 
         keyPair = testRepoUtils.createKeyPair(
-            id = IdSerializer.serialize(10_000),
+            id = ID_1,
             publicKey = byteArrayOf(1, 2),
             privateKey = byteArrayOf(3, 4)
         )
 
         journal = testRepoUtils.createJournal(
-            id = IdSerializer.serialize(20_000),
+            id = ID_1,
             content = byteArrayOf(),
             keyPairId = keyPair.id
         )
@@ -58,7 +61,7 @@ class EntryRepositoryIntegrationTest {
     @Test
     fun `create() sets the version`() {
         val id = IdSerializer.serialize(1)
-        var entry = Entry(
+        val entry = Entry(
             id,
             Instant.EPOCH,
             null,
@@ -70,14 +73,14 @@ class EntryRepositoryIntegrationTest {
             0,
             Schema.V1_0
         )
-        entry = txnHelper.execute { repo.create(it, entry) }
-        assertEquals(1, entry.version)
+        val created = txnHelper.execute { repo.create(it, entry) }
+        assertEquals(1, created.version)
     }
 
     @Test(expected = DataAccessException::class)
     fun `create() with the same id fails`() {
         val id = IdSerializer.serialize(1)
-        var entry1 = Entry(
+        val entry1 = Entry(
             id,
             Instant.EPOCH,
             null,
@@ -89,8 +92,8 @@ class EntryRepositoryIntegrationTest {
             0,
             Schema.V1_0
         )
-        entry1 = txnHelper.execute { repo.create(it, entry1) }
-        assertEquals(1, entry1.version)
+        val created = txnHelper.execute { repo.create(it, entry1) }
+        assertEquals(1, created.version)
 
         val entry2 = Entry(
             id,
@@ -147,7 +150,7 @@ class EntryRepositoryIntegrationTest {
                 id = it,
                 content = byteArrayOf(1, 2),
                 keyPairId = keyPair.id,
-                journal = journal
+                journalId = journal.id
             )
         }
 
@@ -155,5 +158,28 @@ class EntryRepositoryIntegrationTest {
         val fetchedIds = fetched.map { it.id }
         // Is this test robust enough?
         assertEquals(listOf(id1, id2, id3), fetchedIds)
+    }
+
+    @Test
+    fun `update updates the record`() {
+        testRepoUtils.createEntry(
+            id = ID_1,
+            journalId = journal.id,
+            content = byteArrayOf(1, 2),
+            keyPairId = keyPair.id,
+            created = Instant.EPOCH,
+            owner = TESTER.id
+        )
+
+        val updated = txnHelper.execute {
+            val entry = repo.findById(it, ID_1)!!
+            entry.setContent(3, 4)
+            entry.modified = Instant.ofEpochMilli(123)
+            repo.update(it, entry)
+        }
+
+        assertEquals(2, updated.version)
+        assertEquals(Instant.ofEpochMilli(123), updated.modified)
+        assertArrayEquals(byteArrayOf(3, 4), updated.content)
     }
 }
