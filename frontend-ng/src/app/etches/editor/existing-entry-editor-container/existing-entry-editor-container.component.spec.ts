@@ -7,8 +7,6 @@ import { EntryV1 } from '../../../models/entry/entry-v1';
 import { EtchV1 } from '../../../models/etch/etch';
 import { FakeEntryStore } from '../../../services/fakes.service.spec';
 import { EntryEntity } from '../../../services/models/entry-entity';
-import { OwnerType } from '../../../services/models/owner-type';
-import { Schema } from '../../../services/models/schema';
 import { EntryStore } from '../../../stores/entry.store';
 import { EtchStore } from '../../../stores/etch.store';
 import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
@@ -23,17 +21,17 @@ describe('ExistingEntryEditorContainerComponent', () => {
     let fixture: ComponentFixture<ExistingEntryEditorContainerComponent>;
     let entryStore: FakeEntryStore;
     let etchStore: any;
-    let loadEntrySpy: any;
+    let getEntrySpy: any;
 
     const entryEntity: EntryEntity = TestUtils.createEntryEntity({ id: 'entryId' });
-    const entry: EntryV1 = new EntryV1({ content: 'Entry Title', timestamp: 1000 });
+    const entry: EntryV1 = new EntryV1({ content: 'Entry Title', created: 1000 });
 
     beforeEach(async(() => {
         entryStore = new FakeEntryStore();
         entryStore.entriesById.set(entryEntity.id, entry);
 
-        loadEntrySpy = spyOn(entryStore, 'loadEntry');
-        loadEntrySpy.and.returnValue(Promise.resolve(entryEntity));
+        getEntrySpy = spyOn(entryStore, 'getEntry');
+        getEntrySpy.and.returnValue(Promise.resolve(entryEntity));
 
         etchStore = jasmine.createSpyObj('EtchStore', ['loadEtches']);
         etchStore.state = {
@@ -73,8 +71,8 @@ describe('ExistingEntryEditorContainerComponent', () => {
     });
 
     it('gets entry on create', () => {
-        expect(loadEntrySpy).toHaveBeenCalledTimes(1);
-        expect(loadEntrySpy).toHaveBeenCalledWith('entryId');
+        expect(getEntrySpy).toHaveBeenCalledTimes(1);
+        expect(getEntrySpy).toHaveBeenCalledWith('entryId');
     });
 
     it('gets etches on create', () => {
@@ -130,6 +128,6 @@ describe('ExistingEntryEditorContainerComponent', () => {
     it('loads entry on init', fakeAsync(() => {
         // ngOnInit is called when the component is first created
         tick();
-        expect(loadEntrySpy).toHaveBeenCalledTimes(1);
+        expect(getEntrySpy).toHaveBeenCalledTimes(1);
     }));
 });

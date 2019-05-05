@@ -88,7 +88,7 @@ describe('EntryService', () => {
                 schema: Schema.V1_0,
             },
         };
-        service.updateJournal(updateReq).subscribe(e => {
+        service.updateEntry(updateReq).subscribe(e => {
             expect(e.id).toEqual('entryId');
         });
 

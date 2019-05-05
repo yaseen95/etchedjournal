@@ -42,7 +42,7 @@ export class EntryService {
             .pipe(tap(() => console.info(`Fetched entry ${entryId}`)));
     }
 
-    public updateJournal(req: UpdateEntryReq): Observable<EntryEntity> {
+    public updateEntry(req: UpdateEntryReq): Observable<EntryEntity> {
         console.info(`Updating entry ${req.entryId}`);
         const url = `${ENTRIES_URL}/${req.entryId}`;
         return this.http

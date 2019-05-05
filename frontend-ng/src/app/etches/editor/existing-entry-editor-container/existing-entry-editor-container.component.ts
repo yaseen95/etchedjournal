@@ -29,14 +29,14 @@ export class ExistingEntryEditorContainerComponent implements OnInit {
     }
 
     public ngOnInit() {
-        this.entryStore.loadEntry(this.entryId).then(() => {
+        this.entryStore.getEntry(this.entryId).then(() => {
             const entry = this.entryStore.entriesById.get(this.entryId);
-            switch (entry.version) {
+            switch (entry.schema) {
                 case Schema.V1_0:
                     this.title = (entry as EntryV1).content;
                     break;
                 default:
-                    throw new Error(`Unsupported version ${entry.version}`);
+                    throw new Error(`Unsupported version ${entry.schema}`);
             }
         });
         this.etchStore.loadEtches(this.entryId);

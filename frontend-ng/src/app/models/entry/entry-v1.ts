@@ -2,22 +2,17 @@ import { Schema } from '../../services/models/schema';
 import { AbstractEntry } from './abstract-entry';
 
 export class EntryV1 extends AbstractEntry {
-    public readonly version: Schema = Schema.V1_0;
+    public readonly schema: Schema = Schema.V1_0;
 
     /** actual decrypted content */
     public readonly content: string;
 
     /** timestamp the entry was created on the user's computer */
-    public readonly timestamp: number;
+    public readonly created: number;
 
-    public readonly usesMarkdown: boolean = false;
-
-    constructor(entry: { content: string; timestamp: number; usesMarkdown?: boolean }) {
+    constructor(entry: { content: string; created: number }) {
         super();
         this.content = entry.content;
-        this.timestamp = entry.timestamp;
-        if (entry.usesMarkdown !== undefined) {
-            this.usesMarkdown = entry.usesMarkdown;
-        }
+        this.created = entry.created;
     }
 }

@@ -66,17 +66,17 @@ describe('EntryListContainerComponent', () => {
     });
 
     it('loads journals using id passed as param', () => {
-        const loadEntriesSpy = spyOn(store, 'loadEntries');
+        const getEntriesSpy = spyOn(store, 'getEntries');
         paramMap.set('id', 'foobar');
         component.ngOnInit();
-        expect(loadEntriesSpy).toHaveBeenCalledTimes(1);
-        expect(loadEntriesSpy).toHaveBeenCalledWith('foobar');
+        expect(getEntriesSpy).toHaveBeenCalledTimes(1);
+        expect(getEntriesSpy).toHaveBeenCalledWith('foobar');
     });
 
     it('reloads entries when id param changes', () => {
-        const loadEntriesSpy = spyOn(store, 'loadEntries');
+        const getEntriesSpy = spyOn(store, 'getEntries');
         paramMap.set('id', 'changed id');
         paramMapSubject.next(paramMap as any);
-        expect(loadEntriesSpy).toHaveBeenCalledWith('changed id');
+        expect(getEntriesSpy).toHaveBeenCalledWith('changed id');
     });
 });

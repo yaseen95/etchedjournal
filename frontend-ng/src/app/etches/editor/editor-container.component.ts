@@ -79,7 +79,7 @@ export class EditorContainerComponent implements OnInit, OnDestroy {
         console.info('Creating entry');
         const entryV1: EntryV1 = new EntryV1({
             content: this.title,
-            timestamp: this.clockService.nowMillis(),
+            created: this.clockService.nowMillis(),
         });
         const entry = await this.entryStore.createEntry(this.journalId, entryV1);
         console.log(`Created entry with id ${entry.id}`);

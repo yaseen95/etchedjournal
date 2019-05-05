@@ -21,7 +21,7 @@ describe('EntryListItemComponent', () => {
         component = fixture.componentInstance;
 
         component.entity = TestUtils.createEntryEntity({ id: 'abcdef' });
-        component.entry = new EntryV1({ content: 'Title of the entry', timestamp: 1000 });
+        component.entry = new EntryV1({ content: 'Title of the entry', created: 1000 });
         fixture.detectChanges();
     });
 
