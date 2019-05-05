@@ -5,6 +5,7 @@
             text="{{ journal.name }}"
             link="/journals/{{ entity.id }}"
             (onSave)="renameJournal($event)"
+            [maxLength]="20"
         >
         </app-editable-text>
     </div>

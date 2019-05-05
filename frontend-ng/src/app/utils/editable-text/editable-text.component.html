@@ -8,6 +8,7 @@
             (input)="onInput($event)"
             (keyup)="onKeyUp($event)"
             (blur)="onBlur()"
+            [maxLength]="maxLength"
         />
     </ng-container>
     <ng-container *ngIf="!editing">

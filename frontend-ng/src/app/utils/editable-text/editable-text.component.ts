@@ -18,12 +18,18 @@ export class EditableText implements OnInit {
     @Input()
     public link?: string;
 
+    @Input()
+    public maxLength: number;
+
     public editing: boolean = false;
     private editingText: string = '';
 
     public ngOnInit(): void {
         if (this.text === undefined || this.text === null) {
             throw new Error('Text is required');
+        }
+        if (this.maxLength === undefined || this.maxLength === null || this.maxLength <= 0) {
+            throw new Error(`Must provide positive maxLength`);
         }
     }
 
