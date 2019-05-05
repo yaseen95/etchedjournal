@@ -41,4 +41,17 @@ export class EntryService {
             .get<EntryEntity>(`${ENTRIES_URL}/${entryId}`)
             .pipe(tap(() => console.info(`Fetched entry ${entryId}`)));
     }
+
+    public updateJournal(req: UpdateEntryReq): Observable<EntryEntity> {
+        console.info(`Updating entry ${req.entryId}`);
+        const url = `${ENTRIES_URL}/${req.entryId}`;
+        return this.http
+            .post<EntryEntity>(url, req.entityReq)
+            .pipe(tap(j => console.info(`Updated entry ${j.id}`)));
+    }
+}
+
+export interface UpdateEntryReq {
+    entityReq: EncryptedEntityRequest;
+    entryId: string;
 }
