@@ -38,6 +38,7 @@ class CognitoAuthenticationFilterTest {
         mockToken = mock()
 
         `when`(mapper.mapToAuthentication(any())).thenReturn(auth)
+        SecurityContextHolder.getContext().authentication = null
     }
 
     @Test
