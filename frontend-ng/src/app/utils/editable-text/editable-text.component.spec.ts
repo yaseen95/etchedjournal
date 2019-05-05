@@ -3,9 +3,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TestUtils } from '../test-utils.spec';
 import { EditableText } from './editable-text.component';
-import triggerKeyUp = TestUtils.triggerKeyUp;
-import triggerInput = TestUtils.triggerInput;
 import triggerBlur = TestUtils.triggerBlur;
+import triggerInput = TestUtils.triggerInput;
+import triggerKeyUp = TestUtils.triggerKeyUp;
 
 describe('EditableText', () => {
     let component: EditableText;
@@ -21,6 +21,7 @@ describe('EditableText', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(EditableText);
         component = fixture.componentInstance;
+        component.maxLength = 20;
     });
 
     it('does not initialize to editing mode', () => {
@@ -175,6 +176,16 @@ describe('EditableText', () => {
 
         triggerKeyUp(inputDe, 'Enter');
         expect(component.text).toEqual('ab');
+    });
+
+    it('editing - input has maxlength', () => {
+        component.editing = true;
+        component.text = 'foobar';
+        component.maxLength = 20;
+        fixture.detectChanges();
+
+        const inputDe = TestUtils.queryExpectOne(fixture.debugElement, 'input');
+        expect(inputDe.properties.maxLength).toEqual(20);
     });
 });
 
