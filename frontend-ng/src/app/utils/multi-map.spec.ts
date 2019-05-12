@@ -1,7 +1,6 @@
 import { MultiMap } from './multi-map';
 
 describe('MultiMap', () => {
-
     it('multiple mappings for same key', () => {
         const data = new MultiMap<string, string>();
         data.set('a', 'a');
@@ -58,8 +57,8 @@ describe('MultiMap', () => {
     });
 
     it('of() instantiates map', () => {
-       const map: MultiMap<string, number> = MultiMap.of('key', [1, 2, 3]);
-       expect(map.get('key')).toEqual([1, 2, 3]);
-       expect(map.size).toEqual(3);
+        const map: MultiMap<string, number> = MultiMap.of('key', [1, 2, 3]);
+        expect(map.get('key')).toEqual([1, 2, 3]);
+        expect(map.size).toEqual(3);
     });
 });

@@ -1,7 +1,6 @@
 import { removeDuplicates } from './object-utils';
 
 describe('removeDuplicates', () => {
-
     it('returns uniques - primitives', () => {
         const set = removeDuplicates([1, 2, 2, 2, 3]);
         expect(set).toEqual([1, 2, 3]);
@@ -22,7 +21,7 @@ describe('removeDuplicates', () => {
 
     it('interface and objects are different', () => {
         interface Foo {
-            foo: string
+            foo: string;
         }
 
         class Bar {
@@ -38,7 +37,7 @@ describe('removeDuplicates', () => {
 
     it('similar interface and objects but same of each is deduped', () => {
         interface Foo {
-            foo: string
+            foo: string;
         }
 
         class Bar {

@@ -2,12 +2,15 @@ export class MultiMap<K, V> {
     private sizeInternal = 0;
     private data = new Map<K, V[]>();
 
-    constructor() {
+    public static of<K, V>(key: K, values: V[]): MultiMap<K, V> {
+        const map = new MultiMap<K, V>();
+        map.setMany(key, values);
+        return map;
     }
 
     // TODO Should we return a `ReadonlyArray` or a copy
-    get(key: K): Array<V> {
-        let values = this.data.get(key);
+    public get(key: K): V[] {
+        const values = this.data.get(key);
         if (values === null || values === undefined) {
             return [];
         }
@@ -15,31 +18,25 @@ export class MultiMap<K, V> {
         return [...values];
     }
 
-    set(key: K, value: V) {
+    public set(key: K, value: V) {
         const values = this.get(key);
         values.push(value);
         this.sizeInternal++;
         this.data.set(key, values);
     }
 
-    setMany(key: K, values: V[]) {
+    public setMany(key: K, values: V[]) {
         const existing = this.get(key);
         existing.push(...values);
         this.sizeInternal += values.length;
         this.data.set(key, existing);
     }
 
-    keys(): Array<K> {
+    public keys(): K[] {
         return Array.from(this.data.keys());
     }
 
     public get size() {
         return this.sizeInternal;
-    }
-
-    public static of<K, V>(key: K, values: V[]): MultiMap<K, V> {
-        const map = new MultiMap<K, V>();
-        map.setMany(key, values);
-        return map;
     }
 }

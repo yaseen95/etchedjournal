@@ -5,8 +5,7 @@ import { EncrypterService } from '../../services/encrypter.service';
 
 @Injectable({ providedIn: 'root' })
 export class EtchEncryptingWriter {
-    constructor(private encrypter: EncrypterService) {
-    }
+    constructor(private encrypter: EncrypterService) {}
 
     public async write<T extends AbstractEtch>(etches: T[]): Promise<string> {
         // We write many etches as a single blob to save space

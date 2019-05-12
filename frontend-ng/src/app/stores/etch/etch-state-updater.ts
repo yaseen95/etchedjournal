@@ -36,11 +36,7 @@ export class EtchStateUpdater {
         store.etchesById.set(entity.id, update.etches);
     }
 
-    private static updateLocalState(
-        store: State,
-        entryId: string,
-        updates: EtchesAndEntity[]
-    ) {
+    private static updateLocalState(store: State, entryId: string, updates: EtchesAndEntity[]) {
         const flattened = [];
         for (const update of updates) {
             flattened.push(...update.etches);

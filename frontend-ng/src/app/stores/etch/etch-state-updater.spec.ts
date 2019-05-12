@@ -1,11 +1,10 @@
 import { AbstractEtch } from '../../models/etch/abstract-etch';
 import { MultiMap } from '../../utils/multi-map';
 import { TestUtils } from '../../utils/test-utils.spec';
-import { EtchesAndEntity } from './etch.store';
 import { EtchStateUpdater, State } from './etch-state-updater';
+import { EtchesAndEntity } from './etch.store';
 import createEtch = TestUtils.createEtch;
 import createEtchEntity = TestUtils.createEtchEntity;
-
 
 describe('EtchStateUpdater', () => {
     let state: State;

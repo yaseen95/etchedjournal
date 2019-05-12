@@ -7,8 +7,7 @@ import { EtchesAndEntity } from './etch.store';
 
 @Injectable({ providedIn: 'root' })
 export class EtchDecryptingReader {
-    constructor(private encrypter: EncrypterService) {
-    }
+    constructor(private encrypter: EncrypterService) {}
 
     public async read(encrypted: EtchEntity[]): Promise<EtchesAndEntity[]> {
         const etches: EtchesAndEntity[] = [];

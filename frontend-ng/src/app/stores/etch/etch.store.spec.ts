@@ -5,7 +5,7 @@ import { EtchService } from '../../services/etch.service';
 import {
     FakeEncrypter,
     FakeEncrypterService,
-    FakeEtchQueue
+    FakeEtchQueue,
 } from '../../services/fakes.service.spec';
 import { EtchEntity } from '../../services/models/etch-entity';
 import { Schema } from '../../services/models/schema';
@@ -51,11 +51,13 @@ describe('EtchStore', () => {
     });
 
     it('getEtches loads and decrypts etches', async () => {
-        const etches: Array<Partial<EtchEntity>> = [{
-            id: 'etchId',
-            content: 'ciphertext',
-            schema: Schema.V1_0
-        }];
+        const etches: Array<Partial<EtchEntity>> = [
+            {
+                id: 'etchId',
+                content: 'ciphertext',
+                schema: Schema.V1_0,
+            },
+        ];
         etchService.getEtches.and.returnValue(of(etches));
         encrypter.setDecryptResponse('[{"schema": "V1_0","content":"foo","created":123}]');
 
@@ -124,23 +126,23 @@ describe('EtchStore', () => {
         expect(createEtchesSpy).toHaveBeenCalledTimes(2);
         expect(createEtchesSpy.calls.allArgs()).toEqual([
             ['entry1', [ETCH_FOO]],
-            ['entry2', [createEtch('bar')]]
+            ['entry2', [createEtch('bar')]],
         ]);
     });
 
     function createStore(deps: {
-        encrypterService?: EncrypterService,
-        queue?: EtchQueue,
-        reader?: EtchDecryptingReader,
-        writer?: EtchEncryptingWriter,
-        etchService?: EtchService
+        encrypterService?: EncrypterService;
+        queue?: EtchQueue;
+        reader?: EtchDecryptingReader;
+        writer?: EtchEncryptingWriter;
+        etchService?: EtchService;
     }): EtchStore {
         return new EtchStore(
             getIfDefinedOrDefault(deps.etchService, etchService),
             getIfDefinedOrDefault(deps.encrypterService, encrypterService),
             getIfDefinedOrDefault(deps.queue, queue),
             getIfDefinedOrDefault(deps.reader, reader),
-            getIfDefinedOrDefault(deps.writer, writer),
+            getIfDefinedOrDefault(deps.writer, writer)
         );
     }
 });

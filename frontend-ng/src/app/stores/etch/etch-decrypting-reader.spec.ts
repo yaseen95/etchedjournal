@@ -1,12 +1,11 @@
 import { FakeEncrypter, FakeEncrypterService } from '../../services/fakes.service.spec';
 import { TestUtils } from '../../utils/test-utils.spec';
-import { EtchesAndEntity } from './etch.store';
 import { EtchDecryptingReader } from './etch-decrypting-reader';
+import { EtchesAndEntity } from './etch.store';
 import createEtch = TestUtils.createEtch;
 import createEtchEntity = TestUtils.createEtchEntity;
 
 describe('EtchDecryptingReader', () => {
-
     let encrypterService: FakeEncrypterService;
     let encrypter: FakeEncrypter;
 

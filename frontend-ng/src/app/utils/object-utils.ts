@@ -1,4 +1,4 @@
-const isEqualInternal = require('lodash.isequal');
+import * as isEqualInternal from 'lodash.isequal';
 
 export class ObjectUtils {
     public static isDefined<T>(x: T): boolean {

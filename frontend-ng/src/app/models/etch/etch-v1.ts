@@ -10,7 +10,7 @@ export class EtchV1 extends AbstractEtch {
     /** timestamp the etch was created on the user's computer */
     public readonly created: number;
 
-    constructor(etch: { content: string, created: number }) {
+    constructor(etch: { content: string; created: number }) {
         super();
         this.content = etch.content;
         this.created = etch.created;

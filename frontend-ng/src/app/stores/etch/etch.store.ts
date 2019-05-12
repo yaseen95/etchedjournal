@@ -49,8 +49,10 @@ export class EtchStore {
         return decrypted.map(e => e.entity);
     }
 
+    // @VisibleForTesting
+    // Caller should only use `addEtches`
     @action
-    async createEtches(entryId: string, etches: AbstractEtch[]): Promise<EtchEntity[]> {
+    public async createEtches(entryId: string, etches: AbstractEtch[]): Promise<EtchEntity[]> {
         const ciphertext = await this.writer.write(etches);
         const encEntity: EncryptedEntityRequest = {
             content: ciphertext,
