@@ -1,6 +1,9 @@
 import { EMPTY, of } from 'rxjs';
 import { EntryStore } from '../stores/entry.store';
-import { EtchStore } from '../stores/etch.store';
+import { EtchDecryptingReader } from '../stores/etch/etch-decrypting-reader';
+import { EtchEncryptingWriter } from '../stores/etch/etch-encrypting-writer';
+import { EtchQueue } from '../stores/etch/etch-queue';
+import { EtchStore } from '../stores/etch/etch.store';
 import { JournalStore } from '../stores/journal.store';
 import { ObjectUtils } from '../utils/object-utils';
 import { Encrypter } from './encrypter';
@@ -106,6 +109,13 @@ export class FakeEntryStore extends EntryStore {
     }
 }
 
+export class FakeEtchQueue extends EtchQueue {
+    constructor() {
+        super();
+        this.subscription.unsubscribe();
+    }
+}
+
 export class FakeEtchStore extends EtchStore {
     public encrypterServiceFake: EncrypterService;
     public etchServiceMock: EtchService;
@@ -118,7 +128,13 @@ export class FakeEtchStore extends EtchStore {
         etchService.getEtches.and.returnValue(of([]));
         etchService.postEtches.and.returnValue(of([]));
 
-        super(etchService, encService);
+        super(
+            etchService,
+            encService,
+            new FakeEtchQueue(),
+            new EtchDecryptingReader(encService),
+            new EtchEncryptingWriter(encService)
+        );
 
         this.encrypterServiceFake = encService;
         this.etchServiceMock = etchService;

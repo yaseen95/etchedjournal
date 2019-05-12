@@ -4,24 +4,26 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { MobxAngularModule } from 'mobx-angular';
 import { EntryV1 } from '../../../models/entry/entry-v1';
-import { EtchV1 } from '../../../models/etch/etch';
-import { FakeEntryStore } from '../../../services/fakes.service.spec';
+import { FakeEntryStore, FakeEtchStore } from '../../../services/fakes.service.spec';
 import { EntryEntity } from '../../../services/models/entry-entity';
 import { EntryStore } from '../../../stores/entry.store';
-import { EtchStore } from '../../../stores/etch.store';
+import { EtchStore } from '../../../stores/etch/etch.store';
 import { SpinnerComponent } from '../../../utils/spinner/spinner.component';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { EntryEditorComponent } from '../entry-editor/entry-editor.component';
 import { EntryTitleComponent } from '../entry-title/entry-title.component';
 import { EtchItemComponent } from '../etch-item/etch-item.component';
 import { ExistingEntryEditorContainerComponent } from './existing-entry-editor-container.component';
+import createEtchEntity = TestUtils.createEtchEntity;
+import createEtch = TestUtils.createEtch;
 
 describe('ExistingEntryEditorContainerComponent', () => {
     let component: ExistingEntryEditorContainerComponent;
     let fixture: ComponentFixture<ExistingEntryEditorContainerComponent>;
     let entryStore: FakeEntryStore;
-    let etchStore: any;
+    let etchStore: FakeEtchStore;
     let getEntrySpy: any;
+    let getEtchesSpy: any;
 
     const entryEntity: EntryEntity = TestUtils.createEntryEntity({ id: 'entryId' });
     const entry: EntryV1 = new EntryV1({ content: 'Entry Title', created: 1000 });
@@ -33,13 +35,9 @@ describe('ExistingEntryEditorContainerComponent', () => {
         getEntrySpy = spyOn(entryStore, 'getEntry');
         getEntrySpy.and.returnValue(Promise.resolve(entryEntity));
 
-        etchStore = jasmine.createSpyObj('EtchStore', ['loadEtches']);
-        etchStore.state = {
-            loading: false,
-            etches: [],
-            parsedEtches: [],
-        };
-        etchStore.loadEtches.and.returnValue(Promise.resolve());
+        etchStore = new FakeEtchStore();
+        getEtchesSpy = spyOn(etchStore, 'getEtches');
+        getEtchesSpy.and.returnValue(Promise.resolve([]));
 
         TestBed.configureTestingModule({
             declarations: [
@@ -76,31 +74,31 @@ describe('ExistingEntryEditorContainerComponent', () => {
     });
 
     it('gets etches on create', () => {
-        expect(etchStore.loadEtches).toHaveBeenCalledTimes(1);
-        expect(etchStore.loadEtches).toHaveBeenCalledWith('entryId');
+        expect(getEtchesSpy).toHaveBeenCalledTimes(1);
+        expect(getEtchesSpy).toHaveBeenCalledWith('entryId');
     });
 
     it('display spinner when loading entries and etches decrypted', () => {
         component.entryStore.loading = true;
-        component.etchStore.state.loading = false;
+        component.etchStore.loading = false;
         expect(component.displaySpinner()).toBe(true);
     });
 
     it('display spinner when etches not decrypted', () => {
         component.entryStore.loading = false;
-        component.etchStore.state.loading = true;
+        component.etchStore.loading = true;
         expect(component.displaySpinner()).toBe(true);
     });
 
     it('do not display spinner when etches loaded and etches decrypted', () => {
         component.entryStore.loading = false;
-        component.etchStore.state.loading = false;
+        component.etchStore.loading = false;
         expect(component.displaySpinner()).toBe(false);
     });
 
     it('displays spinner', () => {
         component.entryStore.loading = true;
-        component.etchStore.state.loading = true;
+        component.etchStore.loading = true;
         expect(component.displaySpinner()).toBe(true);
 
         fixture.detectChanges();
@@ -108,13 +106,22 @@ describe('ExistingEntryEditorContainerComponent', () => {
         expect(spinnerDe.nativeElement.innerText).toEqual('Getting entry');
     });
 
-    it('displays editor when decrypted', () => {
-        component.entryStore.loading = false;
-        component.etchStore.state.loading = false;
-        component.etchStore.state.parsedEtches = [{ content: 'decrypted etch 1' }] as EtchV1[];
+    it('displays editor when decrypted', fakeAsync(() => {
+        const etchEntities = [createEtchEntity({ id: 'etchId' })];
+        getEtchesSpy.and.returnValue(Promise.resolve(etchEntities));
+
+        entryStore.loading = false;
+        etchStore.loading = false;
+
+        etchStore.entities = etchEntities;
+        etchStore.etchesById.set('etchId', [createEtch('decrypted')]);
+        etchStore.etchesByEntry.set('entryId', createEtch('decrypted'));
+
         component.title = 'Entry Title';
 
-        expect(component.displaySpinner()).toBeFalsy();
+        component.ngOnInit();
+        tick();
+
         fixture.detectChanges();
 
         expect(component.title).toEqual('Entry Title');
@@ -122,8 +129,8 @@ describe('ExistingEntryEditorContainerComponent', () => {
         expect(titleDe.nativeElement.innerText).toEqual('Entry Title');
 
         const etchListDe = TestUtils.queryExpectOne(fixture.debugElement, 'app-etch-item');
-        expect(etchListDe.nativeElement.innerText.trim()).toEqual('decrypted etch 1');
-    });
+        expect(etchListDe.nativeElement.innerText.trim()).toEqual('decrypted');
+    }));
 
     it('loads entry on init', fakeAsync(() => {
         // ngOnInit is called when the component is first created

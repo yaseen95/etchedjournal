@@ -1,5 +1,6 @@
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
+import { EtchV1 } from '../models/etch/etch-v1';
 import { EntryEntity } from '../services/models/entry-entity';
 import { EtchEntity } from '../services/models/etch-entity';
 import { EtchedUser } from '../services/models/etched-user';
@@ -119,5 +120,9 @@ export namespace TestUtils {
 
     export function triggerBlur(de: DebugElement) {
         de.triggerEventHandler('blur', null);
+    }
+
+    export function createEtch(content: string, created: number = 0): EtchV1 {
+        return new EtchV1({ content, created });
     }
 }

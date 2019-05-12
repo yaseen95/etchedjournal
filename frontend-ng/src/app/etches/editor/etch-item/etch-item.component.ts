@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { EtchV1 } from '../../../models/etch/etch';
+import { EtchV1 } from '../../../models/etch/etch-v1';
 
 @Component({
     selector: 'app-etch-item',
@@ -16,7 +16,7 @@ export class EtchItemComponent implements OnInit {
     public timestamp: string;
 
     public ngOnInit() {
-        this.timestamp = new Date(this.etch.timestamp).toLocaleString();
+        this.timestamp = new Date(this.etch.created).toLocaleString();
     }
 
     public toggleExpand() {
