@@ -28,6 +28,7 @@
         "bcryptjs": "^2.4.3",
         "core-js": "^2.5.4",
         "jwt-decode": "^2.2.0",
+        "lodash.isequal": "^4.5.0",
         "mobx": "^5.9.4",
         "mobx-angular": "^3.0.1",
         "openpgp": "4.4.10",

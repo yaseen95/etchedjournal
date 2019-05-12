@@ -7,7 +7,7 @@ import { ClockService } from '../../services/clock.service';
 import { FakeClock } from '../../services/clock.service.spec';
 import { FakeEntryStore, FakeEtchStore } from '../../services/fakes.service.spec';
 import { EntryStore } from '../../stores/entry.store';
-import { EtchStore } from '../../stores/etch.store';
+import { EtchStore } from '../../stores/etch/etch.store';
 import { EditorContainerComponent } from './editor-container.component';
 import { EntryEditorComponent } from './entry-editor/entry-editor.component';
 import { EntryTitleComponent } from './entry-title/entry-title.component';

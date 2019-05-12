@@ -1,4 +1,4 @@
-<div class="columns is-centered" *mobxAutorun>
+<div class="columns is-centered">
     <div *ngIf="displaySpinner()" class="column is-12-mobile is-4-desktop">
         <app-spinner [text]="'Getting entry'"></app-spinner>
     </div>
@@ -9,7 +9,8 @@
             class="columns has-text-left"
         >
         </app-entry-title>
-        <app-editor (etchEmitter)="onNewEtch($event)" [etches]="etchStore.state.parsedEtches">
+        <app-editor (etchEmitter)="onNewEtch($event)"
+                    [etches]="etchStore.etchesByEntry.get(entryId)">
         </app-editor>
     </div>
 </div>

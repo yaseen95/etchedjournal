@@ -1,11 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { By } from '@angular/platform-browser';
-import { EtchV1 } from '../../../models/etch/etch';
+import { EtchV1 } from '../../../models/etch/etch-v1';
 import { ClockService } from '../../../services/clock.service';
 import { TestUtils } from '../../../utils/test-utils.spec';
 import { EtchItemComponent } from '../etch-item/etch-item.component';
 import { EntryEditorComponent } from './entry-editor.component';
+import createEtch = TestUtils.createEtch;
 
 describe('EntryEditorComponent', () => {
     let component: EntryEditorComponent;
@@ -31,8 +32,14 @@ describe('EntryEditorComponent', () => {
         component.etchEmitter.subscribe(e => emittedEtches.push(e));
     });
 
+    afterEach(() => {
+        component.ngOnDestroy();
+        // reset emitted etches
+        emittedEtches = [];
+    });
+
     it('etches renders when length greater than 0', () => {
-        component.etches = [new EtchV1('abc', 0), new EtchV1('def', 0)];
+        component.etches = [createEtch('abc'), createEtch('def')];
         fixture.detectChanges();
 
         const listDe = TestUtils.queryExpectOne(fixture.debugElement, '#etches-list');
@@ -84,11 +91,11 @@ describe('EntryEditorComponent', () => {
 
         // 1 etch should have been emitted
         expect(emittedEtches.length).toEqual(1);
-        expect(emittedEtches[0]).toEqual(new EtchV1('abc', 0));
+        expect(emittedEtches[0]).toEqual(createEtch('abc'));
 
         // etch should also have been updated and be visible in the etches list
         expect(component.etches.length).toEqual(1);
-        expect(component.etches[0]).toEqual(new EtchV1('abc', 0));
+        expect(component.etches[0]).toEqual(createEtch('abc'));
         const listDe = TestUtils.queryExpectOne(fixture.debugElement, 'li');
         expect(listDe.nativeElement.textContent).toEqual('abc');
 
@@ -122,7 +129,7 @@ describe('EntryEditorComponent', () => {
         component.etchIfInactive();
         fixture.detectChanges();
 
-        const expected = new EtchV1('posted after timeout', 5000);
+        const expected = createEtch('posted after timeout', 5000);
 
         expect(emittedEtches.length).toEqual(1);
         expect(emittedEtches[0]).toEqual(expected);
@@ -155,11 +162,5 @@ describe('EntryEditorComponent', () => {
         // no etches should have been created
         expect(emittedEtches.length).toEqual(0);
         expect(component.etches.length).toEqual(0);
-    });
-
-    afterEach(() => {
-        component.ngOnDestroy();
-        // reset emitted etches
-        emittedEtches = [];
     });
 });

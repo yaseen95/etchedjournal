@@ -4,13 +4,12 @@ import {
     EventEmitter,
     Input,
     OnDestroy,
-    OnInit,
     Output,
     Renderer2,
     ViewChild,
 } from '@angular/core';
 import { interval, Observable, Subscription } from 'rxjs';
-import { EtchV1 } from '../../../models/etch/etch';
+import { EtchV1 } from '../../../models/etch/etch-v1';
 import { ClockService } from '../../../services/clock.service';
 
 const DEFAULT_ETCH_TIMEOUT = 5 * 1000;
@@ -117,19 +116,11 @@ export class EntryEditorComponent implements OnDestroy {
         if (text === '') {
             return;
         }
-
-        // TODO: Add metadata representation of etch
-        console.info(`Etching: ${text}`);
-
-        const e = new EtchV1(text, this.clock.nowMillis());
-
+        const e = new EtchV1({ content: text, created: this.clock.nowMillis() });
         // Push the current etch to the list of etches being displayed
         this.etches.push(e);
-
         // Reset the etch
         this.editorElem.nativeElement.textContent = '';
-
-        // Emit the etch
         this.etchEmitter.emit(e);
     }
 }

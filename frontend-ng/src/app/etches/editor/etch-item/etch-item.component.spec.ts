@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { EtchV1 } from '../../../models/etch/etch';
+import { EtchV1 } from '../../../models/etch/etch-v1';
 import { TestUtils } from '../../../utils/test-utils.spec';
 
 import { EtchItemComponent } from './etch-item.component';
@@ -7,7 +7,7 @@ import { EtchItemComponent } from './etch-item.component';
 describe('EtchItemComponent', () => {
     let component: EtchItemComponent;
     let fixture: ComponentFixture<EtchItemComponent>;
-    const etch = new EtchV1('content', 0);
+    const etch = new EtchV1({ content: 'content', created: 0 });
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
