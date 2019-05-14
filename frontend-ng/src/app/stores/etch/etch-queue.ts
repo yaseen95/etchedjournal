@@ -7,7 +7,7 @@ import { MultiMap } from '../../utils/multi-map';
 export class EtchQueue {
     public readonly queueObs: Subject<MultiMap<string, AbstractEtch>>;
     /** contains queued etches, maps entry id to a list of etches */
-    private queued: MultiMap<string, AbstractEtch>;
+    protected queued: MultiMap<string, AbstractEtch>;
     public subscription: Subscription;
 
     constructor() {
@@ -20,6 +20,14 @@ export class EtchQueue {
 
     public put(entryId: string, etches: AbstractEtch[]) {
         this.queued.setMany(entryId, etches);
+    }
+
+    public flush() {
+        this.broadcastQueued();
+    }
+
+    public size() {
+        return this.queued.size;
     }
 
     private broadcastQueued() {
