@@ -8,10 +8,7 @@ import { EtchQueue } from './stores/etch/etch-queue';
     styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-    constructor(
-        private secureStorage: SecureStorageService,
-        private queue: EtchQueue
-    ) {}
+    constructor(private secureStorage: SecureStorageService, private queue: EtchQueue) {}
 
     @HostListener('window:beforeunload', ['$event'])
     private onAppUnload(event: BeforeUnloadEvent) {
