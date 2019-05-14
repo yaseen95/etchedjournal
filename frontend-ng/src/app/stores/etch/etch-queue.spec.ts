@@ -86,4 +86,45 @@ describe('EtchQueue', () => {
 
         queue.subscription.unsubscribe();
     }));
+
+    it('size is empty when queue is created', () => {
+        const queue = new EtchQueue();
+        expect(queue.size()).toEqual(0);
+    });
+
+    it('size is updated', () => {
+        const queue = new EtchQueue();
+        queue.put('e1', [createEtch('foo')]);
+        queue.put('e2', [createEtch('bar')]);
+        expect(queue.size()).toEqual(2);
+    });
+
+    it('multiple etches count toward size per key', () => {
+        const queue = new EtchQueue();
+        queue.put('e1', [createEtch('foo'), createEtch('baz')]);
+        queue.put('e2', [createEtch('bar')]);
+        expect(queue.size()).toEqual(3);
+    });
+
+    it('queue can be flushed', () => {
+        const queue = new EtchQueue();
+        queue.put('e1', [createEtch('bar')]);
+
+        const broadcasted = [];
+        queue.queueObs.subscribe(val => broadcasted.push(val));
+
+        queue.flush();
+
+        expect(broadcasted.length).toEqual(1);
+        const expected = MultiMap.of('e1', [createEtch('bar')]);
+        expect(broadcasted[0]).toEqual(expected);
+    });
+
+    it('queue flush does nothing when queue is empty', () => {
+        const queue = new EtchQueue();
+        const broadcasted = [];
+        queue.queueObs.subscribe(val => broadcasted.push(val));
+        queue.flush();
+        expect(broadcasted).toEqual([]);
+    });
 });
