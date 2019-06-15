@@ -187,6 +187,17 @@ describe('EditableText', () => {
         const inputDe = TestUtils.queryExpectOne(fixture.debugElement, 'input');
         expect(inputDe.properties.maxLength).toEqual(20);
     });
+
+    it('editing - can press enter to exit immediately after editing', () => {
+        component.editing = true;
+        component.text = 'foobar';
+        component.ngOnInit();
+        fixture.detectChanges();
+
+        const inputDe = TestUtils.queryExpectOne(fixture.debugElement, 'input');
+        triggerKeyUp(inputDe, 'Enter');
+        expect(component.editing).toEqual(false);
+    });
 });
 
 function triggerInputAndKeydown(de: DebugElement) {
