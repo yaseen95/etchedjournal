@@ -34,7 +34,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class JournalRecord extends UpdatableRecordImpl<JournalRecord> implements Record9<String, Instant, Instant, byte[], String, OwnerType, String, Integer, Schema> {
 
-    private static final long serialVersionUID = -607925316;
+    private static final long serialVersionUID = -1491267806;
 
     /**
      * Setter for <code>public.journal.id</code>.
@@ -79,6 +79,7 @@ public class JournalRecord extends UpdatableRecordImpl<JournalRecord> implements
     /**
      * Getter for <code>public.journal.modified</code>.
      */
+    @NotNull
     public Instant getModified() {
         return (Instant) get(2);
     }

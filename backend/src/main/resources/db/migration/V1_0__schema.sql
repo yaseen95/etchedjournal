@@ -18,7 +18,7 @@ CREATE TABLE key_pair (
 CREATE TABLE journal (
   id          BIGINT        PRIMARY KEY UNIQUE NOT NULL,
   created     TIMESTAMP     NOT NULL,
-  modified    TIMESTAMP     DEFAULT NULL,
+  modified    TIMESTAMP     NOT NULL,
   content     BYTEA         NOT NULL,
   -- TODO: Make `owner` a UUID column
   owner       VARCHAR(60)   NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE journal (
 CREATE TABLE entry (
   id          BIGINT        PRIMARY KEY UNIQUE NOT NULL,
   created     TIMESTAMP     NOT NULL,
-  modified    TIMESTAMP     DEFAULT NULL,
+  modified    TIMESTAMP     NOT NULL,
   content     BYTEA         NOT NULL,
   owner       VARCHAR(60)   NOT NULL,
   owner_type  CHAR(1)       NOT NULL,

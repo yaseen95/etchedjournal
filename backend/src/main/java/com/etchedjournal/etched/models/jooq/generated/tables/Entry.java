@@ -8,7 +8,6 @@ import com.etchedjournal.etched.models.OwnerType;
 import com.etchedjournal.etched.models.Schema;
 import com.etchedjournal.etched.models.jooq.converter.IdConverter;
 import com.etchedjournal.etched.models.jooq.converter.InstantConverter;
-import com.etchedjournal.etched.models.jooq.converter.NullableInstantConverter;
 import com.etchedjournal.etched.models.jooq.converter.OwnerTypeConverter;
 import com.etchedjournal.etched.models.jooq.converter.SchemaConverter;
 import com.etchedjournal.etched.models.jooq.generated.Indexes;
@@ -47,7 +46,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Entry extends TableImpl<EntryRecord> {
 
-    private static final long serialVersionUID = -547132969;
+    private static final long serialVersionUID = -1152012866;
 
     /**
      * The reference instance of <code>public.entry</code>
@@ -75,7 +74,7 @@ public class Entry extends TableImpl<EntryRecord> {
     /**
      * The column <code>public.entry.modified</code>.
      */
-    public final TableField<EntryRecord, Instant> MODIFIED = createField("modified", org.jooq.impl.SQLDataType.TIMESTAMP, this, "", new NullableInstantConverter());
+    public final TableField<EntryRecord, Instant> MODIFIED = createField("modified", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "", new InstantConverter());
 
     /**
      * The column <code>public.entry.content</code>.

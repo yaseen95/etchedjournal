@@ -2,6 +2,7 @@ package com.etchedjournal.etched.repository
 
 import com.etchedjournal.etched.TestAuthService
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER
+import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.TestRepoUtils.Companion.ID_1
@@ -64,7 +65,7 @@ class EntryRepositoryIntegrationTest {
         val entry = Entry(
             id,
             Instant.EPOCH,
-            null,
+            Instant.EPOCH,
             byteArrayOf(1, 2),
             TestAuthService.TESTER_USER_ID,
             OwnerType.USER,
@@ -83,9 +84,9 @@ class EntryRepositoryIntegrationTest {
         val entry1 = Entry(
             id,
             Instant.EPOCH,
-            null,
+            Instant.EPOCH,
             byteArrayOf(1, 2),
-            TestAuthService.TESTER_USER_ID,
+            TESTER_USER_ID,
             OwnerType.USER,
             journal.id,
             keyPair.id,
@@ -98,9 +99,9 @@ class EntryRepositoryIntegrationTest {
         val entry2 = Entry(
             id,
             Instant.EPOCH,
-            null,
+            Instant.EPOCH,
             byteArrayOf(1, 2),
-            TestAuthService.TESTER_USER_ID,
+            TESTER_USER_ID,
             OwnerType.USER,
             journal.id,
             keyPair.id,
@@ -118,9 +119,9 @@ class EntryRepositoryIntegrationTest {
         val entry = Entry(
             id,
             Instant.EPOCH,
-            null,
+            Instant.EPOCH,
             byteArrayOf(1, 2),
-            TestAuthService.TESTER_USER_ID,
+            TESTER_USER_ID,
             OwnerType.USER,
             journal.id,
             keyPair.id,

@@ -23,7 +23,6 @@ import com.etchedjournal.etched.utils.clock.FakeClock
 import com.etchedjournal.etched.utils.id.IdGenerator
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -171,7 +170,7 @@ class EntryServiceImplIntegrationTest {
         assertEquals(TESTER.id, created.owner)
         assertEquals(Schema.V1_0, created.schema)
         assertEquals(101, created.created.toEpochMilli())
-        assertNull(created.modified)
+        assertEquals(101, created.modified.toEpochMilli())
         assertEquals(1, created.version)
         assertEquals(Schema.V1_0, created.schema)
     }
@@ -232,7 +231,6 @@ class EntryServiceImplIntegrationTest {
         clock.millis = 123
 
         val created = testRepo.createEntry(ID_1, keyPair.id, byteArrayOf(1))
-        assertNull(created.modified)
         assertArrayEquals(byteArrayOf(1), created.content)
 
         txnHelper.execute { txn ->

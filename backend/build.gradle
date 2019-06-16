@@ -202,6 +202,8 @@ jooq {
         }
     }
 }
+// Uncomment this line to avoid gradle caching of jooq code gen
+// generateEtchedJooqSchemaSource.outputs.upToDateWhen { false }
 
 // Need to run the flyway migration before we do the jooq code gen
 // In non-dev configurations flyway will be run on app boot

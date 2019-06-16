@@ -1,6 +1,5 @@
 package com.etchedjournal.etched.repository
 
-import com.etchedjournal.etched.TestAuthService
 import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
@@ -54,9 +53,9 @@ class JournalRepositoryIntegrationTest {
         var journal = Journal(
             id,
             Instant.EPOCH,
-            null,
+            Instant.EPOCH,
             byteArrayOf(1, 2),
-            TestAuthService.TESTER_USER_ID,
+            TESTER_USER_ID,
             OwnerType.USER,
             keyPair.id,
             0,
@@ -72,9 +71,9 @@ class JournalRepositoryIntegrationTest {
         var journal1 = Journal(
             id,
             Instant.EPOCH,
-            null,
+            Instant.EPOCH,
             byteArrayOf(1, 2),
-            TestAuthService.TESTER_USER_ID,
+            TESTER_USER_ID,
             OwnerType.USER,
             keyPair.id,
             0,
@@ -86,9 +85,9 @@ class JournalRepositoryIntegrationTest {
         val journal2 = Journal(
             id,
             Instant.EPOCH,
-            null,
+            Instant.EPOCH,
             byteArrayOf(1, 2),
-            TestAuthService.TESTER_USER_ID,
+            TESTER_USER_ID,
             OwnerType.USER,
             keyPair.id,
             // set version to 0
@@ -105,9 +104,9 @@ class JournalRepositoryIntegrationTest {
         val journal = Journal(
             id,
             Instant.EPOCH,
-            null,
+            Instant.EPOCH,
             byteArrayOf(1, 2),
-            TestAuthService.TESTER_USER_ID,
+            TESTER_USER_ID,
             OwnerType.USER,
             keyPair.id,
             0,

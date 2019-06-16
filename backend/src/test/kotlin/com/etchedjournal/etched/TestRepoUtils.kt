@@ -45,7 +45,7 @@ class TestRepoUtils(
         keyPairId: String,
         content: ByteArray = byteArrayOf(1),
         created: Instant = Instant.EPOCH,
-        modified: Instant? = null,
+        modified: Instant = Instant.EPOCH,
         owner: String = TESTER.id,
         ownerType: OwnerType = OwnerType.USER,
         schema: Schema = Schema.V1_0
@@ -70,7 +70,7 @@ class TestRepoUtils(
         content: ByteArray = byteArrayOf(1),
         keyPairId: String = ID_1,
         created: Instant = Instant.EPOCH,
-        modified: Instant? = null,
+        modified: Instant = Instant.EPOCH,
         owner: String = TESTER.id,
         ownerType: OwnerType = OwnerType.USER,
         schema: Schema = Schema.V1_0

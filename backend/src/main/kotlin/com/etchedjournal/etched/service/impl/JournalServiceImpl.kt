@@ -51,10 +51,11 @@ class JournalServiceImpl(
         logger.info("Creating journal {}", req)
         checkKeyPairExists(txn, req.keyPairId)
 
+        val timestamp = clock.now()
         val journal = Journal(
             idGenerator.generateId(),
-            clock.now(),
-            null,
+            timestamp,
+            timestamp,
             req.content,
             authService.getUserId(),
             OwnerType.USER,
