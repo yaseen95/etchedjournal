@@ -57,10 +57,11 @@ class EntryServiceImpl(
         checkJournalExists(txn, journalId)
         checkKeyPairExists(txn, req.keyPairId)
 
+        val timestamp = clock.now()
         val entry = Entry(
             idGenerator.generateId(),
-            clock.now(),
-            null,
+            timestamp,
+            timestamp,
             req.content,
             authService.getUserId(),
             OwnerType.USER,

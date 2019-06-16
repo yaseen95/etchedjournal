@@ -82,6 +82,7 @@ public class Journal {
         return this.created;
     }
 
+    @NotNull
     public Instant getModified() {
         return this.modified;
     }

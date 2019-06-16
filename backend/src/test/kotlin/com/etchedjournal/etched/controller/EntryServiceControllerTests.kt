@@ -10,7 +10,6 @@ import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.TestRepoUtils.Companion.ID_1
-import com.etchedjournal.etched.isNull
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import com.etchedjournal.etched.models.jooq.generated.tables.records.EntryRecord
 import com.etchedjournal.etched.models.jooq.generated.tables.records.JournalRecord
@@ -91,7 +90,7 @@ class EntryServiceControllerTests {
             .andExpect(jsonPath("$", hasSize<Any>(1)))
             .andExpect(jsonPath("$[0].id", `is`(e.id)))
             .andExpect(jsonPath("$[0].created", `is`(0)))
-            .andExpect(jsonPath("$[0].modified", isNull()))
+            .andExpect(jsonPath("$[0].modified", `is`(0)))
             .andExpect(jsonPath("$[0].content", `is`("AQI=")))
             .andExpect(jsonPath("$[0].owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$[0].ownerType", `is`("USER")))
@@ -112,9 +111,9 @@ class EntryServiceControllerTests {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id", `is`(e.id)))
             .andExpect(jsonPath("$.created", `is`(0)))
-            .andExpect(jsonPath("$.modified", isNull()))
+            .andExpect(jsonPath("$.modified", `is`(0)))
             .andExpect(jsonPath("$.content", `is`("AQI=")))
-            .andExpect(jsonPath("$.modified", isNull()))
+            .andExpect(jsonPath("$.modified", `is`(0)))
             .andExpect(jsonPath("$.owner", `is`(TESTER_USER_ID)))
             .andExpect(jsonPath("$.ownerType", `is`("USER")))
             // These shouldn't be in the payload
@@ -177,7 +176,7 @@ class EntryServiceControllerTests {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(ID_LENGTH_MATCHER))
             .andExpect(jsonPath("$.created").value(TIMESTAMP_RECENT_MATCHER))
-            .andExpect(jsonPath("$.modified", isNull()))
+            .andExpect(jsonPath("$.modified").value(TIMESTAMP_RECENT_MATCHER))
             .andExpect(jsonPath("$.content", `is`("abcd")))
             .andExpect(jsonPath("$.owner", `is`(TESTER_USER_ID)))
     }
