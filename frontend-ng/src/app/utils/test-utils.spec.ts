@@ -35,6 +35,11 @@ export namespace TestUtils {
         input.dispatchEvent(new Event('input'));
     }
 
+    export function updateInputValue(de: DebugElement, value: string) {
+        de.nativeElement.value = value;
+        triggerInput(de);
+    }
+
     /**
      * Query a debug element and expect no items to match the given query expression
      *
@@ -108,6 +113,14 @@ export namespace TestUtils {
         // called defaultX because `default` is reserved and I can't call it `default_` due to
         // linting
         return x === undefined ? defaultX : x;
+    }
+
+    export function triggerEnter(de: DebugElement) {
+        triggerKeyUp(de, 'Enter');
+    }
+
+    export function triggerEscape(de: DebugElement) {
+        triggerKeyUp(de, 'Escape');
     }
 
     export function triggerKeyUp(de: DebugElement, key: string) {

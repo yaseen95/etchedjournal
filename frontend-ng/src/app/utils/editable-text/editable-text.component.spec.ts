@@ -4,8 +4,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { TestUtils } from '../test-utils.spec';
 import { EditableText } from './editable-text.component';
 import triggerBlur = TestUtils.triggerBlur;
-import triggerInput = TestUtils.triggerInput;
-import triggerKeyUp = TestUtils.triggerKeyUp;
+import triggerEnter = TestUtils.triggerEnter;
+import triggerEscape = TestUtils.triggerEscape;
+import updateInputValue = TestUtils.updateInputValue;
 
 describe('EditableText', () => {
     let component: EditableText;
@@ -22,16 +23,14 @@ describe('EditableText', () => {
         fixture = TestBed.createComponent(EditableText);
         component = fixture.componentInstance;
         component.maxLength = 20;
+        setTextAndInit('foobar');
     });
 
     it('does not initialize to editing mode', () => {
-        component.text = 'foobar';
-        fixture.detectChanges();
         expect(component.editing).toEqual(false);
     });
 
     it('!editing - displays input text', () => {
-        component.text = 'foobar';
         component.editing = false;
         fixture.detectChanges();
 
@@ -40,7 +39,6 @@ describe('EditableText', () => {
     });
 
     it('!editing - displays input text as link', () => {
-        component.text = 'foobar';
         component.link = '/foo/bar';
         fixture.detectChanges();
 
@@ -50,7 +48,6 @@ describe('EditableText', () => {
     });
 
     it('!editing - clicks on edit icon changes edit mode', () => {
-        component.text = 'foobar';
         expect(component.editing).toEqual(false);
         fixture.detectChanges();
 
@@ -60,79 +57,78 @@ describe('EditableText', () => {
         expect(component.editing).toEqual(true);
     });
 
-    it('editing - input is visible', () => {
-        component.editing = true;
-        component.text = 'foobar';
-        fixture.detectChanges();
-
-        TestUtils.queryExpectOne(fixture.debugElement, 'input');
-    });
-
     it('editing - input updates current text', () => {
-        component.editing = true;
-        component.text = '';
-        fixture.detectChanges();
+        enableEditingMode();
 
-        const inputDe = TestUtils.queryExpectOne(fixture.debugElement, 'input');
-        inputDe.nativeElement.value = 'foobar';
-        triggerInputAndKeydown(inputDe);
+        const inputDe = getInputDebugElement();
+        updateInputValue(inputDe, 'foobarbaz');
+        triggerEnter(inputDe);
 
-        expect(component.text).toEqual('foobar');
+        expect(component.text).toEqual('foobarbaz');
     });
 
     it('editing - emits text on save', () => {
-        component.editing = true;
-        component.text = '';
-        fixture.detectChanges();
+        enableEditingMode();
 
         const emitted = [];
         component.onSave.subscribe(text => emitted.push(text));
 
-        const inputDe = TestUtils.queryExpectOne(fixture.debugElement, 'input');
-        inputDe.nativeElement.value = 'foobar';
-        triggerInputAndKeydown(inputDe);
+        const inputDe = getInputDebugElement();
+        updateInputValue(inputDe, 'foobarbaz');
+        triggerEnter(inputDe);
 
-        expect(emitted).toEqual(['foobar']);
+        expect(emitted).toEqual(['foobarbaz']);
     });
 
     it('editing - input text empty does not update text', () => {
-        component.editing = true;
-        component.text = 'foobar';
-        fixture.detectChanges();
+        enableEditingMode();
 
-        const inputDe = TestUtils.queryExpectOne(fixture.debugElement, 'input');
-        // Set text to empty
-        inputDe.nativeElement.value = '';
-        triggerInputAndKeydown(inputDe);
+        const inputDe = getInputDebugElement();
+        updateInputValue(inputDe, '');
+        triggerEnter(inputDe);
 
-        // Should still be foobar
         expect(component.text).toEqual('foobar');
     });
 
-    it('editing - exits edit mode after pressing enter', () => {
-        component.editing = true;
-        component.text = 'foobar';
-        fixture.detectChanges();
+    it('editing - blank title does not update text', () => {
+        enableEditingMode();
 
-        const inputDe = TestUtils.queryExpectOne(fixture.debugElement, 'input');
-        inputDe.nativeElement.value = 'samsepiol';
-        triggerInputAndKeydown(inputDe);
+        const inputDe = getInputDebugElement();
+        updateInputValue(inputDe, '   \n\n\t ');
+        triggerEnter(inputDe);
+
+        expect(component.text).toEqual('foobar');
+    });
+
+    it('editing - trims title on save', () => {
+        enableEditingMode();
+
+        const inputDe = getInputDebugElement();
+        updateInputValue(inputDe, '   abc ');
+        triggerEnter(inputDe);
+
+        expect(component.text).toEqual('abc');
+    });
+
+    it('editing - exits edit mode after pressing enter', () => {
+        enableEditingMode();
+
+        const inputDe = getInputDebugElement();
+        updateInputValue(inputDe, 'samsepiol');
+        triggerEnter(inputDe);
 
         expect(component.text).toEqual('samsepiol');
         expect(component.editing).toEqual(false);
     });
 
     it('editing - blur exits edit mode and saves if not empty', () => {
-        component.editing = true;
-        component.text = 'foobar';
-        fixture.detectChanges();
+        enableEditingMode();
 
         const emitted = [];
         component.onSave.subscribe(text => emitted.push(text));
 
-        const inputDe = TestUtils.queryExpectOne(fixture.debugElement, 'input');
-        inputDe.nativeElement.value = 'samsepiol';
-        triggerInput(inputDe);
+        const inputDe = getInputDebugElement();
+        updateInputValue(inputDe, 'samsepiol');
         triggerBlur(inputDe);
 
         expect(emitted).toEqual(['samsepiol']);
@@ -141,55 +137,81 @@ describe('EditableText', () => {
     });
 
     it('editing - blur exits edit mode and does not save if empty', () => {
-        component.editing = true;
-        component.text = 'foobar';
-        fixture.detectChanges();
+        enableEditingMode();
 
         const emitted = [];
         component.onSave.subscribe(text => emitted.push(text));
 
-        const inputDe = TestUtils.queryExpectOne(fixture.debugElement, 'input');
-        (inputDe.nativeElement as HTMLInputElement).value = '';
-        triggerInput(inputDe);
+        const inputDe = getInputDebugElement();
+        updateInputValue(inputDe, '');
         triggerBlur(inputDe);
 
         expect(emitted).toEqual([]);
-        // Should still be foobar
         expect(component.text).toEqual('foobar');
         expect(component.editing).toEqual(false);
     });
 
-    it('editing - keyUp does not save until enter is pressed', () => {
-        component.editing = true;
-        component.text = 'foobar';
-        fixture.detectChanges();
+    it('editing - does not save until enter is pressed', () => {
+        enableEditingMode();
+        const inputDe = getInputDebugElement();
 
-        const inputDe = TestUtils.queryExpectOne(fixture.debugElement, 'input');
+        const emitted = [];
+        component.onSave.subscribe(text => emitted.push(text));
 
-        inputDe.nativeElement.value = 'a';
-        triggerInput(inputDe);
+        updateInputValue(inputDe, 'a');
         expect(component.text).toEqual('foobar');
 
-        inputDe.nativeElement.value = 'ab';
-        triggerInput(inputDe);
+        updateInputValue(inputDe, 'ab');
         expect(component.text).toEqual('foobar');
 
-        triggerKeyUp(inputDe, 'Enter');
+        triggerEnter(inputDe);
         expect(component.text).toEqual('ab');
+
+        expect(emitted).toEqual(['ab']);
     });
 
     it('editing - input has maxlength', () => {
-        component.editing = true;
-        component.text = 'foobar';
+        enableEditingMode();
         component.maxLength = 20;
         fixture.detectChanges();
 
-        const inputDe = TestUtils.queryExpectOne(fixture.debugElement, 'input');
+        const inputDe = getInputDebugElement();
         expect(inputDe.properties.maxLength).toEqual(20);
     });
-});
 
-function triggerInputAndKeydown(de: DebugElement) {
-    triggerInput(de);
-    triggerKeyUp(de, 'Enter');
-}
+    it('editing - can press enter to exit immediately after editing', () => {
+        // GH-172
+        enableEditingMode();
+        const inputDe = getInputDebugElement();
+        triggerEnter(inputDe);
+        expect(component.editing).toEqual(false);
+    });
+
+    it('editing - can press escape to exit without saving changes', () => {
+        enableEditingMode();
+        const inputDe = getInputDebugElement();
+        updateInputValue(inputDe, 'a');
+        triggerEscape(inputDe);
+        fixture.detectChanges();
+
+        expect(component.text).toEqual('foobar');
+        expect(component.editing).toEqual(false);
+    });
+
+    function setTextAndInit(text: string) {
+        // text is provided as an input arg, because we create the component before the test
+        // gets to run we have to mess around with
+        component.text = text;
+        component.ngOnInit();
+        fixture.detectChanges();
+    }
+
+    function enableEditingMode() {
+        component.editing = true;
+        fixture.detectChanges();
+    }
+
+    function getInputDebugElement(): DebugElement {
+        return TestUtils.queryExpectOne(fixture.debugElement, 'input');
+    }
+});

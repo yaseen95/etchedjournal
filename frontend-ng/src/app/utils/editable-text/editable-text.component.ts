@@ -22,12 +22,14 @@ export class EditableText implements OnInit {
     public maxLength: number;
 
     public editing: boolean = false;
-    private editingText: string = '';
+    private editingText: string;
 
     public ngOnInit(): void {
         if (this.text === undefined || this.text === null) {
             throw new Error('Text is required');
         }
+        this.text = this.text.trim();
+        this.editingText = this.text;
         if (this.maxLength === undefined || this.maxLength === null || this.maxLength <= 0) {
             throw new Error('Must provide positive maxLength');
         }
@@ -38,8 +40,10 @@ export class EditableText implements OnInit {
     }
 
     public onKeyUp(event: KeyboardEvent) {
-        if (event.key === 'Enter' && this.editingText !== '') {
+        if (event.key === 'Enter') {
             this.finishEditing();
+        } else if (event.key === 'Escape') {
+            this.exitWithoutSaving();
         }
     }
 
@@ -48,18 +52,26 @@ export class EditableText implements OnInit {
     }
 
     public onBlur() {
-        if (this.editingText !== '') {
-            this.finishEditing();
+        this.finishEditing();
+    }
+
+    private finishEditing() {
+        if (this.shouldUpdateText()) {
+            this.onSave.emit(this.editingText);
+            this.text = this.editingText;
         }
         this.editing = false;
     }
 
-    private finishEditing() {
-        if (this.text !== this.editingText) {
-            // Only emit the change if the text has changed
-            this.onSave.emit(this.editingText);
+    private shouldUpdateText(): boolean {
+        if (this.editingText === '') {
+            return false;
         }
-        this.text = this.editingText;
+        return this.editingText !== this.text;
+    }
+
+    private exitWithoutSaving() {
         this.editing = false;
+        this.editingText = this.text;
     }
 }
