@@ -10,7 +10,6 @@ import com.etchedjournal.etched.TestAuthService.Companion.TESTER_USER_ID
 import com.etchedjournal.etched.TestConfig
 import com.etchedjournal.etched.TestRepoUtils
 import com.etchedjournal.etched.TestRepoUtils.Companion.ID_1
-import com.etchedjournal.etched.isNull
 import com.etchedjournal.etched.models.jooq.generated.tables.pojos.KeyPair
 import com.etchedjournal.etched.models.jooq.generated.tables.records.EntryRecord
 import com.etchedjournal.etched.models.jooq.generated.tables.records.JournalRecord
